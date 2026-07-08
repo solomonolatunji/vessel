@@ -14,6 +14,8 @@ build/
 data/vessel.db*
 data/backups/
 data/caddy/
+data/builds/
+tests/data/
 *.env
 *.env.local
 

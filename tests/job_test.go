@@ -1,4 +1,4 @@
-package api
+package tests
 
 import (
 	"bytes"
@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/solomonolatunji/vessel/internal/api"
 	"github.com/solomonolatunji/vessel/internal/store"
 	"github.com/solomonolatunji/vessel/internal/types"
 )
@@ -26,7 +27,7 @@ func TestScheduledJobsEndpoints(t *testing.T) {
 	}
 	defer s.Close()
 
-	srv := NewServer(s, nil, nil, nil)
+	srv := api.NewServer(s, nil, nil, nil)
 
 	registerPayload := []byte(`{"email":"admin@vessel.dev","password":"securepassword123","role":"admin"}`)
 	reqReg := httptest.NewRequest(http.MethodPost, "/api/auth/register", bytes.NewReader(registerPayload))
@@ -38,7 +39,6 @@ func TestScheduledJobsEndpoints(t *testing.T) {
 	_ = json.NewDecoder(recReg.Body).Decode(&registerResp)
 	tokenStr, _ := registerResp["token"].(string)
 
-	// Create a dummy project first so validation passes
 	project := &types.ProjectConfig{
 		Name:         "Job Test Project",
 		InternalPort: 3000,
@@ -47,7 +47,6 @@ func TestScheduledJobsEndpoints(t *testing.T) {
 		t.Fatalf("failed to create dummy project: %v", err)
 	}
 
-	// Create job request
 	jobReq := types.JobConfig{
 		ProjectID: project.ID,
 		Name:      "Daily Cleanup",
@@ -74,7 +73,6 @@ func TestScheduledJobsEndpoints(t *testing.T) {
 		t.Fatal("expected job ID to be generated")
 	}
 
-	// List jobs for the project
 	reqList := httptest.NewRequest(http.MethodGet, "/api/jobs?projectId="+project.ID, nil)
 	reqList.Header.Set("Authorization", "Bearer "+tokenStr)
 	recList := httptest.NewRecorder()
@@ -84,7 +82,6 @@ func TestScheduledJobsEndpoints(t *testing.T) {
 		t.Fatalf("expected status %d on list jobs, got %d", http.StatusOK, recList.Code)
 	}
 
-	// Get specific job
 	reqGet := httptest.NewRequest(http.MethodGet, "/api/jobs/"+createdJob.ID, nil)
 	reqGet.Header.Set("Authorization", "Bearer "+tokenStr)
 	recGet := httptest.NewRecorder()
@@ -94,7 +91,6 @@ func TestScheduledJobsEndpoints(t *testing.T) {
 		t.Fatalf("expected status %d on get job, got %d", http.StatusOK, recGet.Code)
 	}
 
-	// Delete job
 	reqDel := httptest.NewRequest(http.MethodDelete, "/api/jobs/"+createdJob.ID, nil)
 	reqDel.Header.Set("Authorization", "Bearer "+tokenStr)
 	recDel := httptest.NewRecorder()

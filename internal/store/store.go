@@ -143,6 +143,16 @@ func (s *Store) migrate() error {
 			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 			FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
 		);`,
+		`CREATE TABLE IF NOT EXISTS user_git_providers (
+			id TEXT PRIMARY KEY,
+			user_id TEXT NOT NULL,
+			provider TEXT NOT NULL,
+			encrypted_access_token TEXT NOT NULL,
+			account_name TEXT NOT NULL,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			UNIQUE(user_id, provider)
+		);`,
 	}
 
 	for _, query := range queries {

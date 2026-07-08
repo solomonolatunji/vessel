@@ -1,4 +1,4 @@
-package api
+package tests
 
 import (
 	"bytes"
@@ -10,6 +10,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/solomonolatunji/vessel/internal/api"
 	"github.com/solomonolatunji/vessel/internal/proxy"
 	"github.com/solomonolatunji/vessel/internal/store"
 	"github.com/solomonolatunji/vessel/internal/types"
@@ -31,7 +32,7 @@ func TestProjectHandlerAndSslipFallback(t *testing.T) {
 	proxyCfg := proxy.NewCaddyConfig(tempDir, "admin@test.local")
 	proxyMgr := proxy.NewProxyManager(proxyCfg, s, nil)
 
-	srv := NewServer(s, nil, proxyMgr, nil)
+	srv := api.NewServer(s, nil, proxyMgr, nil)
 
 	payload := []byte(`{"name":"My Node Service","internal_port":3000}`)
 	req := httptest.NewRequest(http.MethodPost, "/api/projects", bytes.NewReader(payload))

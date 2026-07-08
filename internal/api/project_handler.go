@@ -100,6 +100,13 @@ func (s *Server) handleDeployProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sourceDir := filepath.Join("data", "builds", id)
+	if s.gitService != nil && project.RepositoryURL != "" {
+		if err := s.gitService.CloneOrPullRepository(r.Context(), project, sourceDir, nil); err != nil {
+			writeError(w, http.StatusInternalServerError, fmt.Sprintf("git checkout failed: %v", err))
+			return
+		}
+	}
+
 	containerID, err := s.deployer.Deploy(r.Context(), project, sourceDir, nil)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, fmt.Sprintf("deployment rollout failed: %v", err))

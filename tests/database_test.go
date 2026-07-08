@@ -1,4 +1,4 @@
-package api
+package tests
 
 import (
 	"bytes"
@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/solomonolatunji/vessel/internal/api"
 	"github.com/solomonolatunji/vessel/internal/store"
 	"github.com/solomonolatunji/vessel/internal/types"
 )
@@ -26,7 +27,7 @@ func TestManagedDatabasesAndStorageEndpoints(t *testing.T) {
 	}
 	defer s.Close()
 
-	srv := NewServer(s, nil, nil, nil)
+	srv := api.NewServer(s, nil, nil, nil)
 
 	registerPayload := []byte(`{"email":"admin@vessel.dev","password":"securepassword123","role":"admin"}`)
 	reqReg := httptest.NewRequest(http.MethodPost, "/api/auth/register", bytes.NewReader(registerPayload))

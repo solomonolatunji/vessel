@@ -24,6 +24,7 @@ type Server struct {
 	cronManager     *orchestrator.CronManager
 	cronService     *services.CronService
 	serviceLinker   *services.ServiceLinker
+	gitService      *services.GitService
 }
 
 // NewServer initializes a Server wired to the database store, container orchestrator, reverse proxy, and Docker client.
@@ -43,6 +44,7 @@ func NewServer(s *store.Store, deployer *orchestrator.Deployer, proxyManager *pr
 		cronManager:     cronMgr,
 		cronService:     services.NewCronService(s, cronMgr),
 		serviceLinker:   services.NewServiceLinker(s),
+		gitService:      services.NewGitService(s),
 	}
 	if srv.deployer != nil {
 		srv.deployer.EnvProvider = srv.serviceLinker.GetLinkedEnvironmentVariables
@@ -90,6 +92,12 @@ func (s *Server) registerRoutes() {
 	s.router.HandleFunc("DELETE /api/jobs/{id}", s.RequireAuth(s.handleJobDetail))
 	s.router.HandleFunc("POST /api/jobs/{id}/trigger", s.RequireAuth(s.handleJobDetail))
 
+	s.router.HandleFunc("POST /api/git/connect", s.RequireAuth(s.handleConnectGitProvider))
+	s.router.HandleFunc("GET /api/git/status", s.RequireAuth(s.handleGetGitProvidersStatus))
+	s.router.HandleFunc("DELETE /api/git/connect/{provider}", s.RequireAuth(s.handleDisconnectGitProvider))
+	s.router.HandleFunc("GET /api/git/repos", s.RequireAuth(s.handleListGitRepositories))
+	s.router.HandleFunc("POST /api/webhooks/git/{projectId}", s.handleGitWebhook)
+
 	s.router.HandleFunc("GET /ws/terminal/{id}", s.handleTerminalWebSocket)
 }
 
@@ -109,7 +117,7 @@ func (s *Server) corsMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		if strings.HasPrefix(r.URL.Path, "/api/") && !strings.HasPrefix(r.URL.Path, "/api/auth/") {
+		if strings.HasPrefix(r.URL.Path, "/api/") && !strings.HasPrefix(r.URL.Path, "/api/auth/") && !strings.HasPrefix(r.URL.Path, "/api/webhooks/") {
 			authHeader := r.Header.Get("Authorization")
 			if authHeader != "" && !strings.HasPrefix(authHeader, "Bearer ") {
 				writeError(w, http.StatusUnauthorized, "invalid authorization token format")
