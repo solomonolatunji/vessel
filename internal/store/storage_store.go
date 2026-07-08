@@ -24,9 +24,9 @@ func (s *Store) CreateStorage(st *types.StorageConfig) error {
 	}
 
 	_, err = s.db.Exec(`INSERT INTO storage (
-		id, project_id, name, type, api_port, console_port, access_key, encrypted_secret_key, bucket_name, volume_path, container_id, status, internal_dns, external_dns, created_at, updated_at
-	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-		st.ID, st.ProjectID, st.Name, st.Type, st.APIPort, st.ConsolePort, st.AccessKey, encryptedSecretKey, st.BucketName, st.VolumePath, st.ContainerID, st.Status, st.InternalDNS, st.ExternalDNS, st.CreatedAt, st.UpdatedAt)
+		id, project_id, environment_id, name, type, api_port, console_port, access_key, encrypted_secret_key, bucket_name, volume_path, container_id, status, internal_dns, external_dns, created_at, updated_at
+	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		st.ID, st.ProjectID, st.EnvironmentID, st.Name, st.Type, st.APIPort, st.ConsolePort, st.AccessKey, encryptedSecretKey, st.BucketName, st.VolumePath, st.ContainerID, st.Status, st.InternalDNS, st.ExternalDNS, st.CreatedAt, st.UpdatedAt)
 	return err
 }
 
@@ -35,9 +35,9 @@ func (s *Store) GetStorage(id string) (*types.StorageConfig, error) {
 	var st types.StorageConfig
 	var encryptedSecretKey string
 
-	err := s.db.QueryRow(`SELECT id, COALESCE(project_id, ''), name, type, api_port, console_port, access_key, encrypted_secret_key, bucket_name, volume_path, COALESCE(container_id, ''), status, COALESCE(internal_dns, ''), COALESCE(external_dns, ''), created_at, updated_at
+	err := s.db.QueryRow(`SELECT id, COALESCE(project_id, ''), COALESCE(environment_id, ''), name, type, api_port, console_port, access_key, encrypted_secret_key, bucket_name, volume_path, COALESCE(container_id, ''), status, COALESCE(internal_dns, ''), COALESCE(external_dns, ''), created_at, updated_at
 		FROM storage WHERE id = ?`, id).Scan(
-		&st.ID, &st.ProjectID, &st.Name, &st.Type, &st.APIPort, &st.ConsolePort, &st.AccessKey, &encryptedSecretKey, &st.BucketName, &st.VolumePath, &st.ContainerID, &st.Status, &st.InternalDNS, &st.ExternalDNS, &st.CreatedAt, &st.UpdatedAt,
+		&st.ID, &st.ProjectID, &st.EnvironmentID, &st.Name, &st.Type, &st.APIPort, &st.ConsolePort, &st.AccessKey, &encryptedSecretKey, &st.BucketName, &st.VolumePath, &st.ContainerID, &st.Status, &st.InternalDNS, &st.ExternalDNS, &st.CreatedAt, &st.UpdatedAt,
 	)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
@@ -55,7 +55,7 @@ func (s *Store) GetStorage(id string) (*types.StorageConfig, error) {
 
 // ListStorage retrieves all registered object storage instances and decrypts their secret keys.
 func (s *Store) ListStorage() ([]types.StorageConfig, error) {
-	rows, err := s.db.Query(`SELECT id, COALESCE(project_id, ''), name, type, api_port, console_port, access_key, encrypted_secret_key, bucket_name, volume_path, COALESCE(container_id, ''), status, COALESCE(internal_dns, ''), COALESCE(external_dns, ''), created_at, updated_at FROM storage ORDER BY created_at ASC`)
+	rows, err := s.db.Query(`SELECT id, COALESCE(project_id, ''), COALESCE(environment_id, ''), name, type, api_port, console_port, access_key, encrypted_secret_key, bucket_name, volume_path, COALESCE(container_id, ''), status, COALESCE(internal_dns, ''), COALESCE(external_dns, ''), created_at, updated_at FROM storage ORDER BY created_at ASC`)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (s *Store) ListStorage() ([]types.StorageConfig, error) {
 	for rows.Next() {
 		var st types.StorageConfig
 		var encryptedSecretKey string
-		if err := rows.Scan(&st.ID, &st.ProjectID, &st.Name, &st.Type, &st.APIPort, &st.ConsolePort, &st.AccessKey, &encryptedSecretKey, &st.BucketName, &st.VolumePath, &st.ContainerID, &st.Status, &st.InternalDNS, &st.ExternalDNS, &st.CreatedAt, &st.UpdatedAt); err != nil {
+		if err := rows.Scan(&st.ID, &st.ProjectID, &st.EnvironmentID, &st.Name, &st.Type, &st.APIPort, &st.ConsolePort, &st.AccessKey, &encryptedSecretKey, &st.BucketName, &st.VolumePath, &st.ContainerID, &st.Status, &st.InternalDNS, &st.ExternalDNS, &st.CreatedAt, &st.UpdatedAt); err != nil {
 			return nil, err
 		}
 		if plainSecretKey, err := s.vault.Decrypt(encryptedSecretKey); err == nil {
@@ -78,7 +78,7 @@ func (s *Store) ListStorage() ([]types.StorageConfig, error) {
 
 // ListStorageByProject retrieves all managed object storage instances linked to a specific project identifier.
 func (s *Store) ListStorageByProject(projectID string) ([]types.StorageConfig, error) {
-	rows, err := s.db.Query(`SELECT id, COALESCE(project_id, ''), name, type, api_port, console_port, access_key, encrypted_secret_key, bucket_name, volume_path, COALESCE(container_id, ''), status, COALESCE(internal_dns, ''), COALESCE(external_dns, ''), created_at, updated_at FROM storage WHERE project_id = ? ORDER BY created_at ASC`, projectID)
+	rows, err := s.db.Query(`SELECT id, COALESCE(project_id, ''), COALESCE(environment_id, ''), name, type, api_port, console_port, access_key, encrypted_secret_key, bucket_name, volume_path, COALESCE(container_id, ''), status, COALESCE(internal_dns, ''), COALESCE(external_dns, ''), created_at, updated_at FROM storage WHERE project_id = ? ORDER BY created_at ASC`, projectID)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +88,30 @@ func (s *Store) ListStorageByProject(projectID string) ([]types.StorageConfig, e
 	for rows.Next() {
 		var st types.StorageConfig
 		var encryptedSecretKey string
-		if err := rows.Scan(&st.ID, &st.ProjectID, &st.Name, &st.Type, &st.APIPort, &st.ConsolePort, &st.AccessKey, &encryptedSecretKey, &st.BucketName, &st.VolumePath, &st.ContainerID, &st.Status, &st.InternalDNS, &st.ExternalDNS, &st.CreatedAt, &st.UpdatedAt); err != nil {
+		if err := rows.Scan(&st.ID, &st.ProjectID, &st.EnvironmentID, &st.Name, &st.Type, &st.APIPort, &st.ConsolePort, &st.AccessKey, &encryptedSecretKey, &st.BucketName, &st.VolumePath, &st.ContainerID, &st.Status, &st.InternalDNS, &st.ExternalDNS, &st.CreatedAt, &st.UpdatedAt); err != nil {
+			return nil, err
+		}
+		if plainSecretKey, err := s.vault.Decrypt(encryptedSecretKey); err == nil {
+			st.SecretKey = plainSecretKey
+		}
+		storages = append(storages, st)
+	}
+	return storages, nil
+}
+
+// ListStorageByEnvironment retrieves all managed object storage instances linked to a specific environment identifier.
+func (s *Store) ListStorageByEnvironment(environmentID string) ([]types.StorageConfig, error) {
+	rows, err := s.db.Query(`SELECT id, COALESCE(project_id, ''), COALESCE(environment_id, ''), name, type, api_port, console_port, access_key, encrypted_secret_key, bucket_name, volume_path, COALESCE(container_id, ''), status, COALESCE(internal_dns, ''), COALESCE(external_dns, ''), created_at, updated_at FROM storage WHERE environment_id = ? ORDER BY created_at ASC`, environmentID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var storages []types.StorageConfig
+	for rows.Next() {
+		var st types.StorageConfig
+		var encryptedSecretKey string
+		if err := rows.Scan(&st.ID, &st.ProjectID, &st.EnvironmentID, &st.Name, &st.Type, &st.APIPort, &st.ConsolePort, &st.AccessKey, &encryptedSecretKey, &st.BucketName, &st.VolumePath, &st.ContainerID, &st.Status, &st.InternalDNS, &st.ExternalDNS, &st.CreatedAt, &st.UpdatedAt); err != nil {
 			return nil, err
 		}
 		if plainSecretKey, err := s.vault.Decrypt(encryptedSecretKey); err == nil {

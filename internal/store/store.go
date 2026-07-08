@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
+	"sync"
 
 	_ "modernc.org/sqlite"
 )
 
 // Store encapsulates the embedded SQLite 3 database and AES secret vault.
 type Store struct {
+	mu    sync.RWMutex
 	db    *sql.DB
 	vault *Vault
 }
@@ -163,6 +165,16 @@ func (s *Store) migrate() error {
 
 	_, _ = s.db.Exec("ALTER TABLE databases ADD COLUMN project_id TEXT DEFAULT '';")
 	_, _ = s.db.Exec("ALTER TABLE storage ADD COLUMN project_id TEXT DEFAULT '';")
+	_, _ = s.db.Exec("ALTER TABLE databases ADD COLUMN environment_id TEXT DEFAULT '';")
+	_, _ = s.db.Exec("ALTER TABLE storage ADD COLUMN environment_id TEXT DEFAULT '';")
+
+	if err := s.initEnvironmentTable(); err != nil {
+		return fmt.Errorf("failed to initialize environments table: %w", err)
+	}
+	if err := s.initAppServiceTable(); err != nil {
+		return fmt.Errorf("failed to initialize app_services table: %w", err)
+	}
+
 	log.Println("✅ Vessel SQLite schema initialized successfully (`data/vessel.db`)")
 	return nil
 }

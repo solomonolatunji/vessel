@@ -25,7 +25,43 @@ func (s *Store) CreateProject(p *types.ProjectConfig) error {
 		p.InternalPort, p.Domain, p.AutoDeployWebhook, p.CPURequest, p.MemoryLimitMB, p.HealthCheckPath,
 		p.CreatedAt, p.UpdatedAt,
 	)
-	return err
+	if err != nil {
+		return err
+	}
+
+	// Automatically provision the initial default "production" environment for the project canvas.
+	defaultEnv := &types.EnvironmentConfig{
+		ProjectID: p.ID,
+		Name:      "production",
+		IsDefault: true,
+	}
+	if err := s.CreateEnvironment(defaultEnv); err != nil {
+		return err
+	}
+
+	// If the project was initialized with a RepositoryURL (backward compatibility / quick setup),
+	// automatically register it as the first AppService inside the default production environment.
+	if p.RepositoryURL != "" {
+		initialApp := &types.AppServiceConfig{
+			ProjectID:         p.ID,
+			EnvironmentID:     defaultEnv.ID,
+			Name:              p.Name,
+			RepositoryURL:     p.RepositoryURL,
+			Branch:            p.Branch,
+			BuildCommand:      p.BuildCommand,
+			StartCommand:      p.StartCommand,
+			DockerfilePath:    p.DockerfilePath,
+			InternalPort:      p.InternalPort,
+			Domain:            p.Domain,
+			AutoDeployWebhook: p.AutoDeployWebhook,
+			CPURequest:        p.CPURequest,
+			MemoryLimitMB:     p.MemoryLimitMB,
+			HealthCheckPath:   p.HealthCheckPath,
+		}
+		_ = s.CreateAppService(initialApp)
+	}
+
+	return nil
 }
 
 // GetProject retrieves a ProjectConfig record by its ID.

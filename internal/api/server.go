@@ -97,6 +97,18 @@ func (s *Server) registerRoutes() {
 	s.router.HandleFunc("DELETE /api/git/connect/{provider}", s.RequireAuth(s.handleDisconnectGitProvider))
 	s.router.HandleFunc("GET /api/git/repos", s.RequireAuth(s.handleListGitRepositories))
 	s.router.HandleFunc("POST /api/webhooks/git/{projectId}", s.handleGitWebhook)
+	s.router.HandleFunc("GET /api/canvas/projects", s.RequireAuth(s.ListProjectCanvasSummaries))
+	s.router.HandleFunc("GET /api/projects/{id}/summary", s.RequireAuth(s.GetProjectCanvasSummary))
+	s.router.HandleFunc("GET /api/environments/{id}/canvas", s.RequireAuth(s.GetEnvironmentCanvas))
+
+	s.router.HandleFunc("POST /api/projects/{id}/environments", s.RequireAuth(s.CreateEnvironment))
+	s.router.HandleFunc("GET /api/projects/{id}/environments", s.RequireAuth(s.ListEnvironments))
+	s.router.HandleFunc("DELETE /api/environments/{id}", s.RequireAuth(s.DeleteEnvironment))
+
+	s.router.HandleFunc("POST /api/environments/{id}/apps", s.RequireAuth(s.CreateAppService))
+	s.router.HandleFunc("GET /api/environments/{id}/apps", s.RequireAuth(s.ListAppServicesByEnvironment))
+	s.router.HandleFunc("GET /api/apps/{id}", s.RequireAuth(s.GetAppService))
+	s.router.HandleFunc("DELETE /api/apps/{id}", s.RequireAuth(s.DeleteAppService))
 
 	s.router.HandleFunc("GET /ws/terminal/{id}", s.handleTerminalWebSocket)
 }
