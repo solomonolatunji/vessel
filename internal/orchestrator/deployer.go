@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"strings"
 
 	"github.com/docker/docker/client"
 	"github.com/solomonolatunji/vessel/internal/store"
 	"github.com/solomonolatunji/vessel/internal/types"
+	"github.com/solomonolatunji/vessel/internal/utils"
 )
 
 // Deployer orchestrates full zero-downtime application builds, secret injection, and container switchover.
@@ -50,10 +50,8 @@ func (d *Deployer) Deploy(ctx context.Context, project *types.ProjectConfig, sou
 	}
 
 	envVarsMap, err := d.store.GetEnvVars(project.ID)
-	if err != nil {
-		if logWriter != nil {
-			fmt.Fprintf(logWriter, "⚠️ [Deployer] Warning: could not load environment variables: %v\n", err)
-		}
+	if err != nil && logWriter != nil {
+		fmt.Fprintf(logWriter, "⚠️ [Deployer] Warning: could not load environment variables: %v\n", err)
 	}
 
 	var envSlice []string
@@ -61,7 +59,7 @@ func (d *Deployer) Deploy(ctx context.Context, project *types.ProjectConfig, sou
 		envSlice = append(envSlice, fmt.Sprintf("%s=%s", k, v))
 	}
 
-	containerName := fmt.Sprintf("vessel-%s", strings.ToLower(project.ID))
+	containerName := utils.NormalizeContainerName(project.ID)
 	if logWriter != nil {
 		fmt.Fprintf(logWriter, "🔄 [Deployer] Rolling out container %s with %d encrypted environment variables...\n", containerName, len(envSlice))
 	}

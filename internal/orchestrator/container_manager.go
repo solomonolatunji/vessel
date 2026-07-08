@@ -9,6 +9,7 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
+	"github.com/solomonolatunji/vessel/internal/utils"
 )
 
 // ContainerManager wraps the Docker SDK to control container creation, execution lifecycle, and health diagnostics.
@@ -34,23 +35,14 @@ func (c *ContainerManager) CreateAndStart(ctx context.Context, name, imageTag st
 		ExposedPorts: nat.PortSet{containerPort: struct{}{}},
 	}
 
-	var memoryBytes int64 = 512 * 1024 * 1024
-	if memoryLimitMB > 0 {
-		memoryBytes = int64(memoryLimitMB) * 1024 * 1024
-	}
-	var nanoCPUs int64 = 500_000_000
-	if cpuRequest > 0 {
-		nanoCPUs = int64(cpuRequest * 1_000_000_000)
-	}
-
 	hostConfig := &container.HostConfig{
 		RestartPolicy: container.RestartPolicy{Name: "always"},
 		PortBindings: nat.PortMap{
 			containerPort: []nat.PortBinding{{HostIP: "127.0.0.1", HostPort: "0"}},
 		},
 		Resources: container.Resources{
-			Memory:   memoryBytes,
-			NanoCPUs: nanoCPUs,
+			Memory:   utils.MegaBytesToBytes(memoryLimitMB),
+			NanoCPUs: utils.CPURequestToNanoCPUs(cpuRequest),
 		},
 	}
 

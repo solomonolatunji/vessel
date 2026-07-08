@@ -5,7 +5,7 @@
 - **One component per file.** Never cram thousands of lines into a single file. Break components down into individual files.
 - **Name files in `kebab-case`** (e.g. `project-card.tsx`, `use-logs-stream.ts`).
 - Use named exports over default exports.
-- Prefer concise code. No JSDoc/TSDoc comments unless the logic is non-obvious.
+- Prefer concise code. No inline `//` comments allowed. Only JSDoc/TSDoc (`/** */`) for TS/JS and GoDoc (`// PackageName`) for Go files, and only when the logic is non-obvious.
 
 ## Workflow
 
