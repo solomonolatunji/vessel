@@ -2,7 +2,6 @@ package types
 
 import "time"
 
-// GitProviderConfig represents a user's authenticated OAuth or Personal Access Token connection to a Git platform.
 type GitProviderConfig struct {
 	ID          string    `json:"id"`
 	UserID      string    `json:"userId"`
@@ -13,7 +12,6 @@ type GitProviderConfig struct {
 	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
-// GitRepository represents repository metadata fetched from GitHub or GitLab APIs.
 type GitRepository struct {
 	ID            int64  `json:"id"`
 	Name          string `json:"name"`
@@ -24,7 +22,6 @@ type GitRepository struct {
 	DefaultBranch string `json:"defaultBranch"`
 }
 
-// GitConnectRequest represents the payload sent by the user when linking a Git provider token.
 type GitConnectRequest struct {
 	Provider    string `json:"provider"`
 	AccessToken string `json:"accessToken"`

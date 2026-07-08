@@ -83,7 +83,6 @@ func (s *Store) GetEnvironmentCanvas(environmentID string) (*types.EnvironmentCa
 	dbs, _ := s.ListDatabasesByEnvironment(environmentID)
 	storage, _ := s.ListStorageByEnvironment(environmentID)
 
-	// Convert slice values to pointers if needed or return existing slices
 	var dbsPtrs []*types.DatabaseConfig
 	for i := range dbs {
 		dbsPtrs = append(dbsPtrs, &dbs[i])

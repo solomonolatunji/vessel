@@ -1,6 +1,5 @@
 package types
 
-// ContainerHealth tracks real-time resource utilization and status for running containers.
 type ContainerHealth struct {
 	Status             string  `json:"status"`
 	CPUUsagePercentage float64 `json:"cpuUsagePercentage"`

@@ -110,13 +110,11 @@ func (s *Server) handleGitWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Fast acceptance to let the webhook sender finish instantly
 	writeJSON(w, http.StatusAccepted, map[string]string{
 		"status":  "accepted",
 		"message": fmt.Sprintf("triggering background build & deployment for %s", project.Name),
 	})
 
-	// Run clone and deploy asynchronously
 	go func() {
 		ctx := context.Background()
 		sourceDir := filepath.Join("data", "builds", project.ID)

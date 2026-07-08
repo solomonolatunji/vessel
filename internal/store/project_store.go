@@ -29,7 +29,6 @@ func (s *Store) CreateProject(p *types.ProjectConfig) error {
 		return err
 	}
 
-	// Automatically provision the initial default "production" environment for the project canvas.
 	defaultEnv := &types.EnvironmentConfig{
 		ProjectID: p.ID,
 		Name:      "production",

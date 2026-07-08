@@ -1,6 +1,5 @@
 package types
 
-// SystemInfo delivers host health, Docker daemon metrics, and self-update alerts.
 type SystemInfo struct {
 	Version         string `json:"version"`
 	GoVersion       string `json:"goVersion"`

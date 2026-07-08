@@ -21,7 +21,6 @@ func TestStoreAndVault(t *testing.T) {
 	}
 	defer s.Close()
 
-	// 1. Test Project CRUD
 	proj := &types.ProjectConfig{
 		Name:          "Aeroplane-Inspired App",
 		RepositoryURL: "https://github.com/solomonolatunji/sample-app",
@@ -41,7 +40,6 @@ func TestStoreAndVault(t *testing.T) {
 		t.Errorf("expected project name %s, got %s", proj.Name, fetchedProj.Name)
 	}
 
-	// 2. Test Domain CRUD
 	domain := &types.DomainConfig{
 		ProjectID:     proj.ID,
 		DomainName:    "custom-app.vessel.dev",
@@ -57,7 +55,6 @@ func TestStoreAndVault(t *testing.T) {
 		t.Fatalf("expected 1 domain, got %d (err: %v)", len(domains), err)
 	}
 
-	// 3. Test AES Encrypted EnvVars
 	if err := s.SetEnvVar(proj.ID, "DATABASE_URL", "postgres://user:secret@db:5432/app"); err != nil {
 		t.Fatalf("SetEnvVar failed: %v", err)
 	}
@@ -69,7 +66,6 @@ func TestStoreAndVault(t *testing.T) {
 		t.Errorf("expected decrypted secret, got %s", envs["DATABASE_URL"])
 	}
 
-	// 4. Test User & Invite CRUD
 	user := &types.User{
 		Email:        "admin@vessel.dev",
 		PasswordHash: "hashed-pass",

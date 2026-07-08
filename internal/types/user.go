@@ -2,7 +2,6 @@ package types
 
 import "time"
 
-// User represents an authenticated workspace member of the Vessel control plane.
 type User struct {
 	ID           string    `json:"id"`
 	Email        string    `json:"email"`
@@ -12,7 +11,6 @@ type User struct {
 	UpdatedAt    time.Time `json:"updatedAt"`
 }
 
-// UserClaims holds the payload extracted from a verified JWT access token.
 type UserClaims struct {
 	UserID string `json:"sub"`
 	Email  string `json:"email"`

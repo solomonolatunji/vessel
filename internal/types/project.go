@@ -2,7 +2,6 @@ package types
 
 import "time"
 
-// ProjectConfig stores the core application configuration, build rules, and runtime settings.
 type ProjectConfig struct {
 	ID                string          `json:"id"`
 	Name              string          `json:"name"`

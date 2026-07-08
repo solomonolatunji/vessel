@@ -34,7 +34,7 @@ func NewCronManager(dockerClient *client.Client, s *store.Store) *CronManager {
 	return &CronManager{
 		dockerClient: dockerClient,
 		store:        s,
-		cronEngine:   cron.New(cron.WithSeconds()), // support standard and second-level cron schedules
+		cronEngine:   cron.New(cron.WithSeconds()),
 		entries:      make(map[string]cron.EntryID),
 	}
 }

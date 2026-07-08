@@ -2,7 +2,6 @@ package types
 
 import "time"
 
-// Invite tracks pending workspace role invitations and expiration metadata.
 type Invite struct {
 	ID         string     `json:"id"`
 	Email      string     `json:"email"`

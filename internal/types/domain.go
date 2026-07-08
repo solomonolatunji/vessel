@@ -2,7 +2,6 @@ package types
 
 import "time"
 
-// DomainConfig manages custom domain routing, SSL certificate issuance state, and Caddy integration.
 type DomainConfig struct {
 	ID            string    `json:"id"`
 	ProjectID     string    `json:"projectId"`

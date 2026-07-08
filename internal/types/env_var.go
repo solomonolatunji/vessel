@@ -2,7 +2,6 @@ package types
 
 import "time"
 
-// EnvVar represents an encrypted environment variable record stored in SQLite.
 type EnvVar struct {
 	ID             string    `json:"id"`
 	ProjectID      string    `json:"projectId"`

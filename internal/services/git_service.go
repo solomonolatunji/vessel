@@ -55,7 +55,7 @@ func (gs *GitService) SaveProvider(userID string, req *types.GitConnectRequest) 
 	if err := gs.store.SaveGitProvider(gp); err != nil {
 		return nil, fmt.Errorf("failed to save git provider: %w", err)
 	}
-	gp.AccessToken = "" // strip from return payload
+	gp.AccessToken = ""
 	return gp, nil
 }
 
@@ -217,7 +217,6 @@ func (gs *GitService) CloneOrPullRepository(ctx context.Context, project *types.
 		branch = "main"
 	}
 
-	// Inject authentication token into clone URL if available from any stored provider matching domain
 	authURL := gs.injectAuthTokenIfAvailable(repoURL)
 
 	if logWriter != nil {
@@ -226,7 +225,6 @@ func (gs *GitService) CloneOrPullRepository(ctx context.Context, project *types.
 
 	gitDir := filepath.Join(targetDir, ".git")
 	if _, err := os.Stat(gitDir); err == nil {
-		// Existing repository exists; run git fetch & reset to pull latest changes cleanly
 		if logWriter != nil {
 			fmt.Fprintf(logWriter, "🔄 [GitService] Existing local directory detected; pulling latest changes...\n")
 		}
@@ -244,14 +242,12 @@ func (gs *GitService) CloneOrPullRepository(ctx context.Context, project *types.
 		return nil
 	}
 
-	// Clean target directory and clone freshly
 	_ = os.RemoveAll(targetDir)
 	if err := os.MkdirAll(filepath.Dir(targetDir), 0755); err != nil {
 		return fmt.Errorf("failed to create build parent dir: %w", err)
 	}
 
 	var cloneCmd *exec.Cmd
-	// Try cloning with specific branch first; if branch does not exist or wasn't specified accurately, fallback without -b
 	cloneArgs := []string{"clone", "--depth", "1", "-b", branch, authURL, targetDir}
 	if logWriter != nil {
 		fmt.Fprintf(logWriter, "🚀 [GitService] Running git clone --depth 1 -b %s...\n", branch)
@@ -261,7 +257,6 @@ func (gs *GitService) CloneOrPullRepository(ctx context.Context, project *types.
 	var stderr bytes.Buffer
 	cloneCmd.Stderr = &stderr
 	if err := cloneCmd.Run(); err != nil {
-		// Fallback without -b flag if the default branch is master/something else
 		if strings.Contains(stderr.String(), "Remote branch") && branch == "main" {
 			if logWriter != nil {
 				fmt.Fprintf(logWriter, "⚠️ [GitService] Branch 'main' not found; retrying clone with repository default branch...\n")
@@ -297,9 +292,7 @@ func (gs *GitService) injectAuthTokenIfAvailable(repoURL string) string {
 		return repoURL
 	}
 
-	// Look up if any user on the platform has stored a token for this provider
-	// We check the first token found in store or if passed in context; here we query DB via a quick lookup
-	gp, err := gs.store.GetGitProvider("", provider) // empty userID matches or checks token
+	gp, err := gs.store.GetGitProvider("", provider)
 	if err != nil || gp == nil || gp.AccessToken == "" {
 		return repoURL
 	}

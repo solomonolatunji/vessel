@@ -2,7 +2,6 @@ package types
 
 import "time"
 
-// AppServiceConfig represents a single deployable Git web application or worker service inside a Project environment.
 type AppServiceConfig struct {
 	ID                string          `json:"id"`
 	ProjectID         string          `json:"projectId"`
@@ -21,7 +20,7 @@ type AppServiceConfig struct {
 	MemoryLimitMB     int             `json:"memoryLimitMB,omitempty"`
 	HealthCheckPath   string          `json:"healthCheckPath,omitempty"`
 	Health            ContainerHealth `json:"health"`
-	Status            string          `json:"status"` // running, stopped, failed, building
+	Status            string          `json:"status"`
 	ContainerID       string          `json:"containerId"`
 	CreatedAt         time.Time       `json:"createdAt"`
 	UpdatedAt         time.Time       `json:"updatedAt"`
