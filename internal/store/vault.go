@@ -11,29 +11,26 @@ import (
 	"path/filepath"
 )
 
-// Vault handles AES-256-GCM encryption and decryption for sensitive project secrets (.env variables)
+// Vault handles AES-256-GCM encryption and decryption for sensitive project secrets.
 type Vault struct {
 	key []byte
 }
 
-// NewVault initializes or loads the 256-bit encryption key stored in the persistent data directory
+// NewVault initializes or loads the 256-bit encryption key stored in the persistent data directory.
 func NewVault(dataDir string) (*Vault, error) {
 	keyPath := filepath.Join(dataDir, ".vault_key")
 
-	// Check if master encryption key already exists
 	if keyData, err := os.ReadFile(keyPath); err == nil {
 		if len(keyData) == 32 {
 			return &Vault{key: keyData}, nil
 		}
 	}
 
-	// Generate a secure 32-byte (256-bit) random key
 	newKey := make([]byte, 32)
 	if _, err := io.ReadFull(rand.Reader, newKey); err != nil {
 		return nil, err
 	}
 
-	// Persist master key with strict permissions (0600)
 	if err := os.MkdirAll(dataDir, 0755); err != nil {
 		return nil, err
 	}
@@ -44,7 +41,7 @@ func NewVault(dataDir string) (*Vault, error) {
 	return &Vault{key: newKey}, nil
 }
 
-// Encrypt locks plaintext using AES-256-GCM and returns a base64-encoded ciphertext with prepended nonce
+// Encrypt locks plaintext using AES-256-GCM and returns a base64-encoded ciphertext with prepended nonce.
 func (v *Vault) Encrypt(plaintext string) (string, error) {
 	block, err := aes.NewCipher(v.key)
 	if err != nil {
@@ -65,7 +62,7 @@ func (v *Vault) Encrypt(plaintext string) (string, error) {
 	return base64.StdEncoding.EncodeToString(ciphertext), nil
 }
 
-// Decrypt decodes a base64 ciphertext and unlocks it with AES-256-GCM
+// Decrypt decodes a base64 ciphertext and unlocks it with AES-256-GCM.
 func (v *Vault) Decrypt(encrypted string) (string, error) {
 	data, err := base64.StdEncoding.DecodeString(encrypted)
 	if err != nil {

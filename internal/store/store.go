@@ -12,13 +12,13 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// Store encapsulates the embedded SQLite 3 DB and AES secret vault
+// Store encapsulates the embedded SQLite 3 database and AES secret vault.
 type Store struct {
 	db    *sql.DB
 	vault *Vault
 }
 
-// NewStore initializes modernc pure-Go SQLite inside the data/ directory and migrates tables
+// NewStore initializes modernc pure-Go SQLite inside the specified data directory and runs schema migrations.
 func NewStore(dataDir string) (*Store, error) {
 	vault, err := NewVault(dataDir)
 	if err != nil {
@@ -108,13 +108,12 @@ func (s *Store) migrate() error {
 	return nil
 }
 
-// Close gracefully closes SQLite database connection
+// Close gracefully closes the SQLite database connection.
 func (s *Store) Close() error {
 	return s.db.Close()
 }
 
-// --- Project CRUD ---
-
+// CreateProject inserts a new ProjectConfig record into SQLite.
 func (s *Store) CreateProject(p *types.ProjectConfig) error {
 	if p.ID == "" {
 		p.ID = uuid.NewString()
@@ -135,6 +134,7 @@ func (s *Store) CreateProject(p *types.ProjectConfig) error {
 	return err
 }
 
+// GetProject retrieves a ProjectConfig record by its ID.
 func (s *Store) GetProject(id string) (*types.ProjectConfig, error) {
 	row := s.db.QueryRow(`SELECT id, name, repository_url, branch, build_command, start_command, dockerfile_path,
 		internal_port, domain, auto_deploy_webhook, cpu_request, memory_limit_mb, health_check_path, created_at, updated_at
@@ -150,8 +150,7 @@ func (s *Store) GetProject(id string) (*types.ProjectConfig, error) {
 	return &p, nil
 }
 
-// --- Domain CRUD ---
-
+// AddDomain registers a new custom domain routing rule for a project.
 func (s *Store) AddDomain(d *types.DomainConfig) error {
 	if d.ID == "" {
 		d.ID = uuid.NewString()
@@ -166,6 +165,7 @@ func (s *Store) AddDomain(d *types.DomainConfig) error {
 	return err
 }
 
+// ListDomains returns all custom domain configurations attached to the specified project ID.
 func (s *Store) ListDomains(projectID string) ([]types.DomainConfig, error) {
 	rows, err := s.db.Query(`SELECT id, project_id, domain_name, redirect_to, ssl_cert_status, path_prefix, created_at, updated_at
 		FROM domains WHERE project_id = ? ORDER BY domain_name ASC`, projectID)
@@ -185,8 +185,7 @@ func (s *Store) ListDomains(projectID string) ([]types.DomainConfig, error) {
 	return domains, nil
 }
 
-// --- Encrypted EnvVars CRUD ---
-
+// SetEnvVar encrypts a plaintext environment variable value and stores it in SQLite.
 func (s *Store) SetEnvVar(projectID, key, plaintextValue string) error {
 	encrypted, err := s.vault.Encrypt(plaintextValue)
 	if err != nil {
@@ -201,6 +200,7 @@ func (s *Store) SetEnvVar(projectID, key, plaintextValue string) error {
 	return err
 }
 
+// GetEnvVars retrieves and decrypts all environment variables for a given project ID.
 func (s *Store) GetEnvVars(projectID string) (map[string]string, error) {
 	rows, err := s.db.Query(`SELECT key, encrypted_value FROM env_vars WHERE project_id = ?`, projectID)
 	if err != nil {
@@ -216,15 +216,14 @@ func (s *Store) GetEnvVars(projectID string) (map[string]string, error) {
 		}
 		plaintext, err := s.vault.Decrypt(encrypted)
 		if err != nil {
-			continue // skip or log
+			continue
 		}
 		envs[key] = plaintext
 	}
 	return envs, nil
 }
 
-// --- Users & Invites CRUD ---
-
+// CreateUser registers a new authenticated user in SQLite.
 func (s *Store) CreateUser(u *types.User) error {
 	if u.ID == "" {
 		u.ID = uuid.NewString()
@@ -238,6 +237,7 @@ func (s *Store) CreateUser(u *types.User) error {
 	return err
 }
 
+// CreateInvite issues a new workspace invitation token with a 7-day expiration.
 func (s *Store) CreateInvite(inv *types.Invite) error {
 	if inv.ID == "" {
 		inv.ID = uuid.NewString()
@@ -247,7 +247,7 @@ func (s *Store) CreateInvite(inv *types.Invite) error {
 	}
 	inv.CreatedAt = time.Now()
 	if inv.ExpiresAt.IsZero() {
-		inv.ExpiresAt = time.Now().Add(7 * 24 * time.Hour) // 7 days expiration
+		inv.ExpiresAt = time.Now().Add(7 * 24 * time.Hour)
 	}
 
 	_, err := s.db.Exec(`INSERT INTO invites (id, email, role, token, invited_by, expires_at, created_at)

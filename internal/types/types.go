@@ -2,16 +2,16 @@ package types
 
 import "time"
 
-// ContainerHealth tracks real-time stats for running app containers
+// ContainerHealth tracks real-time resource utilization and status for running containers.
 type ContainerHealth struct {
-	Status             string  `json:"status"` // running, stopped, building, unhealthy
+	Status             string  `json:"status"`
 	CPUUsagePercentage float64 `json:"cpuUsagePercentage"`
 	MemoryUsageBytes   int64   `json:"memoryUsageBytes"`
 	MemoryLimitBytes   int64   `json:"memoryLimitBytes"`
 	UptimeSeconds      int64   `json:"uptimeSeconds"`
 }
 
-// ProjectConfig stores the core app configuration, build rules, and runtime settings
+// ProjectConfig stores the core application configuration, build rules, and runtime settings.
 type ProjectConfig struct {
 	ID                string          `json:"id"`
 	Name              string          `json:"name"`
@@ -32,51 +32,51 @@ type ProjectConfig struct {
 	UpdatedAt         time.Time       `json:"updatedAt"`
 }
 
-// DomainConfig manages custom domain routing, SSL issuance, and Caddy integration
+// DomainConfig manages custom domain routing, SSL certificate issuance state, and Caddy integration.
 type DomainConfig struct {
 	ID            string    `json:"id"`
 	ProjectID     string    `json:"projectId"`
 	DomainName    string    `json:"domainName"`
 	RedirectTo    string    `json:"redirectTo,omitempty"`
-	SSLCertStatus string    `json:"sslCertStatus"` // pending, issued, failed
-	PathPrefix    string    `json:"pathPrefix"`    // e.g., "/" or "/api"
+	SSLCertStatus string    `json:"sslCertStatus"`
+	PathPrefix    string    `json:"pathPrefix"`
 	CreatedAt     time.Time `json:"createdAt"`
 	UpdatedAt     time.Time `json:"updatedAt"`
 }
 
-// User represents an authenticated member of the Vessel control plane
+// User represents an authenticated workspace member of the Vessel control plane.
 type User struct {
 	ID           string    `json:"id"`
 	Email        string    `json:"email"`
 	PasswordHash string    `json:"-"`
-	Role         string    `json:"role"` // owner, admin, developer, viewer
+	Role         string    `json:"role"`
 	CreatedAt    time.Time `json:"createdAt"`
 	UpdatedAt    time.Time `json:"updatedAt"`
 }
 
-// Invite tracks pending workspace invitations (similar to Coolify/Aeroplane)
+// Invite tracks pending workspace role invitations and expiration metadata.
 type Invite struct {
-	ID        string     `json:"id"`
-	Email     string     `json:"email"`
-	Role      string     `json:"role"`
-	Token     string     `json:"token"`
-	InvitedBy string     `json:"invitedBy"`
-	ExpiresAt time.Time  `json:"expiresAt"`
+	ID         string     `json:"id"`
+	Email      string     `json:"email"`
+	Role       string     `json:"role"`
+	Token      string     `json:"token"`
+	InvitedBy  string     `json:"invitedBy"`
+	ExpiresAt  time.Time  `json:"expiresAt"`
 	AcceptedAt *time.Time `json:"acceptedAt,omitempty"`
-	CreatedAt time.Time  `json:"createdAt"`
+	CreatedAt  time.Time  `json:"createdAt"`
 }
 
-// EnvVar represents an encrypted environment variable stored in SQLite
+// EnvVar represents an encrypted environment variable record stored in SQLite.
 type EnvVar struct {
 	ID             string    `json:"id"`
 	ProjectID      string    `json:"projectId"`
 	Key            string    `json:"key"`
-	EncryptedValue string    `json:"-"` // Never exposed raw via general API
+	EncryptedValue string    `json:"-"`
 	CreatedAt      time.Time `json:"createdAt"`
 	UpdatedAt      time.Time `json:"updatedAt"`
 }
 
-// SystemInfo delivers host health, Docker daemon metrics, and self-update alerts
+// SystemInfo delivers host health, Docker daemon metrics, and self-update alerts.
 type SystemInfo struct {
 	Version         string `json:"version"`
 	GoVersion       string `json:"goVersion"`
