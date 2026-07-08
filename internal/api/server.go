@@ -12,27 +12,38 @@ import (
 
 // Server encapsulates HTTP routing, API handler dependencies, and authentication guards for the Vessel control plane.
 type Server struct {
-	router       *http.ServeMux
-	store        *store.Store
-	deployer     *orchestrator.Deployer
-	proxyManager *proxy.ProxyManager
-	dockerClient *client.Client
+	router          *http.ServeMux
+	store           *store.Store
+	deployer        *orchestrator.Deployer
+	proxyManager    *proxy.ProxyManager
+	dockerClient    *client.Client
+	tokenService    *TokenService
+	dbDeployer      *orchestrator.DatabaseDeployer
+	storageDeployer *orchestrator.StorageDeployer
 }
 
 // NewServer initializes a Server wired to the database store, container orchestrator, reverse proxy, and Docker client.
 func NewServer(s *store.Store, deployer *orchestrator.Deployer, proxyManager *proxy.ProxyManager, dockerClient *client.Client) *Server {
 	srv := &Server{
-		router:       http.NewServeMux(),
-		store:        s,
-		deployer:     deployer,
-		proxyManager: proxyManager,
-		dockerClient: dockerClient,
+		router:          http.NewServeMux(),
+		store:           s,
+		deployer:        deployer,
+		proxyManager:    proxyManager,
+		dockerClient:    dockerClient,
+		tokenService:    NewTokenService(),
+		dbDeployer:      orchestrator.NewDatabaseDeployer(dockerClient, s),
+		storageDeployer: orchestrator.NewStorageDeployer(dockerClient, s),
 	}
 	srv.registerRoutes()
 	return srv
 }
 
 func (s *Server) registerRoutes() {
+	s.router.HandleFunc("POST /api/auth/register", s.handleRegister)
+	s.router.HandleFunc("POST /api/auth/login", s.handleLogin)
+	s.router.HandleFunc("GET /api/auth/me", s.RequireAuth(s.handleGetCurrentUser))
+	s.router.HandleFunc("POST /api/auth/logout", s.handleLogout)
+
 	s.router.HandleFunc("GET /api/projects", s.handleListProjects)
 	s.router.HandleFunc("POST /api/projects", s.handleCreateProject)
 	s.router.HandleFunc("GET /api/projects/{id}", s.handleGetProject)
@@ -45,6 +56,20 @@ func (s *Server) registerRoutes() {
 
 	s.router.HandleFunc("GET /api/projects/{id}/env", s.handleGetEnvVars)
 	s.router.HandleFunc("PUT /api/projects/{id}/env", s.handleSetEnvVars)
+
+	s.router.HandleFunc("GET /api/databases", s.RequireAuth(s.handleListDatabases))
+	s.router.HandleFunc("POST /api/databases", s.RequireAuth(s.handleCreateDatabase))
+	s.router.HandleFunc("GET /api/databases/{id}", s.RequireAuth(s.handleGetDatabase))
+	s.router.HandleFunc("DELETE /api/databases/{id}", s.RequireAuth(s.handleDeleteDatabase))
+	s.router.HandleFunc("POST /api/databases/{id}/start", s.RequireAuth(s.handleStartDatabase))
+	s.router.HandleFunc("POST /api/databases/{id}/stop", s.RequireAuth(s.handleStopDatabase))
+
+	s.router.HandleFunc("GET /api/storage", s.RequireAuth(s.handleListStorage))
+	s.router.HandleFunc("POST /api/storage", s.RequireAuth(s.handleCreateStorage))
+	s.router.HandleFunc("GET /api/storage/{id}", s.RequireAuth(s.handleGetStorage))
+	s.router.HandleFunc("DELETE /api/storage/{id}", s.RequireAuth(s.handleDeleteStorage))
+	s.router.HandleFunc("POST /api/storage/{id}/start", s.RequireAuth(s.handleStartStorage))
+	s.router.HandleFunc("POST /api/storage/{id}/stop", s.RequireAuth(s.handleStopStorage))
 
 	s.router.HandleFunc("GET /ws/terminal/{id}", s.handleTerminalWebSocket)
 }

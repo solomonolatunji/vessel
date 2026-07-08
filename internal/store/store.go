@@ -94,6 +94,40 @@ func (s *Store) migrate() error {
 			FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
 			UNIQUE(project_id, key)
 		);`,
+		`CREATE TABLE IF NOT EXISTS databases (
+			id TEXT PRIMARY KEY,
+			name TEXT UNIQUE NOT NULL,
+			engine TEXT NOT NULL,
+			version TEXT NOT NULL,
+			port INTEGER NOT NULL,
+			username TEXT NOT NULL,
+			encrypted_password TEXT NOT NULL,
+			database_name TEXT NOT NULL,
+			volume_path TEXT NOT NULL,
+			container_id TEXT,
+			status TEXT DEFAULT 'stopped',
+			internal_dns TEXT,
+			external_dns TEXT,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		);`,
+		`CREATE TABLE IF NOT EXISTS storage (
+			id TEXT PRIMARY KEY,
+			name TEXT UNIQUE NOT NULL,
+			type TEXT DEFAULT 'minio',
+			api_port INTEGER DEFAULT 9000,
+			console_port INTEGER DEFAULT 9001,
+			access_key TEXT NOT NULL,
+			encrypted_secret_key TEXT NOT NULL,
+			bucket_name TEXT NOT NULL,
+			volume_path TEXT NOT NULL,
+			container_id TEXT,
+			status TEXT DEFAULT 'stopped',
+			internal_dns TEXT,
+			external_dns TEXT,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		);`,
 	}
 
 	for _, query := range queries {
