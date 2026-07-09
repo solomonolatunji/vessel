@@ -17,38 +17,33 @@ func NewCanvasHandler(s *services.CanvasService) *CanvasHandler {
 }
 
 func (h *CanvasHandler) ListCanvasSummaries(c echo.Context) error {
-	summaries, err := h.canvasService.ListSummaries(r.Context())
+	summaries, err := h.canvasService.ListSummaries(c.Request().Context())
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusOK, summaries)
+	return c.JSON(http.StatusOK, summaries)
 }
 
 func (h *CanvasHandler) GetCanvasSummary(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		WriteError(w, http.StatusBadRequest, "missing id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing id parameter"})
 	}
-	summary, err := h.canvasService.GetSummary(r.Context(), id)
+	summary, err := h.canvasService.GetSummary(c.Request().Context(), id)
 	if err != nil || summary == nil {
-		WriteError(w, http.StatusNotFound, "canvas summary not found")
-		return nil
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "canvas summary not found"})
 	}
-	WriteJSON(w, http.StatusOK, summary)
+	return c.JSON(http.StatusOK, summary)
 }
 
 func (h *CanvasHandler) GetEnvironmentCanvas(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		WriteError(w, http.StatusBadRequest, "missing id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing id parameter"})
 	}
-	canvas, err := h.canvasService.GetEnvironmentCanvas(r.Context(), id)
+	canvas, err := h.canvasService.GetEnvironmentCanvas(c.Request().Context(), id)
 	if err != nil || canvas == nil {
-		WriteError(w, http.StatusNotFound, "environment canvas not found")
-		return nil
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "environment canvas not found"})
 	}
-	WriteJSON(w, http.StatusOK, canvas)
+	return c.JSON(http.StatusOK, canvas)
 }

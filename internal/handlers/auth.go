@@ -3,7 +3,6 @@ package handlers
 import (
 	"github.com/labstack/echo/v4"
 
-	"encoding/json"
 	"net/http"
 
 	"vessel.dev/vessel/internal/services"
@@ -25,13 +24,12 @@ func (h *AuthHandler) Register(c echo.Context) error {
 	if err := c.Bind(&payload); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
 	}
-	u, token, err := h.authService.Register(r.Context(), payload.Email, payload.Password)
+	u, token, err := h.authService.Register(c.Request().Context(), payload.Email, payload.Password)
 	if err != nil {
-		WriteError(w, http.StatusBadRequest, err.Error())
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
-	SetAuthCookie(w, token)
-	WriteJSON(w, http.StatusOK, map[string]any{
+	SetAuthCookie(c, token)
+	return c.JSON(http.StatusOK, map[string]any{
 		"token": token,
 		"user":  u,
 	})
@@ -45,19 +43,18 @@ func (h *AuthHandler) Login(c echo.Context) error {
 	if err := c.Bind(&payload); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
 	}
-	u, token, err := h.authService.Login(r.Context(), payload.Email, payload.Password)
+	u, token, err := h.authService.Login(c.Request().Context(), payload.Email, payload.Password)
 	if err != nil {
-		WriteError(w, http.StatusUnauthorized, err.Error())
-		return nil
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": err.Error()})
 	}
-	SetAuthCookie(w, token)
-	WriteJSON(w, http.StatusOK, map[string]any{
+	SetAuthCookie(c, token)
+	return c.JSON(http.StatusOK, map[string]any{
 		"token": token,
 		"user":  u,
 	})
 }
 
 func (h *AuthHandler) Logout(c echo.Context) error {
-	ClearAuthCookie(w)
-	WriteJSON(w, http.StatusOK, map[string]string{"status": "logged out"})
+	ClearAuthCookie(c)
+	return c.JSON(http.StatusOK, map[string]string{"status": "logged out"})
 }

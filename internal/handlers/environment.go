@@ -3,7 +3,6 @@ package handlers
 import (
 	"github.com/labstack/echo/v4"
 
-	"encoding/json"
 	"net/http"
 
 	"vessel.dev/vessel/internal/models"
@@ -21,22 +20,19 @@ func NewEnvironmentHandler(s *services.EnvironmentService) *EnvironmentHandler {
 func (h *EnvironmentHandler) ListByProject(c echo.Context) error {
 	projectID := c.Param("id")
 	if projectID == "" {
-		WriteError(w, http.StatusBadRequest, "missing project id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing project id parameter"})
 	}
-	envs, err := h.envService.ListByProject(r.Context(), projectID)
+	envs, err := h.envService.ListByProject(c.Request().Context(), projectID)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusOK, envs)
+	return c.JSON(http.StatusOK, envs)
 }
 
 func (h *EnvironmentHandler) Create(c echo.Context) error {
 	projectID := c.Param("id")
 	if projectID == "" {
-		WriteError(w, http.StatusBadRequest, "missing project id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing project id parameter"})
 	}
 	var env models.EnvironmentConfig
 	if err := c.Bind(&env); err != nil {
@@ -44,28 +40,24 @@ func (h *EnvironmentHandler) Create(c echo.Context) error {
 	}
 	env.ProjectID = projectID
 	if env.Name == "" {
-		WriteError(w, http.StatusBadRequest, "environment name is required")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "environment name is required"})
 	}
-	created, err := h.envService.CreateEnvironment(r.Context(), &env)
+	created, err := h.envService.CreateEnvironment(c.Request().Context(), &env)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusCreated, created)
+	return c.JSON(http.StatusCreated, created)
 }
 
 func (h *EnvironmentHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		WriteError(w, http.StatusBadRequest, "missing id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing id parameter"})
 	}
-	if err := h.envService.DeleteEnvironment(r.Context(), id); err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+	if err := h.envService.DeleteEnvironment(c.Request().Context(), id); err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	w.WriteHeader(http.StatusNoContent)
+	return c.NoContent(http.StatusNoContent)
 }
 
 type DomainHandler struct {
@@ -79,22 +71,19 @@ func NewDomainHandler(s *services.EnvironmentService) *DomainHandler {
 func (h *DomainHandler) ListByProject(c echo.Context) error {
 	projectID := c.Param("id")
 	if projectID == "" {
-		WriteError(w, http.StatusBadRequest, "missing project id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing project id parameter"})
 	}
-	domains, err := h.envService.ListDomainsByProject(r.Context(), projectID)
+	domains, err := h.envService.ListDomainsByProject(c.Request().Context(), projectID)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusOK, domains)
+	return c.JSON(http.StatusOK, domains)
 }
 
 func (h *DomainHandler) Create(c echo.Context) error {
 	projectID := c.Param("id")
 	if projectID == "" {
-		WriteError(w, http.StatusBadRequest, "missing project id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing project id parameter"})
 	}
 	var d models.DomainConfig
 	if err := c.Bind(&d); err != nil {
@@ -102,28 +91,24 @@ func (h *DomainHandler) Create(c echo.Context) error {
 	}
 	d.ProjectID = projectID
 	if d.DomainName == "" {
-		WriteError(w, http.StatusBadRequest, "domainName is required")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "domainName is required"})
 	}
-	created, err := h.envService.CreateDomain(r.Context(), &d)
+	created, err := h.envService.CreateDomain(c.Request().Context(), &d)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusCreated, created)
+	return c.JSON(http.StatusCreated, created)
 }
 
 func (h *DomainHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		WriteError(w, http.StatusBadRequest, "missing id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing id parameter"})
 	}
-	if err := h.envService.DeleteDomain(r.Context(), id); err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+	if err := h.envService.DeleteDomain(c.Request().Context(), id); err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	w.WriteHeader(http.StatusNoContent)
+	return c.NoContent(http.StatusNoContent)
 }
 
 type ProjectEnvHandler struct {
@@ -137,35 +122,31 @@ func NewProjectEnvHandler(s *services.EnvironmentService) *ProjectEnvHandler {
 func (h *ProjectEnvHandler) GetVars(c echo.Context) error {
 	projectID := c.Param("id")
 	if projectID == "" {
-		WriteError(w, http.StatusBadRequest, "missing project id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing project id parameter"})
 	}
-	vars, err := h.envService.GetVars(r.Context(), projectID)
+	vars, err := h.envService.GetVars(c.Request().Context(), projectID)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 	if vars == nil {
 		vars = map[string]string{}
 	}
-	WriteJSON(w, http.StatusOK, vars)
+	return c.JSON(http.StatusOK, vars)
 }
 
 func (h *ProjectEnvHandler) SetVars(c echo.Context) error {
 	projectID := c.Param("id")
 	if projectID == "" {
-		WriteError(w, http.StatusBadRequest, "missing project id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing project id parameter"})
 	}
 	var vars map[string]string
 	if err := c.Bind(&vars); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
 	}
 	for k, v := range vars {
-		if err := h.envService.SetVar(r.Context(), projectID, k, v); err != nil {
-			WriteError(w, http.StatusInternalServerError, err.Error())
-			return nil
+		if err := h.envService.SetVar(c.Request().Context(), projectID, k, v); err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		}
 	}
-	WriteJSON(w, http.StatusOK, vars)
+	return c.JSON(http.StatusOK, vars)
 }

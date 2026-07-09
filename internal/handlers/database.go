@@ -3,7 +3,6 @@ package handlers
 import (
 	"github.com/labstack/echo/v4"
 
-	"encoding/json"
 	"net/http"
 
 	"vessel.dev/vessel/internal/models"
@@ -19,15 +18,14 @@ func NewDatabaseHandler(s *services.DatabaseService) *DatabaseHandler {
 }
 
 func (h *DatabaseHandler) ListDatabases(c echo.Context) error {
-	databases, err := h.databaseService.ListDatabases(r.Context())
+	databases, err := h.databaseService.ListDatabases(c.Request().Context())
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 	if databases == nil {
 		databases = []*models.Database{}
 	}
-	WriteJSON(w, http.StatusOK, databases)
+	return c.JSON(http.StatusOK, databases)
 }
 
 func (h *DatabaseHandler) CreateDatabase(c echo.Context) error {
@@ -35,64 +33,55 @@ func (h *DatabaseHandler) CreateDatabase(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
 	}
-	db, err := h.databaseService.CreateDatabaseFromRequest(r.Context(), &req)
+	db, err := h.databaseService.CreateDatabaseFromRequest(c.Request().Context(), &req)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusCreated, db)
+	return c.JSON(http.StatusCreated, db)
 }
 
 func (h *DatabaseHandler) GetDatabase(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		WriteError(w, http.StatusBadRequest, "missing database id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing database id parameter"})
 	}
-	db, err := h.databaseService.GetDatabase(r.Context(), id)
+	db, err := h.databaseService.GetDatabase(c.Request().Context(), id)
 	if err != nil || db == nil {
-		WriteError(w, http.StatusNotFound, "database not found")
-		return nil
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "database not found"})
 	}
-	WriteJSON(w, http.StatusOK, db)
+	return c.JSON(http.StatusOK, db)
 }
 
 func (h *DatabaseHandler) DeleteDatabase(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		WriteError(w, http.StatusBadRequest, "missing database id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing database id parameter"})
 	}
-	if err := h.databaseService.DeleteDatabase(r.Context(), id); err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+	if err := h.databaseService.DeleteDatabase(c.Request().Context(), id); err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusOK, map[string]string{"status": "deleted"})
+	return c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
 }
 
 func (h *DatabaseHandler) StartDatabase(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		WriteError(w, http.StatusBadRequest, "missing database id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing database id parameter"})
 	}
-	db, err := h.databaseService.StartDatabase(r.Context(), id)
+	db, err := h.databaseService.StartDatabase(c.Request().Context(), id)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusOK, db)
+	return c.JSON(http.StatusOK, db)
 }
 
 func (h *DatabaseHandler) StopDatabase(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		WriteError(w, http.StatusBadRequest, "missing database id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing database id parameter"})
 	}
-	if err := h.databaseService.StopDatabase(r.Context(), id); err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+	if err := h.databaseService.StopDatabase(c.Request().Context(), id); err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusOK, map[string]string{"status": "stopped"})
+	return c.JSON(http.StatusOK, map[string]string{"status": "stopped"})
 }

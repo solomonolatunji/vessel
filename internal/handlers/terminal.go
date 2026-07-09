@@ -46,26 +46,23 @@ func NewTerminalHandler(
 
 func (h *TerminalHandler) HandleWebSocket(c echo.Context) error {
 	if h.tokenService != nil {
-		tokenStr := middleware.ExtractTokenFromRequest(r)
+		tokenStr := middleware.ExtractTokenFromRequest(c)
 		if tokenStr == "" {
-			WriteError(w, http.StatusUnauthorized, "missing authentication token for terminal access")
-			return nil
+			return c.JSON(http.StatusUnauthorized, map[string]string{"error": "missing authentication token for terminal access"})
 		}
 		if _, err := h.tokenService.ValidateToken(tokenStr); err != nil {
-			WriteError(w, http.StatusUnauthorized, "invalid authentication token for terminal access")
-			return nil
+			return c.JSON(http.StatusUnauthorized, map[string]string{"error": "invalid authentication token for terminal access"})
 		}
 	}
 
 	id := c.Param("id")
 	if id == "" {
-		WriteError(w, http.StatusBadRequest, "missing id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing id parameter"})
 	}
 
 	containerName := h.normalizeName(id)
 	if h.appService != nil {
-		if svc, err := h.appService.GetAppService(r.Context(), id); err == nil && svc != nil {
+		if svc, err := h.appService.GetAppService(c.Request().Context(), id); err == nil && svc != nil {
 			if svc.ContainerID != "" && svc.ContainerID != "-" {
 				containerName = svc.ContainerID
 			} else {
@@ -83,26 +80,23 @@ func (h *TerminalHandler) HandleWebSocket(c echo.Context) error {
 	}
 
 	if h.dockerClient == nil {
-		WriteError(w, http.StatusInternalServerError, "docker client unavailable")
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "docker client unavailable"})
 	}
 
 	resp, err := h.dockerClient.ContainerExecCreate(context.Background(), containerName, execConfig)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, "failed to create exec instance: "+err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to create exec instance: " + err.Error()})
 	}
 
 	hijackedResp, err := h.dockerClient.ContainerExecAttach(context.Background(), resp.ID, types.ExecStartCheck{Tty: true})
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, "failed to attach to exec instance: "+err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to attach to exec instance: " + err.Error()})
 	}
 	defer hijackedResp.Close()
 
-	ws, err := terminalUpgrader.Upgrade(w, r, nil)
+	ws, err := terminalUpgrader.Upgrade(c.Response().Writer, c.Request(), nil)
 	if err != nil {
-		return nil
+		return err
 	}
 	defer ws.Close()
 
@@ -124,12 +118,13 @@ func (h *TerminalHandler) HandleWebSocket(c echo.Context) error {
 	go func() {
 		for range ticker.C {
 			if err := ws.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(10*time.Second)); err != nil {
-				return nil
+				return
 			}
 		}
 	}()
 
 	<-errChan
+	return nil
 }
 
 func (h *TerminalHandler) wsToReader(ws *websocket.Conn) io.Reader {
@@ -139,11 +134,11 @@ func (h *TerminalHandler) wsToReader(ws *websocket.Conn) io.Reader {
 			_, message, err := ws.ReadMessage()
 			if err != nil {
 				w.CloseWithError(err)
-				return nil
+				return
 			}
 			_, err = w.Write(message)
 			if err != nil {
-				return nil
+				return
 			}
 		}
 	}()
@@ -158,11 +153,11 @@ func (h *TerminalHandler) wsToWriter(ws *websocket.Conn) io.Writer {
 			n, err := r.Read(buf)
 			if n > 0 {
 				if err := ws.WriteMessage(websocket.BinaryMessage, buf[:n]); err != nil {
-					return nil
+					return
 				}
 			}
 			if err != nil {
-				return nil
+				return
 			}
 		}
 	}()

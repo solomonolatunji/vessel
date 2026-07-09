@@ -18,36 +18,31 @@ func NewUpdaterHandler(s *services.UpdaterService) *UpdaterHandler {
 
 func (h *UpdaterHandler) GetUpdateStatus(c echo.Context) error {
 	if h.updaterService == nil {
-		WriteError(w, http.StatusInternalServerError, "updater service not initialized")
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "updater service not initialized"})
 	}
 	status := h.updaterService.GetStatus()
-	WriteJSON(w, http.StatusOK, status)
+	return c.JSON(http.StatusOK, status)
 }
 
 func (h *UpdaterHandler) CheckUpdate(c echo.Context) error {
 	if h.updaterService == nil {
-		WriteError(w, http.StatusInternalServerError, "updater service not initialized")
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "updater service not initialized"})
 	}
-	if _, err := h.updaterService.CheckForUpdates(r.Context()); err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+	if _, err := h.updaterService.CheckForUpdates(c.Request().Context()); err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 	status := h.updaterService.GetStatus()
-	WriteJSON(w, http.StatusOK, status)
+	return c.JSON(http.StatusOK, status)
 }
 
 func (h *UpdaterHandler) DeployUpdate(c echo.Context) error {
 	if h.updaterService == nil {
-		WriteError(w, http.StatusInternalServerError, "updater service not initialized")
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "updater service not initialized"})
 	}
-	if err := h.updaterService.DeployUpdate(r.Context()); err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+	if err := h.updaterService.DeployUpdate(c.Request().Context()); err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusAccepted, map[string]string{
+	return c.JSON(http.StatusAccepted, map[string]string{
 		"message": "update deployment triggered",
 	})
 }

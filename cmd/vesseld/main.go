@@ -11,6 +11,7 @@ import (
 	"runtime"
 
 	"github.com/docker/docker/client"
+	"github.com/joho/godotenv"
 	_ "modernc.org/sqlite"
 	"vessel.dev/vessel/internal/api"
 	"vessel.dev/vessel/internal/engine"
@@ -79,8 +80,6 @@ func (a *dbDomainLister) ListAllDomains() ([]models.DomainConfig, error) {
 	return list, rows.Err()
 }
 
-
-
 type dbDeployerStore struct {
 	db    *sql.DB
 	vault *vault.Vault
@@ -104,6 +103,9 @@ func (a *dbDeployerStore) ListServiceVariables(serviceID string) ([]*models.Vari
 }
 
 func main() {
+	// Attempt to load .env file if it exists, but don't fail if it doesn't
+	_ = godotenv.Load()
+
 	log.Printf(" Booting Vessel Daemon (`vesseld`) v%s [%s/%s]...", vesselVersion, runtime.GOOS, runtime.GOARCH)
 
 	port := os.Getenv("PORT")

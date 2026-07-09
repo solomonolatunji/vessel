@@ -4,7 +4,6 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"context"
-	"encoding/json"
 	"net/http"
 
 	"vessel.dev/vessel/internal/models"
@@ -25,12 +24,11 @@ func NewProjectHandler(s *services.ProjectService, p ProxyReloader) *ProjectHand
 }
 
 func (h *ProjectHandler) ListProjects(c echo.Context) error {
-	projects, err := h.projectService.ListProjects(r.Context())
+	projects, err := h.projectService.ListProjects(c.Request().Context())
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusOK, projects)
+	return c.JSON(http.StatusOK, projects)
 }
 
 func (h *ProjectHandler) CreateProject(c echo.Context) error {
@@ -38,43 +36,38 @@ func (h *ProjectHandler) CreateProject(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
 	}
-	p, err := h.projectService.CreateProjectFromRequest(r.Context(), &req)
+	p, err := h.projectService.CreateProjectFromRequest(c.Request().Context(), &req)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 	if h.proxy != nil {
-		_ = h.proxy.Reload(r.Context())
+		_ = h.proxy.Reload(c.Request().Context())
 	}
-	WriteJSON(w, http.StatusCreated, p)
+	return c.JSON(http.StatusCreated, p)
 }
 
 func (h *ProjectHandler) GetProject(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		WriteError(w, http.StatusBadRequest, "missing project id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing project id parameter"})
 	}
-	p, err := h.projectService.GetProject(r.Context(), id)
+	p, err := h.projectService.GetProject(c.Request().Context(), id)
 	if err != nil {
-		WriteError(w, http.StatusNotFound, "project not found")
-		return nil
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "project not found"})
 	}
-	WriteJSON(w, http.StatusOK, p)
+	return c.JSON(http.StatusOK, p)
 }
 
 func (h *ProjectHandler) DeleteProject(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		WriteError(w, http.StatusBadRequest, "missing project id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing project id parameter"})
 	}
-	if err := h.projectService.DeleteProject(r.Context(), id); err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+	if err := h.projectService.DeleteProject(c.Request().Context(), id); err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 	if h.proxy != nil {
-		_ = h.proxy.Reload(r.Context())
+		_ = h.proxy.Reload(c.Request().Context())
 	}
-	WriteJSON(w, http.StatusOK, map[string]string{"status": "deleted"})
+	return c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
 }

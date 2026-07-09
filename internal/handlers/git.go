@@ -3,7 +3,6 @@ package handlers
 import (
 	"github.com/labstack/echo/v4"
 
-	"encoding/json"
 	"net/http"
 
 	"vessel.dev/vessel/internal/models"
@@ -19,70 +18,60 @@ func NewGitHandler(s *services.GitService) *GitHandler {
 }
 
 func (h *GitHandler) Connect(c echo.Context) error {
-	userID := ExtractUserID(r)
+	userID := ExtractUserID(c)
 	if userID == "" {
-		WriteError(w, http.StatusUnauthorized, "unauthorized")
-		return nil
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
 	}
 	var req models.GitConnectRequest
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
 	}
-	gp, err := h.gitService.ConnectProvider(r.Context(), userID, &req)
+	gp, err := h.gitService.ConnectProvider(c.Request().Context(), userID, &req)
 	if err != nil {
-		WriteError(w, http.StatusBadRequest, err.Error())
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusCreated, gp)
+	return c.JSON(http.StatusCreated, gp)
 }
 
 func (h *GitHandler) Status(c echo.Context) error {
-	userID := ExtractUserID(r)
+	userID := ExtractUserID(c)
 	if userID == "" {
-		WriteError(w, http.StatusUnauthorized, "unauthorized")
-		return nil
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
 	}
-	status, err := h.gitService.GetConnectedProviders(r.Context(), userID)
+	status, err := h.gitService.GetConnectedProviders(c.Request().Context(), userID)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusOK, status)
+	return c.JSON(http.StatusOK, status)
 }
 
 func (h *GitHandler) Disconnect(c echo.Context) error {
-	userID := ExtractUserID(r)
+	userID := ExtractUserID(c)
 	if userID == "" {
-		WriteError(w, http.StatusUnauthorized, "unauthorized")
-		return nil
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
 	}
 	provider := c.Param("provider")
 	if provider == "" {
-		WriteError(w, http.StatusBadRequest, "missing provider parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing provider parameter"})
 	}
-	if err := h.gitService.DisconnectProvider(r.Context(), userID, provider); err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+	if err := h.gitService.DisconnectProvider(c.Request().Context(), userID, provider); err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusOK, map[string]string{"status": "disconnected"})
+	return c.JSON(http.StatusOK, map[string]string{"status": "disconnected"})
 }
 
 func (h *GitHandler) ListRepos(c echo.Context) error {
-	userID := ExtractUserID(r)
+	userID := ExtractUserID(c)
 	if userID == "" {
-		WriteError(w, http.StatusUnauthorized, "unauthorized")
-		return nil
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
 	}
 	provider := c.QueryParam("provider")
 	if provider == "" {
-		WriteError(w, http.StatusBadRequest, "missing provider query parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing provider query parameter"})
 	}
-	repos, err := h.gitService.ListRepositories(r.Context(), userID, provider)
+	repos, err := h.gitService.ListRepositories(c.Request().Context(), userID, provider)
 	if err != nil {
-		WriteError(w, http.StatusBadRequest, err.Error())
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusOK, repos)
+	return c.JSON(http.StatusOK, repos)
 }

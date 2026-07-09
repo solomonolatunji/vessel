@@ -3,7 +3,6 @@ package handlers
 import (
 	"github.com/labstack/echo/v4"
 
-	"encoding/json"
 	"net/http"
 
 	"vessel.dev/vessel/internal/models"
@@ -19,24 +18,21 @@ func NewNotificationHandler(ns *services.NotificationService) *NotificationHandl
 }
 
 func (h *NotificationHandler) GetIntegrations(c echo.Context) error {
-	if r.Method != http.MethodGet {
-		WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		return nil
+	if c.Request().Method != http.MethodGet {
+		return c.JSON(http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
 	}
 
-	integ, err := h.notificationService.GetIntegration(r.Context())
+	integ, err := h.notificationService.GetIntegration(c.Request().Context())
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 
-	WriteJSON(w, http.StatusOK, integ)
+	return c.JSON(http.StatusOK, integ)
 }
 
 func (h *NotificationHandler) SaveIntegrations(c echo.Context) error {
-	if r.Method != http.MethodPut && r.Method != http.MethodPost {
-		WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		return nil
+	if c.Request().Method != http.MethodPut && c.Request().Method != http.MethodPost {
+		return c.JSON(http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
 	}
 
 	var integ models.NotificationIntegration
@@ -44,18 +40,16 @@ func (h *NotificationHandler) SaveIntegrations(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
 	}
 
-	if err := h.notificationService.SaveIntegration(r.Context(), &integ); err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+	if err := h.notificationService.SaveIntegration(c.Request().Context(), &integ); err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 
-	WriteJSON(w, http.StatusOK, integ)
+	return c.JSON(http.StatusOK, integ)
 }
 
 func (h *NotificationHandler) TestNotification(c echo.Context) error {
-	if r.Method != http.MethodPost {
-		WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		return nil
+	if c.Request().Method != http.MethodPost {
+		return c.JSON(http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
 	}
 
 	var req struct {
@@ -67,47 +61,41 @@ func (h *NotificationHandler) TestNotification(c echo.Context) error {
 	}
 
 	if err := h.notificationService.SendTest(req.Channel, req.ProjectID); err != nil {
-		WriteError(w, http.StatusBadRequest, err.Error())
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
-	WriteJSON(w, http.StatusOK, map[string]string{
+	return c.JSON(http.StatusOK, map[string]string{
 		"status":  "ok",
 		"message": "Test notification sent successfully over " + req.Channel,
 	})
 }
 
 func (h *NotificationHandler) GetProjectPreferences(c echo.Context) error {
-	if r.Method != http.MethodGet {
-		WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		return nil
+	if c.Request().Method != http.MethodGet {
+		return c.JSON(http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
 	}
 
 	projectID := c.Param("id")
 	if projectID == "" {
-		WriteError(w, http.StatusBadRequest, "Missing project id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Missing project id parameter"})
 	}
 
-	pref, err := h.notificationService.GetProjectPref(r.Context(), projectID)
+	pref, err := h.notificationService.GetProjectPref(c.Request().Context(), projectID)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 
-	WriteJSON(w, http.StatusOK, pref)
+	return c.JSON(http.StatusOK, pref)
 }
 
 func (h *NotificationHandler) SaveProjectPreferences(c echo.Context) error {
-	if r.Method != http.MethodPut && r.Method != http.MethodPost {
-		WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		return nil
+	if c.Request().Method != http.MethodPut && c.Request().Method != http.MethodPost {
+		return c.JSON(http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
 	}
 
 	projectID := c.Param("id")
 	if projectID == "" {
-		WriteError(w, http.StatusBadRequest, "Missing project id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Missing project id parameter"})
 	}
 
 	var pref models.ProjectNotificationPref
@@ -116,10 +104,9 @@ func (h *NotificationHandler) SaveProjectPreferences(c echo.Context) error {
 	}
 	pref.ProjectID = projectID
 
-	if err := h.notificationService.SaveProjectPref(r.Context(), &pref); err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+	if err := h.notificationService.SaveProjectPref(c.Request().Context(), &pref); err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 
-	WriteJSON(w, http.StatusOK, pref)
+	return c.JSON(http.StatusOK, pref)
 }

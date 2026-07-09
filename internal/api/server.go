@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	echomiddleware "github.com/labstack/echo/v4/middleware"
 
 	"github.com/docker/docker/client"
 	"vessel.dev/vessel/internal/engine"
@@ -21,15 +21,15 @@ import (
 )
 
 type Server struct {
-	router                 *echo.Echo
-	deployer               *engine.Deployer
-	proxyManager           *proxy.ProxyManager
-	dockerClient           *client.Client
-	tokenService           *services.TokenService
-	authGuard              *middleware.AuthGuard
-	cronManager            *engine.CronManager
-	serviceLinker          *services.ServiceLinker
-	notifierService        *notifier.NotifierService
+	router          *echo.Echo
+	deployer        *engine.Deployer
+	proxyManager    *proxy.ProxyManager
+	dockerClient    *client.Client
+	tokenService    *services.TokenService
+	authGuard       *middleware.AuthGuard
+	cronManager     *engine.CronManager
+	serviceLinker   *services.ServiceLinker
+	notifierService *notifier.NotifierService
 
 	appServiceHandler      *handlers.AppHandler
 	dbHandler              *handlers.DatabaseHandler
@@ -123,24 +123,22 @@ func NewServer(db *sql.DB, vault *vault.Vault, deployer *engine.Deployer, proxyM
 	// Auth Guard
 	authGuard := middleware.NewAuthGuard(tokenService, settingsService)
 
-
-
 	// 3. Handlers
 	e := echo.New()
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-	e.Use(middleware.CORS())
+	e.Use(echomiddleware.Logger())
+	e.Use(echomiddleware.Recover())
+	e.Use(echomiddleware.CORS())
 
 	srv := &Server{
-		router:                 e,
-		deployer:               deployer,
-		proxyManager:           proxyManager,
-		dockerClient:           dockerClient,
-		tokenService:           tokenService,
-		authGuard:              authGuard,
-		cronManager:            cronMgr,
-		serviceLinker:          svcLinker,
-		notifierService:        notifierService,
+		router:          e,
+		deployer:        deployer,
+		proxyManager:    proxyManager,
+		dockerClient:    dockerClient,
+		tokenService:    tokenService,
+		authGuard:       authGuard,
+		cronManager:     cronMgr,
+		serviceLinker:   svcLinker,
+		notifierService: notifierService,
 
 		appServiceHandler:      handlers.NewAppHandler(appService),
 		dbHandler:              handlers.NewDatabaseHandler(dbService),
@@ -183,14 +181,6 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) Handler() http.Handler {
 	return s.router
-}
-
-func (s *Server) RequireAuth(next http.HandlerFunc) http.HandlerFunc {
-	return s.authGuard.RequireAuth(next)
-}
-
-func (s *Server) RequireRole(requiredRole string, next http.HandlerFunc) http.HandlerFunc {
-	return s.authGuard.RequireRole(requiredRole, next)
 }
 
 func GetUserClaimsFromContext(ctx context.Context) *models.UserClaims {

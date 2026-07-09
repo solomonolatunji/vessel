@@ -3,7 +3,6 @@ package handlers
 import (
 	"github.com/labstack/echo/v4"
 
-	"encoding/json"
 	"net/http"
 
 	"vessel.dev/vessel/internal/models"
@@ -25,57 +24,51 @@ func (h *AppHandler) Create(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
 	}
 	if req.Name == "" {
-		WriteError(w, http.StatusBadRequest, "app service name is required")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "app service name is required"})
 	}
 	req.EnvironmentID = envID
 	if req.InternalPort == 0 {
 		req.InternalPort = 3000
 	}
-	created, err := h.appService.CreateAppService(r.Context(), &req)
+	created, err := h.appService.CreateAppService(c.Request().Context(), &req)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusCreated, created)
+	return c.JSON(http.StatusCreated, created)
 }
 
 func (h *AppHandler) ListByEnvironment(c echo.Context) error {
 	envID := c.Param("id")
-	apps, err := h.appService.ListByEnvironment(r.Context(), envID)
+	apps, err := h.appService.ListByEnvironment(c.Request().Context(), envID)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusOK, apps)
+	return c.JSON(http.StatusOK, apps)
 }
 
 func (h *AppHandler) ListByProject(c echo.Context) error {
 	projectID := c.Param("id")
-	apps, err := h.appService.ListByProject(r.Context(), projectID)
+	apps, err := h.appService.ListByProject(c.Request().Context(), projectID)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusOK, apps)
+	return c.JSON(http.StatusOK, apps)
 }
 
 func (h *AppHandler) Get(c echo.Context) error {
 	id := c.Param("id")
-	svc, err := h.appService.GetAppService(r.Context(), id)
+	svc, err := h.appService.GetAppService(c.Request().Context(), id)
 	if err != nil || svc == nil {
-		WriteError(w, http.StatusNotFound, "app service not found")
-		return nil
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "app service not found"})
 	}
-	WriteJSON(w, http.StatusOK, svc)
+	return c.JSON(http.StatusOK, svc)
 }
 
 func (h *AppHandler) Update(c echo.Context) error {
 	id := c.Param("id")
-	existing, err := h.appService.GetAppService(r.Context(), id)
+	existing, err := h.appService.GetAppService(c.Request().Context(), id)
 	if err != nil || existing == nil {
-		WriteError(w, http.StatusNotFound, "app service not found")
-		return nil
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "app service not found"})
 	}
 	var req models.AppService
 	if err := c.Bind(&req); err != nil {
@@ -88,20 +81,18 @@ func (h *AppHandler) Update(c echo.Context) error {
 	existing.Domain = req.Domain
 	existing.ContainerID = req.ContainerID
 	existing.Status = req.Status
-	if err := h.appService.UpdateAppService(r.Context(), existing); err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+	if err := h.appService.UpdateAppService(c.Request().Context(), existing); err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusOK, existing)
+	return c.JSON(http.StatusOK, existing)
 }
 
 func (h *AppHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
-	if err := h.appService.DeleteAppService(r.Context(), id); err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+	if err := h.appService.DeleteAppService(c.Request().Context(), id); err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	w.WriteHeader(http.StatusNoContent)
+	return c.NoContent(http.StatusNoContent)
 }
 
 type ServiceVarHandler struct {
@@ -114,12 +105,11 @@ func NewServiceVarHandler(s *services.AppService) *ServiceVarHandler {
 
 func (h *ServiceVarHandler) List(c echo.Context) error {
 	serviceID := c.Param("serviceId")
-	list, err := h.appService.ListVariablesByService(r.Context(), serviceID)
+	list, err := h.appService.ListVariablesByService(c.Request().Context(), serviceID)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusOK, list)
+	return c.JSON(http.StatusOK, list)
 }
 
 func (h *ServiceVarHandler) Create(c echo.Context) error {
@@ -128,20 +118,18 @@ func (h *ServiceVarHandler) Create(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
 	}
-	svc, err := h.appService.GetAppService(r.Context(), serviceID)
+	svc, err := h.appService.GetAppService(c.Request().Context(), serviceID)
 	if err != nil || svc == nil {
-		WriteError(w, http.StatusNotFound, "service not found")
-		return nil
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "service not found"})
 	}
 	req.ServiceID = serviceID
 	req.ProjectID = svc.ProjectID
 	req.EnvironmentID = svc.EnvironmentID
-	created, err := h.appService.CreateVariable(r.Context(), &req)
+	created, err := h.appService.CreateVariable(c.Request().Context(), &req)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusCreated, created)
+	return c.JSON(http.StatusCreated, created)
 }
 
 func (h *ServiceVarHandler) Update(c echo.Context) error {
@@ -153,18 +141,16 @@ func (h *ServiceVarHandler) Update(c echo.Context) error {
 	}
 	req.ID = id
 	req.ServiceID = serviceID
-	if err := h.appService.UpdateVariable(r.Context(), &req); err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+	if err := h.appService.UpdateVariable(c.Request().Context(), &req); err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusOK, req)
+	return c.JSON(http.StatusOK, req)
 }
 
 func (h *ServiceVarHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
-	if err := h.appService.DeleteVariable(r.Context(), id); err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+	if err := h.appService.DeleteVariable(c.Request().Context(), id); err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	w.WriteHeader(http.StatusNoContent)
+	return c.NoContent(http.StatusNoContent)
 }

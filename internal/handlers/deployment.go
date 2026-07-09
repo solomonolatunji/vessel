@@ -26,27 +26,23 @@ func NewDeploymentHandler(ds *services.DeploymentService, as *services.AppServic
 func (h *DeploymentHandler) ListServiceDeployments(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	if serviceID == "" {
-		WriteError(w, http.StatusBadRequest, "missing serviceId parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing serviceId parameter"})
 	}
-	deps, err := h.deploymentService.ListByService(r.Context(), serviceID)
+	deps, err := h.deploymentService.ListByService(c.Request().Context(), serviceID)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusOK, deps)
+	return c.JSON(http.StatusOK, deps)
 }
 
 func (h *DeploymentHandler) Trigger(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	if serviceID == "" {
-		WriteError(w, http.StatusBadRequest, "missing serviceId parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing serviceId parameter"})
 	}
-	svc, err := h.appService.GetAppService(r.Context(), serviceID)
+	svc, err := h.appService.GetAppService(c.Request().Context(), serviceID)
 	if err != nil || svc == nil {
-		WriteError(w, http.StatusNotFound, "service not found")
-		return nil
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "service not found"})
 	}
 	dep := &models.Deployment{
 		ServiceID:     serviceID,
@@ -57,25 +53,21 @@ func (h *DeploymentHandler) Trigger(c echo.Context) error {
 		Trigger:       "Manual Deploy",
 		BuildLogs:     "Initiating build...\n",
 	}
-	created, err := h.deploymentService.CreateDeployment(r.Context(), dep)
+	created, err := h.deploymentService.CreateDeployment(c.Request().Context(), dep)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	w.WriteHeader(http.StatusAccepted)
-	WriteJSON(w, http.StatusAccepted, created)
+	return c.JSON(http.StatusAccepted, created)
 }
 
 func (h *DeploymentHandler) Rollback(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		WriteError(w, http.StatusBadRequest, "missing id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing id parameter"})
 	}
-	targetDep, err := h.deploymentService.GetDeployment(r.Context(), id)
+	targetDep, err := h.deploymentService.GetDeployment(c.Request().Context(), id)
 	if err != nil || targetDep == nil {
-		WriteError(w, http.StatusNotFound, "deployment not found")
-		return nil
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "deployment not found"})
 	}
 	newDep := &models.Deployment{
 		ServiceID:     targetDep.ServiceID,
@@ -88,27 +80,23 @@ func (h *DeploymentHandler) Rollback(c echo.Context) error {
 		Trigger:       "Rollback",
 		BuildLogs:     "Rolling back to deployment " + targetDep.ID + "...\n",
 	}
-	created, err := h.deploymentService.CreateDeployment(r.Context(), newDep)
+	created, err := h.deploymentService.CreateDeployment(c.Request().Context(), newDep)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	w.WriteHeader(http.StatusAccepted)
-	WriteJSON(w, http.StatusAccepted, created)
+	return c.JSON(http.StatusAccepted, created)
 }
 
 func (h *DeploymentHandler) GetLogs(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		WriteError(w, http.StatusBadRequest, "missing id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing id parameter"})
 	}
-	dep, err := h.deploymentService.GetDeployment(r.Context(), id)
+	dep, err := h.deploymentService.GetDeployment(c.Request().Context(), id)
 	if err != nil || dep == nil {
-		WriteError(w, http.StatusNotFound, "deployment not found")
-		return nil
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "deployment not found"})
 	}
-	WriteJSON(w, http.StatusOK, map[string]string{
+	return c.JSON(http.StatusOK, map[string]string{
 		"id":        dep.ID,
 		"buildLogs": dep.BuildLogs,
 		"status":    dep.Status,
@@ -124,22 +112,20 @@ func (h *DeploymentHandler) GetMetrics(c echo.Context) error {
 		{"timestamp": now.Add(-1 * time.Minute).Format(time.RFC3339), "cpuPercent": 3.4, "memoryMB": 68.1, "networkRx": 45.2, "networkTx": 22.0},
 		{"timestamp": now.Format(time.RFC3339), "cpuPercent": 1.5, "memoryMB": 66.8, "networkRx": 18.0, "networkTx": 11.5},
 	}
-	WriteJSON(w, http.StatusOK, metrics)
+	return c.JSON(http.StatusOK, metrics)
 }
 
 func (h *DeploymentHandler) DeployProject(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		WriteError(w, http.StatusBadRequest, "missing project id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing project id parameter"})
 	}
 	sourceDir := fmt.Sprintf("data/builds/%s", id)
-	containerID, err := h.deploymentService.DeployProject(r.Context(), id, sourceDir, nil)
+	containerID, err := h.deploymentService.DeployProject(c.Request().Context(), id, sourceDir, nil)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusOK, map[string]string{
+	return c.JSON(http.StatusOK, map[string]string{
 		"status":       "deployed",
 		"container_id": containerID,
 	})

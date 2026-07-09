@@ -3,7 +3,6 @@ package handlers
 import (
 	"github.com/labstack/echo/v4"
 
-	"encoding/json"
 	"net/http"
 
 	"vessel.dev/vessel/internal/models"
@@ -21,15 +20,13 @@ func NewJobHandler(s *services.JobService) *JobHandler {
 func (h *JobHandler) ListProjectJobs(c echo.Context) error {
 	projectID := c.QueryParam("projectId")
 	if projectID == "" {
-		WriteError(w, http.StatusBadRequest, "missing projectId query parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing projectId query parameter"})
 	}
-	jobs, err := h.jobService.ListJobsByProject(r.Context(), projectID)
+	jobs, err := h.jobService.ListJobsByProject(c.Request().Context(), projectID)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusOK, jobs)
+	return c.JSON(http.StatusOK, jobs)
 }
 
 func (h *JobHandler) Create(c echo.Context) error {
@@ -37,51 +34,44 @@ func (h *JobHandler) Create(c echo.Context) error {
 	if err := c.Bind(&j); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
 	}
-	created, err := h.jobService.CreateJob(r.Context(), &j)
+	created, err := h.jobService.CreateJob(c.Request().Context(), &j)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusCreated, created)
+	return c.JSON(http.StatusCreated, created)
 }
 
 func (h *JobHandler) Get(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		WriteError(w, http.StatusBadRequest, "missing id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing id parameter"})
 	}
-	j, err := h.jobService.GetJob(r.Context(), id)
+	j, err := h.jobService.GetJob(c.Request().Context(), id)
 	if err != nil || j == nil {
-		WriteError(w, http.StatusNotFound, "job not found")
-		return nil
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "job not found"})
 	}
-	WriteJSON(w, http.StatusOK, j)
+	return c.JSON(http.StatusOK, j)
 }
 
 func (h *JobHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		WriteError(w, http.StatusBadRequest, "missing id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing id parameter"})
 	}
-	if err := h.jobService.DeleteJob(r.Context(), id); err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+	if err := h.jobService.DeleteJob(c.Request().Context(), id); err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	w.WriteHeader(http.StatusNoContent)
+	return c.NoContent(http.StatusNoContent)
 }
 
 func (h *JobHandler) Run(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		WriteError(w, http.StatusBadRequest, "missing id parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing id parameter"})
 	}
-	out, err := h.jobService.ExecuteJob(r.Context(), id)
+	out, err := h.jobService.ExecuteJob(c.Request().Context(), id)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, err.Error())
-		return nil
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	WriteJSON(w, http.StatusOK, map[string]string{"status": "executed", "output": out})
+	return c.JSON(http.StatusOK, map[string]string{"status": "executed", "output": out})
 }

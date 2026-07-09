@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -13,8 +14,7 @@ import (
 )
 
 const (
-	defaultReleaseAPI = "https://api.github.com/repos/solomonolatunji/vessel/releases/latest"
-	defaultVersion    = "v1.0.0"
+	defaultVersion = "v1.0.0"
 )
 
 type UpdateInfo struct {
@@ -117,9 +117,17 @@ func (u *UpdaterService) CheckForUpdates(ctx context.Context) (*UpdateInfo, erro
 
 	latestVer := currentVer
 	releaseNotes := "System is running optimal build."
-	downloadURL := "https://github.com/solomonolatunji/vessel/releases"
+	downloadURL := os.Getenv("VESSEL_DOWNLOAD_URL")
+	if downloadURL == "" {
+		downloadURL = "https://github.com/solomonolatunji/vessel/releases"
+	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, defaultReleaseAPI, nil)
+	releaseAPI := os.Getenv("VESSEL_UPDATE_URL")
+	if releaseAPI == "" {
+		releaseAPI = "https://api.github.com/repos/solomonolatunji/vessel/releases/latest"
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, releaseAPI, nil)
 	if err == nil {
 		req.Header.Set("User-Agent", "vessel-updater/"+currentVer)
 		if resp, err := u.httpClient.Do(req); err == nil {

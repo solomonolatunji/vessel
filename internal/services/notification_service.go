@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"os"
 
 	"vessel.dev/vessel/internal/models"
 	"vessel.dev/vessel/internal/repositories"
@@ -50,11 +51,16 @@ func (s *NotificationService) SendTest(channel, projectID string) error {
 	if s.dispatcher == nil {
 		return errors.New("dispatcher unavailable")
 	}
+	dashboardURL := os.Getenv("VESSEL_DASHBOARD_URL")
+	if dashboardURL == "" {
+		dashboardURL = "http://localhost:3000"
+	}
+
 	return s.dispatcher.Send(&models.NotificationEvent{
 		Title:     "Test Notification from Vessel",
 		Message:   "If you see this, your " + channel + " integration is working correctly!",
 		Level:     "info",
 		ProjectID: projectID,
-		URL:       "http://localhost:3000/settings/notifications",
+		URL:       dashboardURL + "/settings/notifications",
 	})
 }

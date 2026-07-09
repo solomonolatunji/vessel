@@ -39,45 +39,36 @@ func NewWebhookHandler(
 func (h *WebhookHandler) HandleProjectWebhook(c echo.Context) error {
 	projectID := c.Param("projectId")
 	if projectID == "" {
-		WriteError(w, http.StatusBadRequest, "missing projectId parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing projectId parameter"})
 	}
 
-	project, err := h.projectService.GetProject(r.Context(), projectID)
+	project, err := h.projectService.GetProject(c.Request().Context(), projectID)
 	if err != nil || project == nil {
-		WriteError(w, http.StatusNotFound, "project not found")
-		return nil
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "project not found"})
 	}
-
-	WriteJSON(w, http.StatusAccepted, map[string]string{
-		"status":  "accepted",
-		"message": fmt.Sprintf("triggering background build & deployment for %s", project.Name),
-	})
 
 	go func() {
 		ctx := context.Background()
 		sourceDir := filepath.Join("data", "builds", project.ID)
 		_, _ = h.deploymentService.DeployProject(ctx, project.ID, sourceDir, nil)
 	}()
+
+	return c.JSON(http.StatusAccepted, map[string]string{
+		"status":  "accepted",
+		"message": fmt.Sprintf("triggering background build & deployment for %s", project.Name),
+	})
 }
 
 func (h *WebhookHandler) HandleServiceWebhook(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	if serviceID == "" {
-		WriteError(w, http.StatusBadRequest, "missing serviceId parameter")
-		return nil
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing serviceId parameter"})
 	}
 
-	appSvc, err := h.appService.GetAppService(r.Context(), serviceID)
+	appSvc, err := h.appService.GetAppService(c.Request().Context(), serviceID)
 	if err != nil || appSvc == nil {
-		WriteError(w, http.StatusNotFound, "service not found")
-		return nil
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "service not found"})
 	}
-
-	WriteJSON(w, http.StatusAccepted, map[string]string{
-		"status":  "accepted",
-		"message": fmt.Sprintf("triggering background build & rollout for service %s", appSvc.Name),
-	})
 
 	go func() {
 		ctx := context.Background()
@@ -100,10 +91,15 @@ func (h *WebhookHandler) HandleServiceWebhook(c echo.Context) error {
 			if err := h.gitService.CloneOrPullAppRepository(ctx, appSvc, sourceDir, nil); err != nil {
 				log.Printf("[ServiceGitWebhook] Git clone/pull failed for service %s (%s): %v", appSvc.Name, appSvc.ID, err)
 				_ = h.deploymentService.UpdateStatus(ctx, dep.ID, "FAILED", dep.BuildLogs+fmt.Sprintf("Error cloning repository: %v\n", err), "")
-				return nil
+				return
 			}
 		}
 
 		_ = h.deploymentService.UpdateStatus(ctx, dep.ID, "ACTIVE", dep.BuildLogs+"Deployment rollout triggered via Webhook.\n", appSvc.ContainerID)
 	}()
+
+	return c.JSON(http.StatusAccepted, map[string]string{
+		"status":  "accepted",
+		"message": fmt.Sprintf("triggering background build & rollout for service %s", appSvc.Name),
+	})
 }
