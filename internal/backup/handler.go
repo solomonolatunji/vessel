@@ -4,12 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+
+	"vessel.dev/vessel/internal/models"
 )
 
 type BackupManager interface {
-	RegisterBackup(cfg *BackupConfig) error
+	RegisterBackup(cfg *models.BackupConfig) error
 	UnregisterBackup(backupConfigID string)
-	TriggerBackup(ctx context.Context, backupConfigID string) (*BackupRecord, error)
+	TriggerBackup(ctx context.Context, backupConfigID string) (*models.BackupRecord, error)
 }
 
 type Handler struct {
@@ -56,7 +58,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if h.backupManager != nil {
-		_ = h.backupManager.RegisterBackup(&cfg)
+		_ = h.backupManager.RegisterBackup(toModelBackupConfig(&cfg))
 	}
 
 	writeJSON(w, http.StatusCreated, cfg)

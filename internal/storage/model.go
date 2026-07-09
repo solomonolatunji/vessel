@@ -1,6 +1,10 @@
 package storage
 
-import "time"
+import (
+	"time"
+
+	"vessel.dev/vessel/internal/models"
+)
 
 type Storage struct {
 	ID            string    `json:"id"`
@@ -20,4 +24,29 @@ type Storage struct {
 	ExternalDNS   string    `json:"externalDns"`
 	CreatedAt     time.Time `json:"createdAt"`
 	UpdatedAt     time.Time `json:"updatedAt"`
+}
+
+func toModelStorage(s *Storage) *models.Storage {
+	if s == nil {
+		return nil
+	}
+	return &models.Storage{
+		ID:            s.ID,
+		ProjectID:     s.ProjectID,
+		EnvironmentID: s.EnvironmentID,
+		Name:          s.Name,
+		Type:          s.Type,
+		APIPort:       s.APIPort,
+		ConsolePort:   s.ConsolePort,
+		AccessKey:     s.AccessKey,
+		SecretKey:     s.SecretKey,
+		BucketName:    s.BucketName,
+		VolumePath:    s.VolumePath,
+		ContainerID:   s.ContainerID,
+		Status:        s.Status,
+		InternalDNS:   s.InternalDNS,
+		ExternalDNS:   s.ExternalDNS,
+		CreatedAt:     s.CreatedAt,
+		UpdatedAt:     s.UpdatedAt,
+	}
 }

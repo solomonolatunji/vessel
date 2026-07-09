@@ -1,5 +1,7 @@
 package backup
 
+import "vessel.dev/vessel/internal/models"
+
 type BackupConfig struct {
 	ID              string `json:"id"`
 	ProjectID       string `json:"projectId"`
@@ -38,4 +40,23 @@ type S3Destination struct {
 	AccessKeyID     string `json:"accessKeyId"`
 	SecretAccessKey string `json:"secretAccessKey"`
 	CreatedAt       string `json:"createdAt"`
+}
+
+func toModelBackupConfig(c *BackupConfig) *models.BackupConfig {
+	if c == nil {
+		return nil
+	}
+	return &models.BackupConfig{
+		ID:              c.ID,
+		ProjectID:       c.ProjectID,
+		DatabaseID:      c.DatabaseID,
+		StorageID:       c.StorageID,
+		S3DestinationID: c.S3DestinationID,
+		Name:            c.Name,
+		Schedule:        c.Schedule,
+		RetentionDays:   c.RetentionDays,
+		Status:          c.Status,
+		CreatedAt:       c.CreatedAt,
+		UpdatedAt:       c.UpdatedAt,
+	}
 }

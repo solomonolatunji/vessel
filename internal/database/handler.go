@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+
+	"vessel.dev/vessel/internal/models"
 )
 
 type Deployer interface {
-	SpinUp(ctx context.Context, db *Database) (string, error)
+	SpinUp(ctx context.Context, db *models.Database) (string, error)
 	Stop(ctx context.Context, id string) error
 }
 
@@ -86,7 +88,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if h.deployer != nil {
-		_, _ = h.deployer.SpinUp(r.Context(), db)
+		_, _ = h.deployer.SpinUp(r.Context(), toModelDatabase(db))
 	}
 
 	writeJSON(w, http.StatusCreated, db)
@@ -143,7 +145,7 @@ func (h *Handler) Start(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if _, err := h.deployer.SpinUp(r.Context(), db); err != nil {
+	if _, err := h.deployer.SpinUp(r.Context(), toModelDatabase(db)); err != nil {
 		writeError(w, http.StatusInternalServerError, err.Error())
 		return
 	}

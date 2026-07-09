@@ -1,6 +1,10 @@
 package database
 
-import "time"
+import (
+	"time"
+
+	"vessel.dev/vessel/internal/models"
+)
 
 type Database struct {
 	ID            string    `json:"id"`
@@ -20,4 +24,29 @@ type Database struct {
 	ExternalDNS   string    `json:"externalDns"`
 	CreatedAt     time.Time `json:"createdAt"`
 	UpdatedAt     time.Time `json:"updatedAt"`
+}
+
+func toModelDatabase(d *Database) *models.Database {
+	if d == nil {
+		return nil
+	}
+	return &models.Database{
+		ID:            d.ID,
+		ProjectID:     d.ProjectID,
+		EnvironmentID: d.EnvironmentID,
+		Name:          d.Name,
+		Engine:        d.Engine,
+		Version:       d.Version,
+		Port:          d.Port,
+		Username:      d.Username,
+		Password:      d.Password,
+		DatabaseName:  d.DatabaseName,
+		VolumePath:    d.VolumePath,
+		ContainerID:   d.ContainerID,
+		Status:        d.Status,
+		InternalDNS:   d.InternalDNS,
+		ExternalDNS:   d.ExternalDNS,
+		CreatedAt:     d.CreatedAt,
+		UpdatedAt:     d.UpdatedAt,
+	}
 }
