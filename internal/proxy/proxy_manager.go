@@ -9,21 +9,19 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
-	"vessel.dev/vessel/internal/domain"
-	"vessel.dev/vessel/internal/project"
-	"vessel.dev/vessel/internal/service"
+	"vessel.dev/vessel/internal/models"
 )
 
 type ProjectLister interface {
-	ListProjects() ([]project.ProjectConfig, error)
+	ListProjects() ([]models.ProjectConfig, error)
 }
 
 type AppServiceLister interface {
-	ListAllAppServices() ([]*service.AppService, error)
+	ListServices() ([]models.AppService, error)
 }
 
 type DomainLister interface {
-	ListAllDomains() ([]domain.Config, error)
+	ListAllDomains() ([]models.DomainConfig, error)
 }
 
 type ProxyManager struct {
@@ -52,7 +50,7 @@ func (m *ProxyManager) Reload(ctx context.Context) error {
 		return fmt.Errorf("failed to load active projects for caddy reload: %w", err)
 	}
 
-	services, _ := m.services.ListAllAppServices()
+	services, _ := m.services.ListServices()
 
 	domains, err := m.domains.ListAllDomains()
 	if err != nil {

@@ -12,18 +12,19 @@ import (
 	"strings"
 	"time"
 
-	"vessel.dev/vessel/internal/notification"
+	"vessel.dev/vessel/internal/models"
+	"vessel.dev/vessel/internal/repositories"
 )
 
 type NotifierService struct {
-	repo notification.Repository
+	repo repositories.NotificationRepository
 }
 
-func NewNotifierService(repo notification.Repository) *NotifierService {
+func NewNotifierService(repo repositories.NotificationRepository) *NotifierService {
 	return &NotifierService{repo: repo}
 }
 
-func (n *NotifierService) Dispatch(event *notification.NotificationEvent) {
+func (n *NotifierService) Dispatch(event *models.NotificationEvent) {
 	go func() {
 		if err := n.Send(event); err != nil {
 			log.Printf("[Notifier] Failed to dispatch event '%s': %v", event.Title, err)
@@ -31,13 +32,13 @@ func (n *NotifierService) Dispatch(event *notification.NotificationEvent) {
 	}()
 }
 
-func (n *NotifierService) Send(event *notification.NotificationEvent) error {
+func (n *NotifierService) Send(event *models.NotificationEvent) error {
 	integ, err := n.repo.GetIntegration(context.Background())
 	if err != nil || integ == nil {
 		return fmt.Errorf("could not load notification integrations: %w", err)
 	}
 
-	var pref *notification.ProjectNotificationPref
+	var pref *models.ProjectNotificationPref
 	if event.ProjectID != "" {
 		p, err := n.repo.GetProjectPref(context.Background(), event.ProjectID)
 		if err == nil {
@@ -76,7 +77,7 @@ func (n *NotifierService) Send(event *notification.NotificationEvent) error {
 	return nil
 }
 
-func (n *NotifierService) sendSMTP(integ *notification.NotificationIntegration, event *notification.NotificationEvent) error {
+func (n *NotifierService) sendSMTP(integ *models.NotificationIntegration, event *models.NotificationEvent) error {
 	var auth smtp.Auth
 	if integ.SMTPUser != "" && integ.SMTPPassword != "" {
 		auth = smtp.PlainAuth("", integ.SMTPUser, integ.SMTPPassword, integ.SMTPHost)
@@ -106,7 +107,7 @@ func (n *NotifierService) sendSMTP(integ *notification.NotificationIntegration, 
 	return smtp.SendMail(addr, auth, fromAddr, to, msg)
 }
 
-func (n *NotifierService) sendResend(integ *notification.NotificationIntegration, event *notification.NotificationEvent) error {
+func (n *NotifierService) sendResend(integ *models.NotificationIntegration, event *models.NotificationEvent) error {
 	fromStr := "Vessel Notifications <alerts@vessel.dev>"
 	if integ.SMTPFromAddress != "" {
 		if integ.SMTPFromName != "" {
@@ -135,7 +136,7 @@ func (n *NotifierService) sendResend(integ *notification.NotificationIntegration
 	return nil
 }
 
-func (n *NotifierService) sendSlack(webhookURL string, event *notification.NotificationEvent) error {
+func (n *NotifierService) sendSlack(webhookURL string, event *models.NotificationEvent) error {
 	payload := map[string]string{
 		"text": fmt.Sprintf("🚀 *%s*\n%s\n<%s|View Details>", event.Title, event.Message, event.URL),
 	}
@@ -148,7 +149,7 @@ func (n *NotifierService) sendSlack(webhookURL string, event *notification.Notif
 	return nil
 }
 
-func (n *NotifierService) sendDiscord(webhookURL string, ping bool, event *notification.NotificationEvent) error {
+func (n *NotifierService) sendDiscord(webhookURL string, ping bool, event *models.NotificationEvent) error {
 	content := fmt.Sprintf("**%s**\n%s\n[View Details](%s)", event.Title, event.Message, event.URL)
 	if ping && event.Level == "error" {
 		content = "@everyone " + content
@@ -163,7 +164,7 @@ func (n *NotifierService) sendDiscord(webhookURL string, ping bool, event *notif
 	return nil
 }
 
-func (n *NotifierService) sendTelegram(botToken, chatID string, event *notification.NotificationEvent) error {
+func (n *NotifierService) sendTelegram(botToken, chatID string, event *models.NotificationEvent) error {
 	apiURL := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", botToken)
 	text := fmt.Sprintf("🛰 *%s*\n%s\n%s", event.Title, event.Message, event.URL)
 	payload := map[string]string{
@@ -180,7 +181,7 @@ func (n *NotifierService) sendTelegram(botToken, chatID string, event *notificat
 	return nil
 }
 
-func (n *NotifierService) sendPushover(userKey, apiToken string, event *notification.NotificationEvent) error {
+func (n *NotifierService) sendPushover(userKey, apiToken string, event *models.NotificationEvent) error {
 	values := url.Values{
 		"token":   {apiToken},
 		"user":    {userKey},
@@ -195,7 +196,7 @@ func (n *NotifierService) sendPushover(userKey, apiToken string, event *notifica
 	return nil
 }
 
-func (n *NotifierService) sendWebhook(webhookURL string, event *notification.NotificationEvent) error {
+func (n *NotifierService) sendWebhook(webhookURL string, event *models.NotificationEvent) error {
 	body, _ := json.Marshal(event)
 	resp, err := http.Post(webhookURL, "application/json", bytes.NewBuffer(body))
 	if err != nil {

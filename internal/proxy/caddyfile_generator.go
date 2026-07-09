@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"vessel.dev/vessel/internal/domain"
-	"vessel.dev/vessel/internal/project"
-	"vessel.dev/vessel/internal/service"
+	"vessel.dev/vessel/internal/models"
 	"vessel.dev/vessel/internal/utils"
 )
 
@@ -19,7 +17,7 @@ func NewCaddyfileGenerator(config *CaddyConfig) *CaddyfileGenerator {
 	return &CaddyfileGenerator{config: config}
 }
 
-func (g *CaddyfileGenerator) Generate(projects []project.ProjectConfig, services []*service.AppService, domains []domain.Config) (string, error) {
+func (g *CaddyfileGenerator) Generate(projects []models.ProjectConfig, services []models.AppService, domains []models.DomainConfig) (string, error) {
 	var buf bytes.Buffer
 
 	buf.WriteString("{\n")
@@ -30,38 +28,37 @@ func (g *CaddyfileGenerator) Generate(projects []project.ProjectConfig, services
 	}
 	buf.WriteString("}\n\n")
 
-	projectMap := make(map[string]*project.ProjectConfig)
+	projectMap := make(map[string]*models.ProjectConfig)
 	for i := range projects {
 		projectMap[projects[i].ID] = &projects[i]
 		g.writeProjectBlock(&buf, &projects[i])
 	}
 
-	serviceMap := make(map[string]*service.AppService)
-	for _, s := range services {
-		if s == nil {
-			continue
-		}
+	serviceMap := make(map[string]*models.AppService)
+	for i := range services {
+		s := &services[i]
 		serviceMap[s.ID] = s
 		g.writeAppServiceBlock(&buf, s)
 	}
 
 	for i := range domains {
 		domainConfig := &domains[i]
-		if s, ok := serviceMap[domainConfig.ProjectID]; ok {
-			g.writeCustomDomainServiceBlock(&buf, domainConfig, s)
-			continue
+		var s *models.AppService
+		if val, ok := serviceMap[domainConfig.ProjectID]; ok {
+			s = val
 		}
+
 		targetProject, ok := projectMap[domainConfig.ProjectID]
-		if !ok {
+		if !ok && s == nil {
 			continue
 		}
-		g.writeCustomDomainBlock(&buf, domainConfig, targetProject)
+		g.writeDomainBlock(&buf, domainConfig, targetProject, s)
 	}
 
 	return buf.String(), nil
 }
 
-func (g *CaddyfileGenerator) writeProjectBlock(buf *bytes.Buffer, p *project.ProjectConfig) {
+func (g *CaddyfileGenerator) writeProjectBlock(buf *bytes.Buffer, p *models.ProjectConfig) {
 	if p.Name == "" {
 		return
 	}
@@ -81,7 +78,7 @@ func (g *CaddyfileGenerator) writeProjectBlock(buf *bytes.Buffer, p *project.Pro
 	buf.WriteString("}\n\n")
 }
 
-func (g *CaddyfileGenerator) writeAppServiceBlock(buf *bytes.Buffer, s *service.AppService) {
+func (g *CaddyfileGenerator) writeAppServiceBlock(buf *bytes.Buffer, s *models.AppService) {
 	if s.Domain == "" && s.Name == "" {
 		return
 	}
@@ -114,13 +111,24 @@ func (g *CaddyfileGenerator) writeAppServiceBlock(buf *bytes.Buffer, s *service.
 	buf.WriteString("}\n\n")
 }
 
-func (g *CaddyfileGenerator) writeCustomDomainServiceBlock(buf *bytes.Buffer, d *domain.Config, s *service.AppService) {
+func (g *CaddyfileGenerator) writeDomainBlock(buf *bytes.Buffer, d *models.DomainConfig, p *models.ProjectConfig, s *models.AppService) {
 	if d.DomainName == "" {
 		return
 	}
 
-	containerHost := utils.NormalizeContainerName(s.ID)
-	targetPort := s.InternalPort
+	var containerHost string
+	var targetPort int
+
+	if s != nil {
+		containerHost = utils.NormalizeContainerName(s.ID)
+		targetPort = s.InternalPort
+	} else if p != nil {
+		containerHost = utils.NormalizeContainerName(p.ID)
+		targetPort = 3000
+	} else {
+		return
+	}
+
 	if targetPort <= 0 {
 		targetPort = 3000
 	}
@@ -142,36 +150,5 @@ func (g *CaddyfileGenerator) writeCustomDomainServiceBlock(buf *bytes.Buffer, d 
 	buf.WriteString("\t\theader_up X-Real-IP {remote_host}\n")
 	buf.WriteString("\t\theader_up X-Forwarded-Proto {scheme}\n")
 	buf.WriteString("\t}\n")
-	buf.WriteString("}\n\n")
-}
-
-func (g *CaddyfileGenerator) writeCustomDomainBlock(buf *bytes.Buffer, d *domain.Config, p *project.ProjectConfig) {
-	if d.DomainName == "" {
-		return
-	}
-
-	containerHost := utils.NormalizeContainerName(p.ID)
-	targetPort := 3000
-	if targetPort <= 0 {
-		targetPort = 3000
-	}
-
-	buf.WriteString(strings.TrimSpace(d.DomainName) + " {\n")
-	if d.RedirectTo != "" {
-		buf.WriteString(fmt.Sprintf("\tredir %s{uri} permanent\n", strings.TrimSpace(d.RedirectTo)))
-		buf.WriteString("}\n\n")
-		return
-	}
-
-	pathPrefix := d.PathPrefix
-	if pathPrefix == "" {
-		pathPrefix = "*"
-	}
-
-	buf.WriteString(fmt.Sprintf("\treverse_proxy %s %s:%d {\n", pathPrefix, containerHost, targetPort))
-	buf.WriteString("\t\theader_up Host {upstream_hostport}\n")
-	buf.WriteString("\t\theader_up X-Real-IP {remote_host}\n")
-	buf.WriteString("\t\theader_up X-Forwarded-Proto {scheme}\n")
-	buf.WriteString("\t}\n")
-	buf.WriteString("}\n\n")
+	buf.WriteString("}\n")
 }

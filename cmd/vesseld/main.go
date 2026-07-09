@@ -13,14 +13,10 @@ import (
 	"github.com/docker/docker/client"
 	_ "modernc.org/sqlite"
 	"vessel.dev/vessel/internal/api"
-	"vessel.dev/vessel/internal/domain"
 	"vessel.dev/vessel/internal/engine"
-	"vessel.dev/vessel/internal/env"
-	"vessel.dev/vessel/internal/project"
+	"vessel.dev/vessel/internal/models"
 	"vessel.dev/vessel/internal/proxy"
-	"vessel.dev/vessel/internal/service"
-	"vessel.dev/vessel/internal/service_var"
-	"vessel.dev/vessel/internal/settings"
+	"vessel.dev/vessel/internal/repositories"
 	"vessel.dev/vessel/internal/vault"
 )
 
@@ -28,15 +24,15 @@ const vesselVersion = "0.1.0-alpha"
 
 type dbProjectLister struct{ db *sql.DB }
 
-func (a *dbProjectLister) ListProjects() ([]project.ProjectConfig, error) {
+func (a *dbProjectLister) ListProjects() ([]models.ProjectConfig, error) {
 	rows, err := a.db.Query(`SELECT id, COALESCE(workspace_id, ''), COALESCE(team_id,''), name, COALESCE(description,''), created_at, updated_at FROM projects ORDER BY created_at DESC`)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var list []project.ProjectConfig
+	var list []models.ProjectConfig
 	for rows.Next() {
-		var p project.ProjectConfig
+		var p models.ProjectConfig
 		if err := rows.Scan(&p.ID, &p.WorkspaceID, &p.TeamID, &p.Name, &p.Description, &p.CreatedAt, &p.UpdatedAt); err != nil {
 			return nil, err
 		}
@@ -47,34 +43,34 @@ func (a *dbProjectLister) ListProjects() ([]project.ProjectConfig, error) {
 
 type dbServiceLister struct{ db *sql.DB }
 
-func (a *dbServiceLister) ListAllAppServices() ([]*service.AppService, error) {
+func (a *dbServiceLister) ListServices() ([]models.AppService, error) {
 	rows, err := a.db.Query(`SELECT id, project_id, environment_id, name, repository_url, branch, internal_port, domain, container_id, status, created_at, updated_at FROM app_services ORDER BY created_at ASC`)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var list []*service.AppService
+	var list []models.AppService
 	for rows.Next() {
-		var s service.AppService
-		if err := rows.Scan(&s.ID, &s.ProjectID, &s.EnvironmentID, &s.Name, &s.RepositoryURL, &s.Branch, &s.InternalPort, &s.Domain, &s.ContainerID, &s.Status, &s.CreatedAt, &s.UpdatedAt); err != nil {
+		var svc models.AppService
+		if err := rows.Scan(&svc.ID, &svc.ProjectID, &svc.EnvironmentID, &svc.Name, &svc.RepositoryURL, &svc.Branch, &svc.InternalPort, &svc.Domain, &svc.ContainerID, &svc.Status, &svc.CreatedAt, &svc.UpdatedAt); err != nil {
 			return nil, err
 		}
-		list = append(list, &s)
+		list = append(list, svc)
 	}
 	return list, rows.Err()
 }
 
 type dbDomainLister struct{ db *sql.DB }
 
-func (a *dbDomainLister) ListAllDomains() ([]domain.Config, error) {
+func (a *dbDomainLister) ListAllDomains() ([]models.DomainConfig, error) {
 	rows, err := a.db.Query(`SELECT id, project_id, domain_name, redirect_to, ssl_cert_status, path_prefix, created_at, updated_at FROM domains ORDER BY domain_name ASC`)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var list []domain.Config
+	var list []models.DomainConfig
 	for rows.Next() {
-		var d domain.Config
+		var d models.DomainConfig
 		if err := rows.Scan(&d.ID, &d.ProjectID, &d.DomainName, &d.RedirectTo, &d.SSLCertStatus, &d.PathPrefix, &d.CreatedAt, &d.UpdatedAt); err != nil {
 			return nil, err
 		}
@@ -83,39 +79,27 @@ func (a *dbDomainLister) ListAllDomains() ([]domain.Config, error) {
 	return list, rows.Err()
 }
 
-type svcRepoAdapter struct{ svcRepo *service.SQLiteRepository }
 
-func (a *svcRepoAdapter) GetByID(ctx context.Context, id string) (*service_var.ServiceDTO, error) {
-	app, err := a.svcRepo.GetByID(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	if app == nil {
-		return nil, nil
-	}
-	return &service_var.ServiceDTO{ID: app.ID, ProjectID: app.ProjectID, EnvironmentID: app.EnvironmentID}, nil
-}
 
 type dbDeployerStore struct {
 	db    *sql.DB
 	vault *vault.Vault
 }
 
-func (a *dbDeployerStore) GetServerSettings() (*settings.ServerSettings, error) {
-	return settings.NewSQLiteRepository(a.db).GetServerSettings(context.Background())
+func (a *dbDeployerStore) GetServerSettings() (*models.ServerSettings, error) {
+	return repositories.NewSettingsSQLiteRepository(a.db).GetServerSettings(context.Background())
 }
 
-func (a *dbDeployerStore) ListAppServicesByProject(projectID string) ([]*service.AppService, error) {
-	return service.NewSQLiteRepository(a.db).ListByProject(context.Background(), projectID)
+func (a *dbDeployerStore) ListAppServicesByProject(projectID string) ([]*models.AppService, error) {
+	return repositories.NewAppServiceSQLiteRepository(a.db).ListByProject(context.Background(), projectID)
 }
 
 func (a *dbDeployerStore) GetEnvVars(projectID string) (map[string]string, error) {
-	return env.NewSQLiteRepository(a.db, a.vault).GetVars(context.Background(), projectID)
+	return repositories.NewEnvSQLiteRepository(a.db, a.vault).GetVars(context.Background(), projectID)
 }
 
-func (a *dbDeployerStore) ListServiceVariables(serviceID string) ([]*service_var.Variable, error) {
-	svcRepo := service.NewSQLiteRepository(a.db)
-	svVarRepo := service_var.NewSQLiteRepository(a.db, &svcRepoAdapter{svcRepo: svcRepo})
+func (a *dbDeployerStore) ListServiceVariables(serviceID string) ([]*models.Variable, error) {
+	svVarRepo := repositories.NewServiceVarSQLiteRepository(a.db)
 	return svVarRepo.ListByService(context.Background(), serviceID)
 }
 

@@ -20,7 +20,9 @@ type BackupRepository interface {
 	DeleteConfig(ctx context.Context, id, projectID string) error
 
 	CreateRecord(ctx context.Context, rec *models.BackupRecord) error
+	GetRecordByID(ctx context.Context, id string) (*models.BackupRecord, error)
 	ListRecordsByConfig(ctx context.Context, backupConfigID string) ([]*models.BackupRecord, error)
+	UpdateRecord(ctx context.Context, rec *models.BackupRecord) error
 }
 
 type BackupSQLiteRepository struct {
@@ -227,4 +229,42 @@ func (r *BackupSQLiteRepository) ListRecordsByConfig(_ context.Context, backupCo
 		list = append(list, &rec)
 	}
 	return list, nil
+}
+
+func (r *BackupSQLiteRepository) GetRecordByID(ctx context.Context, id string) (*models.BackupRecord, error) {
+	row := r.db.QueryRowContext(ctx, `
+		SELECT id, backup_config_id, project_id, COALESCE(database_id, ''), status, COALESCE(file_path, ''), file_size_bytes, COALESCE(s3_url, ''), COALESCE(logs, ''), created_at, COALESCE(completed_at, '')
+		FROM backup_records WHERE id = ?`, id)
+
+	var rec models.BackupRecord
+	err := row.Scan(&rec.ID, &rec.BackupConfigID, &rec.ProjectID, &rec.DatabaseID, &rec.Status, &rec.FilePath, &rec.FileSizeBytes, &rec.S3URL, &rec.Logs, &rec.StartedAt, &rec.CompletedAt)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &rec, nil
+}
+
+func (r *BackupSQLiteRepository) UpdateRecord(ctx context.Context, rec *models.BackupRecord) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	res, err := r.db.ExecContext(ctx, `
+		UPDATE backup_records 
+		SET status = ?, file_path = ?, s3_url = ?, logs = ?, file_size_bytes = ?, completed_at = ?
+		WHERE id = ?`,
+		rec.Status, rec.FilePath, rec.S3URL, rec.Logs, rec.FileSizeBytes, rec.CompletedAt, rec.ID)
+	if err != nil {
+		return err
+	}
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return errors.New("backup record not found")
+	}
+	return nil
 }

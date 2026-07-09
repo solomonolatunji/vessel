@@ -7,9 +7,8 @@ import (
 	"net/http"
 	"strings"
 
+	"vessel.dev/vessel/internal/models"
 	"vessel.dev/vessel/internal/services"
-	"vessel.dev/vessel/internal/settings"
-	"vessel.dev/vessel/internal/user"
 )
 
 type contextKey string
@@ -17,7 +16,7 @@ type contextKey string
 const userClaimsKey contextKey = "user_claims"
 
 type SettingsProvider interface {
-	GetServerSettings() (*settings.ServerSettings, error)
+	GetSettings(context.Context) (*models.ServerSettings, error)
 }
 
 type AuthGuard struct {
@@ -32,7 +31,7 @@ func NewAuthGuard(ts *services.TokenService, sp SettingsProvider) *AuthGuard {
 func (g *AuthGuard) RequireAuth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if g.Settings != nil {
-			settings, _ := g.Settings.GetServerSettings()
+			settings, _ := g.Settings.GetSettings(r.Context())
 			if settings != nil && strings.TrimSpace(settings.IPAllowlist) != "" {
 				clientIP := ExtractClientIP(r)
 				if !IsIPAllowed(clientIP, settings.IPAllowlist) {
@@ -43,7 +42,7 @@ func (g *AuthGuard) RequireAuth(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		if g.TokenService == nil {
-			userClaims := &user.UserClaims{
+			userClaims := &models.UserClaims{
 				UserID: "default",
 				Email:  "default@vessel.dev",
 				Role:   "admin",
@@ -66,7 +65,7 @@ func (g *AuthGuard) RequireAuth(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		totpEnabled, _ := claimsMap["totpEnabled"].(bool)
-		userClaims := &user.UserClaims{
+		userClaims := &models.UserClaims{
 			UserID:      fmt.Sprintf("%v", claimsMap["sub"]),
 			Email:       fmt.Sprintf("%v", claimsMap["email"]),
 			Role:        fmt.Sprintf("%v", claimsMap["role"]),
@@ -121,7 +120,7 @@ func ExtractClientIP(r *http.Request) string {
 func (g *AuthGuard) RequireRole(requiredRole string, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if g.Settings != nil {
-			settings, _ := g.Settings.GetServerSettings()
+			settings, _ := g.Settings.GetSettings(r.Context())
 			if settings != nil && strings.TrimSpace(settings.IPAllowlist) != "" {
 				clientIP := ExtractClientIP(r)
 				if !IsIPAllowed(clientIP, settings.IPAllowlist) {
@@ -132,7 +131,7 @@ func (g *AuthGuard) RequireRole(requiredRole string, next http.HandlerFunc) http
 		}
 
 		if g.TokenService == nil {
-			userClaims := &user.UserClaims{
+			userClaims := &models.UserClaims{
 				UserID: "default",
 				Email:  "default@vessel.dev",
 				Role:   "admin",
@@ -161,7 +160,7 @@ func (g *AuthGuard) RequireRole(requiredRole string, next http.HandlerFunc) http
 		}
 
 		totpEnabled, _ := claimsMap["totpEnabled"].(bool)
-		userClaims := &user.UserClaims{
+		userClaims := &models.UserClaims{
 			UserID:      fmt.Sprintf("%v", claimsMap["sub"]),
 			Email:       fmt.Sprintf("%v", claimsMap["email"]),
 			Role:        role,
@@ -173,12 +172,11 @@ func (g *AuthGuard) RequireRole(requiredRole string, next http.HandlerFunc) http
 	}
 }
 
-func GetUserClaimsFromContext(ctx context.Context) *user.UserClaims {
-	claims, ok := ctx.Value(userClaimsKey).(*user.UserClaims)
-	if !ok {
-		return nil
+func GetUserClaimsFromContext(ctx context.Context) *models.UserClaims {
+	if c, ok := ctx.Value(userClaimsKey).(*models.UserClaims); ok {
+		return c
 	}
-	return claims
+	return nil
 }
 
 func ExtractTokenFromRequest(r *http.Request) string {
