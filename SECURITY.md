@@ -17,9 +17,10 @@ Vessel takes infrastructure and deployment security extremely seriously. Because
 If you discover a security vulnerability in Vessel (such as unauthorized container access, `.env` secret leakage, or authentication bypass), **please do not report it publicly via GitHub Issues**.
 
 Instead, please send an email or private advisory to our maintainers at:
-**security@vessel.dev** (or open a private GitHub Security Advisory).
+**<security@vessel.dev>** (or open a private GitHub Security Advisory).
 
 ### What to Include in Your Report
+
 - Type of issue (e.g., buffer overflow, SQL injection, privilege escalation, cross-site scripting).
 - Full paths of source file(s) related to the vulnerability.
 - Step-by-step instructions or proof-of-concept (PoC) code to reproduce the vulnerability safely.

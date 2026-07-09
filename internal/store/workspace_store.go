@@ -279,4 +279,3 @@ func (s *Store) DeleteWorkspace(id string, ownerID string) error {
 	_, err := s.db.Exec("DELETE FROM workspaces WHERE id = ? AND owner_id = ?", id, ownerID)
 	return err
 }
-

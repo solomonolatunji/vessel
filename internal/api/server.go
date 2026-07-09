@@ -2,6 +2,8 @@ package api
 
 import (
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/docker/docker/client"
@@ -78,18 +80,18 @@ func (s *Server) registerRoutes() {
 	s.router.HandleFunc("GET /api/auth/me", s.RequireAuth(s.handleGetCurrentUser))
 	s.router.HandleFunc("POST /api/auth/logout", s.handleLogout)
 
-	s.router.HandleFunc("GET /api/projects", s.handleListProjects)
-	s.router.HandleFunc("POST /api/projects", s.handleCreateProject)
-	s.router.HandleFunc("GET /api/projects/{id}", s.handleGetProject)
-	s.router.HandleFunc("DELETE /api/projects/{id}", s.handleDeleteProject)
-	s.router.HandleFunc("POST /api/projects/{id}/deploy", s.handleDeployProject)
+	s.router.HandleFunc("GET /api/projects", s.RequireAuth(s.handleListProjects))
+	s.router.HandleFunc("POST /api/projects", s.RequireAuth(s.handleCreateProject))
+	s.router.HandleFunc("GET /api/projects/{id}", s.RequireAuth(s.handleGetProject))
+	s.router.HandleFunc("DELETE /api/projects/{id}", s.RequireAuth(s.handleDeleteProject))
+	s.router.HandleFunc("POST /api/projects/{id}/deploy", s.RequireAuth(s.handleDeployProject))
 
-	s.router.HandleFunc("GET /api/projects/{id}/domains", s.handleListDomains)
-	s.router.HandleFunc("POST /api/projects/{id}/domains", s.handleAddDomain)
-	s.router.HandleFunc("DELETE /api/domains/{id}", s.handleDeleteDomain)
+	s.router.HandleFunc("GET /api/projects/{id}/domains", s.RequireAuth(s.handleListDomains))
+	s.router.HandleFunc("POST /api/projects/{id}/domains", s.RequireAuth(s.handleAddDomain))
+	s.router.HandleFunc("DELETE /api/domains/{id}", s.RequireAuth(s.handleDeleteDomain))
 
-	s.router.HandleFunc("GET /api/projects/{id}/env", s.handleGetEnvVars)
-	s.router.HandleFunc("PUT /api/projects/{id}/env", s.handleSetEnvVars)
+	s.router.HandleFunc("GET /api/projects/{id}/env", s.RequireAuth(s.handleGetEnvVars))
+	s.router.HandleFunc("PUT /api/projects/{id}/env", s.RequireAuth(s.handleSetEnvVars))
 
 	s.router.HandleFunc("GET /api/databases", s.RequireAuth(s.handleListDatabases))
 	s.router.HandleFunc("POST /api/databases", s.RequireAuth(s.handleCreateDatabase))
@@ -206,6 +208,27 @@ func (s *Server) registerRoutes() {
 
 	s.router.HandleFunc("GET /ws/terminal/{id}", s.handleTerminalWebSocket)
 	s.router.HandleFunc("GET /ws/services/{id}/terminal", s.handleTerminalWebSocket)
+
+	// Static GUI Dashboard Serving (SPA fallback)
+	staticDir := os.Getenv("VESSEL_STATIC_DIR")
+	if staticDir == "" {
+		staticDir = "dashboard/dist"
+	}
+	if stat, err := os.Stat(staticDir); err == nil && stat.IsDir() {
+		fileServer := http.FileServer(http.Dir(staticDir))
+		s.router.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+			if strings.HasPrefix(r.URL.Path, "/api/") || strings.HasPrefix(r.URL.Path, "/ws/") {
+				http.NotFound(w, r)
+				return
+			}
+			path := filepath.Join(staticDir, filepath.Clean(r.URL.Path))
+			if _, err := os.Stat(path); os.IsNotExist(err) {
+				http.ServeFile(w, r, filepath.Join(staticDir, "index.html"))
+				return
+			}
+			fileServer.ServeHTTP(w, r)
+		})
+	}
 }
 
 // Handler returns the root HTTP handler wrapped with global CORS and authentication middleware.

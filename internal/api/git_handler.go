@@ -184,4 +184,3 @@ func (s *Server) handleServiceGitWebhook(w http.ResponseWriter, r *http.Request)
 		}
 	}()
 }
-

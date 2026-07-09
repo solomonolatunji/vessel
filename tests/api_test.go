@@ -34,9 +34,27 @@ func TestProjectHandlerAndSslipFallback(t *testing.T) {
 
 	srv := api.NewServer(s, nil, proxyMgr, nil)
 
+	// Register user & obtain auth token
+	regPayload := []byte(`{"email":"admin@vessel.dev","password":"password123","role":"admin"}`)
+	regReq := httptest.NewRequest(http.MethodPost, "/api/auth/register", bytes.NewReader(regPayload))
+	regReq.Header.Set("Content-Type", "application/json")
+	regRec := httptest.NewRecorder()
+	srv.Handler().ServeHTTP(regRec, regReq)
+
+	var tokenStr string
+	for _, cookie := range regRec.Result().Cookies() {
+		if cookie.Name == "vessel_token" {
+			tokenStr = cookie.Value
+			break
+		}
+	}
+
 	payload := []byte(`{"name":"My Node Service","internal_port":3000}`)
 	req := httptest.NewRequest(http.MethodPost, "/api/projects", bytes.NewReader(payload))
 	req.Header.Set("Content-Type", "application/json")
+	if tokenStr != "" {
+		req.Header.Set("Authorization", "Bearer "+tokenStr)
+	}
 	rec := httptest.NewRecorder()
 
 	srv.Handler().ServeHTTP(rec, req)

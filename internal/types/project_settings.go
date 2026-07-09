@@ -2,15 +2,13 @@ package types
 
 import "time"
 
-type ServiceVariable struct {
-	ID            string    `json:"id"`
-	ServiceID     string    `json:"serviceId"`
-	EnvironmentID string    `json:"environmentId"`
-	Key           string    `json:"key"`
-	Value         string    `json:"value"` // Decrypted plaintext when returned to API if authorized
-	IsSecret      bool      `json:"isSecret"`
-	CreatedAt     time.Time `json:"createdAt"`
-	UpdatedAt     time.Time `json:"updatedAt"`
+type EnvVar struct {
+	ID             string    `json:"id"`
+	ProjectID      string    `json:"projectId"`
+	Key            string    `json:"key"`
+	EncryptedValue string    `json:"-"`
+	CreatedAt      time.Time `json:"createdAt"`
+	UpdatedAt      time.Time `json:"updatedAt"`
 }
 
 type ProjectWebhook struct {

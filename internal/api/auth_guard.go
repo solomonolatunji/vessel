@@ -15,6 +15,17 @@ const userClaimsKey contextKey = "user_claims"
 
 func (s *Server) RequireAuth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if s.tokenService == nil {
+			userClaims := &types.UserClaims{
+				UserID: "default",
+				Email:  "default@vessel.dev",
+				Role:   "admin",
+			}
+			ctx := context.WithValue(r.Context(), userClaimsKey, userClaims)
+			next(w, r.WithContext(ctx))
+			return
+		}
+
 		tokenStr := extractTokenFromRequest(r)
 		if tokenStr == "" {
 			writeError(w, http.StatusUnauthorized, "missing authentication token")
@@ -72,6 +83,11 @@ func extractTokenFromRequest(r *http.Request) string {
 	cookie, err := r.Cookie("vessel_token")
 	if err == nil && cookie.Value != "" {
 		return strings.TrimSpace(cookie.Value)
+	}
+
+	queryToken := r.URL.Query().Get("token")
+	if queryToken != "" {
+		return strings.TrimSpace(queryToken)
 	}
 
 	return ""

@@ -20,6 +20,18 @@ var upgrader = websocket.Upgrader{
 }
 
 func (s *Server) handleTerminalWebSocket(w http.ResponseWriter, r *http.Request) {
+	if s.tokenService != nil {
+		tokenStr := extractTokenFromRequest(r)
+		if tokenStr == "" {
+			writeError(w, http.StatusUnauthorized, "missing authentication token for terminal access")
+			return
+		}
+		if _, err := s.tokenService.ValidateToken(tokenStr); err != nil {
+			writeError(w, http.StatusUnauthorized, "invalid authentication token for terminal access")
+			return
+		}
+	}
+
 	id := r.PathValue("id")
 	if id == "" {
 		writeError(w, http.StatusBadRequest, "missing id parameter")
