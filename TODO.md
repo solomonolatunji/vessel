@@ -96,6 +96,12 @@
   - [x] **Update Check Frequency**: Configurable cron expression for automatic update checks (e.g. `0 * * * *`).
   - [x] **Manual Check Button**: Trigger an immediate update check from the API (`POST /api/settings/updates/check`).
   - [x] **Auto-Update & Deploy**: Toggle to enable/disable automatic updates and execute binary rollout (`POST /api/settings/updates/deploy`).
+- [ ] **Refactor `internal/services/` into `internal/jobs/` + `internal/actions/`**:
+  - `internal/jobs/` — async/queued operations (deploy, backup, send email, cron executions)
+  - `internal/actions/` — single-purpose CQRS operations (create project, invite member, rollback, etc.)
+  - Keep `internal/engine/` for Docker-specific orchestration (builders, container manager, deployer coordinator, stats monitor)
+  - Keep `internal/services/` for remaining cross-cutting business logic (token service, service linker)
+- [ ] **`internal/events/` + `internal/listeners/`**: Lightweight pub/sub bus for decoupled side effects (e.g., `deployment.completed` → notify Slack, update audit log, trigger webhook; `backup.failed` → send alert, retry).
 
 ---
 
