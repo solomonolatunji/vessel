@@ -107,7 +107,6 @@ func (h *WebhookHandler) HandleServiceWebhook(c echo.Context) error {
 	})
 }
 
-// HandleGitHubWebhook receives payloads directly from GitHub
 func (h *WebhookHandler) HandleGitHubWebhook(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	if serviceID == "" {

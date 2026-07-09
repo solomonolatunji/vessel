@@ -26,12 +26,6 @@ func (s *DatabaseService) QueryDatabase(ctx context.Context, id string, query st
 		return nil, errors.New("query cannot be empty")
 	}
 
-	// Assuming the internalDNS and port are reachable from the vessel daemon.
-	// We might need to use the Docker internal network or external mapped port.
-	// For this, we'll try to connect to the external mapped port if running on the host,
-	// or InternalDNS if running inside the same network.
-	// Since vessel daemon orchestrates containers, it typically has access to localhost:db.Port
-	// if it maps ports, or containerIP if inside docker network. Let's use localhost:port.
 	host := "localhost"
 	if db.Port == 0 {
 		return nil, errors.New("database port not configured")
@@ -88,13 +82,12 @@ func (s *DatabaseService) querySQL(driver, dsn, query string) (*models.DatabaseQ
 
 	rows, err := conn.Query(query)
 	if err != nil {
-		// Try exec if query fails (e.g. INSERT/UPDATE/DELETE)
 		if strings.HasPrefix(strings.ToUpper(strings.TrimSpace(query)), "SELECT") || strings.HasPrefix(strings.ToUpper(strings.TrimSpace(query)), "EXPLAIN") {
 			return nil, err
 		}
 		res, execErr := conn.Exec(query)
 		if execErr != nil {
-			return nil, err // return the original query error instead, might be more useful
+			return nil, err
 		}
 		rowsAffected, _ := res.RowsAffected()
 		return &models.DatabaseQueryResponse{
@@ -110,7 +103,6 @@ func (s *DatabaseService) querySQL(driver, dsn, query string) (*models.DatabaseQ
 
 	var resultRows []map[string]any
 	for rows.Next() {
-		// Create a slice of interface{}'s to represent each column
 		columns := make([]interface{}, len(cols))
 		columnPointers := make([]interface{}, len(cols))
 		for i := range columns {
@@ -124,7 +116,6 @@ func (s *DatabaseService) querySQL(driver, dsn, query string) (*models.DatabaseQ
 		m := make(map[string]any)
 		for i, colName := range cols {
 			val := columnPointers[i].(*interface{})
-			// Convert []byte to string for JSON serialization
 			if b, ok := (*val).([]byte); ok {
 				m[colName] = string(b)
 			} else {

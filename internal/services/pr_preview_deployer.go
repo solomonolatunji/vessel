@@ -1,11 +1,15 @@
 package services
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
+	"net/http"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -43,7 +47,7 @@ func (s *PRPreviewService) DeployPRPreview(ctx context.Context, appID string, pr
 
 	previewDomain := fmt.Sprintf("pr-%d.%s", prNumber, app.Domain)
 	if app.Domain == "" {
-		previewDomain = fmt.Sprintf("pr-%d.%s.sslip.io", prNumber, app.Name) // Fallback
+		previewDomain = fmt.Sprintf("pr-%d.%s.sslip.io", prNumber, app.Name)
 	}
 
 	preview := &models.PRPreview{
@@ -67,7 +71,6 @@ func (s *PRPreviewService) DeployPRPreview(ctx context.Context, appID string, pr
 		bgCtx := context.Background()
 		sourceDir := filepath.Join("data", "builds", "pr-previews", preview.ID)
 
-		// 1. Clone the specific PR branch
 		clonedApp := *app
 		clonedApp.Branch = branch
 		if err := s.gitService.CloneOrPullAppRepository(bgCtx, &clonedApp, sourceDir, nil); err != nil {
@@ -77,10 +80,6 @@ func (s *PRPreviewService) DeployPRPreview(ctx context.Context, appID string, pr
 			return
 		}
 
-		// 2. Deploy using engine deployer, mapping to the preview domain
-		// For ephemeral previews, we pass the previewDomain.
-		// Note: The Deploy method should ideally accept domain overrides.
-		// For now we'll update the clonedApp domain to the previewDomain
 		clonedApp.Domain = previewDomain
 		clonedApp.Name = fmt.Sprintf("%s-pr-%d", app.Name, prNumber)
 
@@ -96,9 +95,7 @@ func (s *PRPreviewService) DeployPRPreview(ctx context.Context, appID string, pr
 		preview.Status = "READY"
 		_ = s.repo.Update(bgCtx, preview)
 
-		// 3. Post Commit Status Check Update to GitHub/GitLab
-		// (Integration goes here - currently mocked)
-		log.Printf("[PRPreview] Posted status 'success' for commit %s. Preview available at %s", commitHash, previewDomain)
+		s.updateCommitStatus(bgCtx, app, commitHash, previewDomain)
 	}()
 
 	return preview, nil
@@ -119,4 +116,59 @@ func (s *PRPreviewService) DestroyPRPreview(ctx context.Context, appID string, p
 	}
 
 	return nil
+}
+
+func (s *PRPreviewService) updateCommitStatus(ctx context.Context, app *models.AppService, commitHash, previewDomain string) {
+	if app.RepositoryURL == "" {
+		return
+	}
+
+	repoParts := strings.Split(strings.TrimSuffix(app.RepositoryURL, ".git"), "/")
+	if len(repoParts) < 2 {
+		return
+	}
+	owner := repoParts[len(repoParts)-2]
+	repo := repoParts[len(repoParts)-1]
+
+	token := ""
+	if strings.Contains(app.RepositoryURL, "@") {
+		parts := strings.Split(app.RepositoryURL, "@")
+		authParts := strings.Split(parts[0], "://")
+		if len(authParts) == 2 {
+			creds := strings.Split(authParts[1], ":")
+			if len(creds) == 2 {
+				token = creds[1]
+			} else {
+				token = creds[0]
+			}
+		}
+	}
+
+	if token == "" || !strings.Contains(app.RepositoryURL, "github.com") {
+		return
+	}
+
+	url := fmt.Sprintf("https://api.github.com/repos/%s/%s/statuses/%s", owner, repo, commitHash)
+
+	payload := map[string]string{
+		"state":       "success",
+		"target_url":  "https://" + previewDomain,
+		"description": "PR Preview is ready",
+		"context":     "vessel/pr-preview",
+	}
+
+	jsonPayload, _ := json.Marshal(payload)
+	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(jsonPayload))
+	if err != nil {
+		return
+	}
+
+	req.Header.Set("Authorization", "token "+token)
+	req.Header.Set("Accept", "application/vnd.github.v3+json")
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err == nil {
+		resp.Body.Close()
+	}
 }
