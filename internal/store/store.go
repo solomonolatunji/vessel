@@ -174,8 +174,150 @@ func (s *Store) migrate() error {
 	if err := s.initAppServiceTable(); err != nil {
 		return fmt.Errorf("failed to initialize app_services table: %w", err)
 	}
+	if err := s.initDeploymentsTable(); err != nil {
+		return fmt.Errorf("failed to initialize deployments table: %w", err)
+	}
+	if err := s.initServiceVarsTable(); err != nil {
+		return fmt.Errorf("failed to initialize service_vars table: %w", err)
+	}
+	if err := s.initProjectWebhooksTable(); err != nil {
+		return fmt.Errorf("failed to initialize project_webhooks table: %w", err)
+	}
+	if err := s.initProjectTokensTable(); err != nil {
+		return fmt.Errorf("failed to initialize project_tokens table: %w", err)
+	}
+	if err := s.initProjectMembersTable(); err != nil {
+		return fmt.Errorf("failed to initialize project_members table: %w", err)
+	}
+	if err := s.initBackupTables(); err != nil {
+		return fmt.Errorf("failed to initialize backup tables: %w", err)
+	}
+	if err := s.initTeamTables(); err != nil {
+		return fmt.Errorf("failed to initialize team tables: %w", err)
+	}
+	if err := s.initSettingsTables(); err != nil {
+		return fmt.Errorf("failed to initialize settings tables: %w", err)
+	}
 
 	log.Println("✅ Vessel SQLite schema initialized successfully (`data/vessel.db`)")
+	return nil
+}
+
+func (s *Store) initSettingsTables() error {
+	queries := []string{
+		`CREATE TABLE IF NOT EXISTS server_settings (
+			id TEXT PRIMARY KEY,
+			caddy_wildcard_ip TEXT DEFAULT '127.0.0.1',
+			discord_webhook_url TEXT,
+			slack_webhook_url TEXT,
+			telegram_bot_token TEXT,
+			telegram_chat_id TEXT,
+			smtp_host TEXT,
+			smtp_port INTEGER DEFAULT 587,
+			smtp_user TEXT,
+			smtp_password TEXT,
+			notification_alerts BOOLEAN DEFAULT TRUE,
+			updated_at TEXT
+		);`,
+		`CREATE TABLE IF NOT EXISTS personal_access_tokens (
+			id TEXT PRIMARY KEY,
+			user_id TEXT NOT NULL,
+			name TEXT NOT NULL,
+			token_hash TEXT NOT NULL,
+			prefix TEXT NOT NULL,
+			expires_at TEXT,
+			created_at TEXT
+		);`,
+	}
+	for _, q := range queries {
+		if _, err := s.db.Exec(q); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s *Store) initTeamTables() error {
+	queries := []string{
+		`CREATE TABLE IF NOT EXISTS teams (
+			id TEXT PRIMARY KEY,
+			name TEXT NOT NULL,
+			owner_id TEXT NOT NULL,
+			created_at TEXT,
+			updated_at TEXT
+		);`,
+		`CREATE TABLE IF NOT EXISTS team_members (
+			id TEXT PRIMARY KEY,
+			team_id TEXT NOT NULL,
+			user_id TEXT NOT NULL,
+			user_email TEXT,
+			role TEXT NOT NULL,
+			joined_at TEXT
+		);`,
+		`CREATE TABLE IF NOT EXISTS team_invites (
+			id TEXT PRIMARY KEY,
+			team_id TEXT NOT NULL,
+			email TEXT NOT NULL,
+			role TEXT NOT NULL,
+			token TEXT UNIQUE NOT NULL,
+			invited_by TEXT NOT NULL,
+			expires_at TEXT,
+			created_at TEXT
+		);`,
+	}
+	for _, q := range queries {
+		if _, err := s.db.Exec(q); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s *Store) initBackupTables() error {
+	queries := []string{
+		`CREATE TABLE IF NOT EXISTS backup_configs (
+			id TEXT PRIMARY KEY,
+			project_id TEXT NOT NULL,
+			database_id TEXT,
+			storage_id TEXT,
+			s3_destination_id TEXT,
+			name TEXT NOT NULL,
+			schedule TEXT NOT NULL,
+			retention_days INTEGER DEFAULT 7,
+			status TEXT DEFAULT 'active',
+			created_at TEXT,
+			updated_at TEXT
+		);`,
+		`CREATE TABLE IF NOT EXISTS backup_records (
+			id TEXT PRIMARY KEY,
+			backup_config_id TEXT NOT NULL,
+			project_id TEXT NOT NULL,
+			database_id TEXT,
+			status TEXT DEFAULT 'running',
+			file_path TEXT,
+			file_size_bytes INTEGER DEFAULT 0,
+			s3_url TEXT,
+			logs TEXT,
+			started_at TEXT,
+			completed_at TEXT
+		);`,
+		`CREATE TABLE IF NOT EXISTS s3_destinations (
+			id TEXT PRIMARY KEY,
+			project_id TEXT NOT NULL,
+			name TEXT NOT NULL,
+			endpoint TEXT NOT NULL,
+			bucket TEXT NOT NULL,
+			region TEXT NOT NULL,
+			access_key_id TEXT NOT NULL,
+			secret_access_key TEXT NOT NULL,
+			created_at TEXT
+		);`,
+	}
+	for _, q := range queries {
+		if _, err := s.db.Exec(q); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 

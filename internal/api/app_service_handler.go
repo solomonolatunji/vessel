@@ -71,6 +71,33 @@ func (s *Server) GetAppService(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(app)
 }
 
+// UpdateAppService modifies settings of an existing application container service (`Settings` tab).
+func (s *Server) UpdateAppService(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+
+	existing, err := s.store.GetAppService(id)
+	if err != nil || existing == nil {
+		http.Error(w, "App service not found: "+err.Error(), http.StatusNotFound)
+		return
+	}
+
+	var payload types.AppServiceConfig
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+		http.Error(w, "Invalid request payload: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+	payload.ID = id
+	payload.ProjectID = existing.ProjectID
+	payload.EnvironmentID = existing.EnvironmentID
+
+	if err := s.store.UpdateAppService(&payload); err != nil {
+		http.Error(w, "Failed to update app service settings: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(payload)
+}
+
 // DeleteAppService deletes an application container service configuration from the canvas.
 func (s *Server) DeleteAppService(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")

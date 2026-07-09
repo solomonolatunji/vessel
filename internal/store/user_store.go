@@ -69,3 +69,12 @@ func (s *Store) ListUsers() ([]types.User, error) {
 	}
 	return users, nil
 }
+
+// UpdateUser updates an existing user account in SQLite.
+func (s *Store) UpdateUser(u *types.User) error {
+	u.UpdatedAt = time.Now()
+	_, err := s.db.Exec(`UPDATE users SET email = ?, password_hash = ?, role = ?, updated_at = ? WHERE id = ?`,
+		u.Email, u.PasswordHash, u.Role, u.UpdatedAt, u.ID)
+	return err
+}
+

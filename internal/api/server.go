@@ -13,18 +13,25 @@ import (
 
 // Server encapsulates HTTP routing, API handler dependencies, and authentication guards for the Vessel control plane.
 type Server struct {
-	router          *http.ServeMux
-	store           *store.Store
-	deployer        *orchestrator.Deployer
-	proxyManager    *proxy.ProxyManager
-	dockerClient    *client.Client
-	tokenService    *services.TokenService
-	dbDeployer      *orchestrator.DatabaseDeployer
-	storageDeployer *orchestrator.StorageDeployer
-	cronManager     *orchestrator.CronManager
-	cronService     *services.CronService
-	serviceLinker   *services.ServiceLinker
-	gitService      *services.GitService
+	router                 *http.ServeMux
+	store                  *store.Store
+	deployer               *orchestrator.Deployer
+	proxyManager           *proxy.ProxyManager
+	dockerClient           *client.Client
+	tokenService           *services.TokenService
+	dbDeployer             *orchestrator.DatabaseDeployer
+	storageDeployer        *orchestrator.StorageDeployer
+	cronManager            *orchestrator.CronManager
+	cronService            *services.CronService
+	serviceLinker          *services.ServiceLinker
+	gitService             *services.GitService
+	deploymentHandler      *DeploymentHandler
+	serviceVarHandler      *ServiceVarHandler
+	projectSettingsHandler *ProjectSettingsHandler
+	backupManager          *orchestrator.BackupManager
+	backupHandler          *BackupHandler
+	teamHandler            *TeamHandler
+	settingsHandler        *SettingsHandler
 }
 
 // NewServer initializes a Server wired to the database store, container orchestrator, reverse proxy, and Docker client.
@@ -32,19 +39,29 @@ func NewServer(s *store.Store, deployer *orchestrator.Deployer, proxyManager *pr
 	cronMgr := orchestrator.NewCronManager(dockerClient, s)
 	_ = cronMgr.Start()
 
+	backupMgr := orchestrator.NewBackupManager(dockerClient, s, "")
+	_ = backupMgr.Start()
+
 	srv := &Server{
-		router:          http.NewServeMux(),
-		store:           s,
-		deployer:        deployer,
-		proxyManager:    proxyManager,
-		dockerClient:    dockerClient,
-		tokenService:    services.NewTokenService(),
-		dbDeployer:      orchestrator.NewDatabaseDeployer(dockerClient, s),
-		storageDeployer: orchestrator.NewStorageDeployer(dockerClient, s),
-		cronManager:     cronMgr,
-		cronService:     services.NewCronService(s, cronMgr),
-		serviceLinker:   services.NewServiceLinker(s),
-		gitService:      services.NewGitService(s),
+		router:                 http.NewServeMux(),
+		store:                  s,
+		deployer:               deployer,
+		proxyManager:           proxyManager,
+		dockerClient:           dockerClient,
+		tokenService:           services.NewTokenService(),
+		dbDeployer:             orchestrator.NewDatabaseDeployer(dockerClient, s),
+		storageDeployer:        orchestrator.NewStorageDeployer(dockerClient, s),
+		cronManager:            cronMgr,
+		cronService:            services.NewCronService(s, cronMgr),
+		serviceLinker:          services.NewServiceLinker(s),
+		gitService:             services.NewGitService(s),
+		deploymentHandler:      NewDeploymentHandler(s),
+		serviceVarHandler:      NewServiceVarHandler(s),
+		projectSettingsHandler: NewProjectSettingsHandler(s),
+		backupManager:          backupMgr,
+		backupHandler:          NewBackupHandler(s, backupMgr),
+		teamHandler:            NewTeamHandler(s),
+		settingsHandler:        NewSettingsHandler(s, dockerClient),
 	}
 	if srv.deployer != nil {
 		srv.deployer.EnvProvider = srv.serviceLinker.GetLinkedEnvironmentVariables
@@ -108,7 +125,65 @@ func (s *Server) registerRoutes() {
 	s.router.HandleFunc("POST /api/environments/{id}/apps", s.RequireAuth(s.CreateAppService))
 	s.router.HandleFunc("GET /api/environments/{id}/apps", s.RequireAuth(s.ListAppServicesByEnvironment))
 	s.router.HandleFunc("GET /api/apps/{id}", s.RequireAuth(s.GetAppService))
+	s.router.HandleFunc("PUT /api/apps/{id}", s.RequireAuth(s.UpdateAppService))
 	s.router.HandleFunc("DELETE /api/apps/{id}", s.RequireAuth(s.DeleteAppService))
+
+	// --- Service Deployments & Metrics tabs ---
+	s.router.HandleFunc("GET /api/services/{serviceId}/deployments", s.RequireAuth(s.deploymentHandler.ListServiceDeployments))
+	s.router.HandleFunc("POST /api/services/{serviceId}/deploy", s.RequireAuth(s.deploymentHandler.TriggerServiceDeployment))
+	s.router.HandleFunc("POST /api/deployments/{id}/rollback", s.RequireAuth(s.deploymentHandler.RollbackDeployment))
+	s.router.HandleFunc("GET /api/deployments/{id}/logs", s.RequireAuth(s.deploymentHandler.GetDeploymentLogs))
+	s.router.HandleFunc("GET /api/services/{serviceId}/metrics", s.RequireAuth(s.deploymentHandler.GetServiceMetrics))
+
+	// --- Service Variables & Raw Editor tabs ---
+	s.router.HandleFunc("GET /api/services/{serviceId}/variables", s.RequireAuth(s.serviceVarHandler.ListServiceVariables))
+	s.router.HandleFunc("POST /api/services/{serviceId}/variables", s.RequireAuth(s.serviceVarHandler.SetServiceVariable))
+	s.router.HandleFunc("PUT /api/services/{serviceId}/variables/bulk", s.RequireAuth(s.serviceVarHandler.BulkSetServiceVariables))
+	s.router.HandleFunc("DELETE /api/services/{serviceId}/variables/{id}", s.RequireAuth(s.serviceVarHandler.DeleteServiceVariable))
+
+	// --- Project Settings tabs (Billing, Webhooks, Tokens, Members) ---
+	s.router.HandleFunc("GET /api/projects/{projectId}/billing", s.RequireAuth(s.projectSettingsHandler.GetProjectBilling))
+	s.router.HandleFunc("GET /api/projects/{projectId}/webhooks", s.RequireAuth(s.projectSettingsHandler.ListWebhooks))
+	s.router.HandleFunc("POST /api/projects/{projectId}/webhooks", s.RequireAuth(s.projectSettingsHandler.CreateWebhook))
+	s.router.HandleFunc("DELETE /api/projects/{projectId}/webhooks/{id}", s.RequireAuth(s.projectSettingsHandler.DeleteWebhook))
+	s.router.HandleFunc("GET /api/projects/{projectId}/tokens", s.RequireAuth(s.projectSettingsHandler.ListTokens))
+	s.router.HandleFunc("POST /api/projects/{projectId}/tokens", s.RequireAuth(s.projectSettingsHandler.CreateToken))
+	s.router.HandleFunc("DELETE /api/projects/{projectId}/tokens/{id}", s.RequireAuth(s.projectSettingsHandler.DeleteToken))
+	s.router.HandleFunc("GET /api/projects/{projectId}/members", s.RequireAuth(s.projectSettingsHandler.ListMembers))
+	s.router.HandleFunc("POST /api/projects/{projectId}/members", s.RequireAuth(s.projectSettingsHandler.InviteMember))
+	s.router.HandleFunc("DELETE /api/projects/{projectId}/members/{id}", s.RequireAuth(s.projectSettingsHandler.RemoveMember))
+
+	// --- Automated Database & Volume Backups and S3 Destinations ---
+	s.router.HandleFunc("GET /api/backups", s.RequireAuth(s.backupHandler.ListBackups))
+	s.router.HandleFunc("POST /api/backups", s.RequireAuth(s.backupHandler.CreateBackup))
+	s.router.HandleFunc("GET /api/backups/{id}", s.RequireAuth(s.backupHandler.GetBackup))
+	s.router.HandleFunc("DELETE /api/backups/{id}", s.RequireAuth(s.backupHandler.DeleteBackup))
+	s.router.HandleFunc("POST /api/backups/{id}/trigger", s.RequireAuth(s.backupHandler.TriggerBackup))
+	s.router.HandleFunc("GET /api/backups/{id}/records", s.RequireAuth(s.backupHandler.ListBackupRecords))
+	s.router.HandleFunc("GET /api/s3-destinations", s.RequireAuth(s.backupHandler.ListS3Destinations))
+	s.router.HandleFunc("POST /api/s3-destinations", s.RequireAuth(s.backupHandler.CreateS3Destination))
+	s.router.HandleFunc("DELETE /api/s3-destinations/{id}", s.RequireAuth(s.backupHandler.DeleteS3Destination))
+
+	// --- Teams & Organizations Collaboration ---
+	s.router.HandleFunc("GET /api/teams", s.RequireAuth(s.teamHandler.ListTeams))
+	s.router.HandleFunc("POST /api/teams", s.RequireAuth(s.teamHandler.CreateTeam))
+	s.router.HandleFunc("GET /api/teams/{id}", s.RequireAuth(s.teamHandler.GetTeam))
+	s.router.HandleFunc("DELETE /api/teams/{id}", s.RequireAuth(s.teamHandler.DeleteTeam))
+	s.router.HandleFunc("GET /api/teams/{id}/members", s.RequireAuth(s.teamHandler.ListMembers))
+	s.router.HandleFunc("POST /api/teams/{id}/invite", s.RequireAuth(s.teamHandler.InviteMember))
+	s.router.HandleFunc("DELETE /api/teams/{id}/members/{userId}", s.RequireAuth(s.teamHandler.RemoveMember))
+	s.router.HandleFunc("GET /api/team-invites/{token}", s.teamHandler.GetInvite)
+	s.router.HandleFunc("POST /api/team-invites/{token}/accept", s.RequireAuth(s.teamHandler.AcceptInvite))
+
+	// --- Global Server Settings, System Prune, Profile & PATs ---
+	s.router.HandleFunc("GET /api/settings", s.RequireAuth(s.settingsHandler.GetServerSettings))
+	s.router.HandleFunc("PUT /api/settings", s.RequireRole("admin", s.settingsHandler.UpdateServerSettings))
+	s.router.HandleFunc("POST /api/settings/prune", s.RequireRole("admin", s.settingsHandler.TriggerSystemPrune))
+	s.router.HandleFunc("GET /api/profile", s.RequireAuth(s.settingsHandler.GetProfile))
+	s.router.HandleFunc("PUT /api/profile", s.RequireAuth(s.settingsHandler.UpdateProfile))
+	s.router.HandleFunc("GET /api/profile/tokens", s.RequireAuth(s.settingsHandler.ListPATs))
+	s.router.HandleFunc("POST /api/profile/tokens", s.RequireAuth(s.settingsHandler.CreatePAT))
+	s.router.HandleFunc("DELETE /api/profile/tokens/{id}", s.RequireAuth(s.settingsHandler.DeletePAT))
 
 	s.router.HandleFunc("GET /ws/terminal/{id}", s.handleTerminalWebSocket)
 }
