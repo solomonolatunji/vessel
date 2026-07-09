@@ -10,7 +10,7 @@
 ## Workflow
 
 - **Do not run build or test commands after every change.** Just make the code change. If something breaks, the user will say so.
-- Run `npm run format:fix` before finishing a session to keep formatting clean.
+- Run `npm run format:fix` (`biome check --write .`) for TS/JS/JSON and `go fmt ./...` for Go before committing or finishing a session. NEVER run `prettier` (`npx prettier`) — Biome is our strict formatter.
 - Prefer `read`/`grep`/`glob` tools over `bash` for file exploration.
 - When making edits, read the file first, then use `edit` for targeted changes.
 
@@ -34,7 +34,7 @@
 - **Lib/utils** go in `dashboard/src/lib/`.
 - **Marketing pages** live in `web/src/pages/`, components in `web/src/components/`.
 - Use Tailwind CSS v4 `@theme` directives for design tokens; avoid custom CSS where Tailwind utilities suffice.
-- Format with Biome (root `biome.json`).
+- **Format strictly with Biome** (`npm run format:fix` / `biome check --write .`) and `go fmt ./...`. NEVER use Prettier (`npx prettier`).
 
 ## Go Conventions
 
