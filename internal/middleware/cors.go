@@ -5,7 +5,6 @@ import (
 	"strings"
 )
 
-// CORSMiddleware wraps an HTTP handler to attach Cross-Origin Resource Sharing headers and validate authorization format.
 func CORSMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")

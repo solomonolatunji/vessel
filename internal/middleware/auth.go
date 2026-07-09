@@ -14,7 +14,6 @@ type contextKey string
 
 const userClaimsKey contextKey = "user_claims"
 
-// AuthGuard provides HTTP middleware for verifying authentication tokens and role permissions.
 type AuthGuard struct {
 	TokenService *services.TokenService
 }
@@ -24,7 +23,6 @@ func NewAuthGuard(ts *services.TokenService) *AuthGuard {
 	return &AuthGuard{TokenService: ts}
 }
 
-// RequireAuth validates Bearer tokens or query parameters before invoking the protected handler.
 func (g *AuthGuard) RequireAuth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if g.TokenService == nil {
@@ -61,7 +59,6 @@ func (g *AuthGuard) RequireAuth(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-// RequireRole enforces that the authenticated user possesses the specified role or administrative access.
 func (g *AuthGuard) RequireRole(requiredRole string, next http.HandlerFunc) http.HandlerFunc {
 	return g.RequireAuth(func(w http.ResponseWriter, r *http.Request) {
 		claims := GetUserClaimsFromContext(r.Context())
@@ -79,7 +76,6 @@ func (g *AuthGuard) RequireRole(requiredRole string, next http.HandlerFunc) http
 	})
 }
 
-// GetUserClaimsFromContext retrieves the authenticated user's claims from the HTTP request context.
 func GetUserClaimsFromContext(ctx context.Context) *types.UserClaims {
 	claims, ok := ctx.Value(userClaimsKey).(*types.UserClaims)
 	if !ok {
