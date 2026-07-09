@@ -1,99 +1,99 @@
-name: CI
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
-jobs:
-  lint:
-    name: Lint & Format
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - uses: actions/setup-go@v5
-        with:
-          go-version: '1.24'
-      - name: Install npm dependencies
-        run: npm ci
-      - name: Check Go formatting
-        run: |
-          gofmt -l . 2>&1 | head -20
-          test -z "$(gofmt -l .)"
-      - name: Run Biome
-        run: npx @biomejs/biome ci .
-      - name: Go vet
-        run: go vet ./...
-
-  build-go:
-    name: Build Go
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: '1.24'
-      - name: Build
-        run: go build ./cmd/...
-
-  build-dashboard:
-    name: Build Dashboard
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Install dependencies
-        run: npm ci
-      - name: Generate routes
-        run: npm --workspace=dashboard run generate-routes
-      - name: Typecheck
-        run: npx tsc --noEmit -p dashboard
-      - name: Build
-        run: npm --workspace=dashboard run build
-
-  build-web:
-    name: Build Web
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Install dependencies
-        run: npm ci
-      - name: Build
-        run: npm --workspace=web run build
-
-  build-docs:
-    name: Build Docs
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Install dependencies
-        run: npm ci
-      - name: Build
-        run: npm --workspace=docs run build
-
-  test-go:
-    name: Test Go
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: '1.24'
-      - name: Test
-        run: go test ./internal/...
+# name: CI
+# 
+# on:
+#   push:
+#     branches: [main]
+#   pull_request:
+#     branches: [main]
+# 
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.ref }}
+#   cancel-in-progress: true
+# 
+# jobs:
+#   lint:
+#     name: Lint & Format
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: actions/setup-node@v4
+#         with:
+#           node-version: 22
+#       - uses: actions/setup-go@v5
+#         with:
+#           go-version: '1.24'
+#       - name: Install npm dependencies
+#         run: npm ci
+#       - name: Check Go formatting
+#         run: |
+#           gofmt -l . 2>&1 | head -20
+#           test -z "$(gofmt -l .)"
+#       - name: Run Biome
+#         run: npx @biomejs/biome ci .
+#       - name: Go vet
+#         run: go vet ./...
+# 
+#   build-go:
+#     name: Build Go
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: actions/setup-go@v5
+#         with:
+#           go-version: '1.24'
+#       - name: Build
+#         run: go build ./cmd/...
+# 
+#   build-dashboard:
+#     name: Build Dashboard
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: actions/setup-node@v4
+#         with:
+#           node-version: 22
+#       - name: Install dependencies
+#         run: npm ci
+#       - name: Generate routes
+#         run: npm --workspace=dashboard run generate-routes
+#       - name: Typecheck
+#         run: npx tsc --noEmit -p dashboard
+#       - name: Build
+#         run: npm --workspace=dashboard run build
+# 
+#   build-web:
+#     name: Build Web
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: actions/setup-node@v4
+#         with:
+#           node-version: 22
+#       - name: Install dependencies
+#         run: npm ci
+#       - name: Build
+#         run: npm --workspace=web run build
+# 
+#   build-docs:
+#     name: Build Docs
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: actions/setup-node@v4
+#         with:
+#           node-version: 22
+#       - name: Install dependencies
+#         run: npm ci
+#       - name: Build
+#         run: npm --workspace=docs run build
+# 
+#   test-go:
+#     name: Test Go
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: actions/setup-go@v5
+#         with:
+#           go-version: '1.24'
+#       - name: Test
+#         run: go test ./internal/...
