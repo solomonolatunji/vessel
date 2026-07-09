@@ -13,6 +13,7 @@ import (
 	"vessel.dev/vessel/internal/services/oauth"
 	"vessel.dev/vessel/internal/store"
 	"vessel.dev/vessel/internal/types"
+	"vessel.dev/vessel/internal/updater"
 )
 
 // Server encapsulates HTTP routing, API handler dependencies, and authentication guards for the Vessel control plane.
@@ -42,6 +43,7 @@ type Server struct {
 	notificationHandler    *NotificationHandler
 	oauthService           *oauth.OAuthService
 	oauthHandler           *OAuthHandler
+	updaterService         *updater.UpdaterService
 }
 
 // NewServer initializes a Server wired to the database store, container orchestrator, reverse proxy, and Docker client.
@@ -56,6 +58,9 @@ func NewServer(s *store.Store, deployer *orchestrator.Deployer, proxyManager *pr
 	notifierService := notifier.NewNotifierService(s)
 	oauthService := oauth.NewOAuthService()
 
+	updaterService := updater.NewUpdaterService(s)
+	updaterService.Start(context.Background())
+
 	srv := &Server{
 		router:                 http.NewServeMux(),
 		store:                  s,
@@ -63,7 +68,7 @@ func NewServer(s *store.Store, deployer *orchestrator.Deployer, proxyManager *pr
 		proxyManager:           proxyManager,
 		dockerClient:           dockerClient,
 		tokenService:           tokenService,
-		authGuard:              middleware.NewAuthGuard(tokenService),
+		authGuard:              middleware.NewAuthGuard(tokenService, s),
 		dbDeployer:             orchestrator.NewDatabaseDeployer(dockerClient, s),
 		storageDeployer:        orchestrator.NewStorageDeployer(dockerClient, s),
 		cronManager:            cronMgr,
@@ -77,11 +82,12 @@ func NewServer(s *store.Store, deployer *orchestrator.Deployer, proxyManager *pr
 		backupHandler:          NewBackupHandler(s, backupMgr),
 		teamHandler:            NewTeamHandler(s),
 		workspaceHandler:       NewWorkspaceHandler(s),
-		settingsHandler:        NewSettingsHandler(s, dockerClient),
+		settingsHandler:        NewSettingsHandler(s, dockerClient, updaterService),
 		notifierService:        notifierService,
 		notificationHandler:    NewNotificationHandler(s, notifierService),
 		oauthService:           oauthService,
 		oauthHandler:           NewOAuthHandler(s, oauthService, tokenService),
+		updaterService:         updaterService,
 	}
 	if srv.deployer != nil {
 		srv.deployer.EnvProvider = srv.serviceLinker.GetLinkedEnvironmentVariables

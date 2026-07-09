@@ -117,6 +117,11 @@ func (h *OAuthHandler) OAuthCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if user == nil {
+		settings, _ := h.store.GetServerSettings()
+		if settings != nil && !settings.RegistrationEnabled {
+			writeError(w, http.StatusForbidden, "new account registration is disabled by the administrator")
+			return
+		}
 		// Auto register via OAuth
 		user = &types.User{
 			Email:         email,

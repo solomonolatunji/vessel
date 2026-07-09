@@ -166,6 +166,16 @@ func (s *Store) migrate() error {
 	_, _ = s.db.Exec("ALTER TABLE users ADD COLUMN totp_secret TEXT DEFAULT '';")
 	_, _ = s.db.Exec("ALTER TABLE users ADD COLUMN recovery_codes TEXT DEFAULT '';")
 	_, _ = s.db.Exec("ALTER TABLE users ADD COLUMN oauth_provider TEXT DEFAULT '';")
+	_, _ = s.db.Exec("ALTER TABLE server_settings ADD COLUMN registration_enabled BOOLEAN DEFAULT TRUE;")
+	_, _ = s.db.Exec("ALTER TABLE server_settings ADD COLUMN custom_dns_resolvers TEXT DEFAULT '';")
+	_, _ = s.db.Exec("ALTER TABLE server_settings ADD COLUMN dns_validation_enabled BOOLEAN DEFAULT TRUE;")
+	_, _ = s.db.Exec("ALTER TABLE server_settings ADD COLUMN ip_allowlist TEXT DEFAULT '';")
+	_, _ = s.db.Exec("ALTER TABLE server_settings ADD COLUMN mcp_server_enabled BOOLEAN DEFAULT TRUE;")
+	_, _ = s.db.Exec("ALTER TABLE server_settings ADD COLUMN update_check_cron TEXT DEFAULT '0 * * * *';")
+	_, _ = s.db.Exec("ALTER TABLE server_settings ADD COLUMN auto_update_enabled BOOLEAN DEFAULT FALSE;")
+	_, _ = s.db.Exec("ALTER TABLE server_settings ADD COLUMN current_version TEXT DEFAULT '0.1.0';")
+	_, _ = s.db.Exec("ALTER TABLE server_settings ADD COLUMN latest_version TEXT DEFAULT '0.1.0';")
+	_, _ = s.db.Exec("ALTER TABLE server_settings ADD COLUMN last_update_check TEXT DEFAULT '';")
 
 	if err := s.initEnvironmentTable(); err != nil {
 		return fmt.Errorf("failed to initialize environments table: %w", err)
@@ -220,6 +230,8 @@ func (s *Store) initNotificationTables() error {
 			smtp_port INTEGER DEFAULT 587,
 			smtp_user TEXT,
 			smtp_password TEXT,
+			smtp_from_name TEXT,
+			smtp_from_address TEXT,
 			resend_enabled BOOLEAN DEFAULT FALSE,
 			resend_api_key TEXT,
 			slack_enabled BOOLEAN DEFAULT FALSE,
@@ -255,6 +267,8 @@ func (s *Store) initNotificationTables() error {
 			return err
 		}
 	}
+	_, _ = s.db.Exec("ALTER TABLE notification_integrations ADD COLUMN smtp_from_name TEXT DEFAULT '';")
+	_, _ = s.db.Exec("ALTER TABLE notification_integrations ADD COLUMN smtp_from_address TEXT DEFAULT '';")
 	return nil
 }
 
@@ -294,7 +308,19 @@ func (s *Store) initSettingsTables() error {
 			smtp_port INTEGER DEFAULT 587,
 			smtp_user TEXT,
 			smtp_password TEXT,
+			smtp_from_name TEXT DEFAULT '',
+			smtp_from_address TEXT DEFAULT '',
 			notification_alerts BOOLEAN DEFAULT TRUE,
+			registration_enabled BOOLEAN DEFAULT TRUE,
+			custom_dns_resolvers TEXT DEFAULT '',
+			dns_validation_enabled BOOLEAN DEFAULT TRUE,
+			ip_allowlist TEXT DEFAULT '',
+			mcp_server_enabled BOOLEAN DEFAULT TRUE,
+			update_check_cron TEXT DEFAULT '0 * * * *',
+			auto_update_enabled BOOLEAN DEFAULT FALSE,
+			current_version TEXT DEFAULT '0.1.0',
+			latest_version TEXT DEFAULT '0.1.0',
+			last_update_check TEXT DEFAULT '',
 			updated_at TEXT
 		);`,
 		`CREATE TABLE IF NOT EXISTS personal_access_tokens (
@@ -312,6 +338,8 @@ func (s *Store) initSettingsTables() error {
 			return err
 		}
 	}
+	_, _ = s.db.Exec("ALTER TABLE server_settings ADD COLUMN smtp_from_name TEXT DEFAULT '';")
+	_, _ = s.db.Exec("ALTER TABLE server_settings ADD COLUMN smtp_from_address TEXT DEFAULT '';")
 	return nil
 }
 

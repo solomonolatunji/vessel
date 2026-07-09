@@ -3,10 +3,12 @@ package middleware
 import (
 	"context"
 	"fmt"
+	"net"
 	"net/http"
 	"strings"
 
 	"vessel.dev/vessel/internal/services"
+	"vessel.dev/vessel/internal/store"
 	"vessel.dev/vessel/internal/types"
 )
 
@@ -16,15 +18,27 @@ const userClaimsKey contextKey = "user_claims"
 
 type AuthGuard struct {
 	TokenService *services.TokenService
+	Store        *store.Store
 }
 
-// NewAuthGuard initializes a new AuthGuard with the provided token service.
-func NewAuthGuard(ts *services.TokenService) *AuthGuard {
-	return &AuthGuard{TokenService: ts}
+// NewAuthGuard initializes a new AuthGuard with the provided token service and store.
+func NewAuthGuard(ts *services.TokenService, st *store.Store) *AuthGuard {
+	return &AuthGuard{TokenService: ts, Store: st}
 }
 
 func (g *AuthGuard) RequireAuth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if g.Store != nil {
+			settings, _ := g.Store.GetServerSettings()
+			if settings != nil && strings.TrimSpace(settings.IPAllowlist) != "" {
+				clientIP := ExtractClientIP(r)
+				if !IsIPAllowed(clientIP, settings.IPAllowlist) {
+					writeError(w, http.StatusForbidden, fmt.Sprintf("access denied from IP address %s by server allowlist policy", clientIP))
+					return
+				}
+			}
+		}
+
 		if g.TokenService == nil {
 			userClaims := &types.UserClaims{
 				UserID: "default",
@@ -59,6 +73,48 @@ func (g *AuthGuard) RequireAuth(next http.HandlerFunc) http.HandlerFunc {
 		ctx := context.WithValue(r.Context(), userClaimsKey, userClaims)
 		next(w, r.WithContext(ctx))
 	}
+}
+
+// IsIPAllowed verifies whether clientIP matches any exact IP or CIDR in the comma-separated allowlist.
+func IsIPAllowed(clientIPStr string, allowlistStr string) bool {
+	clientIP := net.ParseIP(clientIPStr)
+	if clientIP == nil {
+		return false
+	}
+	entries := strings.Split(allowlistStr, ",")
+	for _, entry := range entries {
+		entry = strings.TrimSpace(entry)
+		if entry == "" {
+			continue
+		}
+		if strings.Contains(entry, "/") {
+			_, cidrNet, err := net.ParseCIDR(entry)
+			if err == nil && cidrNet.Contains(clientIP) {
+				return true
+			}
+		} else {
+			if clientIPStr == entry {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// ExtractClientIP parses real client IP from reverse proxy headers or RemoteAddr.
+func ExtractClientIP(r *http.Request) string {
+	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+		parts := strings.Split(xff, ",")
+		return strings.TrimSpace(parts[0])
+	}
+	if xri := r.Header.Get("X-Real-IP"); xri != "" {
+		return strings.TrimSpace(xri)
+	}
+	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		return r.RemoteAddr
+	}
+	return host
 }
 
 func (g *AuthGuard) RequireRole(requiredRole string, next http.HandlerFunc) http.HandlerFunc {

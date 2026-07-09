@@ -15,6 +15,12 @@ type authPayload struct {
 }
 
 func (s *Server) handleRegister(w http.ResponseWriter, r *http.Request) {
+	settings, _ := s.store.GetServerSettings()
+	if settings != nil && !settings.RegistrationEnabled {
+		writeError(w, http.StatusForbidden, "registration is disabled by the administrator")
+		return
+	}
+
 	var payload authPayload
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		writeError(w, http.StatusBadRequest, "invalid authentication payload format")

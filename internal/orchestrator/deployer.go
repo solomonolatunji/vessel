@@ -21,7 +21,7 @@ type Deployer struct {
 func NewDeployer(dockerClient *client.Client, s *store.Store) *Deployer {
 	return &Deployer{
 		builder:          NewBuilder(dockerClient),
-		containerManager: NewContainerManager(dockerClient),
+		containerManager: NewContainerManager(dockerClient, s),
 		store:            s,
 	}
 }

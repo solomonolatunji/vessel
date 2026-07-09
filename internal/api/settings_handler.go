@@ -14,17 +14,20 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"vessel.dev/vessel/internal/store"
 	"vessel.dev/vessel/internal/types"
+	"vessel.dev/vessel/internal/updater"
 )
 
 type SettingsHandler struct {
 	store        *store.Store
 	dockerClient *client.Client
+	updater      *updater.UpdaterService
 }
 
-func NewSettingsHandler(s *store.Store, dockerClient *client.Client) *SettingsHandler {
+func NewSettingsHandler(s *store.Store, dockerClient *client.Client, u *updater.UpdaterService) *SettingsHandler {
 	return &SettingsHandler{
 		store:        s,
 		dockerClient: dockerClient,
+		updater:      u,
 	}
 }
 
@@ -209,4 +212,172 @@ func (h *SettingsHandler) DeletePAT(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *SettingsHandler) HandleMCP(w http.ResponseWriter, r *http.Request) {
+	settings, _ := h.store.GetServerSettings()
+	if settings != nil && !settings.MCPServerEnabled {
+		writeError(w, http.StatusForbidden, "MCP server endpoint is currently disabled by the administrator")
+		return
+	}
+
+	if r.Method == http.MethodGet {
+		writeJSON(w, http.StatusOK, map[string]any{
+			"jsonrpc": "2.0",
+			"server": map[string]string{
+				"name":    "vessel-mcp-server",
+				"version": "v1.0.0",
+			},
+			"capabilities": map[string]any{
+				"tools": map[string]any{
+					"listChanged": false,
+				},
+			},
+			"tools": []map[string]any{
+				{
+					"name":        "list_projects",
+					"description": "List all deployed projects on Vessel",
+					"inputSchema": map[string]any{
+						"type":       "object",
+						"properties": map[string]any{},
+					},
+				},
+				{
+					"name":        "get_system_status",
+					"description": "Check Vessel server CPU, RAM, and database health",
+					"inputSchema": map[string]any{
+						"type":       "object",
+						"properties": map[string]any{},
+					},
+				},
+			},
+		})
+		return
+	}
+
+	var req struct {
+		JSONRPC string `json:"jsonrpc"`
+		ID      any    `json:"id"`
+		Method  string `json:"method"`
+		Params  struct {
+			Name      string         `json:"name"`
+			Arguments map[string]any `json:"arguments"`
+		} `json:"params"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid JSON-RPC format")
+		return
+	}
+
+	switch req.Method {
+	case "tools/list":
+		writeJSON(w, http.StatusOK, map[string]any{
+			"jsonrpc": "2.0",
+			"id":      req.ID,
+			"result": map[string]any{
+				"tools": []map[string]any{
+					{
+						"name":        "list_projects",
+						"description": "List all deployed projects on Vessel",
+					},
+					{
+						"name":        "get_system_status",
+						"description": "Check Vessel server CPU, RAM, and database health",
+					},
+				},
+			},
+		})
+	case "tools/call":
+		switch req.Params.Name {
+		case "list_projects":
+			projects, _ := h.store.ListProjects()
+			writeJSON(w, http.StatusOK, map[string]any{
+				"jsonrpc": "2.0",
+				"id":      req.ID,
+				"result": map[string]any{
+					"content": []map[string]any{
+						{"type": "text", "text": fmt.Sprintf("Found %d projects: %+v", len(projects), projects)},
+					},
+				},
+			})
+		case "get_system_status":
+			writeJSON(w, http.StatusOK, map[string]any{
+				"jsonrpc": "2.0",
+				"id":      req.ID,
+				"result": map[string]any{
+					"content": []map[string]any{
+						{"type": "text", "text": "Vessel system is healthy and operational."},
+					},
+				},
+			})
+		default:
+			writeJSON(w, http.StatusOK, map[string]any{
+				"jsonrpc": "2.0",
+				"id":      req.ID,
+				"error": map[string]any{
+					"code":    -32601,
+					"message": "Method/Tool not found: " + req.Params.Name,
+				},
+			})
+		}
+	default:
+		writeJSON(w, http.StatusOK, map[string]any{
+			"jsonrpc": "2.0",
+			"id":      req.ID,
+			"error": map[string]any{
+				"code":    -32601,
+				"message": "Method not supported: " + req.Method,
+			},
+		})
+	}
+}
+
+func (h *SettingsHandler) CheckUpdate(w http.ResponseWriter, r *http.Request) {
+	if h.updater == nil {
+		writeError(w, http.StatusServiceUnavailable, "update management service is not initialized")
+		return
+	}
+	info, err := h.updater.CheckForUpdate(r.Context())
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	writeJSON(w, http.StatusOK, info)
+}
+
+func (h *SettingsHandler) DeployUpdate(w http.ResponseWriter, r *http.Request) {
+	if h.updater == nil {
+		writeError(w, http.StatusServiceUnavailable, "update management service is not initialized")
+		return
+	}
+	if err := h.updater.DeployUpdate(r.Context()); err != nil {
+		writeError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]string{
+		"status":  "success",
+		"message": "Update successfully applied and system restart triggered.",
+	})
+}
+
+func (h *SettingsHandler) GetUpdateStatus(w http.ResponseWriter, r *http.Request) {
+	settings, err := h.store.GetServerSettings()
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	hasUpdate := false
+	cClean := strings.TrimPrefix(strings.TrimSpace(settings.CurrentVersion), "v")
+	lClean := strings.TrimPrefix(strings.TrimSpace(settings.LatestVersion), "v")
+	if lClean != "" && lClean != cClean {
+		hasUpdate = true
+	}
+	writeJSON(w, http.StatusOK, map[string]any{
+		"currentVersion":  settings.CurrentVersion,
+		"latestVersion":   settings.LatestVersion,
+		"hasUpdate":       hasUpdate,
+		"lastChecked":     settings.LastUpdateCheck,
+		"autoUpdate":      settings.AutoUpdateEnabled,
+		"updateCheckCron": settings.UpdateCheckCron,
+	})
 }

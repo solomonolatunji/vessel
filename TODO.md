@@ -78,24 +78,24 @@
   - **Generic Webhook**: Enabled toggle, POST webhook URL, send test notification.
   - **Notification Preferences**: Per-project toggle to enable/disable each channel independently for deployment events.
 - [x] **OAuth 2.0 Authentication Providers & 2FA (`internal/api/auth_handler.go`, `internal/services/oauth/`)**:
-  - Admin-configurable OAuth providers with enable/disable toggle, client ID, client secret, redirect URI, and provider-specific fields (base URL, tenant).
-  - Supported providers: GitHub, GitLab, Google, Azure AD, Discord, Authentik, Bitbucket, Clerk, Infomaniak, Zitadel.
-  - Member login via OAuth — users authenticate with their chosen provider to access the dashboard.
-  - Two-factor authentication (2FA/TOTP) for local accounts with recovery codes and optional enforced policy per workspace.
-- [ ] **Advanced Server Settings (`internal/api/settings_handler.go`)**:
-  - **Registration Control**: Toggle to enable/disable new user signups.
-  - **DNS Configuration**: Custom DNS resolver addresses for container networking (e.g. `1.1.1.1`), DNS validation toggle.
-  - **API Access Control**: Restrict API access to specific IPs/CIDR ranges (e.g. `192.168.1.100`, `10.0.0.0/8`). Empty = all IPs allowed.
-  - **MCP Server Toggle**: Enable/disable the MCP server endpoint for AI agent integrations. Available for both self-hosted and cloud (see Phase 6 for cloud-specific MCP features).
+  - [x] Admin-configurable OAuth providers with enable/disable toggle, client ID, client secret, redirect URI, and provider-specific fields (base URL, tenant).
+  - [x] Supported providers: GitHub, GitLab, Google, Azure AD, Discord, Authentik, Bitbucket, Clerk, Infomaniak, Zitadel.
+  - [x] Member login via OAuth — users authenticate with their chosen provider to access the dashboard.
+  - [x] Two-factor authentication (2FA/TOTP) for local accounts with recovery codes and optional enforced policy per workspace.
+- [x] **Advanced Server Settings (`internal/api/settings_handler.go`)**:
+  - [x] **Registration Control**: Toggle to enable/disable new user signups.
+  - [x] **DNS Configuration**: Custom DNS resolver addresses for container networking (e.g. `1.1.1.1`), DNS validation toggle.
+  - [x] **API Access Control**: Restrict API access to specific IPs/CIDR ranges (e.g. `192.168.1.100`, `10.0.0.0/8`). Empty = all IPs allowed.
+  - [x] **MCP Server Toggle**: Enable/disable the MCP server endpoint for AI agent integrations (`/api/mcp` JSON-RPC).
 - [ ] **Agent Mode (`cmd/vesseld --agent`)**:
-  - Add `--agent --token=<auth_token>` and `--server=<wss://...>` flags to `vesseld`.
-  - Implement secure outbound WebSocket / mTLS tunnel for remote control.
-  - Allow remote execution of Docker commands over the tunnel without exposing public ports.
-  - Ships in the open-source daemon; the cloud-side connection acceptor is in Phase 6.
-- [ ] **Update Management (`internal/api/settings_handler.go`, `internal/updater/`)**:
-  - **Update Check Frequency**: Configurable cron expression for automatic update checks (e.g. `0 * * * *`).
-  - **Manual Check Button**: Trigger an immediate update check from the dashboard.
-  - **Auto-Update**: Toggle to enable/disable automatic updates with configurable frequency (cron expression). When enabled, pulls and deploys the latest version automatically.
+  - [ ] Add `--agent --token=<auth_token>` and `--server=<wss://...>` flags to `vesseld`.
+  - [ ] Implement secure outbound WebSocket / mTLS tunnel for remote control.
+  - [ ] Allow remote execution of Docker commands over the tunnel without exposing public ports.
+  - [ ] Ships in the open-source daemon; the cloud-side connection acceptor is in Phase 6.
+- [x] **Update Management (`internal/api/settings_handler.go`, `internal/updater/`)**:
+  - [x] **Update Check Frequency**: Configurable cron expression for automatic update checks (e.g. `0 * * * *`).
+  - [x] **Manual Check Button**: Trigger an immediate update check from the API (`POST /api/settings/updates/check`).
+  - [x] **Auto-Update & Deploy**: Toggle to enable/disable automatic updates and execute binary rollout (`POST /api/settings/updates/deploy`).
 
 ---
 

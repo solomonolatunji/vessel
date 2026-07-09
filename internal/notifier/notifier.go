@@ -83,22 +83,46 @@ func (n *NotifierService) Send(event *types.NotificationEvent) error {
 }
 
 func (n *NotifierService) sendSMTP(integ *types.NotificationIntegration, event *types.NotificationEvent) error {
-	auth := smtp.PlainAuth("", integ.SMTPUser, integ.SMTPPassword, integ.SMTPHost)
+	var auth smtp.Auth
+	if integ.SMTPUser != "" && integ.SMTPPassword != "" {
+		auth = smtp.PlainAuth("", integ.SMTPUser, integ.SMTPPassword, integ.SMTPHost)
+	}
 	addr := fmt.Sprintf("%s:%d", integ.SMTPHost, integ.SMTPPort)
-	to := []string{integ.SMTPUser}
-	if len(to) == 0 || to[0] == "" {
-		return nil
+	fromAddr := integ.SMTPFromAddress
+	if fromAddr == "" {
+		fromAddr = integ.SMTPUser
+	}
+	if fromAddr == "" {
+		return fmt.Errorf("SMTP from address is required")
+	}
+	toAddr := integ.SMTPUser
+	if toAddr == "" {
+		toAddr = fromAddr
+	}
+	to := []string{toAddr}
+
+	fromHeader := fromAddr
+	if integ.SMTPFromName != "" {
+		fromHeader = fmt.Sprintf("%s <%s>", integ.SMTPFromName, fromAddr)
 	}
 
 	msg := []byte(fmt.Sprintf("From: %s\r\nTo: %s\r\nSubject: [Vessel %s] %s\r\n\r\n%s\r\n\r\nURL: %s\r\n",
-		integ.SMTPUser, integ.SMTPUser, strings.ToUpper(event.Level), event.Title, event.Message, event.URL))
+		fromHeader, toAddr, strings.ToUpper(event.Level), event.Title, event.Message, event.URL))
 
-	return smtp.SendMail(addr, auth, integ.SMTPUser, to, msg)
+	return smtp.SendMail(addr, auth, fromAddr, to, msg)
 }
 
 func (n *NotifierService) sendResend(integ *types.NotificationIntegration, event *types.NotificationEvent) error {
+	fromStr := "Vessel Notifications <alerts@vessel.dev>"
+	if integ.SMTPFromAddress != "" {
+		if integ.SMTPFromName != "" {
+			fromStr = fmt.Sprintf("%s <%s>", integ.SMTPFromName, integ.SMTPFromAddress)
+		} else {
+			fromStr = integ.SMTPFromAddress
+		}
+	}
 	payload := map[string]interface{}{
-		"from":    "Vessel Notifications <alerts@vessel.dev>",
+		"from":    fromStr,
 		"to":      []string{"admin@localhost"},
 		"subject": fmt.Sprintf("[Vessel] %s", event.Title),
 		"html":    fmt.Sprintf("<p><strong>%s</strong></p><p>%s</p><p><a href=\"%s\">View in Dashboard</a></p>", event.Title, event.Message, event.URL),

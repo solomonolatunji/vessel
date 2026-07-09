@@ -9,6 +9,8 @@ type NotificationIntegration struct {
 	SMTPPort           int    `json:"smtpPort,omitempty"`
 	SMTPUser           string `json:"smtpUser,omitempty"`
 	SMTPPassword       string `json:"smtpPassword,omitempty"`
+	SMTPFromName       string `json:"smtpFromName,omitempty"`
+	SMTPFromAddress    string `json:"smtpFromAddress,omitempty"`
 	ResendEnabled      bool   `json:"resendEnabled"`
 	ResendAPIKey       string `json:"resendApiKey,omitempty"`
 	SlackEnabled       bool   `json:"slackEnabled"`

@@ -4,20 +4,23 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
+	"vessel.dev/vessel/internal/store"
 	"vessel.dev/vessel/internal/utils"
 )
 
 type ContainerManager struct {
 	dockerClient *client.Client
+	store        *store.Store
 }
 
-func NewContainerManager(dockerClient *client.Client) *ContainerManager {
-	return &ContainerManager{dockerClient: dockerClient}
+func NewContainerManager(dockerClient *client.Client, st *store.Store) *ContainerManager {
+	return &ContainerManager{dockerClient: dockerClient, store: st}
 }
 
 // CreateAndStart provisions a new container with explicit CPU/RAM boundaries and environment injections.
@@ -42,6 +45,23 @@ func (c *ContainerManager) CreateAndStart(ctx context.Context, name, imageTag st
 			Memory:   utils.MegaBytesToBytes(memoryLimitMB),
 			NanoCPUs: utils.CPURequestToNanoCPUs(cpuRequest),
 		},
+	}
+
+	if c.store != nil {
+		settings, _ := c.store.GetServerSettings()
+		if settings != nil && strings.TrimSpace(settings.CustomDNSResolvers) != "" {
+			parts := strings.Split(settings.CustomDNSResolvers, ",")
+			var dnsList []string
+			for _, p := range parts {
+				p = strings.TrimSpace(p)
+				if p != "" {
+					dnsList = append(dnsList, p)
+				}
+			}
+			if len(dnsList) > 0 {
+				hostConfig.DNS = dnsList
+			}
+		}
 	}
 
 	_ = c.StopAndRemove(ctx, name)

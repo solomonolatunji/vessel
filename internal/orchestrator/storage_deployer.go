@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	dockertypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -84,6 +85,23 @@ func (d *StorageDeployer) SpinUp(ctx context.Context, sc *types.StorageConfig) (
 				Aliases: []string{containerName, sc.Name},
 			},
 		},
+	}
+
+	if d.store != nil {
+		settings, _ := d.store.GetServerSettings()
+		if settings != nil && strings.TrimSpace(settings.CustomDNSResolvers) != "" {
+			parts := strings.Split(settings.CustomDNSResolvers, ",")
+			var dnsList []string
+			for _, p := range parts {
+				p = strings.TrimSpace(p)
+				if p != "" {
+					dnsList = append(dnsList, p)
+				}
+			}
+			if len(dnsList) > 0 {
+				hostCfg.DNS = dnsList
+			}
+		}
 	}
 
 	created, err := d.dockerClient.ContainerCreate(ctx, containerCfg, hostCfg, netCfg, nil, containerName)
