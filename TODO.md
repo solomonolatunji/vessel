@@ -151,7 +151,9 @@
 
 - [ ] Build unified multi-stage `Dockerfile` packaging `dashboard/dist/` inside the `vesseld` Go binary.
 - [ ] Test end-to-end `deploy/install.sh` and `scripts/upgrade.sh` inside isolated test containers.
-- [ ] **Downgrade Support**: Implement safe downgrade path — backup DB + volumes before upgrade, detect version mismatch on startup, and provide `scripts/rollback.sh` that restores previous binary + data snapshot.
+- [ ] **Downgrade Support**: `scripts/downgrade.sh` — backup DB, pull previous version, restart. Detect version mismatch on startup.
+- [ ] **CI Smoke Test**: `scripts/railpack-smoke.sh` — spin up a test container, verify build + healthcheck.
+- [ ] **Cloud Upgrade**: `scripts/cloud_upgrade.sh` — zero-downtime migration for cloud Postgres + API.
 
 ---
 
