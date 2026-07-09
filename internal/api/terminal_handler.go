@@ -20,13 +20,22 @@ var upgrader = websocket.Upgrader{
 }
 
 func (s *Server) handleTerminalWebSocket(w http.ResponseWriter, r *http.Request) {
-	projectID := r.PathValue("id")
-	if projectID == "" {
-		writeError(w, http.StatusBadRequest, "missing project id parameter")
+	id := r.PathValue("id")
+	if id == "" {
+		writeError(w, http.StatusBadRequest, "missing id parameter")
 		return
 	}
 
-	containerName := utils.NormalizeContainerName(projectID)
+	containerName := utils.NormalizeContainerName(id)
+	if s.store != nil {
+		if appService, err := s.store.GetAppService(id); err == nil && appService != nil {
+			if appService.ContainerID != "" && appService.ContainerID != "-" {
+				containerName = appService.ContainerID
+			} else {
+				containerName = utils.NormalizeContainerName(appService.ID)
+			}
+		}
+	}
 	execConfig := types.ExecConfig{
 		Cmd:          []string{"/bin/sh"},
 		Tty:          true,

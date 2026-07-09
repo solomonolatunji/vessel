@@ -273,6 +273,15 @@ func (s *Store) initTeamTables() error {
 
 func (s *Store) initWorkspaceTables() error {
 	queries := []string{
+		`CREATE TABLE IF NOT EXISTS workspaces (
+			id TEXT PRIMARY KEY,
+			name TEXT NOT NULL,
+			avatar_url TEXT DEFAULT '',
+			preferred_region TEXT DEFAULT 'local',
+			owner_id TEXT NOT NULL,
+			created_at TEXT,
+			updated_at TEXT
+		);`,
 		`CREATE TABLE IF NOT EXISTS workspace_trusted_domains (
 			id TEXT PRIMARY KEY,
 			team_id TEXT NOT NULL,
@@ -302,6 +311,7 @@ func (s *Store) initWorkspaceTables() error {
 			return err
 		}
 	}
+	_, _ = s.db.Exec("ALTER TABLE projects ADD COLUMN workspace_id TEXT DEFAULT '';")
 	return nil
 }
 

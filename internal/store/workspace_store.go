@@ -176,3 +176,107 @@ func (s *Store) ListWorkspaceAuditLogs(teamID string, limit int) ([]*types.Works
 	}
 	return list, nil
 }
+
+// CreateWorkspace inserts a new top-level Workspace into the database.
+func (s *Store) CreateWorkspace(item *types.Workspace) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if item.ID == "" {
+		item.ID = uuid.NewString()
+	}
+	if item.CreatedAt.IsZero() {
+		item.CreatedAt = time.Now().UTC()
+	}
+	if item.UpdatedAt.IsZero() {
+		item.UpdatedAt = time.Now().UTC()
+	}
+	if item.PreferredRegion == "" {
+		item.PreferredRegion = "local"
+	}
+
+	query := `INSERT INTO workspaces (id, name, avatar_url, preferred_region, owner_id, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?)`
+	_, err := s.db.Exec(query, item.ID, item.Name, item.AvatarURL, item.PreferredRegion, item.OwnerID, item.CreatedAt.Format(time.RFC3339), item.UpdatedAt.Format(time.RFC3339))
+	if err != nil {
+		return fmt.Errorf("failed to create workspace: %w", err)
+	}
+	return nil
+}
+
+// GetWorkspace retrieves a Workspace by ID.
+func (s *Store) GetWorkspace(id string) (*types.Workspace, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	query := `SELECT id, name, avatar_url, preferred_region, owner_id, created_at, updated_at FROM workspaces WHERE id = ?`
+	row := s.db.QueryRow(query, id)
+
+	var item types.Workspace
+	var createdAtStr, updatedAtStr string
+	if err := row.Scan(&item.ID, &item.Name, &item.AvatarURL, &item.PreferredRegion, &item.OwnerID, &createdAtStr, &updatedAtStr); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("failed to get workspace: %w", err)
+	}
+	item.CreatedAt, _ = time.Parse(time.RFC3339, createdAtStr)
+	item.UpdatedAt, _ = time.Parse(time.RFC3339, updatedAtStr)
+	return &item, nil
+}
+
+// ListWorkspaces lists all workspaces owned by or accessible to ownerID.
+func (s *Store) ListWorkspaces(ownerID string) ([]*types.Workspace, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	query := `SELECT id, name, avatar_url, preferred_region, owner_id, created_at, updated_at FROM workspaces WHERE owner_id = ? ORDER BY created_at DESC`
+	rows, err := s.db.Query(query, ownerID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list workspaces: %w", err)
+	}
+	defer rows.Close()
+
+	var list []*types.Workspace
+	for rows.Next() {
+		var item types.Workspace
+		var createdAtStr, updatedAtStr string
+		if err := rows.Scan(&item.ID, &item.Name, &item.AvatarURL, &item.PreferredRegion, &item.OwnerID, &createdAtStr, &updatedAtStr); err != nil {
+			return nil, err
+		}
+		item.CreatedAt, _ = time.Parse(time.RFC3339, createdAtStr)
+		item.UpdatedAt, _ = time.Parse(time.RFC3339, updatedAtStr)
+		list = append(list, &item)
+	}
+	return list, nil
+}
+
+// UpdateWorkspace updates workspace details.
+func (s *Store) UpdateWorkspace(item *types.Workspace) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	item.UpdatedAt = time.Now().UTC()
+	query := `UPDATE workspaces SET name = ?, avatar_url = ?, preferred_region = ?, updated_at = ? WHERE id = ?`
+	_, err := s.db.Exec(query, item.Name, item.AvatarURL, item.PreferredRegion, item.UpdatedAt.Format(time.RFC3339), item.ID)
+	if err != nil {
+		return fmt.Errorf("failed to update workspace: %w", err)
+	}
+	return nil
+}
+
+// DeleteWorkspace removes a workspace if it is not the last workspace owned by the user.
+func (s *Store) DeleteWorkspace(id string, ownerID string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	var count int
+	_ = s.db.QueryRow("SELECT count(*) FROM workspaces WHERE owner_id = ?", ownerID).Scan(&count)
+	if count <= 1 {
+		return errors.New("You cannot delete your last workspace. To delete your account, visit Account Settings")
+	}
+
+	_, err := s.db.Exec("DELETE FROM workspaces WHERE id = ? AND owner_id = ?", id, ownerID)
+	return err
+}
+

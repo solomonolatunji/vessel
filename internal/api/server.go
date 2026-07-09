@@ -116,6 +116,7 @@ func (s *Server) registerRoutes() {
 	s.router.HandleFunc("DELETE /api/git/connect/{provider}", s.RequireAuth(s.handleDisconnectGitProvider))
 	s.router.HandleFunc("GET /api/git/repos", s.RequireAuth(s.handleListGitRepositories))
 	s.router.HandleFunc("POST /api/webhooks/git/{projectId}", s.handleGitWebhook)
+	s.router.HandleFunc("POST /api/webhooks/git/services/{serviceId}", s.handleServiceGitWebhook)
 	s.router.HandleFunc("GET /api/canvas/projects", s.RequireAuth(s.ListProjectCanvasSummaries))
 	s.router.HandleFunc("GET /api/projects/{id}/summary", s.RequireAuth(s.GetProjectCanvasSummary))
 	s.router.HandleFunc("GET /api/environments/{id}/canvas", s.RequireAuth(s.GetEnvironmentCanvas))
@@ -179,6 +180,12 @@ func (s *Server) registerRoutes() {
 	s.router.HandleFunc("POST /api/team-invites/{token}/accept", s.RequireAuth(s.teamHandler.AcceptInvite))
 
 	// --- Workspace Level Settings (Trusted Domains, SSH Keys, Audit Logs) ---
+	s.router.HandleFunc("GET /api/workspaces", s.RequireAuth(s.workspaceHandler.ListWorkspaces))
+	s.router.HandleFunc("POST /api/workspaces", s.RequireAuth(s.workspaceHandler.CreateWorkspace))
+	s.router.HandleFunc("GET /api/workspaces/{id}", s.RequireAuth(s.workspaceHandler.GetWorkspace))
+	s.router.HandleFunc("PUT /api/workspaces/{id}", s.RequireAuth(s.workspaceHandler.UpdateWorkspace))
+	s.router.HandleFunc("DELETE /api/workspaces/{id}", s.RequireAuth(s.workspaceHandler.DeleteWorkspace))
+	s.router.HandleFunc("GET /api/workspaces/{id}/projects", s.RequireAuth(s.workspaceHandler.ListWorkspaceProjects))
 	s.router.HandleFunc("GET /api/teams/{teamId}/trusted-domains", s.RequireAuth(s.workspaceHandler.ListTrustedDomains))
 	s.router.HandleFunc("POST /api/teams/{teamId}/trusted-domains", s.RequireAuth(s.workspaceHandler.CreateTrustedDomain))
 	s.router.HandleFunc("DELETE /api/trusted-domains/{id}", s.RequireAuth(s.workspaceHandler.DeleteTrustedDomain))

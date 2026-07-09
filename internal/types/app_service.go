@@ -17,8 +17,14 @@ type AppServiceConfig struct {
 	InternalPort      int             `json:"internalPort"`
 	Domain            string          `json:"domain,omitempty"`
 	EnvVarsCount      int             `json:"envVarsCount"`
-	AutoDeployWebhook bool            `json:"autoDeployWebhook"`
-	CPURequest        float64         `json:"cpuRequest,omitempty"`
+	AutoDeployWebhook         bool            `json:"autoDeployWebhook"`
+	GitRepoFullName           string          `json:"gitRepoFullName,omitempty"`
+	WaitForCI                 bool            `json:"waitForCi"`
+	AutoDeployBranch          bool            `json:"autoDeployBranch"`
+	PublicNetworkingDomain    string          `json:"publicNetworkingDomain,omitempty"`
+	PrivateNetworkingInternal string          `json:"privateNetworkingInternal,omitempty"`
+	EnableOutboundIPv6        bool            `json:"enableOutboundIpv6"`
+	CPURequest                float64         `json:"cpuRequest,omitempty"`
 	MemoryLimitMB     int             `json:"memoryLimitMB,omitempty"`
 	Replicas          int             `json:"replicas,omitempty"`
 	RestartPolicy     string          `json:"restartPolicy,omitempty"`

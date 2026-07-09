@@ -2,6 +2,16 @@ package types
 
 import "time"
 
+type Workspace struct {
+	ID              string    `json:"id"`
+	Name            string    `json:"name"`
+	AvatarURL       string    `json:"avatarUrl,omitempty"`
+	PreferredRegion string    `json:"preferredRegion,omitempty"`
+	OwnerID         string    `json:"ownerId"`
+	CreatedAt       time.Time `json:"createdAt"`
+	UpdatedAt       time.Time `json:"updatedAt"`
+}
+
 type WorkspaceTrustedDomain struct {
 	ID        string    `json:"id"`
 	TeamID    string    `json:"teamId"`

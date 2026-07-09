@@ -4,6 +4,7 @@ import "time"
 
 type ProjectConfig struct {
 	ID          string    `json:"id"`
+	WorkspaceID string    `json:"workspaceId,omitempty"`
 	TeamID      string    `json:"teamId,omitempty"`
 	Name        string    `json:"name"`
 	Description string    `json:"description,omitempty"`

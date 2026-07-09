@@ -55,6 +55,12 @@ func (s *Store) initAppServiceTable() error {
 	_, _ = s.db.Exec("ALTER TABLE app_services ADD COLUMN teardown_timeout INTEGER DEFAULT 30;")
 	_, _ = s.db.Exec("ALTER TABLE app_services ADD COLUMN serverless BOOLEAN DEFAULT 0;")
 	_, _ = s.db.Exec("ALTER TABLE app_services ADD COLUMN cron_schedule TEXT DEFAULT '';")
+	_, _ = s.db.Exec("ALTER TABLE app_services ADD COLUMN git_repo_full_name TEXT DEFAULT '';")
+	_, _ = s.db.Exec("ALTER TABLE app_services ADD COLUMN wait_for_ci BOOLEAN DEFAULT 1;")
+	_, _ = s.db.Exec("ALTER TABLE app_services ADD COLUMN auto_deploy_branch BOOLEAN DEFAULT 1;")
+	_, _ = s.db.Exec("ALTER TABLE app_services ADD COLUMN public_networking_domain TEXT DEFAULT '';")
+	_, _ = s.db.Exec("ALTER TABLE app_services ADD COLUMN private_networking_internal TEXT DEFAULT '';")
+	_, _ = s.db.Exec("ALTER TABLE app_services ADD COLUMN enable_outbound_ipv6 BOOLEAN DEFAULT 0;")
 	return nil
 }
 
@@ -91,14 +97,16 @@ func (s *Store) CreateAppService(service *types.AppServiceConfig) error {
 	query := `INSERT INTO app_services (
 		id, project_id, environment_id, name, icon, repository_url, branch, root_directory, build_command,
 		start_command, dockerfile_path, internal_port, domain, env_vars_count,
-		auto_deploy_webhook, cpu_request, memory_limit_mb, replicas, restart_policy, teardown_timeout,
+		auto_deploy_webhook, git_repo_full_name, wait_for_ci, auto_deploy_branch, public_networking_domain,
+		private_networking_internal, enable_outbound_ipv6, cpu_request, memory_limit_mb, replicas, restart_policy, teardown_timeout,
 		serverless, cron_schedule, health_check_path, status, container_id, created_at, updated_at
-	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	_, err := s.db.Exec(query,
 		service.ID, service.ProjectID, service.EnvironmentID, service.Name, service.Icon, service.RepositoryURL, service.Branch, service.RootDirectory,
 		service.BuildCommand, service.StartCommand, service.DockerfilePath, service.InternalPort, service.Domain,
-		service.EnvVarsCount, service.AutoDeployWebhook, service.CPURequest, service.MemoryLimitMB, service.Replicas, service.RestartPolicy, service.TeardownTimeout,
+		service.EnvVarsCount, service.AutoDeployWebhook, service.GitRepoFullName, service.WaitForCI, service.AutoDeployBranch, service.PublicNetworkingDomain,
+		service.PrivateNetworkingInternal, service.EnableOutboundIPv6, service.CPURequest, service.MemoryLimitMB, service.Replicas, service.RestartPolicy, service.TeardownTimeout,
 		service.Serverless, service.CronSchedule, service.HealthCheckPath, service.Status, service.ContainerID, service.CreatedAt, service.UpdatedAt,
 	)
 	if err != nil {
@@ -114,16 +122,20 @@ func (s *Store) GetAppService(id string) (*types.AppServiceConfig, error) {
 
 	query := `SELECT id, project_id, environment_id, name, icon, repository_url, branch, root_directory, build_command,
 		start_command, dockerfile_path, internal_port, domain, env_vars_count,
-		auto_deploy_webhook, cpu_request, memory_limit_mb, replicas, restart_policy, teardown_timeout,
+		auto_deploy_webhook, COALESCE(git_repo_full_name, ''), COALESCE(wait_for_ci, 1), COALESCE(auto_deploy_branch, 1),
+		COALESCE(public_networking_domain, ''), COALESCE(private_networking_internal, ''), COALESCE(enable_outbound_ipv6, 0),
+		cpu_request, memory_limit_mb, replicas, restart_policy, teardown_timeout,
 		serverless, cron_schedule, health_check_path, status, container_id, created_at, updated_at FROM app_services WHERE id = ?`
 
 	row := s.db.QueryRow(query, id)
 	var app types.AppServiceConfig
-	var autoDeploy, serverless int
+	var autoDeploy, waitForCI, autoDeployBranch, enableIPv6, serverless int
 	err := row.Scan(
 		&app.ID, &app.ProjectID, &app.EnvironmentID, &app.Name, &app.Icon, &app.RepositoryURL, &app.Branch, &app.RootDirectory,
 		&app.BuildCommand, &app.StartCommand, &app.DockerfilePath, &app.InternalPort, &app.Domain,
-		&app.EnvVarsCount, &autoDeploy, &app.CPURequest, &app.MemoryLimitMB, &app.Replicas, &app.RestartPolicy, &app.TeardownTimeout,
+		&app.EnvVarsCount, &autoDeploy, &app.GitRepoFullName, &waitForCI, &autoDeployBranch,
+		&app.PublicNetworkingDomain, &app.PrivateNetworkingInternal, &enableIPv6,
+		&app.CPURequest, &app.MemoryLimitMB, &app.Replicas, &app.RestartPolicy, &app.TeardownTimeout,
 		&serverless, &app.CronSchedule, &app.HealthCheckPath, &app.Status, &app.ContainerID, &app.CreatedAt, &app.UpdatedAt,
 	)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -132,6 +144,9 @@ func (s *Store) GetAppService(id string) (*types.AppServiceConfig, error) {
 		return nil, fmt.Errorf("failed to get app service: %w", err)
 	}
 	app.AutoDeployWebhook = autoDeploy == 1
+	app.WaitForCI = waitForCI == 1
+	app.AutoDeployBranch = autoDeployBranch == 1
+	app.EnableOutboundIPv6 = enableIPv6 == 1
 	app.Serverless = serverless == 1
 	return &app, nil
 }
@@ -143,7 +158,9 @@ func (s *Store) ListAppServicesByEnvironment(environmentID string) ([]*types.App
 
 	query := `SELECT id, project_id, environment_id, name, icon, repository_url, branch, root_directory, build_command,
 		start_command, dockerfile_path, internal_port, domain, env_vars_count,
-		auto_deploy_webhook, cpu_request, memory_limit_mb, replicas, restart_policy, teardown_timeout,
+		auto_deploy_webhook, COALESCE(git_repo_full_name, ''), COALESCE(wait_for_ci, 1), COALESCE(auto_deploy_branch, 1),
+		COALESCE(public_networking_domain, ''), COALESCE(private_networking_internal, ''), COALESCE(enable_outbound_ipv6, 0),
+		cpu_request, memory_limit_mb, replicas, restart_policy, teardown_timeout,
 		serverless, cron_schedule, health_check_path, status, container_id, created_at, updated_at FROM app_services WHERE environment_id = ? ORDER BY created_at ASC`
 
 	rows, err := s.db.Query(query, environmentID)
@@ -155,16 +172,21 @@ func (s *Store) ListAppServicesByEnvironment(environmentID string) ([]*types.App
 	var apps []*types.AppServiceConfig
 	for rows.Next() {
 		var app types.AppServiceConfig
-		var autoDeploy, serverless int
+		var autoDeploy, waitForCI, autoDeployBranch, enableIPv6, serverless int
 		if err := rows.Scan(
 			&app.ID, &app.ProjectID, &app.EnvironmentID, &app.Name, &app.Icon, &app.RepositoryURL, &app.Branch, &app.RootDirectory,
 			&app.BuildCommand, &app.StartCommand, &app.DockerfilePath, &app.InternalPort, &app.Domain,
-			&app.EnvVarsCount, &autoDeploy, &app.CPURequest, &app.MemoryLimitMB, &app.Replicas, &app.RestartPolicy, &app.TeardownTimeout,
+			&app.EnvVarsCount, &autoDeploy, &app.GitRepoFullName, &waitForCI, &autoDeployBranch,
+			&app.PublicNetworkingDomain, &app.PrivateNetworkingInternal, &enableIPv6,
+			&app.CPURequest, &app.MemoryLimitMB, &app.Replicas, &app.RestartPolicy, &app.TeardownTimeout,
 			&serverless, &app.CronSchedule, &app.HealthCheckPath, &app.Status, &app.ContainerID, &app.CreatedAt, &app.UpdatedAt,
 		); err != nil {
 			return nil, fmt.Errorf("failed to scan app service row: %w", err)
 		}
 		app.AutoDeployWebhook = autoDeploy == 1
+		app.WaitForCI = waitForCI == 1
+		app.AutoDeployBranch = autoDeployBranch == 1
+		app.EnableOutboundIPv6 = enableIPv6 == 1
 		app.Serverless = serverless == 1
 		apps = append(apps, &app)
 	}
@@ -181,7 +203,9 @@ func (s *Store) ListAppServicesByProject(projectID string) ([]*types.AppServiceC
 
 	query := `SELECT id, project_id, environment_id, name, icon, repository_url, branch, root_directory, build_command,
 		start_command, dockerfile_path, internal_port, domain, env_vars_count,
-		auto_deploy_webhook, cpu_request, memory_limit_mb, replicas, restart_policy, teardown_timeout,
+		auto_deploy_webhook, COALESCE(git_repo_full_name, ''), COALESCE(wait_for_ci, 1), COALESCE(auto_deploy_branch, 1),
+		COALESCE(public_networking_domain, ''), COALESCE(private_networking_internal, ''), COALESCE(enable_outbound_ipv6, 0),
+		cpu_request, memory_limit_mb, replicas, restart_policy, teardown_timeout,
 		serverless, cron_schedule, health_check_path, status, container_id, created_at, updated_at FROM app_services WHERE project_id = ? ORDER BY created_at ASC`
 
 	rows, err := s.db.Query(query, projectID)
@@ -193,16 +217,21 @@ func (s *Store) ListAppServicesByProject(projectID string) ([]*types.AppServiceC
 	var apps []*types.AppServiceConfig
 	for rows.Next() {
 		var app types.AppServiceConfig
-		var autoDeploy, serverless int
+		var autoDeploy, waitForCI, autoDeployBranch, enableIPv6, serverless int
 		if err := rows.Scan(
 			&app.ID, &app.ProjectID, &app.EnvironmentID, &app.Name, &app.Icon, &app.RepositoryURL, &app.Branch, &app.RootDirectory,
 			&app.BuildCommand, &app.StartCommand, &app.DockerfilePath, &app.InternalPort, &app.Domain,
-			&app.EnvVarsCount, &autoDeploy, &app.CPURequest, &app.MemoryLimitMB, &app.Replicas, &app.RestartPolicy, &app.TeardownTimeout,
+			&app.EnvVarsCount, &autoDeploy, &app.GitRepoFullName, &waitForCI, &autoDeployBranch,
+			&app.PublicNetworkingDomain, &app.PrivateNetworkingInternal, &enableIPv6,
+			&app.CPURequest, &app.MemoryLimitMB, &app.Replicas, &app.RestartPolicy, &app.TeardownTimeout,
 			&serverless, &app.CronSchedule, &app.HealthCheckPath, &app.Status, &app.ContainerID, &app.CreatedAt, &app.UpdatedAt,
 		); err != nil {
 			return nil, fmt.Errorf("failed to scan app service row: %w", err)
 		}
 		app.AutoDeployWebhook = autoDeploy == 1
+		app.WaitForCI = waitForCI == 1
+		app.AutoDeployBranch = autoDeployBranch == 1
+		app.EnableOutboundIPv6 = enableIPv6 == 1
 		app.Serverless = serverless == 1
 		apps = append(apps, &app)
 	}
@@ -221,14 +250,18 @@ func (s *Store) UpdateAppService(service *types.AppServiceConfig) error {
 	query := `UPDATE app_services SET
 		name = ?, icon = ?, repository_url = ?, branch = ?, root_directory = ?, build_command = ?,
 		start_command = ?, dockerfile_path = ?, internal_port = ?, domain = ?,
-		auto_deploy_webhook = ?, cpu_request = ?, memory_limit_mb = ?, replicas = ?, restart_policy = ?,
+		auto_deploy_webhook = ?, git_repo_full_name = ?, wait_for_ci = ?, auto_deploy_branch = ?,
+		public_networking_domain = ?, private_networking_internal = ?, enable_outbound_ipv6 = ?,
+		cpu_request = ?, memory_limit_mb = ?, replicas = ?, restart_policy = ?,
 		teardown_timeout = ?, serverless = ?, cron_schedule = ?, health_check_path = ?, updated_at = ?
 		WHERE id = ?`
 
 	_, err := s.db.Exec(query,
 		service.Name, service.Icon, service.RepositoryURL, service.Branch, service.RootDirectory, service.BuildCommand,
 		service.StartCommand, service.DockerfilePath, service.InternalPort, service.Domain,
-		service.AutoDeployWebhook, service.CPURequest, service.MemoryLimitMB, service.Replicas, service.RestartPolicy,
+		service.AutoDeployWebhook, service.GitRepoFullName, service.WaitForCI, service.AutoDeployBranch,
+		service.PublicNetworkingDomain, service.PrivateNetworkingInternal, service.EnableOutboundIPv6,
+		service.CPURequest, service.MemoryLimitMB, service.Replicas, service.RestartPolicy,
 		service.TeardownTimeout, service.Serverless, service.CronSchedule, service.HealthCheckPath, service.UpdatedAt,
 		service.ID,
 	)
@@ -252,7 +285,9 @@ func (s *Store) ListAllAppServices() ([]*types.AppServiceConfig, error) {
 
 	query := `SELECT id, project_id, environment_id, name, icon, repository_url, branch, root_directory, build_command,
 		start_command, dockerfile_path, internal_port, domain, env_vars_count,
-		auto_deploy_webhook, cpu_request, memory_limit_mb, replicas, restart_policy, teardown_timeout,
+		auto_deploy_webhook, COALESCE(git_repo_full_name, ''), COALESCE(wait_for_ci, 1), COALESCE(auto_deploy_branch, 1),
+		COALESCE(public_networking_domain, ''), COALESCE(private_networking_internal, ''), COALESCE(enable_outbound_ipv6, 0),
+		cpu_request, memory_limit_mb, replicas, restart_policy, teardown_timeout,
 		serverless, cron_schedule, health_check_path, status, container_id, created_at, updated_at FROM app_services ORDER BY created_at ASC`
 
 	rows, err := s.db.Query(query)
@@ -264,16 +299,21 @@ func (s *Store) ListAllAppServices() ([]*types.AppServiceConfig, error) {
 	var apps []*types.AppServiceConfig
 	for rows.Next() {
 		var app types.AppServiceConfig
-		var autoDeploy, serverless int
+		var autoDeploy, waitForCI, autoDeployBranch, enableIPv6, serverless int
 		if err := rows.Scan(
 			&app.ID, &app.ProjectID, &app.EnvironmentID, &app.Name, &app.Icon, &app.RepositoryURL, &app.Branch, &app.RootDirectory,
 			&app.BuildCommand, &app.StartCommand, &app.DockerfilePath, &app.InternalPort, &app.Domain,
-			&app.EnvVarsCount, &autoDeploy, &app.CPURequest, &app.MemoryLimitMB, &app.Replicas, &app.RestartPolicy, &app.TeardownTimeout,
+			&app.EnvVarsCount, &autoDeploy, &app.GitRepoFullName, &waitForCI, &autoDeployBranch,
+			&app.PublicNetworkingDomain, &app.PrivateNetworkingInternal, &enableIPv6,
+			&app.CPURequest, &app.MemoryLimitMB, &app.Replicas, &app.RestartPolicy, &app.TeardownTimeout,
 			&serverless, &app.CronSchedule, &app.HealthCheckPath, &app.Status, &app.ContainerID, &app.CreatedAt, &app.UpdatedAt,
 		); err != nil {
 			return nil, fmt.Errorf("failed to scan app service row: %w", err)
 		}
 		app.AutoDeployWebhook = autoDeploy == 1
+		app.WaitForCI = waitForCI == 1
+		app.AutoDeployBranch = autoDeployBranch == 1
+		app.EnableOutboundIPv6 = enableIPv6 == 1
 		app.Serverless = serverless == 1
 		apps = append(apps, &app)
 	}

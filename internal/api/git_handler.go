@@ -132,3 +132,56 @@ func (s *Server) handleGitWebhook(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 }
+
+func (s *Server) handleServiceGitWebhook(w http.ResponseWriter, r *http.Request) {
+	serviceID := r.PathValue("serviceId")
+	if serviceID == "" {
+		writeError(w, http.StatusBadRequest, "missing serviceId parameter")
+		return
+	}
+
+	if s.store == nil {
+		writeError(w, http.StatusInternalServerError, "store unavailable")
+		return
+	}
+
+	appService, err := s.store.GetAppService(serviceID)
+	if err != nil || appService == nil {
+		writeError(w, http.StatusNotFound, "service not found")
+		return
+	}
+
+	writeJSON(w, http.StatusAccepted, map[string]string{
+		"status":  "accepted",
+		"message": fmt.Sprintf("triggering background build & rollout for service %s", appService.Name),
+	})
+
+	go func() {
+		ctx := context.Background()
+		dep := &types.DeploymentRecord{
+			ServiceID:     appService.ID,
+			EnvironmentID: appService.EnvironmentID,
+			ProjectID:     appService.ProjectID,
+			Status:        "BUILDING",
+			Branch:        appService.Branch,
+			Trigger:       "Git Webhook Push",
+			BuildLogs:     fmt.Sprintf("Initiating automated build from %s branch %s...\n", appService.RepositoryURL, appService.Branch),
+		}
+		_ = s.store.CreateDeployment(dep)
+
+		sourceDir := filepath.Join("data", "builds", "services", appService.ID)
+		if s.gitService != nil && appService.RepositoryURL != "" {
+			if err := s.gitService.CloneOrPullAppRepository(ctx, appService, sourceDir, nil); err != nil {
+				log.Printf("❌ [ServiceGitWebhook] Git clone/pull failed for service %s (%s): %v", appService.Name, appService.ID, err)
+				_ = s.store.UpdateDeploymentStatus(dep.ID, "FAILED", dep.BuildLogs+fmt.Sprintf("Error cloning repository: %v\n", err), "")
+				return
+			}
+		}
+
+		_ = s.store.UpdateDeploymentStatus(dep.ID, "ACTIVE", dep.BuildLogs+"Deployment rollout triggered via Webhook.\n", appService.ContainerID)
+		if s.proxyManager != nil {
+			_ = s.proxyManager.Reload(ctx)
+		}
+	}()
+}
+
