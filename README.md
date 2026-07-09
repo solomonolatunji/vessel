@@ -9,7 +9,8 @@ Turn any bare-metal Linux VPS into your own private Vercel, Railway, or Heroku i
 ## ✨ Features
 
 - **⚡ Blazing-Fast Go Daemon (`vesseld`)**: Uses native Go concurrency and official Docker SDK with `< 30MB RAM` idle overhead.
-- **💻 Main Panel Dashboard (`dashboard/`)**: Built with **Vite + TanStack Router + React + Tailwind CSS**. Features live `@xterm/xterm` terminal logs, real-time CPU/RAM stats, and dark-mode glassmorphism.
+- **💻 Self-Hosted Dashboard (`dashboard/`)**: Built with **Vite + TanStack Router + React + Tailwind CSS**. Served directly by the Go daemon. Features live `@xterm/xterm` terminal logs, real-time CPU/RAM stats, and dark-mode glassmorphism.
+- **☁️ Cloud Dashboard (`cloud/`)**: Same UI experience but hosted as a separate SPA, talking to the cloud backend with Stripe/Paddle/Paystack billing.
 - **🔒 Automated Edge Routing (`Caddy v2`)**: Zero-config Let's Encrypt SSL/TLS certificates and automatic reverse proxy configuration.
 - **🔐 Encrypted `.env` Vault**: AES-256 encrypted environment variables stored inside an embedded SQLite database.
 - **🛡️ Modular Middleware & Security**: Built-in JWT authentication guards, RBAC enforcement (`admin`, `member`), and global CORS middleware.
@@ -35,9 +36,10 @@ vessel/
 │   ├── repositories/     # SQLite data access layer (per-domain repositories)
 │   ├── services/         # Business logic services (auth, cron, deploy, git, etc.)
 │   └── vault/            # AES-256-GCM encryption vault for secrets
-├── cloud/                # ☁️ Staff Admin Dashboard (TanStack Router + React SPA)
-├── dashboard/            # 💻 Main Panel Dashboard (TanStack Router + React SPA)
-├── web/                  # 🌐 Public Marketing Landing Page (vessel.dev)
+├── cloud/                # ☁️ Cloud user dashboard — `cloud.vessel.dev`
+├── dashboard/            # 💻 Self-hosted dashboard — served by daemon binary
+├── web/                  # 🌐 Marketing site — `vessel.dev`
+├── docs/                 # 📖 Documentation — `docs.vessel.dev`
 ├── bootstrap/            # 📦 One-line install server (`install.sh`, `upgrade.sh`)
 ├── scripts/              # 🛠️ System automation (`upgrade.sh`, `backup.sh`, `restore.sh`)
 ├── Dockerfile            # Multi-stage container build uniting `dashboard/` and `vesseld`

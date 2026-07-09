@@ -1,10 +1,13 @@
 # Vessel Dashboard
 
-Vessel's self-hosted control panel GUI built with React 19, TanStack Router, TanStack Query, Radix UI, and Tailwind CSS v4.
+**Self-hosted control panel** — served by the `vesseld` daemon binary on your own server.
+
+Built with React 19, TanStack Router, TanStack Query, Radix UI, and Tailwind CSS v4.
 
 ```sh
 npm install
-npm run dev
+npm run dev       # http://localhost:3000
+npm run build     # → served by daemon at /dashboard
 ```
 
 ## Project Structure
@@ -25,8 +28,12 @@ src/
 | `npm run dev`        | Start dev server at `localhost:3000` |
 | `npm run build`      | Build for production to `dist/`      |
 | `npm run test`       | Run Vitest tests                     |
-| `npm run format`     | Check formatting with Prettier       |
-| `npm run format:fix` | Fix formatting with Prettier         |
+| `npm run format`     | Check formatting with Biome          |
+| `npm run format:fix` | Fix formatting with Biome            |
+
+## Domain
+
+This dashboard ships with the daemon binary. Access it at your instance's IP/domain after running `vesseld`. Not used by cloud users — they use `cloud.vessel.dev` instead.
 
 ## Learn More
 
