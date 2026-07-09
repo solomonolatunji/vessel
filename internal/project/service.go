@@ -97,18 +97,3 @@ func (s *Service) Create(ctx context.Context, req *CreateProjectRequest) (*Proje
 func (s *Service) Delete(ctx context.Context, id string) error {
 	return s.repo.Delete(ctx, id)
 }
-
-// ListCanvasSummaries returns aggregated dashboard summaries for all projects.
-func (s *Service) ListCanvasSummaries(ctx context.Context) ([]CanvasSummary, error) {
-	return s.repo.ListCanvasSummaries(ctx)
-}
-
-// GetCanvasSummary returns an aggregated dashboard summary for a single project.
-func (s *Service) GetCanvasSummary(ctx context.Context, id string) (*CanvasSummary, error) {
-	return s.repo.GetCanvasSummary(ctx, id)
-}
-
-// GetEnvironmentCanvas returns all resources running in an environment.
-func (s *Service) GetEnvironmentCanvas(ctx context.Context, id string) (*EnvironmentCanvas, error) {
-	return s.repo.GetEnvironmentCanvas(ctx, id)
-}

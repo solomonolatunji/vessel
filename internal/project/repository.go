@@ -8,8 +8,4 @@ type Repository interface {
 	Get(ctx context.Context, id string) (*ProjectConfig, error)
 	Create(ctx context.Context, p *ProjectConfig) error
 	Delete(ctx context.Context, id string) error
-
-	ListCanvasSummaries(ctx context.Context) ([]CanvasSummary, error)
-	GetCanvasSummary(ctx context.Context, id string) (*CanvasSummary, error)
-	GetEnvironmentCanvas(ctx context.Context, id string) (*EnvironmentCanvas, error)
 }

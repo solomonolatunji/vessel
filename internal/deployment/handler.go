@@ -1,18 +1,39 @@
 package deployment
 
 import (
+	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 )
 
-type Handler struct {
-	repo        Repository
-	serviceRepo ServiceRepository
+type ProjectStore interface {
+	GetByID(ctx context.Context, id string) (*ProjectConfig, error)
 }
 
-func NewHandler(repo Repository, serviceRepo ServiceRepository) *Handler {
-	return &Handler{repo: repo, serviceRepo: serviceRepo}
+type ProjectConfig struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	TeamID      string `json:"teamId"`
+}
+
+type ProjectDeployer interface {
+	CloneOrPullRepository(ctx context.Context, projectID, sourceDir string) error
+	DeployProject(ctx context.Context, project *ProjectConfig, sourceDir string) (string, error)
+	ReloadProxy(ctx context.Context) error
+}
+
+type Handler struct {
+	repo          Repository
+	serviceRepo   ServiceRepository
+	projectStore  ProjectStore
+	projectDeploy ProjectDeployer
+}
+
+func NewHandler(repo Repository, serviceRepo ServiceRepository, projectStore ProjectStore, projectDeploy ProjectDeployer) *Handler {
+	return &Handler{repo: repo, serviceRepo: serviceRepo, projectStore: projectStore, projectDeploy: projectDeploy}
 }
 
 func writeJSON(w http.ResponseWriter, status int, v any) {
@@ -125,6 +146,41 @@ func (h *Handler) GetMetrics(w http.ResponseWriter, r *http.Request) {
 		{Timestamp: now.Format(time.RFC3339), CPUPercent: 1.5, MemoryMB: 66.8, NetworkRx: 18.0, NetworkTx: 11.5},
 	}
 	writeJSON(w, http.StatusOK, metrics)
+}
+
+func (h *Handler) DeployProject(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	if id == "" {
+		writeError(w, http.StatusBadRequest, "missing project id parameter")
+		return
+	}
+
+	project, err := h.projectStore.GetByID(r.Context(), id)
+	if err != nil || project == nil {
+		writeError(w, http.StatusNotFound, "project not found")
+		return
+	}
+
+	sourceDir := fmt.Sprintf("data/builds/%s", id)
+	if h.projectDeploy != nil {
+		if err := h.projectDeploy.CloneOrPullRepository(r.Context(), id, sourceDir); err != nil {
+			writeError(w, http.StatusInternalServerError, fmt.Sprintf("git operation failed: %v", err))
+			return
+		}
+		containerID, err := h.projectDeploy.DeployProject(r.Context(), project, sourceDir)
+		if err != nil {
+			writeError(w, http.StatusInternalServerError, fmt.Sprintf("deployment rollout failed: %v", err))
+			return
+		}
+		_ = h.projectDeploy.ReloadProxy(r.Context())
+		writeJSON(w, http.StatusOK, map[string]string{
+			"status":       "deployed",
+			"container_id": containerID,
+		})
+		return
+	}
+
+	writeError(w, http.StatusServiceUnavailable, "deployer not available")
 }
 
 func stringOrDefault(m map[string]any, key string) string {

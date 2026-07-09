@@ -101,35 +101,3 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 	writeJSON(w, http.StatusOK, map[string]string{"status": "deleted"})
 }
-
-// ListCanvasSummaries handles GET /api/canvas/projects.
-func (h *Handler) ListCanvasSummaries(w http.ResponseWriter, r *http.Request) {
-	summaries, err := h.service.ListCanvasSummaries(r.Context())
-	if err != nil {
-		writeError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	writeJSON(w, http.StatusOK, summaries)
-}
-
-// GetCanvasSummary handles GET /api/projects/{id}/summary.
-func (h *Handler) GetCanvasSummary(w http.ResponseWriter, r *http.Request) {
-	id := r.PathValue("id")
-	summary, err := h.service.GetCanvasSummary(r.Context(), id)
-	if err != nil {
-		writeError(w, http.StatusNotFound, err.Error())
-		return
-	}
-	writeJSON(w, http.StatusOK, summary)
-}
-
-// GetEnvironmentCanvas handles GET /api/environments/{id}/canvas.
-func (h *Handler) GetEnvironmentCanvas(w http.ResponseWriter, r *http.Request) {
-	id := r.PathValue("id")
-	canvas, err := h.service.GetEnvironmentCanvas(r.Context(), id)
-	if err != nil {
-		writeError(w, http.StatusNotFound, err.Error())
-		return
-	}
-	writeJSON(w, http.StatusOK, canvas)
-}
