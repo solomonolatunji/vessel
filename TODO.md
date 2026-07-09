@@ -11,14 +11,14 @@
 
 ---
 
-## ⚙️ Phase 2: Go Backend Orchestrator (`cmd/vesseld` & `internal/`)
+## ⚙️ Phase 2: Go Backend Engine (`cmd/vesseld` & `internal/`)
 
-- [x] **Docker Engine Client & Multi-Language Builders (`internal/orchestrator/`)**:
+- [x] **Docker Engine Client & Multi-Language Builders (`internal/engine/`)**:
 
   The core bridge where `vesseld` talks to the host Docker daemon (`/var/run/docker.sock`) using the official Docker Go SDK (`github.com/docker/docker/client`). Supports any language/framework out of the box (Node.js, Python, Go, Rust, PHP, Ruby, Java, etc.) without requiring users to write their own Dockerfile — just like Railway, Coolify, and Vercel.
 
   ```text
-  internal/orchestrator/
+  internal/engine/
   ├── builder.go              # Builder Interface & Strategy Dispatcher
   ├── dockerfile_builder.go   # Standard Docker build strategy (when Dockerfile exists)
   ├── railpack_builder.go     # Railpack / Nixpacks / Buildpacks auto-detect OCI builder
@@ -52,7 +52,7 @@
   - [x] `GET /api/projects/:id/domains` / `POST /api/projects/:id/domains` / `DELETE /api/domains/:id` (`domain_handler.go`)
   - [x] `GET /api/projects/:id/env` / `PUT /api/projects/:id/env` (Encrypted `.env` vault read/write via `env_handler.go`)
   - [x] `GET /ws/terminal/:id` (Interactive xterm shell via Docker `exec -it bash` over WebSocket using `gorilla/websocket`)
-- [ ] **Enterprise PaaS Core Services & Advanced API (`internal/api/` & `internal/orchestrator/`)**:
+- [ ] **Enterprise PaaS Core Services & Advanced API (`internal/api/` & `internal/engine/`)**:
   - [x] **Auth API & RBAC Guards (`auth_handler.go`)**: `POST /api/auth/register`, `POST /api/auth/login` (JWT token issuance), `GET /api/auth/me`, `POST /api/auth/logout`, and route-level auth middleware (`RequireAuth`, `RequireRole`).
   - [x] **One-Click Managed Databases & S3 (`database_handler.go`, `database_deployer.go`, `storage_handler.go`, `storage_deployer.go`)**: Instant provisioning of `PostgreSQL`, `MySQL`/`MariaDB`, `Redis`, `MongoDB`, and `MinIO (S3 Object Storage)` with persistent volumes, encrypted credentials (`vault.go`), and internal DNS strings (`GET/POST /api/databases`, `POST /api/databases/:id/start|stop`, `GET/POST /api/storage`, `POST /api/storage/:id/start|stop`).
   - [ ] **Live Database Data Browser & Web SQL Console (`/api/databases/:id/query`)**: Execute SQL queries (`SELECT`, `INSERT`, `UPDATE`, `EXPLAIN`) against managed PostgreSQL/MySQL instances or inspect/run commands against Redis (`KEYS`, `GET`, `SET`) directly over REST/WebSocket without external database GUI clients.

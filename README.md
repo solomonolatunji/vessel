@@ -25,7 +25,7 @@ vessel/
 ├── internal/             # Core Go packages
 │   ├── api/              # HTTP handlers & route registration (`server.go`, `routes.go`)
 │   ├── middleware/       # Authentication guards (`auth.go`) & CORS configuration (`cors.go`)
-│   ├── orchestrator/     # Container, database, storage & cron job lifecycle managers
+│   ├── engine/           # Container, database, storage & cron job lifecycle managers
 │   ├── proxy/            # Caddy v2 reverse proxy controller
 │   ├── services/         # Token, Git, Cron, and Service Linker services
 │   ├── store/            # SQLite embedded database and state management
