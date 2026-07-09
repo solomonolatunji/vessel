@@ -37,10 +37,12 @@ Astro 7 + Starlight. Documentation site with full-text search, sidebar navigatio
 
 ## Code Style & Conventions
 
-### Go
+### Go & Architecture
 
+- **Feature/Domain Packaging (`internal/<domain>/`)**: Organize packages by domain/feature (`internal/auth/`, `internal/projects/`, `internal/cron/`) encapsulating `model.go`, `dto.go`, `handler.go`, `service.go`, `repository.go`, and `sqlite.go` in each domain. Avoid horizontal layers (`api/`, `store/`).
+- **Consumer-Defined Interfaces**: Define narrow `Repository` interfaces where they are *consumed* (`Accept interfaces, return structs`) rather than where implemented (`sqlite.go` satisfies implicitly without `implements` clauses).
 - **Files**: `snake_case.go` — `container_manager.go`
-- **Packages**: short, lowercase — `store`, `api`, `orchestrator`
+- **Packages**: short, lowercase, single word — `cron`, `auth`, `apikeys`
 - **No inline `//` comments** — only GoDoc when logic is non-obvious
 - **No GoDoc** on self-explanatory types (`// User represents a user`) or HTTP handlers
 - **No global state** — pass deps via struct fields, wire in `main.go`

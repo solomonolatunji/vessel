@@ -37,12 +37,14 @@ You are a senior software engineer specializing in this codebase — the Go + Ty
 ### Naming
 
 - **Go files**: `snake_case.go` — `container_manager.go`, `railpack_builder.go`
-- **Go packages**: short, lowercase, single word — `store`, `api`, `orchestrator`
 - **Dashboard files**: `kebab-case.tsx` — `project-card.tsx`, `use-logs-stream.ts`
 - **Dashboard components**: grouped by domain in `dashboard/src/components/<domain>/`
 
-### Go
+### Go & Architecture
 
+- **Feature/Domain Packaging (`internal/<domain>/`)**: Organize code inside `internal/` by feature/domain (`internal/auth/`, `internal/projects/`, `internal/cron/`) encapsulating `model.go`, `dto.go`, `handler.go`, `service.go`, `repository.go`, and `sqlite.go`. Avoid horizontal layers (`api/`, `store/`).
+- **Consumer-Defined Interfaces**: Define narrow `Repository` interfaces inside the domain package (`Accept interfaces, return structs`) where consumed (`repository.go`), which concrete DB structs satisfy implicitly without `implements` clauses.
+- **Go packages**: short, lowercase, single word — `cron`, `auth`, `apikeys`
 - No inline `//` comments; only GoDoc (`// Name`) when logic is non-obvious
 - No GoDoc on self-explanatory types (`// User represents a user`) or HTTP handlers
 - No global state — pass dependencies via struct fields

@@ -36,15 +36,17 @@
 - Use Tailwind CSS v4 `@theme` directives for design tokens; avoid custom CSS where Tailwind utilities suffice.
 - **Format strictly with Biome** (`npm run format:fix` / `biome check --write .`) and `go fmt ./...`. NEVER use Prettier (`npx prettier`).
 
-## Go Conventions
+## Go Conventions & Architecture
 
+- **Feature/Domain Packaging (`internal/<domain>/`):** Modern Go code inside `internal/` must be organized by feature/domain (e.g., `internal/auth/`, `internal/projects/`, `internal/cron/`) rather than rigid horizontal layers (`api/`, `services/`, `store/`). Each domain package encapsulates its own `model.go`, `dto.go`, `handler.go`, `service.go`, `repository.go` (if needed), and database implementation (`sqlite.go`).
+- **Consumer-Defined Interfaces:** Define interfaces where they are _consumed_, not where they are implemented (`Accept interfaces, return structs`). Services define narrow `Repository` interfaces (e.g., `type Repository interface { GetByID(ctx, id) (*Job, error) }`) specifying exact dependencies. Concrete database adapters (`*SQLiteRepository`) satisfy them implicitly without `implements` clauses.
+- **Incremental Migration:** New features (e.g. `apikeys/`, `dns/`) must adopt feature-based packaging immediately. Existing legacy modules (`internal/api`, `internal/store`) should be migrated incrementally ("Boy Scout rule") when touched, avoiding massive all-at-once rewrites.
 - **File naming:** lowercase snake_case (`container_health.go`).
-- **Package naming:** short, lowercase, single word (`store`, `api`, `orchestrator`).
+- **Package naming:** short, lowercase, single word (`cron`, `auth`, `apikeys`).
 - **Error handling:** always check errors; wrap with `fmt.Errorf("context: %w", err)`.
 - **No global state.** Pass dependencies via struct fields — wire up in `cmd/vesseld/main.go`.
 - **JSON tags** on every exported struct field.
 - Use `modernc.org/sqlite` (CGO-free) for SQLite. No `database/sql` driver imports for `mattn/go-sqlite3`.
 - Use official `github.com/docker/docker/client` for Docker SDK. Use `gorilla/websocket` for WebSocket upgrades.
-- Hashicorp-style Go layout: `internal/` packages are private, `cmd/` binaries are thin entrypoints.
 - Avoid `init()` functions. Use explicit constructor functions instead.
-- **Testing:** Integration and end-to-end tests go in `internal/tests/`, grouped by domain in subdirectories (e.g. `internal/tests/auth/`, `internal/tests/database/`). Unit tests stay co-located with their source files (`store_test.go`, `proxy_test.go`).
+- **Testing:** Integration and end-to-end tests go in `internal/tests/`, grouped by domain in subdirectories (e.g. `internal/tests/auth/`, `internal/tests/database/`). Unit tests (`Service` logic testing via consumer mocks) stay co-located with their source files (`service_test.go`).
