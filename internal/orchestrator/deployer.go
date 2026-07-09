@@ -47,11 +47,11 @@ func (d *Deployer) DeployAppService(ctx context.Context, app *service.AppService
 	}
 
 	buildOpts := BuildOptions{
-		ProjectID:      app.ProjectID,
-		ServiceID:      app.ID,
-		SourceDir:      sourceDir,
-		LogWriter:      logWriter,
-		AppConfig:      app,
+		ProjectID: app.ProjectID,
+		ServiceID: app.ID,
+		SourceDir: sourceDir,
+		LogWriter: logWriter,
+		AppConfig: app,
 	}
 
 	imageTag, err := d.builder.Build(ctx, buildOpts)

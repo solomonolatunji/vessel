@@ -8,8 +8,15 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
-	vesseltypes "vessel.dev/vessel/internal/types"
 )
+
+type ContainerHealth struct {
+	Status             string  `json:"status"`
+	CPUUsagePercentage float64 `json:"cpuUsagePercentage"`
+	MemoryUsageBytes   int64   `json:"memoryUsageBytes"`
+	MemoryLimitBytes   int64   `json:"memoryLimitBytes"`
+	UptimeSeconds      int64   `json:"uptimeSeconds"`
+}
 
 type StatsMonitor struct {
 	dockerClient *client.Client
@@ -20,14 +27,14 @@ func NewStatsMonitor(dockerClient *client.Client) *StatsMonitor {
 }
 
 // GetHealth fetches one-shot statistical metrics for a running container and returns a formatted ContainerHealth record.
-func (s *StatsMonitor) GetHealth(ctx context.Context, containerIDOrName string) (*vesseltypes.ContainerHealth, error) {
+func (s *StatsMonitor) GetHealth(ctx context.Context, containerIDOrName string) (*ContainerHealth, error) {
 	inspectResp, err := s.dockerClient.ContainerInspect(ctx, containerIDOrName)
 	if err != nil {
-		return &vesseltypes.ContainerHealth{Status: "offline"}, fmt.Errorf("container inspect failed: %w", err)
+		return &ContainerHealth{Status: "offline"}, fmt.Errorf("container inspect failed: %w", err)
 	}
 
 	if !inspectResp.State.Running {
-		return &vesseltypes.ContainerHealth{Status: "stopped"}, nil
+		return &ContainerHealth{Status: "stopped"}, nil
 	}
 
 	statsResp, err := s.dockerClient.ContainerStatsOneShot(ctx, containerIDOrName)
@@ -53,7 +60,7 @@ func (s *StatsMonitor) GetHealth(ctx context.Context, containerIDOrName string) 
 		uptimeSeconds = 0
 	}
 
-	return &vesseltypes.ContainerHealth{
+	return &ContainerHealth{
 		Status:             "running",
 		CPUUsagePercentage: cpuPercent,
 		MemoryUsageBytes:   int64(memoryUsage),
