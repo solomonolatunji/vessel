@@ -16,7 +16,6 @@ func NewServiceVarHandler(store *store.Store) *ServiceVarHandler {
 	return &ServiceVarHandler{store: store}
 }
 
-// ListServiceVariables retrieves all variables for a service (`Variables` tab).
 func (h *ServiceVarHandler) ListServiceVariables(w http.ResponseWriter, r *http.Request) {
 	serviceID := r.PathValue("serviceId")
 
@@ -29,7 +28,6 @@ func (h *ServiceVarHandler) ListServiceVariables(w http.ResponseWriter, r *http.
 	json.NewEncoder(w).Encode(list)
 }
 
-// SetServiceVariable creates or updates a variable (`Variables` tab -> `Add Variable`).
 func (h *ServiceVarHandler) SetServiceVariable(w http.ResponseWriter, r *http.Request) {
 	serviceID := r.PathValue("serviceId")
 
@@ -55,7 +53,6 @@ func (h *ServiceVarHandler) SetServiceVariable(w http.ResponseWriter, r *http.Re
 	json.NewEncoder(w).Encode(v)
 }
 
-// BulkSetServiceVariables handles the `RAW Editor` tab where multiple KEY=VALUE lines are saved at once.
 func (h *ServiceVarHandler) BulkSetServiceVariables(w http.ResponseWriter, r *http.Request) {
 	serviceID := r.PathValue("serviceId")
 
@@ -83,7 +80,6 @@ func (h *ServiceVarHandler) BulkSetServiceVariables(w http.ResponseWriter, r *ht
 	json.NewEncoder(w).Encode(req.Variables)
 }
 
-// DeleteServiceVariable removes a service variable.
 func (h *ServiceVarHandler) DeleteServiceVariable(w http.ResponseWriter, r *http.Request) {
 	serviceID := r.PathValue("serviceId")
 	id := r.PathValue("id")

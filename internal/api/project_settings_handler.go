@@ -16,28 +16,16 @@ func NewProjectSettingsHandler(store *store.Store) *ProjectSettingsHandler {
 	return &ProjectSettingsHandler{store: store}
 }
 
-// GetProjectBilling returns usage breakdown (`Project Settings` -> `Usage / Billing` tab).
 func (h *ProjectSettingsHandler) GetProjectBilling(w http.ResponseWriter, r *http.Request) {
 	projectID := r.PathValue("projectId")
 
-	// Calculate approximate resource allocation
-	apps, _ := h.store.ListAppServicesByProject(projectID)
-	var totalCPU float64
-	var totalRAM int
-	for _, app := range apps {
-		totalCPU += app.CPURequest * float64(app.Replicas)
-		totalRAM += app.MemoryLimitMB * app.Replicas
-	}
-
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"projectId":         projectID,
-		"plan":              "Pro (Railway/Coolify Canvas)",
-		"estimatedCostUSD":  (totalCPU * 5.0) + (float64(totalRAM)/1024.0)*2.5,
-		"allocatedCPUCount": totalCPU,
-		"allocatedRAMMB":    totalRAM,
-		"activeContainers":  len(apps),
-		"billingPeriodEnd":  "End of Month",
+		"projectId":      projectID,
+		"plan":           "Self-Hosted / Open-Source (Community Edition)",
+		"billingEnabled": false,
+		"commercialSide": true,
+		"message":        "Usage tracking and automated billing are managed in Vessel Commercial Edition.",
 	})
 }
 

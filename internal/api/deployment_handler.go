@@ -17,7 +17,6 @@ func NewDeploymentHandler(store *store.Store) *DeploymentHandler {
 	return &DeploymentHandler{store: store}
 }
 
-// ListServiceDeployments returns deployment history for the Deployments tab.
 func (h *DeploymentHandler) ListServiceDeployments(w http.ResponseWriter, r *http.Request) {
 	serviceID := r.PathValue("serviceId")
 
@@ -30,7 +29,6 @@ func (h *DeploymentHandler) ListServiceDeployments(w http.ResponseWriter, r *htt
 	json.NewEncoder(w).Encode(deps)
 }
 
-// TriggerServiceDeployment triggers a new manual or instant deployment for a service (`Deployments` tab -> `Trigger Deploy`).
 func (h *DeploymentHandler) TriggerServiceDeployment(w http.ResponseWriter, r *http.Request) {
 	serviceID := r.PathValue("serviceId")
 
@@ -59,7 +57,6 @@ func (h *DeploymentHandler) TriggerServiceDeployment(w http.ResponseWriter, r *h
 	json.NewEncoder(w).Encode(dep)
 }
 
-// RollbackDeployment triggers a rollback to a previously completed deployment.
 func (h *DeploymentHandler) RollbackDeployment(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 
@@ -90,7 +87,6 @@ func (h *DeploymentHandler) RollbackDeployment(w http.ResponseWriter, r *http.Re
 	json.NewEncoder(w).Encode(newDep)
 }
 
-// GetDeploymentLogs returns build/runtime logs for a specific deployment run.
 func (h *DeploymentHandler) GetDeploymentLogs(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 
@@ -108,7 +104,6 @@ func (h *DeploymentHandler) GetDeploymentLogs(w http.ResponseWriter, r *http.Req
 	})
 }
 
-// GetServiceMetrics returns simulated or live Docker telemetry for the Deployments Metrics sub-tab.
 func (h *DeploymentHandler) GetServiceMetrics(w http.ResponseWriter, r *http.Request) {
 	now := time.Now().UTC()
 	metrics := []types.ServiceMetric{

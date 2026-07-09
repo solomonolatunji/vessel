@@ -54,7 +54,12 @@ func TestProjectHandlerAndSslipFallback(t *testing.T) {
 		t.Errorf("expected name 'My Node Service', got '%s'", created.Name)
 	}
 
-	if !strings.HasSuffix(created.Domain, ".sslip.io") {
-		t.Errorf("expected auto-generated sslip.io fallback domain, got '%s'", created.Domain)
+	services, err := s.ListAppServicesByProject(created.ID)
+	if err != nil || len(services) == 0 {
+		t.Fatalf("expected auto-created service, got %d (err: %v)", len(services), err)
+	}
+
+	if !strings.HasSuffix(services[0].Domain, ".sslip.io") {
+		t.Errorf("expected auto-generated sslip.io fallback domain on service, got '%s'", services[0].Domain)
 	}
 }

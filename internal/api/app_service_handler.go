@@ -7,7 +7,6 @@ import (
 	"github.com/solomonolatunji/vessel/internal/types"
 )
 
-// CreateAppService registers a new Git application container service inside a specific environment.
 func (s *Server) CreateAppService(w http.ResponseWriter, r *http.Request) {
 	envID := r.PathValue("id")
 
@@ -45,7 +44,6 @@ func (s *Server) CreateAppService(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(app)
 }
 
-// ListAppServicesByEnvironment lists all Git application container services running inside an environment.
 func (s *Server) ListAppServicesByEnvironment(w http.ResponseWriter, r *http.Request) {
 	envID := r.PathValue("id")
 
@@ -58,7 +56,21 @@ func (s *Server) ListAppServicesByEnvironment(w http.ResponseWriter, r *http.Req
 	json.NewEncoder(w).Encode(apps)
 }
 
-// GetAppService retrieves full details of an application container service.
+func (s *Server) ListAppServicesByProject(w http.ResponseWriter, r *http.Request) {
+	projectID := r.PathValue("id")
+	if projectID == "" {
+		projectID = r.PathValue("projectId")
+	}
+
+	apps, err := s.store.ListAppServicesByProject(projectID)
+	if err != nil {
+		http.Error(w, "Failed to list app services for project: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(apps)
+}
+
 func (s *Server) GetAppService(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 
@@ -71,7 +83,6 @@ func (s *Server) GetAppService(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(app)
 }
 
-// UpdateAppService modifies settings of an existing application container service (`Settings` tab).
 func (s *Server) UpdateAppService(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 
@@ -98,7 +109,6 @@ func (s *Server) UpdateAppService(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(payload)
 }
 
-// DeleteAppService deletes an application container service configuration from the canvas.
 func (s *Server) DeleteAppService(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 

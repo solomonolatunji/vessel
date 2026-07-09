@@ -5,7 +5,6 @@ import (
 	"net/http"
 )
 
-// ListProjectCanvasSummaries returns Railway-style dashboard cards with service counts, online status, and service icons.
 func (s *Server) ListProjectCanvasSummaries(w http.ResponseWriter, r *http.Request) {
 	summaries, err := s.store.ListProjectCanvasSummaries()
 	if err != nil {
@@ -16,7 +15,6 @@ func (s *Server) ListProjectCanvasSummaries(w http.ResponseWriter, r *http.Reque
 	json.NewEncoder(w).Encode(summaries)
 }
 
-// GetProjectCanvasSummary returns detailed summary stats for a specific project workspace.
 func (s *Server) GetProjectCanvasSummary(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 
@@ -29,7 +27,6 @@ func (s *Server) GetProjectCanvasSummary(w http.ResponseWriter, r *http.Request)
 	json.NewEncoder(w).Encode(summary)
 }
 
-// GetEnvironmentCanvas retrieves all Git applications, databases, and object storage buckets inside a specific environment canvas.
 func (s *Server) GetEnvironmentCanvas(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 

@@ -5,7 +5,6 @@ import (
 	"net/http"
 )
 
-// handleGetEnvVars retrieves decrypted plaintext environment variables for a specific project.
 func (s *Server) handleGetEnvVars(w http.ResponseWriter, r *http.Request) {
 	projectID := r.PathValue("id")
 	if projectID == "" {
@@ -24,7 +23,6 @@ func (s *Server) handleGetEnvVars(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, envVars)
 }
 
-// handleSetEnvVars encrypts and stores environment variable key-value pairs into the SQLite vault.
 func (s *Server) handleSetEnvVars(w http.ResponseWriter, r *http.Request) {
 	projectID := r.PathValue("id")
 	if projectID == "" {

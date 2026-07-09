@@ -28,18 +28,37 @@ func NewDeployer(dockerClient *client.Client, s *store.Store) *Deployer {
 	}
 }
 
-// Deploy executes the complete deployment sequence for a given project configuration.
+// Deploy executes the complete deployment sequence for a given project configuration or its primary application service.
 func (d *Deployer) Deploy(ctx context.Context, project *types.ProjectConfig, sourceDir string, logWriter io.Writer) (string, error) {
+	apps, err := d.store.ListAppServicesByProject(project.ID)
+	if err == nil && len(apps) > 0 {
+		return d.DeployAppService(ctx, apps[0], sourceDir, logWriter)
+	}
+
+	syntheticApp := &types.AppServiceConfig{
+		ID:            project.ID,
+		ProjectID:     project.ID,
+		Name:          project.Name,
+		InternalPort:  3000,
+		MemoryLimitMB: 512,
+		CPURequest:    0.5,
+	}
+	return d.DeployAppService(ctx, syntheticApp, sourceDir, logWriter)
+}
+
+// DeployAppService executes the complete zero-downtime deployment sequence for a specific application service container.
+func (d *Deployer) DeployAppService(ctx context.Context, app *types.AppServiceConfig, sourceDir string, logWriter io.Writer) (string, error) {
 	if logWriter != nil {
-		fmt.Fprintf(logWriter, "🚀 [Deployer] Starting deployment for project: %s (ID: %s)\n", project.Name, project.ID)
+		fmt.Fprintf(logWriter, "🚀 [Deployer] Starting deployment for service: %s (ID: %s)\n", app.Name, app.ID)
 	}
 
 	buildOpts := BuildOptions{
-		ProjectID:      project.ID,
+		ProjectID:      app.ProjectID,
+		ServiceID:      app.ID,
 		SourceDir:      sourceDir,
-		DockerfilePath: project.DockerfilePath,
+		DockerfilePath: app.DockerfilePath,
 		LogWriter:      logWriter,
-		ProjectConfig:  project,
+		AppConfig:      app,
 	}
 
 	imageTag, err := d.builder.Build(ctx, buildOpts)
@@ -50,16 +69,22 @@ func (d *Deployer) Deploy(ctx context.Context, project *types.ProjectConfig, sou
 		fmt.Fprintf(logWriter, "✅ [Deployer] Successfully built OCI image: %s\n", imageTag)
 	}
 
-	envVarsMap, err := d.store.GetEnvVars(project.ID)
+	envVarsMap, err := d.store.GetEnvVars(app.ProjectID)
 	if err != nil && logWriter != nil {
-		fmt.Fprintf(logWriter, "⚠️ [Deployer] Warning: could not load environment variables: %v\n", err)
+		fmt.Fprintf(logWriter, "⚠️ [Deployer] Warning: could not load shared project environment variables: %v\n", err)
+	}
+	if envVarsMap == nil {
+		envVarsMap = make(map[string]string)
+	}
+
+	// Merge service-specific variables over shared project variables
+	serviceVars, _ := d.store.ListServiceVariables(app.ID)
+	for _, sv := range serviceVars {
+		envVarsMap[sv.Key] = sv.Value
 	}
 
 	if d.EnvProvider != nil {
-		if linkedEnvs, err := d.EnvProvider(project.ID); err == nil {
-			if envVarsMap == nil {
-				envVarsMap = make(map[string]string)
-			}
+		if linkedEnvs, err := d.EnvProvider(app.ProjectID); err == nil {
 			for k, v := range linkedEnvs {
 				if _, exists := envVarsMap[k]; !exists {
 					envVarsMap[k] = v
@@ -76,19 +101,32 @@ func (d *Deployer) Deploy(ctx context.Context, project *types.ProjectConfig, sou
 		envSlice = append(envSlice, fmt.Sprintf("%s=%s", k, v))
 	}
 
-	containerName := utils.NormalizeContainerName(project.ID)
+	containerName := utils.NormalizeContainerName(app.ID)
 	if logWriter != nil {
 		fmt.Fprintf(logWriter, "🔄 [Deployer] Rolling out container %s with %d encrypted environment variables...\n", containerName, len(envSlice))
+	}
+
+	port := app.InternalPort
+	if port <= 0 {
+		port = 3000
+	}
+	memMB := app.MemoryLimitMB
+	if memMB <= 0 {
+		memMB = 512
+	}
+	cpuReq := app.CPURequest
+	if cpuReq <= 0 {
+		cpuReq = 0.5
 	}
 
 	containerID, err := d.containerManager.CreateAndStart(
 		ctx,
 		containerName,
 		imageTag,
-		project.InternalPort,
+		port,
 		envSlice,
-		project.MemoryLimitMB,
-		project.CPURequest,
+		memMB,
+		cpuReq,
 	)
 	if err != nil {
 		return "", fmt.Errorf("container rollout failed: %w", err)

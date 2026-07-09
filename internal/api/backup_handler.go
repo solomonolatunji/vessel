@@ -21,7 +21,6 @@ func NewBackupHandler(s *store.Store, bm *orchestrator.BackupManager) *BackupHan
 	}
 }
 
-// ListBackups returns all automated backup schedules for a project.
 func (h *BackupHandler) ListBackups(w http.ResponseWriter, r *http.Request) {
 	projectID := r.URL.Query().Get("projectId")
 	if projectID == "" {
@@ -48,7 +47,6 @@ func (h *BackupHandler) ListBackups(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(list)
 }
 
-// CreateBackup creates a new backup schedule and registers it with the backup cron engine.
 func (h *BackupHandler) CreateBackup(w http.ResponseWriter, r *http.Request) {
 	var cfg types.BackupConfig
 	if err := json.NewDecoder(r.Body).Decode(&cfg); err != nil {
@@ -69,7 +67,6 @@ func (h *BackupHandler) CreateBackup(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(cfg)
 }
 
-// GetBackup returns details of a backup schedule.
 func (h *BackupHandler) GetBackup(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	cfg, err := h.store.GetBackupConfig(id)
@@ -85,7 +82,6 @@ func (h *BackupHandler) GetBackup(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(cfg)
 }
 
-// DeleteBackup removes a backup schedule.
 func (h *BackupHandler) DeleteBackup(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	cfg, err := h.store.GetBackupConfig(id)
@@ -105,7 +101,6 @@ func (h *BackupHandler) DeleteBackup(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// TriggerBackup executes an instant backup dump run right away (`Backups` tab -> `Trigger Backup`).
 func (h *BackupHandler) TriggerBackup(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	if h.backupManager == nil {
@@ -122,7 +117,6 @@ func (h *BackupHandler) TriggerBackup(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(rec)
 }
 
-// ListBackupRecords lists past execution history and archive logs for a backup schedule.
 func (h *BackupHandler) ListBackupRecords(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	list, err := h.store.ListBackupRecords(id)
@@ -134,7 +128,6 @@ func (h *BackupHandler) ListBackupRecords(w http.ResponseWriter, r *http.Request
 	json.NewEncoder(w).Encode(list)
 }
 
-// ListS3Destinations returns all offsite S3 targets registered under a project.
 func (h *BackupHandler) ListS3Destinations(w http.ResponseWriter, r *http.Request) {
 	projectID := r.URL.Query().Get("projectId")
 	if projectID == "" {
@@ -149,7 +142,6 @@ func (h *BackupHandler) ListS3Destinations(w http.ResponseWriter, r *http.Reques
 	json.NewEncoder(w).Encode(list)
 }
 
-// CreateS3Destination registers a new S3 target bucket credentials for offsite backups.
 func (h *BackupHandler) CreateS3Destination(w http.ResponseWriter, r *http.Request) {
 	var dest types.S3Destination
 	if err := json.NewDecoder(r.Body).Decode(&dest); err != nil {
@@ -164,7 +156,6 @@ func (h *BackupHandler) CreateS3Destination(w http.ResponseWriter, r *http.Reque
 	json.NewEncoder(w).Encode(dest)
 }
 
-// DeleteS3Destination removes an S3 offsite target.
 func (h *BackupHandler) DeleteS3Destination(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	projectID := r.URL.Query().Get("projectId")

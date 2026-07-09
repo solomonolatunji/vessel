@@ -7,7 +7,6 @@ import (
 	"github.com/solomonolatunji/vessel/internal/types"
 )
 
-// handleListDomains lists all custom domain configurations attached to a project.
 func (s *Server) handleListDomains(w http.ResponseWriter, r *http.Request) {
 	projectID := r.PathValue("id")
 	if projectID == "" {
@@ -26,7 +25,6 @@ func (s *Server) handleListDomains(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, domains)
 }
 
-// handleAddDomain registers a new custom domain or sslip.io rule for a project and updates Caddy routing instantly.
 func (s *Server) handleAddDomain(w http.ResponseWriter, r *http.Request) {
 	projectID := r.PathValue("id")
 	if projectID == "" {
@@ -55,7 +53,6 @@ func (s *Server) handleAddDomain(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusCreated, d)
 }
 
-// handleDeleteDomain removes a custom domain rule and reloads the Caddy reverse proxy table.
 func (s *Server) handleDeleteDomain(w http.ResponseWriter, r *http.Request) {
 	domainID := r.PathValue("id")
 	if domainID == "" {

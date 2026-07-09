@@ -19,7 +19,6 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-// handleTerminalWebSocket upgrades HTTP requests to interactive WebSockets connected directly to docker exec container shells.
 func (s *Server) handleTerminalWebSocket(w http.ResponseWriter, r *http.Request) {
 	projectID := r.PathValue("id")
 	if projectID == "" {

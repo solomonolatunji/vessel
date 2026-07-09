@@ -13,7 +13,6 @@ type contextKey string
 
 const userClaimsKey contextKey = "user_claims"
 
-// RequireAuth intercepts HTTP requests to verify the presence and validity of a JWT Bearer token or cookie.
 func (s *Server) RequireAuth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tokenStr := extractTokenFromRequest(r)
@@ -39,7 +38,6 @@ func (s *Server) RequireAuth(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-// RequireRole intercepts HTTP requests to ensure the authenticated user holds a specific authorization role or is an admin.
 func (s *Server) RequireRole(requiredRole string, next http.HandlerFunc) http.HandlerFunc {
 	return s.RequireAuth(func(w http.ResponseWriter, r *http.Request) {
 		claims := GetUserClaimsFromContext(r.Context())
@@ -57,7 +55,6 @@ func (s *Server) RequireRole(requiredRole string, next http.HandlerFunc) http.Ha
 	})
 }
 
-// GetUserClaimsFromContext extracts verified JWT UserClaims stored in the request context during authentication.
 func GetUserClaimsFromContext(ctx context.Context) *types.UserClaims {
 	claims, ok := ctx.Value(userClaimsKey).(*types.UserClaims)
 	if !ok {

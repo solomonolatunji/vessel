@@ -40,8 +40,7 @@ func TestScheduledJobsEndpoints(t *testing.T) {
 	tokenStr, _ := registerResp["token"].(string)
 
 	project := &types.ProjectConfig{
-		Name:         "Job Test Project",
-		InternalPort: 3000,
+		Name: "Job Test Project",
 	}
 	if err := s.CreateProject(project); err != nil {
 		t.Fatalf("failed to create dummy project: %v", err)

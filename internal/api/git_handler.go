@@ -11,7 +11,6 @@ import (
 	"github.com/solomonolatunji/vessel/internal/types"
 )
 
-// handleConnectGitProvider links an encrypted GitHub or GitLab access token to the current user.
 func (s *Server) handleConnectGitProvider(w http.ResponseWriter, r *http.Request) {
 	claims := GetUserClaimsFromContext(r.Context())
 	if claims == nil {
@@ -34,7 +33,6 @@ func (s *Server) handleConnectGitProvider(w http.ResponseWriter, r *http.Request
 	writeJSON(w, http.StatusCreated, gp)
 }
 
-// handleGetGitProvidersStatus returns whether the current user has connected GitHub or GitLab.
 func (s *Server) handleGetGitProvidersStatus(w http.ResponseWriter, r *http.Request) {
 	claims := GetUserClaimsFromContext(r.Context())
 	if claims == nil {
@@ -51,7 +49,6 @@ func (s *Server) handleGetGitProvidersStatus(w http.ResponseWriter, r *http.Requ
 	writeJSON(w, http.StatusOK, status)
 }
 
-// handleDisconnectGitProvider unlinks a specific Git platform token for the current user.
 func (s *Server) handleDisconnectGitProvider(w http.ResponseWriter, r *http.Request) {
 	claims := GetUserClaimsFromContext(r.Context())
 	if claims == nil {
@@ -73,7 +70,6 @@ func (s *Server) handleDisconnectGitProvider(w http.ResponseWriter, r *http.Requ
 	writeJSON(w, http.StatusOK, map[string]string{"status": "disconnected"})
 }
 
-// handleListGitRepositories lists all available public and private repositories for the authenticated user on the requested provider.
 func (s *Server) handleListGitRepositories(w http.ResponseWriter, r *http.Request) {
 	claims := GetUserClaimsFromContext(r.Context())
 	if claims == nil {
@@ -96,7 +92,6 @@ func (s *Server) handleListGitRepositories(w http.ResponseWriter, r *http.Reques
 	writeJSON(w, http.StatusOK, repos)
 }
 
-// handleGitWebhook listens for push notifications from GitHub or GitLab and triggers background deployment rollouts.
 func (s *Server) handleGitWebhook(w http.ResponseWriter, r *http.Request) {
 	projectID := r.PathValue("projectId")
 	if projectID == "" {
@@ -118,7 +113,7 @@ func (s *Server) handleGitWebhook(w http.ResponseWriter, r *http.Request) {
 	go func() {
 		ctx := context.Background()
 		sourceDir := filepath.Join("data", "builds", project.ID)
-		if s.gitService != nil && project.RepositoryURL != "" {
+		if s.gitService != nil {
 			if err := s.gitService.CloneOrPullRepository(ctx, project, sourceDir, nil); err != nil {
 				log.Printf("❌ [GitWebhook] Git clone/pull failed for project %s (%s): %v", project.Name, project.ID, err)
 				return

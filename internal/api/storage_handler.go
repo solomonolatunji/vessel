@@ -7,7 +7,6 @@ import (
 	"github.com/solomonolatunji/vessel/internal/types"
 )
 
-// handleListStorage retrieves all managed MinIO and S3 storage instances from the database.
 func (s *Server) handleListStorage(w http.ResponseWriter, r *http.Request) {
 	storages, err := s.store.ListStorage()
 	if err != nil {
@@ -20,7 +19,6 @@ func (s *Server) handleListStorage(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, storages)
 }
 
-// handleCreateStorage registers and spins up a new MinIO object storage container instance.
 func (s *Server) handleCreateStorage(w http.ResponseWriter, r *http.Request) {
 	var sc types.StorageConfig
 	if err := json.NewDecoder(r.Body).Decode(&sc); err != nil {
@@ -64,7 +62,6 @@ func (s *Server) handleCreateStorage(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusCreated, sc)
 }
 
-// handleGetStorage retrieves details and decrypted credentials for an object storage instance.
 func (s *Server) handleGetStorage(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	if id == "" {
@@ -80,7 +77,6 @@ func (s *Server) handleGetStorage(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, sc)
 }
 
-// handleDeleteStorage stops the running object storage container and removes the database record.
 func (s *Server) handleDeleteStorage(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	if id == "" {
@@ -99,7 +95,6 @@ func (s *Server) handleDeleteStorage(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{"status": "deleted"})
 }
 
-// handleStartStorage launches or resumes a stopped object storage container.
 func (s *Server) handleStartStorage(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	if id == "" {
@@ -125,7 +120,6 @@ func (s *Server) handleStartStorage(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, sc)
 }
 
-// handleStopStorage terminates a running object storage container.
 func (s *Server) handleStopStorage(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	if id == "" {

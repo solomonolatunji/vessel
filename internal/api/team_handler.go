@@ -17,7 +17,6 @@ func NewTeamHandler(s *store.Store) *TeamHandler {
 	return &TeamHandler{store: s}
 }
 
-// ListTeams returns all teams where the currently authenticated user is a member or owner.
 func (h *TeamHandler) ListTeams(w http.ResponseWriter, r *http.Request) {
 	claims := GetUserClaimsFromContext(r.Context())
 	if claims == nil {
@@ -33,7 +32,6 @@ func (h *TeamHandler) ListTeams(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, teams)
 }
 
-// CreateTeam creates a new collaboration workspace team and sets the creator as Owner.
 func (h *TeamHandler) CreateTeam(w http.ResponseWriter, r *http.Request) {
 	claims := GetUserClaimsFromContext(r.Context())
 	if claims == nil {
@@ -59,7 +57,6 @@ func (h *TeamHandler) CreateTeam(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusCreated, req)
 }
 
-// GetTeam returns team details along with its member list if the calling user belongs to the team.
 func (h *TeamHandler) GetTeam(w http.ResponseWriter, r *http.Request) {
 	claims := GetUserClaimsFromContext(r.Context())
 	if claims == nil {
@@ -87,7 +84,6 @@ func (h *TeamHandler) GetTeam(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// DeleteTeam removes a team workspace (restricted to team Owner).
 func (h *TeamHandler) DeleteTeam(w http.ResponseWriter, r *http.Request) {
 	claims := GetUserClaimsFromContext(r.Context())
 	if claims == nil {
@@ -103,7 +99,6 @@ func (h *TeamHandler) DeleteTeam(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// ListMembers lists all members of a team.
 func (h *TeamHandler) ListMembers(w http.ResponseWriter, r *http.Request) {
 	teamID := r.PathValue("id")
 	members, err := h.store.ListTeamMembers(teamID)
@@ -114,7 +109,6 @@ func (h *TeamHandler) ListMembers(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, members)
 }
 
-// InviteMember invites a user by email to join a team with Owner/Admin/Member role.
 func (h *TeamHandler) InviteMember(w http.ResponseWriter, r *http.Request) {
 	claims := GetUserClaimsFromContext(r.Context())
 	if claims == nil {
@@ -183,7 +177,6 @@ func (h *TeamHandler) InviteMember(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// RemoveMember removes a user from a team.
 func (h *TeamHandler) RemoveMember(w http.ResponseWriter, r *http.Request) {
 	claims := GetUserClaimsFromContext(r.Context())
 	if claims == nil {
@@ -209,7 +202,6 @@ func (h *TeamHandler) RemoveMember(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// GetInvite inspects a pending team invite token.
 func (h *TeamHandler) GetInvite(w http.ResponseWriter, r *http.Request) {
 	token := r.PathValue("token")
 	inv, err := h.store.GetTeamInviteByToken(token)
@@ -220,7 +212,6 @@ func (h *TeamHandler) GetInvite(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, inv)
 }
 
-// AcceptInvite accepts a pending invitation and joins the team.
 func (h *TeamHandler) AcceptInvite(w http.ResponseWriter, r *http.Request) {
 	claims := GetUserClaimsFromContext(r.Context())
 	if claims == nil {

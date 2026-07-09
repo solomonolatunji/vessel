@@ -124,6 +124,7 @@ func (s *Server) registerRoutes() {
 
 	s.router.HandleFunc("POST /api/environments/{id}/apps", s.RequireAuth(s.CreateAppService))
 	s.router.HandleFunc("GET /api/environments/{id}/apps", s.RequireAuth(s.ListAppServicesByEnvironment))
+	s.router.HandleFunc("GET /api/projects/{id}/apps", s.RequireAuth(s.ListAppServicesByProject))
 	s.router.HandleFunc("GET /api/apps/{id}", s.RequireAuth(s.GetAppService))
 	s.router.HandleFunc("PUT /api/apps/{id}", s.RequireAuth(s.UpdateAppService))
 	s.router.HandleFunc("DELETE /api/apps/{id}", s.RequireAuth(s.DeleteAppService))
@@ -186,6 +187,7 @@ func (s *Server) registerRoutes() {
 	s.router.HandleFunc("DELETE /api/profile/tokens/{id}", s.RequireAuth(s.settingsHandler.DeletePAT))
 
 	s.router.HandleFunc("GET /ws/terminal/{id}", s.handleTerminalWebSocket)
+	s.router.HandleFunc("GET /ws/services/{id}/terminal", s.handleTerminalWebSocket)
 }
 
 // Handler returns the root HTTP handler wrapped with global CORS and authentication middleware.

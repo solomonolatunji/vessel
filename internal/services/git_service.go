@@ -205,14 +205,23 @@ func (gs *GitService) listGitLabRepos(ctx context.Context, token string) ([]type
 	return results, nil
 }
 
-// CloneOrPullRepository checks out or updates the codebase from the project's RepositoryURL into targetDir.
+// CloneOrPullRepository checks out or updates the codebase from the project's first application service into targetDir.
 func (gs *GitService) CloneOrPullRepository(ctx context.Context, project *types.ProjectConfig, targetDir string, logWriter io.Writer) error {
-	repoURL := strings.TrimSpace(project.RepositoryURL)
+	apps, err := gs.store.ListAppServicesByProject(project.ID)
+	if err != nil || len(apps) == 0 {
+		return errors.New("no application services found for project to checkout")
+	}
+	return gs.CloneOrPullAppRepository(ctx, apps[0], targetDir, logWriter)
+}
+
+// CloneOrPullAppRepository checks out or updates the codebase from an application service's RepositoryURL into targetDir.
+func (gs *GitService) CloneOrPullAppRepository(ctx context.Context, app *types.AppServiceConfig, targetDir string, logWriter io.Writer) error {
+	repoURL := strings.TrimSpace(app.RepositoryURL)
 	if repoURL == "" {
-		return errors.New("repositoryUrl is not set for project")
+		return errors.New("repositoryUrl is not set for service")
 	}
 
-	branch := strings.TrimSpace(project.Branch)
+	branch := strings.TrimSpace(app.Branch)
 	if branch == "" {
 		branch = "main"
 	}

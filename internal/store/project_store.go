@@ -7,23 +7,17 @@ import (
 	"github.com/solomonolatunji/vessel/internal/types"
 )
 
-// CreateProject inserts a new ProjectConfig record into SQLite.
+// CreateProject inserts a new ProjectConfig record into SQLite and creates its default environment.
 func (s *Store) CreateProject(p *types.ProjectConfig) error {
 	if p.ID == "" {
 		p.ID = uuid.NewString()
 	}
-	now := time.Now()
+	now := time.Now().UTC()
 	p.CreatedAt = now
 	p.UpdatedAt = now
 
-	_, err := s.db.Exec(`INSERT INTO projects (
-		id, name, repository_url, branch, build_command, start_command, dockerfile_path,
-		internal_port, domain, auto_deploy_webhook, cpu_request, memory_limit_mb, health_check_path,
-		created_at, updated_at
-	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-		p.ID, p.Name, p.RepositoryURL, p.Branch, p.BuildCommand, p.StartCommand, p.DockerfilePath,
-		p.InternalPort, p.Domain, p.AutoDeployWebhook, p.CPURequest, p.MemoryLimitMB, p.HealthCheckPath,
-		p.CreatedAt, p.UpdatedAt,
+	_, err := s.db.Exec(`INSERT INTO projects (id, team_id, name, description, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)`,
+		p.ID, p.TeamID, p.Name, p.Description, p.CreatedAt, p.UpdatedAt,
 	)
 	if err != nil {
 		return err
@@ -38,41 +32,15 @@ func (s *Store) CreateProject(p *types.ProjectConfig) error {
 		return err
 	}
 
-	// If the project was initialized with a RepositoryURL (backward compatibility / quick setup),
-	// automatically register it as the first AppService inside the default production environment.
-	if p.RepositoryURL != "" {
-		initialApp := &types.AppServiceConfig{
-			ProjectID:         p.ID,
-			EnvironmentID:     defaultEnv.ID,
-			Name:              p.Name,
-			RepositoryURL:     p.RepositoryURL,
-			Branch:            p.Branch,
-			BuildCommand:      p.BuildCommand,
-			StartCommand:      p.StartCommand,
-			DockerfilePath:    p.DockerfilePath,
-			InternalPort:      p.InternalPort,
-			Domain:            p.Domain,
-			AutoDeployWebhook: p.AutoDeployWebhook,
-			CPURequest:        p.CPURequest,
-			MemoryLimitMB:     p.MemoryLimitMB,
-			HealthCheckPath:   p.HealthCheckPath,
-		}
-		_ = s.CreateAppService(initialApp)
-	}
-
 	return nil
 }
 
 // GetProject retrieves a ProjectConfig record by its ID.
 func (s *Store) GetProject(id string) (*types.ProjectConfig, error) {
-	row := s.db.QueryRow(`SELECT id, name, repository_url, branch, build_command, start_command, dockerfile_path,
-		internal_port, domain, auto_deploy_webhook, cpu_request, memory_limit_mb, health_check_path, created_at, updated_at
-		FROM projects WHERE id = ?`, id)
+	row := s.db.QueryRow(`SELECT id, team_id, name, description, created_at, updated_at FROM projects WHERE id = ?`, id)
 
 	var p types.ProjectConfig
-	err := row.Scan(&p.ID, &p.Name, &p.RepositoryURL, &p.Branch, &p.BuildCommand, &p.StartCommand, &p.DockerfilePath,
-		&p.InternalPort, &p.Domain, &p.AutoDeployWebhook, &p.CPURequest, &p.MemoryLimitMB, &p.HealthCheckPath,
-		&p.CreatedAt, &p.UpdatedAt)
+	err := row.Scan(&p.ID, &p.TeamID, &p.Name, &p.Description, &p.CreatedAt, &p.UpdatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -81,9 +49,7 @@ func (s *Store) GetProject(id string) (*types.ProjectConfig, error) {
 
 // ListProjects retrieves all ProjectConfig records ordered by creation date descending.
 func (s *Store) ListProjects() ([]types.ProjectConfig, error) {
-	rows, err := s.db.Query(`SELECT id, name, repository_url, branch, build_command, start_command, dockerfile_path,
-		internal_port, domain, auto_deploy_webhook, cpu_request, memory_limit_mb, health_check_path, created_at, updated_at
-		FROM projects ORDER BY created_at DESC`)
+	rows, err := s.db.Query(`SELECT id, team_id, name, description, created_at, updated_at FROM projects ORDER BY created_at DESC`)
 	if err != nil {
 		return nil, err
 	}
@@ -92,14 +58,21 @@ func (s *Store) ListProjects() ([]types.ProjectConfig, error) {
 	var projects []types.ProjectConfig
 	for rows.Next() {
 		var p types.ProjectConfig
-		if err := rows.Scan(&p.ID, &p.Name, &p.RepositoryURL, &p.Branch, &p.BuildCommand, &p.StartCommand, &p.DockerfilePath,
-			&p.InternalPort, &p.Domain, &p.AutoDeployWebhook, &p.CPURequest, &p.MemoryLimitMB, &p.HealthCheckPath,
-			&p.CreatedAt, &p.UpdatedAt); err != nil {
+		if err := rows.Scan(&p.ID, &p.TeamID, &p.Name, &p.Description, &p.CreatedAt, &p.UpdatedAt); err != nil {
 			return nil, err
 		}
 		projects = append(projects, p)
 	}
 	return projects, nil
+}
+
+// UpdateProject updates an existing ProjectConfig record in SQLite.
+func (s *Store) UpdateProject(p *types.ProjectConfig) error {
+	p.UpdatedAt = time.Now().UTC()
+	_, err := s.db.Exec(`UPDATE projects SET team_id = ?, name = ?, description = ?, updated_at = ? WHERE id = ?`,
+		p.TeamID, p.Name, p.Description, p.UpdatedAt, p.ID,
+	)
+	return err
 }
 
 // DeleteProject deletes a ProjectConfig record from SQLite by ID.

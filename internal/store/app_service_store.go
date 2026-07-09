@@ -245,6 +245,44 @@ func (s *Store) UpdateAppServiceStatus(id, status, containerID string) error {
 	return err
 }
 
+// ListAllAppServices returns all application container services across the entire platform.
+func (s *Store) ListAllAppServices() ([]*types.AppServiceConfig, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	query := `SELECT id, project_id, environment_id, name, icon, repository_url, branch, root_directory, build_command,
+		start_command, dockerfile_path, internal_port, domain, env_vars_count,
+		auto_deploy_webhook, cpu_request, memory_limit_mb, replicas, restart_policy, teardown_timeout,
+		serverless, cron_schedule, health_check_path, status, container_id, created_at, updated_at FROM app_services ORDER BY created_at ASC`
+
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list all app services: %w", err)
+	}
+	defer rows.Close()
+
+	var apps []*types.AppServiceConfig
+	for rows.Next() {
+		var app types.AppServiceConfig
+		var autoDeploy, serverless int
+		if err := rows.Scan(
+			&app.ID, &app.ProjectID, &app.EnvironmentID, &app.Name, &app.Icon, &app.RepositoryURL, &app.Branch, &app.RootDirectory,
+			&app.BuildCommand, &app.StartCommand, &app.DockerfilePath, &app.InternalPort, &app.Domain,
+			&app.EnvVarsCount, &autoDeploy, &app.CPURequest, &app.MemoryLimitMB, &app.Replicas, &app.RestartPolicy, &app.TeardownTimeout,
+			&serverless, &app.CronSchedule, &app.HealthCheckPath, &app.Status, &app.ContainerID, &app.CreatedAt, &app.UpdatedAt,
+		); err != nil {
+			return nil, fmt.Errorf("failed to scan app service row: %w", err)
+		}
+		app.AutoDeployWebhook = autoDeploy == 1
+		app.Serverless = serverless == 1
+		apps = append(apps, &app)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return apps, nil
+}
+
 // DeleteAppService deletes an application service configuration.
 func (s *Store) DeleteAppService(id string) error {
 	s.mu.Lock()

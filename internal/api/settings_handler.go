@@ -28,7 +28,6 @@ func NewSettingsHandler(s *store.Store, dockerClient *client.Client) *SettingsHa
 	}
 }
 
-// GetServerSettings returns global system configurations (Caddy IP, webhooks, SMTP).
 func (h *SettingsHandler) GetServerSettings(w http.ResponseWriter, r *http.Request) {
 	cfg, err := h.store.GetServerSettings()
 	if err != nil {
@@ -38,7 +37,6 @@ func (h *SettingsHandler) GetServerSettings(w http.ResponseWriter, r *http.Reque
 	writeJSON(w, http.StatusOK, cfg)
 }
 
-// UpdateServerSettings updates global daemon configurations (restricted to admin).
 func (h *SettingsHandler) UpdateServerSettings(w http.ResponseWriter, r *http.Request) {
 	var req types.ServerSettings
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -52,7 +50,6 @@ func (h *SettingsHandler) UpdateServerSettings(w http.ResponseWriter, r *http.Re
 	writeJSON(w, http.StatusOK, req)
 }
 
-// TriggerSystemPrune executes Docker system prune (containers, images, networks, volumes) and reports reclaimed space.
 func (h *SettingsHandler) TriggerSystemPrune(w http.ResponseWriter, r *http.Request) {
 	if h.dockerClient == nil {
 		writeJSON(w, http.StatusOK, map[string]any{
@@ -86,7 +83,6 @@ func (h *SettingsHandler) TriggerSystemPrune(w http.ResponseWriter, r *http.Requ
 	})
 }
 
-// GetProfile returns the authenticated user's profile details.
 func (h *SettingsHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	claims := GetUserClaimsFromContext(r.Context())
 	if claims == nil {
@@ -102,7 +98,6 @@ func (h *SettingsHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, user)
 }
 
-// UpdateProfile updates the authenticated user's name, email, or password.
 func (h *SettingsHandler) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	claims := GetUserClaimsFromContext(r.Context())
 	if claims == nil {
@@ -146,7 +141,6 @@ func (h *SettingsHandler) UpdateProfile(w http.ResponseWriter, r *http.Request) 
 	writeJSON(w, http.StatusOK, user)
 }
 
-// ListPATs lists Personal Access Tokens created by the authenticated user.
 func (h *SettingsHandler) ListPATs(w http.ResponseWriter, r *http.Request) {
 	claims := GetUserClaimsFromContext(r.Context())
 	if claims == nil {
@@ -161,7 +155,6 @@ func (h *SettingsHandler) ListPATs(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, list)
 }
 
-// CreatePAT generates a new secure CLI / API access token.
 func (h *SettingsHandler) CreatePAT(w http.ResponseWriter, r *http.Request) {
 	claims := GetUserClaimsFromContext(r.Context())
 	if claims == nil {
@@ -204,7 +197,6 @@ func (h *SettingsHandler) CreatePAT(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// DeletePAT revokes and deletes a Personal Access Token.
 func (h *SettingsHandler) DeletePAT(w http.ResponseWriter, r *http.Request) {
 	claims := GetUserClaimsFromContext(r.Context())
 	if claims == nil {

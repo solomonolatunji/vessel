@@ -8,7 +8,6 @@ import (
 	"github.com/solomonolatunji/vessel/internal/types"
 )
 
-// handleListDatabases retrieves all managed database records from the state store.
 func (s *Server) handleListDatabases(w http.ResponseWriter, r *http.Request) {
 	databases, err := s.store.ListDatabases()
 	if err != nil {
@@ -21,7 +20,6 @@ func (s *Server) handleListDatabases(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, databases)
 }
 
-// handleCreateDatabase registers and optionally spins up a new stateful database container.
 func (s *Server) handleCreateDatabase(w http.ResponseWriter, r *http.Request) {
 	var db types.DatabaseConfig
 	if err := json.NewDecoder(r.Body).Decode(&db); err != nil {
@@ -67,7 +65,6 @@ func (s *Server) handleCreateDatabase(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusCreated, db)
 }
 
-// handleGetDatabase returns the full details and credentials of a single managed database.
 func (s *Server) handleGetDatabase(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	if id == "" {
@@ -83,7 +80,6 @@ func (s *Server) handleGetDatabase(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, db)
 }
 
-// handleDeleteDatabase stops the running container and removes the database record from SQLite.
 func (s *Server) handleDeleteDatabase(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	if id == "" {
@@ -102,7 +98,6 @@ func (s *Server) handleDeleteDatabase(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{"status": "deleted"})
 }
 
-// handleStartDatabase launches or resumes a stopped managed database instance container.
 func (s *Server) handleStartDatabase(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	if id == "" {
@@ -128,7 +123,6 @@ func (s *Server) handleStartDatabase(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, db)
 }
 
-// handleStopDatabase gracefully terminates a running managed database instance container.
 func (s *Server) handleStopDatabase(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	if id == "" {

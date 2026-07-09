@@ -22,14 +22,24 @@ func TestStoreAndVault(t *testing.T) {
 	defer s.Close()
 
 	proj := &types.ProjectConfig{
-		Name:          "Aeroplane-Inspired App",
+		Name:        "Aeroplane-Inspired App",
+		Description: "Test Project",
+	}
+	if err := s.CreateProject(proj); err != nil {
+		t.Fatalf("CreateProject failed: %v", err)
+	}
+
+	app := &types.AppServiceConfig{
+		ProjectID:     proj.ID,
+		EnvironmentID: "env-prod",
+		Name:          "web",
 		RepositoryURL: "https://github.com/solomonolatunji/sample-app",
 		Branch:        "main",
 		InternalPort:  3000,
 		Domain:        "app.vessel.dev",
 	}
-	if err := s.CreateProject(proj); err != nil {
-		t.Fatalf("CreateProject failed: %v", err)
+	if err := s.CreateAppService(app); err != nil {
+		t.Fatalf("CreateAppService failed: %v", err)
 	}
 
 	fetchedProj, err := s.GetProject(proj.ID)

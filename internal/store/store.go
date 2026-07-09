@@ -42,18 +42,9 @@ func (s *Store) migrate() error {
 	queries := []string{
 		`CREATE TABLE IF NOT EXISTS projects (
 			id TEXT PRIMARY KEY,
+			team_id TEXT DEFAULT '',
 			name TEXT UNIQUE NOT NULL,
-			repository_url TEXT,
-			branch TEXT,
-			build_command TEXT,
-			start_command TEXT,
-			dockerfile_path TEXT,
-			internal_port INTEGER DEFAULT 3000,
-			domain TEXT,
-			auto_deploy_webhook BOOLEAN DEFAULT 1,
-			cpu_request REAL DEFAULT 0.5,
-			memory_limit_mb INTEGER DEFAULT 512,
-			health_check_path TEXT DEFAULT '/',
+			description TEXT DEFAULT '',
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 		);`,
@@ -167,6 +158,8 @@ func (s *Store) migrate() error {
 	_, _ = s.db.Exec("ALTER TABLE storage ADD COLUMN project_id TEXT DEFAULT '';")
 	_, _ = s.db.Exec("ALTER TABLE databases ADD COLUMN environment_id TEXT DEFAULT '';")
 	_, _ = s.db.Exec("ALTER TABLE storage ADD COLUMN environment_id TEXT DEFAULT '';")
+	_, _ = s.db.Exec("ALTER TABLE projects ADD COLUMN team_id TEXT DEFAULT '';")
+	_, _ = s.db.Exec("ALTER TABLE projects ADD COLUMN description TEXT DEFAULT '';")
 
 	if err := s.initEnvironmentTable(); err != nil {
 		return fmt.Errorf("failed to initialize environments table: %w", err)
@@ -194,6 +187,9 @@ func (s *Store) migrate() error {
 	}
 	if err := s.initTeamTables(); err != nil {
 		return fmt.Errorf("failed to initialize team tables: %w", err)
+	}
+	if err := s.initWorkspaceTables(); err != nil {
+		return fmt.Errorf("failed to initialize workspace tables: %w", err)
 	}
 	if err := s.initSettingsTables(); err != nil {
 		return fmt.Errorf("failed to initialize settings tables: %w", err)
@@ -242,6 +238,8 @@ func (s *Store) initTeamTables() error {
 		`CREATE TABLE IF NOT EXISTS teams (
 			id TEXT PRIMARY KEY,
 			name TEXT NOT NULL,
+			avatar_url TEXT DEFAULT '',
+			preferred_deployment_region TEXT DEFAULT 'local',
 			owner_id TEXT NOT NULL,
 			created_at TEXT,
 			updated_at TEXT
@@ -262,6 +260,42 @@ func (s *Store) initTeamTables() error {
 			token TEXT UNIQUE NOT NULL,
 			invited_by TEXT NOT NULL,
 			expires_at TEXT,
+			created_at TEXT
+		);`,
+	}
+	for _, q := range queries {
+		if _, err := s.db.Exec(q); err != nil {
+			return err
+		}
+	}
+	_, _ = s.db.Exec("ALTER TABLE teams ADD COLUMN avatar_url TEXT DEFAULT '';")
+	_, _ = s.db.Exec("ALTER TABLE teams ADD COLUMN preferred_deployment_region TEXT DEFAULT 'local';")
+	return nil
+}
+
+func (s *Store) initWorkspaceTables() error {
+	queries := []string{
+		`CREATE TABLE IF NOT EXISTS workspace_trusted_domains (
+			id TEXT PRIMARY KEY,
+			team_id TEXT NOT NULL,
+			domain TEXT NOT NULL,
+			role TEXT DEFAULT 'developer',
+			created_at TEXT
+		);`,
+		`CREATE TABLE IF NOT EXISTS workspace_ssh_keys (
+			id TEXT PRIMARY KEY,
+			team_id TEXT NOT NULL,
+			name TEXT NOT NULL,
+			public_key TEXT NOT NULL,
+			created_at TEXT
+		);`,
+		`CREATE TABLE IF NOT EXISTS workspace_audit_logs (
+			id TEXT PRIMARY KEY,
+			team_id TEXT NOT NULL,
+			project_id TEXT,
+			environment_id TEXT,
+			action TEXT NOT NULL,
+			actor TEXT NOT NULL,
 			created_at TEXT
 		);`,
 	}

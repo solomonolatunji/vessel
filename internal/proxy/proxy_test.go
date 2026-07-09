@@ -13,13 +13,26 @@ func TestCaddyfileGenerator(t *testing.T) {
 
 	projects := []types.ProjectConfig{
 		{
+			ID:   "test-id-123",
+			Name: "Frontend App",
+		},
+		{
+			ID:   "api-project-456",
+			Name: "Go Backend API",
+		},
+	}
+
+	services := []*types.AppServiceConfig{
+		{
 			ID:           "test-id-123",
+			ProjectID:    "test-id-123",
 			Name:         "Frontend App",
 			Domain:       "app.solomon.com",
 			InternalPort: 3000,
 		},
 		{
 			ID:           "api-project-456",
+			ProjectID:    "api-project-456",
 			Name:         "Go Backend API",
 			InternalPort: 8080,
 		},
@@ -40,7 +53,7 @@ func TestCaddyfileGenerator(t *testing.T) {
 		},
 	}
 
-	caddyfile, err := gen.Generate(projects, domains)
+	caddyfile, err := gen.Generate(projects, services, domains)
 	if err != nil {
 		t.Fatalf("expected no error generating caddyfile, got: %v", err)
 	}

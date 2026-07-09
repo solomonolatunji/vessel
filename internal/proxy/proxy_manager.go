@@ -37,12 +37,14 @@ func (m *ProxyManager) Reload(ctx context.Context) error {
 		return fmt.Errorf("failed to load active projects for caddy reload: %w", err)
 	}
 
+	services, _ := m.store.ListAllAppServices()
+
 	domains, err := m.store.ListAllDomains()
 	if err != nil {
 		return fmt.Errorf("failed to load custom domains for caddy reload: %w", err)
 	}
 
-	caddyfileContent, err := m.generator.Generate(projects, domains)
+	caddyfileContent, err := m.generator.Generate(projects, services, domains)
 	if err != nil {
 		return fmt.Errorf("failed to generate caddyfile syntax: %w", err)
 	}

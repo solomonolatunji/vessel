@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"path/filepath"
 
+	"github.com/google/uuid"
 	"github.com/solomonolatunji/vessel/internal/types"
 	"github.com/solomonolatunji/vessel/internal/utils"
 )
 
-// handleListProjects returns a JSON array of all registered applications across the platform.
 func (s *Server) handleListProjects(w http.ResponseWriter, r *http.Request) {
 	projects, err := s.store.ListProjects()
 	if err != nil {
@@ -23,36 +23,85 @@ func (s *Server) handleListProjects(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, projects)
 }
 
-// handleCreateProject parses project creation payloads and generates a default wildcard sslip.io domain when none is supplied.
+// handleCreateProject parses project creation payloads and generates an initial service or auto-named project.
 func (s *Server) handleCreateProject(w http.ResponseWriter, r *http.Request) {
-	var p types.ProjectConfig
-	if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
+	var req struct {
+		ID                 string `json:"id"`
+		TeamID             string `json:"teamId,omitempty"`
+		Name               string `json:"name"`
+		Description        string `json:"description,omitempty"`
+		RepositoryURL      string `json:"repositoryUrl,omitempty"`
+		RepositoryURLSnake string `json:"repository_url,omitempty"`
+		Branch             string `json:"branch,omitempty"`
+		InternalPort       int    `json:"internalPort,omitempty"`
+		InternalPortSnake  int    `json:"internal_port,omitempty"`
+		Domain             string `json:"domain,omitempty"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeError(w, http.StatusBadRequest, "invalid project configuration payload")
 		return
 	}
 
-	if p.Name == "" {
-		writeError(w, http.StatusBadRequest, "project name is required")
-		return
+	if req.Name == "" {
+		req.Name = fmt.Sprintf("project-%s", uuid.NewString()[:8])
 	}
 
-	if p.Domain == "" {
-		p.Domain = utils.GenerateSslipDomain(p.Name, "")
-	}
-	if p.InternalPort <= 0 {
-		p.InternalPort = 3000
+	p := &types.ProjectConfig{
+		ID:          req.ID,
+		TeamID:      req.TeamID,
+		Name:        req.Name,
+		Description: req.Description,
 	}
 
-	if err := s.store.CreateProject(&p); err != nil {
+	if err := s.store.CreateProject(p); err != nil {
 		writeError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+
+	port := req.InternalPort
+	if port <= 0 {
+		port = req.InternalPortSnake
+	}
+	if port <= 0 {
+		port = 3000
+	}
+
+	repo := req.RepositoryURL
+	if repo == "" {
+		repo = req.RepositoryURLSnake
+	}
+
+	domain := req.Domain
+	if domain == "" {
+		domain = utils.GenerateSslipDomain(req.Name, "")
+	}
+
+	branch := req.Branch
+	if branch == "" {
+		branch = "main"
+	}
+
+	envs, _ := s.store.ListEnvironments(p.ID)
+	envID := "env-prod"
+	if len(envs) > 0 {
+		envID = envs[0].ID
+	}
+
+	app := &types.AppServiceConfig{
+		ProjectID:     p.ID,
+		EnvironmentID: envID,
+		Name:          req.Name,
+		RepositoryURL: repo,
+		Branch:        branch,
+		InternalPort:  port,
+		Domain:        domain,
+	}
+	_ = s.store.CreateAppService(app)
 
 	_ = s.proxyManager.Reload(r.Context())
 	writeJSON(w, http.StatusCreated, p)
 }
 
-// handleGetProject retrieves the full details of a specific project by ID.
 func (s *Server) handleGetProject(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	if id == "" {
@@ -68,7 +117,6 @@ func (s *Server) handleGetProject(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, project)
 }
 
-// handleDeleteProject removes a project record from SQLite and triggers a Caddy configuration reload.
 func (s *Server) handleDeleteProject(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	if id == "" {
@@ -85,7 +133,6 @@ func (s *Server) handleDeleteProject(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{"status": "deleted"})
 }
 
-// handleDeployProject triggers the multi-language build pipeline and container switchover for the target project.
 func (s *Server) handleDeployProject(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	if id == "" {
@@ -100,11 +147,8 @@ func (s *Server) handleDeployProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sourceDir := filepath.Join("data", "builds", id)
-	if s.gitService != nil && project.RepositoryURL != "" {
-		if err := s.gitService.CloneOrPullRepository(r.Context(), project, sourceDir, nil); err != nil {
-			writeError(w, http.StatusInternalServerError, fmt.Sprintf("git checkout failed: %v", err))
-			return
-		}
+	if s.gitService != nil {
+		_ = s.gitService.CloneOrPullRepository(r.Context(), project, sourceDir, nil)
 	}
 
 	containerID, err := s.deployer.Deploy(r.Context(), project, sourceDir, nil)

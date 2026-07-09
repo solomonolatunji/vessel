@@ -23,11 +23,13 @@ const (
 
 // BuildOptions contains options required by builders to generate an OCI image.
 type BuildOptions struct {
-	ProjectID      string               `json:"projectId"`
-	SourceDir      string               `json:"sourceDir"`
-	DockerfilePath string               `json:"dockerfilePath,omitempty"`
-	LogWriter      io.Writer            `json:"-"`
-	ProjectConfig  *types.ProjectConfig `json:"projectConfig,omitempty"`
+	ProjectID      string                  `json:"projectId"`
+	ServiceID      string                  `json:"serviceId,omitempty"`
+	SourceDir      string                  `json:"sourceDir"`
+	DockerfilePath string                  `json:"dockerfilePath,omitempty"`
+	LogWriter      io.Writer               `json:"-"`
+	ProjectConfig  *types.ProjectConfig    `json:"projectConfig,omitempty"`
+	AppConfig      *types.AppServiceConfig `json:"appConfig,omitempty"`
 }
 
 // Builder defines the interface required for any container image builder strategy.

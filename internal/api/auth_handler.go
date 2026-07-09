@@ -14,7 +14,6 @@ type authPayload struct {
 	Role     string `json:"role"`
 }
 
-// handleRegister creates a new user account, hashes the password with bcrypt, issues a JWT token, and sets a secure session cookie.
 func (s *Server) handleRegister(w http.ResponseWriter, r *http.Request) {
 	var payload authPayload
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
@@ -73,7 +72,6 @@ func (s *Server) handleRegister(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// handleLogin validates credentials against stored bcrypt hashes, issues a JWT token, and sets a session cookie.
 func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
 	var payload authPayload
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
@@ -106,7 +104,6 @@ func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// handleGetCurrentUser returns the profile details of the currently authenticated user session.
 func (s *Server) handleGetCurrentUser(w http.ResponseWriter, r *http.Request) {
 	claims := GetUserClaimsFromContext(r.Context())
 	if claims == nil {
@@ -124,7 +121,6 @@ func (s *Server) handleGetCurrentUser(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, user)
 }
 
-// handleLogout clears the vessel_token HTTP-only session cookie from the client browser.
 func (s *Server) handleLogout(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "vessel_token",

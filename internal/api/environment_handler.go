@@ -7,7 +7,6 @@ import (
 	"github.com/solomonolatunji/vessel/internal/types"
 )
 
-// CreateEnvironment provisions a new isolated runtime environment inside a project workspace canvas.
 func (s *Server) CreateEnvironment(w http.ResponseWriter, r *http.Request) {
 	projectID := r.PathValue("id")
 
@@ -32,7 +31,6 @@ func (s *Server) CreateEnvironment(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(env)
 }
 
-// ListEnvironments returns all environments belonging to a project canvas workspace.
 func (s *Server) ListEnvironments(w http.ResponseWriter, r *http.Request) {
 	projectID := r.PathValue("id")
 
@@ -45,7 +43,6 @@ func (s *Server) ListEnvironments(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(envs)
 }
 
-// DeleteEnvironment removes an environment from the project canvas.
 func (s *Server) DeleteEnvironment(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 
