@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -13,6 +14,7 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/joho/godotenv"
 	_ "modernc.org/sqlite"
+	"vessel.dev/vessel/internal/agent"
 	"vessel.dev/vessel/internal/engine"
 	vesselhttp "vessel.dev/vessel/internal/http"
 	"vessel.dev/vessel/internal/models"
@@ -106,7 +108,25 @@ func main() {
 
 	_ = godotenv.Load()
 
+	isAgent := flag.Bool("agent", false, "Run in agent mode")
+	agentToken := flag.String("token", "", "Agent auth token")
+	serverURL := flag.String("server", "", "Controller server WSS URL")
+	flag.Parse()
+
 	log.Printf(" Booting Vessel Daemon (`vesseld`) v%s [%s/%s]...", vesselVersion, runtime.GOOS, runtime.GOARCH)
+
+	if *isAgent {
+		if *serverURL == "" {
+			log.Fatal(" Error: --server is required in agent mode (e.g. wss://vessel.domain.com/api/agent)")
+		}
+		if *agentToken == "" {
+			log.Fatal(" Error: --token is required in agent mode")
+		}
+		if err := agent.Run(context.Background(), *serverURL, *agentToken); err != nil {
+			log.Fatalf(" Agent mode exited: %v", err)
+		}
+		return
+	}
 
 	port := os.Getenv("PORT")
 	if port == "" {

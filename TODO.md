@@ -87,11 +87,11 @@
   - [x] **DNS Configuration**: Custom DNS resolver addresses for container networking (e.g. `1.1.1.1`), DNS validation toggle.
   - [x] **API Access Control**: Restrict API access to specific IPs/CIDR ranges (e.g. `192.168.1.100`, `10.0.0.0/8`). Empty = all IPs allowed.
   - [x] **MCP Server Toggle**: Enable/disable the MCP server endpoint for AI agent integrations (`/api/mcp` JSON-RPC).
-- [ ] **Agent Mode (`cmd/vesseld --agent`)**:
-  - [ ] Add `--agent --token=<auth_token>` and `--server=<wss://...>` flags to `vesseld`.
-  - [ ] Implement secure outbound WebSocket / mTLS tunnel for remote control.
-  - [ ] Allow remote execution of Docker commands over the tunnel without exposing public ports.
-  - [ ] Ships in the open-source daemon; the cloud-side connection acceptor is in Phase 6.
+- [x] **Agent Mode (`cmd/vesseld --agent`)**:
+  - [x] Add `--agent --token=<auth_token>` and `--server=<wss://...>` flags to `vesseld`.
+  - [x] Implement secure outbound WebSocket / mTLS tunnel for remote control.
+  - [x] Allow remote execution of Docker commands over the tunnel without exposing public ports.
+  - [x] Ships in the open-source daemon; the cloud-side connection acceptor is in Phase 6.
 - [x] **Update Management (`internal/api/settings_handler.go`, `internal/updater/`)**:
   - [x] **Update Check Frequency**: Configurable cron expression for automatic update checks (e.g. `0 * * * *`).
   - [x] **Manual Check Button**: Trigger an immediate update check from the API (`POST /api/settings/updates/check`).
