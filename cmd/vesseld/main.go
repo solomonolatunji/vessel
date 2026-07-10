@@ -103,10 +103,14 @@ func main() {
 		log.Printf(" Warning: Failed to start Traefik proxy: %v", err)
 	}
 
+	host := os.Getenv("HOST")
+	
+	addr := host + ":" + port
+
 	deployer := engine.NewDeployer(dockerClient, &dbDeployerStore{db: db, vault: vlt})
 	apiServer := vesselhttp.NewServer(db, vlt, deployer, traefikMgr, dockerClient)
-	log.Printf(" Vessel control plane listening on :%s", port)
-	if err := http.ListenAndServe(":"+port, apiServer.Handler()); err != nil {
+	log.Printf(" Vessel control plane listening on %s", addr)
+	if err := http.ListenAndServe(addr, apiServer.Handler()); err != nil {
 		log.Fatalf(" Server crashed: %v", err)
 	}
 }

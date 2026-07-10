@@ -52,7 +52,7 @@ func (c *ContainerManager) CreateAndStart(ctx context.Context, name, imageTag, s
 			Memory:   utils.MegaBytesToBytes(memoryLimitMB),
 			NanoCPUs: utils.CPURequestToNanoCPUs(cpuRequest),
 		},
-		NetworkMode: "vessel-network", // Connect to the shared Traefik network
+		NetworkMode: container.NetworkMode(utils.GetRuntimeNetwork()), // Connect to the shared Traefik network
 	}
 	if c.store != nil {
 		settings, _ := c.store.GetServerSettings()

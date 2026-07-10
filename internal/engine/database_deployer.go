@@ -127,7 +127,7 @@ func (d *DatabaseDeployer) SpinUp(ctx context.Context, dbConfig *models.Database
 	}
 	netCfg := &network.NetworkingConfig{
 		EndpointsConfig: map[string]*network.EndpointSettings{
-			"vessel-net": {
+			utils.GetRuntimeNetwork(): {
 				Aliases: []string{containerName, dbConfig.Name},
 			},
 		},
