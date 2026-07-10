@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  mariadb:
+    image: mariadb:11
+    x-vessel:
+      is_database: true
+      connection_string: "mariadb://${db.username}:${db.password}@${host}:${port}/${db.database_name}"
+      backup:
+        command: ["mariadb-dump", "-u", "root", "-p${db.password}", "${db.database_name}"]
+        file_extension: ".sql"
+    environment:
+      - MARIADB_ROOT_PASSWORD=${db.password}
+      - MARIADB_USER=${db.username}
+      - MARIADB_PASSWORD=${db.password}
+      - MARIADB_DATABASE=${db.database_name}
+    volumes:
+      - mariadb-data:/var/lib/mysql

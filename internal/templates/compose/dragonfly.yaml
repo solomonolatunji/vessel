@@ -1,7 +1,7 @@
 version: "3.8"
 services:
-  redis:
-    image: redis:7-alpine
+  dragonfly:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
     x-vessel:
       is_database: true
       connection_string: "redis://:${db.password}@${host}:${port}/0"
@@ -9,8 +9,8 @@ services:
         command: ["redis-cli", "SAVE"]
         file_extension: ".rdb"
     command:
-      - redis-server
+      - dragonfly
       - --requirepass
       - ${db.password}
     volumes:
-      - redis-data:/data
+      - dragonfly-data:/data

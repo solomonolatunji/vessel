@@ -20,6 +20,7 @@ import (
 	"github.com/robfig/cron/v3"
 
 	"vessel.dev/vessel/internal/models"
+	"vessel.dev/vessel/internal/templates"
 	"vessel.dev/vessel/internal/utils"
 )
 
@@ -135,20 +136,40 @@ func (bm *BackupManager) TriggerBackup(ctx context.Context, backupConfigID strin
 			return nil, errors.New(errStr)
 		}
 		containerName = utils.NormalizeContainerName(db.ID)
-		switch strings.ToLower(db.Engine) {
-		case "postgresql":
-			dumpCmd = []string{"pg_dump", "-U", "vessel", "vesseldb"}
-			fileExt = ".sql"
-		case "mysql", "mariadb":
-			dumpCmd = []string{"mysqldump", "-u", "root", "-p" + db.Password, "vesseldb"}
-			fileExt = ".sql"
-		case "mongodb":
-			dumpCmd = []string{"mongodump", "--archive"}
-			fileExt = ".archive"
-		case "redis":
-			dumpCmd = []string{"redis-cli", "SAVE"}
-			fileExt = ".rdb"
-		default:
+		tmplMgr, err := templates.NewManager()
+		if err != nil {
+			errStr := fmt.Sprintf("failed to init template manager: %v", err)
+			_ = bm.store.UpdateBackupRecord(rec.ID, "failed", "", "", errStr, 0, time.Now().UTC().Format(time.RFC3339))
+			return nil, errors.New(errStr)
+		}
+
+		composeFile, err := tmplMgr.GetTemplate(strings.ToLower(db.Engine))
+		if err != nil {
+			errStr := fmt.Sprintf("unsupported database engine %s: %v", db.Engine, err)
+			_ = bm.store.UpdateBackupRecord(rec.ID, "failed", "", "", errStr, 0, time.Now().UTC().Format(time.RFC3339))
+			return nil, errors.New(errStr)
+		}
+
+		// Get the main service
+		tmplService, exists := composeFile.Services[strings.ToLower(db.Engine)]
+		if !exists {
+			for _, s := range composeFile.Services {
+				tmplService = s
+				break
+			}
+		}
+
+		if tmplService.XVessel != nil && tmplService.XVessel.Backup != nil && len(tmplService.XVessel.Backup.Command) > 0 {
+			// Resolve variables in command
+			for _, c := range tmplService.XVessel.Backup.Command {
+				resolved := strings.ReplaceAll(c, "${db.password}", db.Password)
+				resolved = strings.ReplaceAll(resolved, "${db.username}", db.Username)
+				resolved = strings.ReplaceAll(resolved, "${db.database_name}", db.DatabaseName)
+				dumpCmd = append(dumpCmd, resolved)
+			}
+			fileExt = tmplService.XVessel.Backup.FileExtension
+		} else {
+			// Fallback generic dump if no metadata exists
 			dumpCmd = []string{"sh", "-c", "echo 'Generic volume snapshot'"}
 			fileExt = ".tar.gz"
 		}

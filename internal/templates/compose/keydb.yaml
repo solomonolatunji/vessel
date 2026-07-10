@@ -1,16 +1,18 @@
 version: "3.8"
 services:
-  redis:
-    image: redis:7-alpine
+  keydb:
+    image: eqalpha/keydb:latest
     x-vessel:
       is_database: true
       connection_string: "redis://:${db.password}@${host}:${port}/0"
       backup:
-        command: ["redis-cli", "SAVE"]
+        command: ["keydb-cli", "SAVE"]
         file_extension: ".rdb"
     command:
-      - redis-server
+      - keydb-server
       - --requirepass
       - ${db.password}
+      - --appendonly
+      - "yes"
     volumes:
-      - redis-data:/data
+      - keydb-data:/data

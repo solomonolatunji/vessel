@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    x-vessel:
+      is_database: true
+      connection_string: "clickhouse://${db.username}:${db.password}@${host}:${port}/${db.database_name}"
+      backup:
+        command: ["clickhouse-client", "--user", "${db.username}", "--password", "${db.password}", "--query", "BACKUP TABLE ${db.database_name}.* TO Disk('backups', 'backup.zip')"]
+        file_extension: ".zip"
+    environment:
+      - CLICKHOUSE_USER=${db.username}
+      - CLICKHOUSE_PASSWORD=${db.password}
+      - CLICKHOUSE_DB=${db.database_name}
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse

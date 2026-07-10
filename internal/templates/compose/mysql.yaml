@@ -1,21 +1,17 @@
+version: "3.8"
 services:
   mysql:
-    image: mysql:8
+    image: mysql:8.0
+    x-vessel:
+      is_database: true
+      connection_string: "mysql://${db.username}:${db.password}@${host}:${port}/${db.database_name}"
+      backup:
+        command: ["mysqldump", "-u", "root", "-p${db.password}", "${db.database_name}"]
+        file_extension: ".sql"
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-appdb}
-      MYSQL_USER: ${MYSQL_USER:-vesseladmin}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${db.password}
+      - MYSQL_USER=${db.username}
+      - MYSQL_PASSWORD=${db.password}
+      - MYSQL_DATABASE=${db.database_name}
     volumes:
-      - mysql_data:/var/lib/mysql
-    ports:
-      - ${PORT:-3306}:3306
-    restart: unless-stopped
-    healthcheck:
-      test: mysqladmin ping -u root -p${MYSQL_ROOT_PASSWORD}
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-volumes:
-  mysql_data:
+      - mysql-data:/var/lib/mysql

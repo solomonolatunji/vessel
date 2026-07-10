@@ -1,19 +1,16 @@
+version: "3.8"
 services:
   mongodb:
-    image: mongo:7
+    image: mongo:7.0
+    x-vessel:
+      is_database: true
+      connection_string: "mongodb://${db.username}:${db.password}@${host}:${port}/${db.database_name}?authSource=admin"
+      backup:
+        command: ["mongodump", "--archive"]
+        file_extension: ".archive"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-vesseladmin}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      - MONGO_INITDB_ROOT_USERNAME=${db.username}
+      - MONGO_INITDB_ROOT_PASSWORD=${db.password}
+      - MONGO_INITDB_DATABASE=${db.database_name}
     volumes:
-      - mongo_data:/data/db
-    ports:
-      - ${PORT:-27017}:27017
-    restart: unless-stopped
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-volumes:
-  mongo_data:
+      - mongo-data:/data/db
