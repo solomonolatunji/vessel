@@ -1,31 +1,56 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
+
 :root {
+  --sl-color-white: #fafafa;
+  --sl-color-gray-1: #e7e8ee;
+  --sl-color-gray-2: #a1a1aa;
+  --sl-color-gray-3: #777b87;
+  --sl-color-gray-4: #52525b;
+  --sl-color-gray-5: #27272a;
+  --sl-color-gray-6: #13131a;
+  --sl-color-black: #0a0a0f;
+  --sl-color-accent-low: rgba(124, 58, 237, 0.16);
   --sl-color-accent: #7c3aed;
   --sl-color-accent-high: #8b5cf6;
-  --sl-color-accent-low: #2e1065;
-  --sl-color-text-accent: #7c3aed;
-}
-
-.dark {
+  --sl-color-text: #a1a1aa;
+  --sl-color-text-accent: #8b5cf6;
+  --sl-color-text-invert: #ffffff;
   --sl-color-bg: #0a0a0f;
-  --sl-color-bg-nav: #0a0a0f;
-  --sl-color-bg-sidebar: #0a0a0f;
-  --sl-color-bg-card: #13131a;
-  --sl-color-bg-markdown: #13131a;
-  --sl-color-border: #27272a;
-  --sl-color-text: #fafafa;
-  --sl-color-text-muted: #a1a1aa;
+  --sl-color-bg-nav: rgba(10, 10, 15, 0.88);
+  --sl-color-bg-sidebar: rgba(10, 10, 15, 0.72);
+  --sl-color-bg-inline-code: rgba(19, 19, 26, 0.9);
+  --sl-color-bg-accent: #7c3aed;
+  --sl-color-hairline-light: rgba(39, 39, 42, 0.72);
+  --sl-color-hairline: rgba(39, 39, 42, 0.65);
+  --sl-color-hairline-shade: rgba(39, 39, 42, 0.5);
+  --sl-color-backdrop-overlay: rgba(10, 10, 15, 0.78);
+  --sl-font: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --sl-font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 }
 
-:root:not(.dark) {
-  --sl-color-bg: #ffffff;
-  --sl-color-bg-nav: #ffffff;
-  --sl-color-bg-sidebar: #fafafa;
-  --sl-color-bg-card: #ffffff;
-  --sl-color-bg-markdown: #ffffff;
-  --sl-color-border: #e5e5e5;
-  --sl-color-text: #171717;
-  --sl-color-text-muted: #737373;
+:root[data-theme="light"] {
+  --sl-color-white: #171717;
+  --sl-color-gray-1: #27272a;
+  --sl-color-gray-2: #52525b;
+  --sl-color-gray-3: #737373;
+  --sl-color-gray-4: #a1a1aa;
+  --sl-color-gray-5: #e5e5e5;
+  --sl-color-gray-6: #f5f5f5;
+  --sl-color-black: #ffffff;
+  --sl-color-accent-low: rgba(109, 40, 217, 0.1);
   --sl-color-accent: #6d28d9;
   --sl-color-accent-high: #7c3aed;
+  --sl-color-text: #52525b;
   --sl-color-text-accent: #6d28d9;
+  --sl-color-text-invert: #ffffff;
+  --sl-color-bg: #ffffff;
+  --sl-color-bg-nav: rgba(255, 255, 255, 0.88);
+  --sl-color-bg-sidebar: rgba(250, 250, 250, 0.72);
+  --sl-color-bg-inline-code: rgba(245, 245, 245, 0.9);
+  --sl-color-bg-accent: #6d28d9;
+  --sl-color-hairline-light: rgba(229, 229, 229, 0.8);
+  --sl-color-hairline: rgba(229, 229, 229, 0.72);
+  --sl-color-hairline-shade: rgba(229, 229, 229, 0.6);
+  --sl-color-backdrop-overlay: rgba(0, 0, 0, 0.1);
 }
