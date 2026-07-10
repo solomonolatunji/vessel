@@ -4,8 +4,6 @@
 
 ## ⚙️ Phase 2: Go Backend Engine (`cmd/vesseld` & `internal/`)
 
-- [ ] **Vercel Project Imports Backend**: Vercel OAuth integration, endpoints to fetch Vercel projects, parse their env vars, and map them to Vessel projects.
-  - _Schema Update_: Add `user_vercel_accounts` table (or integrate into `user_git_providers`) to store Vercel access tokens.
 - [ ] **Serverless Functions Engine**: Endpoints to save function code snippets and a backend builder to package and run serverless functions as containers.
   - _Schema Update_: Add `serverless_functions_code` table to store `service_id`, `runtime`, and `code_content`.
 

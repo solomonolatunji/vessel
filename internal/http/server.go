@@ -58,6 +58,7 @@ type Server struct {
 	gitAppsHandler         *handlers.GitAppsHandler
 	aiSettingsHandler      *handlers.AISettingsHandler
 	aiDiagnosticsHandler   *handlers.AIDiagnosticsHandler
+	vercelHandler          *handlers.VercelHandler
 }
 
 func NewServer(db *sql.DB, vault *vault.Vault, deployer *engine.Deployer, traefikManager *proxy.TraefikManager, dockerClient *client.Client) *Server {
@@ -123,6 +124,9 @@ func NewServer(db *sql.DB, vault *vault.Vault, deployer *engine.Deployer, traefi
 	aiSettingsRepo := repositories.NewTeamAISettingsSQLiteRepository(db, vault)
 	aiSettingsService := services.NewAISettingsService(aiSettingsRepo)
 
+	vercelRepo := repositories.NewVercelRepository(db, vault)
+	vercelService := services.NewVercelService(vercelRepo)
+
 	authGuard := middleware.NewAuthGuard(tokenService, settingsService, psService)
 	e := echo.New()
 	e.Use(echomiddleware.Logger())
@@ -165,6 +169,7 @@ func NewServer(db *sql.DB, vault *vault.Vault, deployer *engine.Deployer, traefi
 		gitAppsHandler:         handlers.NewGitAppsHandler(gitAppsService),
 		aiSettingsHandler:      handlers.NewAISettingsHandler(aiSettingsService),
 		aiDiagnosticsHandler:   handlers.NewAIDiagnosticsHandler(aiSettingsService, deploymentService, projectService),
+		vercelHandler:          handlers.NewVercelHandler(vercelService),
 	}
 	if srv.deployer != nil {
 		srv.deployer.EnvProvider = func(projectID string) (map[string]string, error) {

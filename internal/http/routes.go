@@ -159,6 +159,11 @@ func (s *Server) registerRoutes() {
 	// AI Diagnostics
 	authGroup.POST("/deployments/:id/diagnostics", s.aiDiagnosticsHandler.Analyze)
 
+	// Vercel Integration
+	authGroup.GET("/oauth/vercel/callback", s.vercelHandler.Callback)
+	authGroup.GET("/vercel/projects", s.vercelHandler.ListProjects)
+	authGroup.GET("/vercel/projects/:id/env", s.vercelHandler.GetProjectEnv)
+
 	apiGroup.GET("/ws/services/:id/terminal", s.terminalHandler.HandleWebSocket)
 	s.setupSPAFallback()
 }
