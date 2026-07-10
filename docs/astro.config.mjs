@@ -9,6 +9,7 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'Vessel Docs',
+      customCss: ['./src/styles/theme.css'],
       sidebar: [
         { label: 'Getting Started', slug: 'getting-started' },
         { label: 'Deployment', slug: 'deployment' },

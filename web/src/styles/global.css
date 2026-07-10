@@ -1,1 +1,18 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --color-background: #0a0a0f;
+  --color-surface: #13131a;
+  --color-primary: #7c3aed;
+  --color-primary-hover: #8b5cf6;
+  --color-secondary: #3b82f6;
+  --color-accent: #7c3aed;
+  --color-muted: #52525b;
+  --color-border: #27272a;
+  --color-foreground: #fafafa;
+  --color-muted-foreground: #a1a1aa;
+}
