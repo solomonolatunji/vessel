@@ -10,7 +10,8 @@
     "generate-routes": "tsr generate",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "deploy": "npm run build && echo '/* /index.html 200' > dist/_redirects && wrangler pages deploy dist/ --project-name vessel-cloud"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

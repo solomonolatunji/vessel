@@ -20,6 +20,10 @@
     "build:web": "npm --workspace=web run build",
     "build:all": "npm run build:dashboard && npm run build:cloud && npm run build:web",
     "build:docs": "npm --workspace=docs run build",
+    "deploy:web": "npm --workspace=web run deploy",
+    "deploy:cloud": "npm --workspace=cloud run deploy",
+    "deploy:docs": "npm --workspace=docs run deploy",
+    "deploy:all": "npm run deploy:web && npm run deploy:cloud && npm run deploy:docs",
     "test:dashboard": "npm --workspace=dashboard run test",
     "typecheck": "npm --workspace=dashboard run generate-routes && tsc -b dashboard",
     "format": "biome check .",
@@ -28,6 +32,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.3",
-    "concurrently": "^10.0.3"
+    "concurrently": "^10.0.3",
+    "wrangler": "^4.110.0"
   }
 }
