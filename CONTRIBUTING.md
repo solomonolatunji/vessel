@@ -150,7 +150,7 @@ npm run dev
 | API         | `http://localhost:8080`        | Go REST API           |
 | Health      | `http://localhost:8080/health` | API health check      |
 | Marketing   | `http://localhost:4321`        | Public site           |
-| Cloud Admin | `http://localhost:3002`        | Staff panel           |
+| Cloud Dashboard | `http://localhost:3002`        | Cloud user dashboard (signup, login, projects, /admin) |
 
 ---
 

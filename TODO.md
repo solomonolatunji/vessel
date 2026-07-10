@@ -180,7 +180,7 @@ internal/cloud/             # Cloud Go backend
 ├── middleware/             # API key auth, multi-tenant guards, rate limiting
 └── repos/                  # PostgreSQL repositories (cloud-specific)
 
-cloud/                      # Staff admin dashboard (TanStack + React)
+cloud/                      # Cloud user dashboard (TanStack + React)
 ├── src/
 │   ├── routes/             # TanStack Router routes
 │   ├── components/         # Admin UI components

@@ -16,6 +16,7 @@
     "format:fix": "biome check --write src"
   },
   "dependencies": {
+    "@hugeicons/core-free-icons": "^4.2.2",
     "@tailwindcss/vite": "^4.3.2",
     "astro": "^7.0.7",
     "tailwindcss": "^4.3.2"

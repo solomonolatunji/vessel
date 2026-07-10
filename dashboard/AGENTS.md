@@ -35,3 +35,4 @@ Components go in `src/components/ui/`. Always prefer an existing Radix component
 - [Radix UI](https://www.radix-ui.com/)
 - [Tailwind CSS v4](https://tailwindcss.com/)
 - [Lucide Icons](https://lucide.dev/)
+- [Hugeicons](https://hugeicons.com/)

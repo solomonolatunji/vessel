@@ -1,13 +1,14 @@
-import { Link } from '@tanstack/react-router';
 import {
-  Activity,
-  Database,
-  FolderKanban,
-  LayoutDashboard,
-  Server,
-  Settings,
-  Users,
-} from 'lucide-react';
+  Activity01Icon,
+  CloudServerIcon,
+  DashboardSquare01Icon,
+  Database01Icon,
+  Folder01Icon,
+  Settings01Icon,
+  UserGroupIcon,
+} from '@hugeicons/core-free-icons';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Link } from '@tanstack/react-router';
 import type * as React from 'react';
 
 import {
@@ -31,32 +32,32 @@ const items = [
   {
     title: 'Dashboard',
     url: '/',
-    icon: LayoutDashboard,
+    icon: DashboardSquare01Icon,
   },
   {
     title: 'Projects',
     url: '/projects',
-    icon: FolderKanban,
+    icon: Folder01Icon,
   },
   {
     title: 'Databases & Storage',
     url: '/databases',
-    icon: Database,
+    icon: Database01Icon,
   },
   {
     title: 'Jobs & Backups',
     url: '/jobs',
-    icon: Activity,
+    icon: Activity01Icon,
   },
   {
     title: 'Teams',
     url: '/teams',
-    icon: Users,
+    icon: UserGroupIcon,
   },
   {
     title: 'Settings',
     url: '/settings',
-    icon: Settings,
+    icon: Settings01Icon,
   },
 ];
 
@@ -69,7 +70,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
       >
         <SidebarHeader className="h-16 flex items-center justify-center border-b border-zinc-800/50">
           <div className="flex items-center gap-2 font-bold text-lg tracking-tight text-zinc-100 w-full px-4">
-            <Server className="h-5 w-5 text-indigo-400" />
+            <HugeiconsIcon icon={CloudServerIcon} className="h-5 w-5 text-indigo-400" />
             <span>Vessel</span>
           </div>
         </SidebarHeader>
@@ -87,11 +88,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
                       tooltip={item.title}
                       className="hover:bg-zinc-800/50 text-zinc-300 hover:text-zinc-50 transition-colors"
                     >
-                      <Link
-                        to={item.url}
-                        activeProps={{ className: 'bg-zinc-800/80 text-zinc-50 font-medium' }}
-                      >
-                        <item.icon className="h-4 w-4" />
+                      <Link to={item.url}>
+                        <HugeiconsIcon icon={item.icon} className="h-4 w-4" />
                         <span>{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
