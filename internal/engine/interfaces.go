@@ -11,6 +11,7 @@ type DeployerStore interface {
 	ListAppServicesByProject(projectID string) ([]*models.AppService, error)
 	GetEnvVars(projectID string) (map[string]string, error)
 	ListServiceVariables(serviceID string) ([]*models.Variable, error)
+	GetServerlessFunctionCode(serviceID string) (*models.ServerlessFunctionCode, error)
 }
 
 type DatabaseDeployerStore interface {

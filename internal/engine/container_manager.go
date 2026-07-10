@@ -109,3 +109,21 @@ func (c *ContainerManager) StreamLogs(ctx context.Context, containerIDOrName str
 	_, err = io.Copy(out, logsReader)
 	return err
 }
+
+func (c *ContainerManager) CleanupOrphanedContainers(ctx context.Context, prefix string, excludeContainerID string) error {
+	containers, err := c.dockerClient.ContainerList(ctx, container.ListOptions{All: true})
+	if err != nil {
+		return fmt.Errorf("failed to list containers: %w", err)
+	}
+	for _, ctn := range containers {
+		for _, name := range ctn.Names {
+			if strings.HasPrefix(name, "/"+prefix+"-") {
+				if ctn.ID != excludeContainerID && name != "/"+excludeContainerID {
+					_ = c.StopAndRemove(ctx, ctn.ID)
+				}
+				break
+			}
+		}
+	}
+	return nil
+}

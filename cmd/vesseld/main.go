@@ -51,6 +51,11 @@ func (a *dbDeployerStore) ListServiceVariables(serviceID string) ([]*models.Vari
 	return svVarRepo.ListByService(context.Background(), serviceID)
 }
 
+func (a *dbDeployerStore) GetServerlessFunctionCode(serviceID string) (*models.ServerlessFunctionCode, error) {
+	svlsRepo := repositories.NewServerlessRepository(a.db)
+	return svlsRepo.GetCodeByServiceID(context.Background(), serviceID)
+}
+
 func main() {
 	_ = godotenv.Load()
 	isAgent := flag.Bool("agent", false, "Run in agent mode")

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/docker/docker/api/types/container"
@@ -47,6 +49,39 @@ func (d *Deployer) Deploy(ctx context.Context, project *models.ProjectConfig, so
 func (d *Deployer) DeployAppService(ctx context.Context, app *models.AppService, sourceDir string, logWriter io.Writer) (string, error) {
 	if logWriter != nil {
 		fmt.Fprintf(logWriter, "🚀 [Deployer] Starting deployment for service: %s (ID: %s)\n", app.Name, app.ID)
+	}
+
+	if app.BuildEngine == string(StrategyServerless) {
+		code, err := d.store.GetServerlessFunctionCode(app.ID)
+		if err != nil {
+			return "", fmt.Errorf("could not retrieve serverless code: %w", err)
+		}
+
+		// Create the source dir if it doesn't exist
+		if err := os.MkdirAll(sourceDir, 0755); err != nil {
+			return "", fmt.Errorf("could not create source directory: %w", err)
+		}
+
+		var filename string
+		switch code.Runtime {
+		case "nodejs":
+			filename = "index.js"
+		case "python":
+			filename = "main.py"
+		case "go":
+			filename = "main.go"
+		default:
+			filename = "main.txt"
+		}
+
+		filePath := filepath.Join(sourceDir, filename)
+		if err := os.WriteFile(filePath, []byte(code.CodeContent), 0644); err != nil {
+			return "", fmt.Errorf("could not write serverless code to file: %w", err)
+		}
+
+		if logWriter != nil {
+			fmt.Fprintf(logWriter, "📝 [Deployer] Wrote serverless function code to %s\n", filePath)
+		}
 	}
 	buildOpts := BuildOptions{
 		ProjectID: app.ProjectID,
@@ -125,13 +160,15 @@ func (d *Deployer) DeployAppService(ctx context.Context, app *models.AppService,
 		fmt.Fprintf(logWriter, "🎉 [Deployer] Health check passed! Container is ready.\n")
 		fmt.Fprintf(logWriter, "🎉 [Deployer] Deployment successful! Container ID: %s\n", newContainerName)
 	}
-	oldContainerID := app.ContainerID
-	if oldContainerID != "" && oldContainerID != newContainerName {
-		go func() {
-			time.Sleep(10 * time.Second)
-			_ = d.containerManager.StopAndRemove(context.Background(), oldContainerID)
-		}()
-	}
+	prefix := utils.NormalizeContainerName(app.ID)
+	go func() {
+		time.Sleep(10 * time.Second)
+		if logWriter != nil {
+			fmt.Fprintf(logWriter, "🧹 [Deployer] Cleaning up old orphaned containers...\n")
+		}
+		_ = d.containerManager.CleanupOrphanedContainers(context.Background(), prefix, newContainerName)
+	}()
+
 	return newContainerName, nil
 }
 

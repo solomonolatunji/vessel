@@ -23,6 +23,16 @@ type DomainConfig struct {
 	UpdatedAt     time.Time `json:"updatedAt"`
 }
 
+type ServerlessFunctionCode struct {
+	ID          string    `json:"id"`
+	ServiceID   string    `json:"serviceId"`
+	Runtime     string    `json:"runtime"`
+	CodeContent string    `json:"codeContent"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
+}
+
+
 type EnvironmentConfig struct {
 	ID        string    `json:"id"`
 	ProjectID string    `json:"projectId"`

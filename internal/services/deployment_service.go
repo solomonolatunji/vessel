@@ -92,7 +92,12 @@ func (s *DeploymentService) DeployAppService(ctx context.Context, appID, sourceD
 	if err != nil {
 		return "", err
 	}
-	return s.deployer.DeployAppService(ctx, app, sourceDir, logWriter)
+	containerID, err := s.deployer.DeployAppService(ctx, app, sourceDir, logWriter)
+	if err == nil && containerID != "" {
+		app.ContainerID = containerID
+		_ = s.appRepo.Update(ctx, app)
+	}
+	return containerID, err
 }
 
 func (s *DeploymentService) DeployProject(ctx context.Context, projectID, sourceDir string, logWriter io.Writer) (string, error) {
@@ -103,5 +108,13 @@ func (s *DeploymentService) DeployProject(ctx context.Context, projectID, source
 	if err != nil {
 		return "", err
 	}
-	return s.deployer.Deploy(ctx, project, sourceDir, logWriter)
+	containerID, err := s.deployer.Deploy(ctx, project, sourceDir, logWriter)
+	if err == nil && containerID != "" {
+		apps, appErr := s.appRepo.ListByProject(ctx, projectID)
+		if appErr == nil && len(apps) > 0 {
+			apps[0].ContainerID = containerID
+			_ = s.appRepo.Update(ctx, apps[0])
+		}
+	}
+	return containerID, err
 }

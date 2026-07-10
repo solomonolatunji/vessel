@@ -19,6 +19,7 @@ const (
 	StrategyRailpack   BuildStrategy = "railpack"
 	StrategyNixpacks   BuildStrategy = "nixpacks"
 	StrategyBuildpacks BuildStrategy = "buildpacks"
+	StrategyServerless BuildStrategy = "serverless"
 )
 
 type BuildOptions struct {

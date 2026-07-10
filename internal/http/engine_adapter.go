@@ -19,6 +19,7 @@ type engineAdapter struct {
 	backupRepo     repositories.BackupRepository
 	s3Repo         repositories.S3DestinationRepository
 	serviceVarRepo repositories.ServiceVarRepository
+	serverlessRepo repositories.ServerlessRepository
 }
 
 func newEngineAdapter(
@@ -32,6 +33,7 @@ func newEngineAdapter(
 	backupRepo repositories.BackupRepository,
 	s3Repo repositories.S3DestinationRepository,
 	serviceVarRepo repositories.ServiceVarRepository,
+	serverlessRepo repositories.ServerlessRepository,
 ) *engineAdapter {
 	return &engineAdapter{
 		settingsRepo:   settingsRepo,
@@ -44,6 +46,7 @@ func newEngineAdapter(
 		backupRepo:     backupRepo,
 		s3Repo:         s3Repo,
 		serviceVarRepo: serviceVarRepo,
+		serverlessRepo: serverlessRepo,
 	}
 }
 
@@ -61,6 +64,10 @@ func (a *engineAdapter) GetEnvVars(projectID string) (map[string]string, error) 
 
 func (a *engineAdapter) ListServiceVariables(serviceID string) ([]*models.Variable, error) {
 	return a.serviceVarRepo.ListByService(context.Background(), serviceID)
+}
+
+func (a *engineAdapter) GetServerlessFunctionCode(serviceID string) (*models.ServerlessFunctionCode, error) {
+	return a.serverlessRepo.GetCodeByServiceID(context.Background(), serviceID)
 }
 
 func (a *engineAdapter) UpdateDatabaseStatus(id string, status string, containerID string) error {

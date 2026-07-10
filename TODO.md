@@ -17,8 +17,8 @@
   - **Pushover**: Enabled toggle, user key, API token, send test notification.
   - **Generic Webhook**: Enabled toggle, POST webhook URL, send test notification.
   - **Notification Preferences**: Per-project toggle to enable/disable each channel independently for deployment events.
-- [ ] **Rollback Logic & Cleanup**: Automatically clean up orphaned containers and perform rollbacks if a deployment fails midway.
-  - [ ] **Database Hardening**: Apply/preserve Redis authentication during restores/deploys, and allow passing custom command arguments to database containers.
+- [x] **Rollback Logic & Cleanup**: Automatically clean up orphaned containers and perform rollbacks if a deployment fails midway.
+- [ ] **Database Hardening**: Apply/preserve Redis authentication during restores/deploys, and allow passing custom command arguments to database containers.
 
 ---
 
