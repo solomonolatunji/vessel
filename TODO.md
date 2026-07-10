@@ -2,12 +2,6 @@
 
 ---
 
-## ⚙️ Phase 2: Go Backend Engine (`cmd/vesseld` & `internal/`)
-
-*(All Phase 2 tasks have been completed)*
-
----
-
 ## 💻 Phase 3: Control Panel Dashboard (`dashboard/`)
 
 - [ ] **GitHub One-Click Connect (UI)**: Add a flow in the dashboard to trigger the GitHub App Manifest creation.
