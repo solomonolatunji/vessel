@@ -134,18 +134,8 @@ func (d *DatabaseDeployer) SpinUp(ctx context.Context, dbConfig *models.Database
 	}
 	if d.store != nil {
 		settings, _ := d.store.GetServerSettings()
-		if settings != nil && strings.TrimSpace(settings.CustomDNSResolvers) != "" {
-			parts := strings.Split(settings.CustomDNSResolvers, ",")
-			var dnsList []string
-			for _, p := range parts {
-				p = strings.TrimSpace(p)
-				if p != "" {
-					dnsList = append(dnsList, p)
-				}
-			}
-			if len(dnsList) > 0 {
-				hostCfg.DNS = dnsList
-			}
+		if settings != nil {
+			ApplyCustomDNS(hostCfg, settings.CustomDNSResolvers)
 		}
 	}
 	created, err := d.dockerClient.ContainerCreate(ctx, containerCfg, hostCfg, netCfg, nil, containerName)

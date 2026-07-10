@@ -88,18 +88,24 @@ func (r *ProjectSettingsSQLiteRepository) ListWebhooksByProject(ctx context.Cont
 	return out, rows.Err()
 }
 
-func (r *ProjectSettingsSQLiteRepository) DeleteWebhook(ctx context.Context, id, projectID string) error {
+func (r *ProjectSettingsSQLiteRepository) deleteByIDAndProject(ctx context.Context, table, id, projectID, entityName string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	res, err := r.db.ExecContext(ctx, `DELETE FROM project_webhooks WHERE id = ? AND project_id = ?`, id, projectID)
+	// table is safe here because it's hardcoded internally
+	query := fmt.Sprintf("DELETE FROM %s WHERE id = ? AND project_id = ?", table)
+	res, err := r.db.ExecContext(ctx, query, id, projectID)
 	if err != nil {
-		return fmt.Errorf("delete webhook: %w", err)
+		return fmt.Errorf("delete %s: %w", entityName, err)
 	}
 	n, _ := res.RowsAffected()
 	if n == 0 {
-		return errors.New("webhook not found")
+		return fmt.Errorf("%s not found", entityName)
 	}
 	return nil
+}
+
+func (r *ProjectSettingsSQLiteRepository) DeleteWebhook(ctx context.Context, id, projectID string) error {
+	return r.deleteByIDAndProject(ctx, "project_webhooks", id, projectID, "webhook")
 }
 
 func (r *ProjectSettingsSQLiteRepository) CreateToken(ctx context.Context, t *models.ProjectToken) (string, error) {
@@ -173,17 +179,7 @@ func (r *ProjectSettingsSQLiteRepository) ListTokensByProject(ctx context.Contex
 }
 
 func (r *ProjectSettingsSQLiteRepository) DeleteToken(ctx context.Context, id, projectID string) error {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	res, err := r.db.ExecContext(ctx, `DELETE FROM project_tokens WHERE id = ? AND project_id = ?`, id, projectID)
-	if err != nil {
-		return fmt.Errorf("delete token: %w", err)
-	}
-	n, _ := res.RowsAffected()
-	if n == 0 {
-		return errors.New("token not found")
-	}
-	return nil
+	return r.deleteByIDAndProject(ctx, "project_tokens", id, projectID, "token")
 }
 
 func (r *ProjectSettingsSQLiteRepository) GetTokenByHash(ctx context.Context, tokenHash string) (*models.ProjectToken, error) {
@@ -278,15 +274,5 @@ func (r *ProjectSettingsSQLiteRepository) ListMembers(ctx context.Context, proje
 }
 
 func (r *ProjectSettingsSQLiteRepository) RemoveMember(ctx context.Context, id, projectID string) error {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	res, err := r.db.ExecContext(ctx, `DELETE FROM project_members WHERE id = ? AND project_id = ?`, id, projectID)
-	if err != nil {
-		return fmt.Errorf("remove member: %w", err)
-	}
-	n, _ := res.RowsAffected()
-	if n == 0 {
-		return errors.New("member not found")
-	}
-	return nil
+	return r.deleteByIDAndProject(ctx, "project_members", id, projectID, "member")
 }

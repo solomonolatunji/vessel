@@ -113,44 +113,7 @@ func (d *Deployer) DeployAppService(ctx context.Context, app *models.AppService,
 	if err != nil {
 		return "", fmt.Errorf("container rollout failed: %w", err)
 	}
-	healthy := false
-	if logWriter != nil {
-		fmt.Fprintf(logWriter, "⏳ [Deployer] Waiting for container to become healthy...\n")
-	}
-	for i := 0; i < 30; i++ {
-		time.Sleep(2 * time.Second)
-		inspect, err := d.containerManager.Inspect(ctx, newContainerName)
-		if err == nil {
-			if !inspect.State.Running {
-				if inspect.State.Status == "exited" {
-					break
-				}
-				continue
-			}
-			if app.HealthCheckPath != "" {
-				var hostPort string
-				for _, bindings := range inspect.NetworkSettings.Ports {
-					if len(bindings) > 0 {
-						hostPort = bindings[0].HostPort
-						break
-					}
-				}
-				if hostPort != "" {
-					resp, err := http.Get(fmt.Sprintf("http://127.0.0.1:%s%s", hostPort, app.HealthCheckPath))
-					if err == nil {
-						resp.Body.Close()
-						if resp.StatusCode >= 200 && resp.StatusCode < 400 {
-							healthy = true
-							break
-						}
-					}
-				}
-			} else {
-				healthy = true
-				break
-			}
-		}
-	}
+	healthy := d.waitForHealthyContainer(ctx, newContainerName, app.HealthCheckPath)
 	if !healthy {
 		_ = d.containerManager.StopAndRemove(ctx, newContainerName)
 		if logWriter != nil {
@@ -183,4 +146,40 @@ func (d *Deployer) Remove(ctx context.Context, containerID string) error {
 		return err
 	}
 	return nil
+}
+
+func (d *Deployer) waitForHealthyContainer(ctx context.Context, containerName string, healthCheckPath string) bool {
+	for i := 0; i < 30; i++ {
+		time.Sleep(2 * time.Second)
+		inspect, err := d.containerManager.Inspect(ctx, containerName)
+		if err == nil {
+			if !inspect.State.Running {
+				if inspect.State.Status == "exited" {
+					break
+				}
+				continue
+			}
+			if healthCheckPath != "" {
+				var hostPort string
+				for _, bindings := range inspect.NetworkSettings.Ports {
+					if len(bindings) > 0 {
+						hostPort = bindings[0].HostPort
+						break
+					}
+				}
+				if hostPort != "" {
+					resp, err := http.Get(fmt.Sprintf("http://127.0.0.1:%s%s", hostPort, healthCheckPath))
+					if err == nil {
+						resp.Body.Close()
+						if resp.StatusCode >= 200 && resp.StatusCode < 400 {
+							return true
+						}
+					}
+				}
+			} else {
+				return true
+			}
+		}
+	}
+	return false
 }

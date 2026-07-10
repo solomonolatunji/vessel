@@ -110,6 +110,11 @@ func (bm *BackupManager) UnregisterBackup(backupConfigID string) {
 	}
 }
 
+func (bm *BackupManager) failBackupRecord(recID, errStr string) (*models.BackupRecord, error) {
+	_ = bm.store.UpdateBackupRecord(recID, "failed", "", "", errStr, 0, time.Now().UTC().Format(time.RFC3339))
+	return nil, errors.New(errStr)
+}
+
 func (bm *BackupManager) TriggerBackup(ctx context.Context, backupConfigID string) (*models.BackupRecord, error) {
 	cfg, err := bm.store.GetBackupConfig(backupConfigID)
 	if err != nil || cfg == nil {
@@ -131,23 +136,17 @@ func (bm *BackupManager) TriggerBackup(ctx context.Context, backupConfigID strin
 	if cfg.DatabaseID != "" {
 		db, err := bm.store.GetDatabase(cfg.DatabaseID)
 		if err != nil || db == nil {
-			errStr := fmt.Sprintf("target database %s not found", cfg.DatabaseID)
-			_ = bm.store.UpdateBackupRecord(rec.ID, "failed", "", "", errStr, 0, time.Now().UTC().Format(time.RFC3339))
-			return nil, errors.New(errStr)
+			return bm.failBackupRecord(rec.ID, fmt.Sprintf("target database %s not found", cfg.DatabaseID))
 		}
 		containerName = utils.NormalizeContainerName(db.ID)
 		tmplMgr, err := templates.NewManager()
 		if err != nil {
-			errStr := fmt.Sprintf("failed to init template manager: %v", err)
-			_ = bm.store.UpdateBackupRecord(rec.ID, "failed", "", "", errStr, 0, time.Now().UTC().Format(time.RFC3339))
-			return nil, errors.New(errStr)
+			return bm.failBackupRecord(rec.ID, fmt.Sprintf("failed to init template manager: %v", err))
 		}
 
 		composeFile, err := tmplMgr.GetTemplate(strings.ToLower(db.Engine))
 		if err != nil {
-			errStr := fmt.Sprintf("unsupported database engine %s: %v", db.Engine, err)
-			_ = bm.store.UpdateBackupRecord(rec.ID, "failed", "", "", errStr, 0, time.Now().UTC().Format(time.RFC3339))
-			return nil, errors.New(errStr)
+			return bm.failBackupRecord(rec.ID, fmt.Sprintf("unsupported database engine %s: %v", db.Engine, err))
 		}
 
 		// Get the main service
@@ -178,9 +177,7 @@ func (bm *BackupManager) TriggerBackup(ctx context.Context, backupConfigID strin
 		dumpCmd = []string{"tar", "-czf", "-", "/data"}
 		fileExt = ".tar.gz"
 	} else {
-		errStr := "backup config requires either databaseId or storageId"
-		_ = bm.store.UpdateBackupRecord(rec.ID, "failed", "", "", errStr, 0, time.Now().UTC().Format(time.RFC3339))
-		return nil, errors.New(errStr)
+		return bm.failBackupRecord(rec.ID, "backup config requires either databaseId or storageId")
 	}
 	fileName := fmt.Sprintf("backup_%s_%s%s", cfg.ID, time.Now().UTC().Format("20060102_150405"), fileExt)
 	filePath := filepath.Join(bm.backupDir, fileName)
@@ -189,9 +186,7 @@ func (bm *BackupManager) TriggerBackup(ctx context.Context, backupConfigID strin
 	if bm.dockerClient != nil {
 		inspectResp, err := bm.dockerClient.ContainerInspect(ctx, containerName)
 		if err != nil || !inspectResp.State.Running {
-			errStr := fmt.Sprintf("cannot backup: container %s is stopped or not running", containerName)
-			_ = bm.store.UpdateBackupRecord(rec.ID, "failed", "", "", errStr, 0, time.Now().UTC().Format(time.RFC3339))
-			return nil, errors.New(errStr)
+			return bm.failBackupRecord(rec.ID, fmt.Sprintf("cannot backup: container %s is stopped or not running", containerName))
 		}
 		execConfig := dockertypes.ExecConfig{
 			AttachStdout: true,
@@ -200,15 +195,11 @@ func (bm *BackupManager) TriggerBackup(ctx context.Context, backupConfigID strin
 		}
 		execIDResp, err := bm.dockerClient.ContainerExecCreate(ctx, inspectResp.ID, execConfig)
 		if err != nil {
-			errStr := fmt.Sprintf("docker exec create failed: %v", err)
-			_ = bm.store.UpdateBackupRecord(rec.ID, "failed", "", "", errStr, 0, time.Now().UTC().Format(time.RFC3339))
-			return nil, errors.New(errStr)
+			return bm.failBackupRecord(rec.ID, fmt.Sprintf("docker exec create failed: %v", err))
 		}
 		attachResp, err := bm.dockerClient.ContainerExecAttach(ctx, execIDResp.ID, dockertypes.ExecStartCheck{})
 		if err != nil {
-			errStr := fmt.Sprintf("docker exec attach failed: %v", err)
-			_ = bm.store.UpdateBackupRecord(rec.ID, "failed", "", "", errStr, 0, time.Now().UTC().Format(time.RFC3339))
-			return nil, errors.New(errStr)
+			return bm.failBackupRecord(rec.ID, fmt.Sprintf("docker exec attach failed: %v", err))
 		}
 		defer attachResp.Close()
 		var stdoutBuf, stderrBuf bytes.Buffer
@@ -222,9 +213,7 @@ func (bm *BackupManager) TriggerBackup(ctx context.Context, backupConfigID strin
 		execLogs = "Docker client nil: simulated successful local dump.\n"
 	}
 	if err := os.WriteFile(filePath, dumpBytes, 0o600); err != nil {
-		errStr := fmt.Sprintf("failed to write backup archive to disk: %v", err)
-		_ = bm.store.UpdateBackupRecord(rec.ID, "failed", "", "", errStr, 0, time.Now().UTC().Format(time.RFC3339))
-		return nil, errors.New(errStr)
+		return bm.failBackupRecord(rec.ID, fmt.Sprintf("failed to write backup archive to disk: %v", err))
 	}
 	fileInfo, _ := os.Stat(filePath)
 	var sizeBytes int64 = int64(len(dumpBytes))

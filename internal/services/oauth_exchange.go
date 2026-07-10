@@ -74,14 +74,7 @@ func GetAuthorizationURL(p *models.OAuthProviderConfig, state string) (string, e
 	}
 }
 
-func exchangeGitHub(client *http.Client, p *models.OAuthProviderConfig, code string) (string, error) {
-	body, _ := json.Marshal(map[string]string{
-		"client_id": p.ClientID, "client_secret": p.ClientSecret,
-		"code": code, "redirect_uri": p.RedirectURI,
-	})
-	req, _ := http.NewRequest("POST", "https://github.com/login/oauth/access_token", bytes.NewBuffer(body))
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Accept", "application/json")
+func executeOAuthFlow(client *http.Client, req *http.Request, userURL string, parseEmail func(io.Reader) (string, error)) (string, error) {
 	resp, err := client.Do(req)
 	if err != nil {
 		return "", err
@@ -91,87 +84,7 @@ func exchangeGitHub(client *http.Client, p *models.OAuthProviderConfig, code str
 		AccessToken string `json:"access_token"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&tokenResp); err != nil || tokenResp.AccessToken == "" {
-		return "", fmt.Errorf("failed to get github access token")
-	}
-	userReq, _ := http.NewRequest("GET", "https://api.github.com/user/emails", nil)
-	userReq.Header.Set("Authorization", "Bearer "+tokenResp.AccessToken)
-	userResp, err := client.Do(userReq)
-	if err != nil {
-		return "", err
-	}
-	defer userResp.Body.Close()
-	var emails []struct {
-		Email   string `json:"email"`
-		Primary bool   `json:"primary"`
-	}
-	if err := json.NewDecoder(userResp.Body).Decode(&emails); err == nil {
-		for _, e := range emails {
-			if e.Primary {
-				return e.Email, nil
-			}
-		}
-		if len(emails) > 0 {
-			return emails[0].Email, nil
-		}
-	}
-	return "", fmt.Errorf("could not retrieve email from github")
-}
-
-func exchangeBitbucket(client *http.Client, p *models.OAuthProviderConfig, code string) (string, error) {
-	values := url.Values{
-		"client_id": {p.ClientID}, "client_secret": {p.ClientSecret},
-		"code": {code}, "grant_type": {"authorization_code"},
-	}
-	resp, err := client.PostForm("https://bitbucket.org/site/oauth2/access_token", values)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-	var tokenResp struct {
-		AccessToken string `json:"access_token"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&tokenResp); err != nil || tokenResp.AccessToken == "" {
-		return "", fmt.Errorf("failed to get bitbucket access token")
-	}
-	userReq, _ := http.NewRequest("GET", "https://api.bitbucket.org/2.0/user/emails", nil)
-	userReq.Header.Set("Authorization", "Bearer "+tokenResp.AccessToken)
-	userResp, err := client.Do(userReq)
-	if err != nil {
-		return "", err
-	}
-	defer userResp.Body.Close()
-	var emailResp struct {
-		Values []struct {
-			Email     string `json:"email"`
-			IsPrimary bool   `json:"is_primary"`
-		} `json:"values"`
-	}
-	if err := json.NewDecoder(userResp.Body).Decode(&emailResp); err == nil {
-		for _, e := range emailResp.Values {
-			if e.IsPrimary {
-				return e.Email, nil
-			}
-		}
-	}
-	return "", fmt.Errorf("could not retrieve email from bitbucket")
-}
-
-func exchangeOIDC(client *http.Client, p *models.OAuthProviderConfig, code string) (string, error) {
-	tokenURL, userURL := oidcEndpoints(p)
-	values := url.Values{
-		"client_id": {p.ClientID}, "client_secret": {p.ClientSecret},
-		"code": {code}, "grant_type": {"authorization_code"}, "redirect_uri": {p.RedirectURI},
-	}
-	resp, err := client.PostForm(tokenURL, values)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-	var tokenResp struct {
-		AccessToken string `json:"access_token"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&tokenResp); err != nil || tokenResp.AccessToken == "" {
-		return "", fmt.Errorf("failed to exchange oauth code for token with %s", p.ProviderName)
+		return "", fmt.Errorf("failed to get access token")
 	}
 	userReq, _ := http.NewRequest("GET", userURL, nil)
 	userReq.Header.Set("Authorization", "Bearer "+tokenResp.AccessToken)
@@ -180,14 +93,82 @@ func exchangeOIDC(client *http.Client, p *models.OAuthProviderConfig, code strin
 		return "", err
 	}
 	defer userResp.Body.Close()
-	var userInfo struct {
-		Email string `json:"email"`
+	return parseEmail(userResp.Body)
+}
+
+func exchangeGitHub(client *http.Client, p *models.OAuthProviderConfig, code string) (string, error) {
+	body, _ := json.Marshal(map[string]string{
+		"client_id": p.ClientID, "client_secret": p.ClientSecret,
+		"code": code, "redirect_uri": p.RedirectURI,
+	})
+	req, _ := http.NewRequest("POST", "https://github.com/login/oauth/access_token", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
+
+	return executeOAuthFlow(client, req, "https://api.github.com/user/emails", func(r io.Reader) (string, error) {
+		var emails []struct {
+			Email   string `json:"email"`
+			Primary bool   `json:"primary"`
+		}
+		if err := json.NewDecoder(r).Decode(&emails); err == nil {
+			for _, e := range emails {
+				if e.Primary {
+					return e.Email, nil
+				}
+			}
+			if len(emails) > 0 {
+				return emails[0].Email, nil
+			}
+		}
+		return "", fmt.Errorf("could not retrieve email from github")
+	})
+}
+
+func exchangeBitbucket(client *http.Client, p *models.OAuthProviderConfig, code string) (string, error) {
+	values := url.Values{
+		"client_id": {p.ClientID}, "client_secret": {p.ClientSecret},
+		"code": {code}, "grant_type": {"authorization_code"},
 	}
-	b, _ := io.ReadAll(userResp.Body)
-	if err := json.Unmarshal(b, &userInfo); err == nil && userInfo.Email != "" {
-		return userInfo.Email, nil
+	req, _ := http.NewRequest("POST", "https://bitbucket.org/site/oauth2/access_token", strings.NewReader(values.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	return executeOAuthFlow(client, req, "https://api.bitbucket.org/2.0/user/emails", func(r io.Reader) (string, error) {
+		var emailResp struct {
+			Values []struct {
+				Email     string `json:"email"`
+				IsPrimary bool   `json:"is_primary"`
+			} `json:"values"`
+		}
+		if err := json.NewDecoder(r).Decode(&emailResp); err == nil {
+			for _, e := range emailResp.Values {
+				if e.IsPrimary {
+					return e.Email, nil
+				}
+			}
+		}
+		return "", fmt.Errorf("could not retrieve email from bitbucket")
+	})
+}
+
+func exchangeOIDC(client *http.Client, p *models.OAuthProviderConfig, code string) (string, error) {
+	tokenURL, userURL := oidcEndpoints(p)
+	values := url.Values{
+		"client_id": {p.ClientID}, "client_secret": {p.ClientSecret},
+		"code": {code}, "grant_type": {"authorization_code"}, "redirect_uri": {p.RedirectURI},
 	}
-	return "", fmt.Errorf("could not extract email from %s user info", p.ProviderName)
+	req, _ := http.NewRequest("POST", tokenURL, strings.NewReader(values.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	return executeOAuthFlow(client, req, userURL, func(r io.Reader) (string, error) {
+		var userInfo struct {
+			Email string `json:"email"`
+		}
+		b, _ := io.ReadAll(r)
+		if err := json.Unmarshal(b, &userInfo); err == nil && userInfo.Email != "" {
+			return userInfo.Email, nil
+		}
+		return "", fmt.Errorf("could not extract email from %s user info", p.ProviderName)
+	})
 }
 
 func oidcEndpoints(p *models.OAuthProviderConfig) (tokenURL, userURL string) {

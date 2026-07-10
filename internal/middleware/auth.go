@@ -37,17 +37,26 @@ func NewAuthGuard(ts *services.TokenService, sp SettingsProvider, pt ProjectToke
 	return &AuthGuard{TokenService: ts, Settings: sp, ProjectTokens: pt}
 }
 
+func (g *AuthGuard) checkIPAllowlist(c echo.Context) error {
+	if g.Settings == nil {
+		return nil
+	}
+	settings, _ := g.Settings.GetSettings(c.Request().Context())
+	if settings == nil || strings.TrimSpace(settings.IPAllowlist) == "" {
+		return nil
+	}
+	clientIP := c.RealIP()
+	if !IsIPAllowed(clientIP, settings.IPAllowlist) {
+		return c.JSON(http.StatusForbidden, map[string]string{"error": fmt.Sprintf("access denied from IP address %s by server allowlist policy", clientIP)})
+	}
+	return nil
+}
+
 func (g *AuthGuard) RequireAuth() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			if g.Settings != nil {
-				settings, _ := g.Settings.GetSettings(c.Request().Context())
-				if settings != nil && strings.TrimSpace(settings.IPAllowlist) != "" {
-					clientIP := c.RealIP()
-					if !IsIPAllowed(clientIP, settings.IPAllowlist) {
-						return c.JSON(http.StatusForbidden, map[string]string{"error": fmt.Sprintf("access denied from IP address %s by server allowlist policy", clientIP)})
-					}
-				}
+			if err := g.checkIPAllowlist(c); err != nil {
+				return err
 			}
 			tokenStr := ExtractTokenFromRequest(c)
 			if tokenStr == "" {
@@ -169,14 +178,8 @@ func (g *AuthGuard) RequireScope(requiredScope string) echo.MiddlewareFunc {
 func (g *AuthGuard) RequireRole(requiredRole string) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			if g.Settings != nil {
-				settings, _ := g.Settings.GetSettings(c.Request().Context())
-				if settings != nil && strings.TrimSpace(settings.IPAllowlist) != "" {
-					clientIP := c.RealIP()
-					if !IsIPAllowed(clientIP, settings.IPAllowlist) {
-						return c.JSON(http.StatusForbidden, map[string]string{"error": fmt.Sprintf("access denied from IP address %s by server allowlist policy", clientIP)})
-					}
-				}
+			if err := g.checkIPAllowlist(c); err != nil {
+				return err
 			}
 			if g.TokenService == nil {
 				userClaims := &models.UserClaims{

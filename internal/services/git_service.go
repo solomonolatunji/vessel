@@ -147,23 +147,32 @@ func (s *GitService) ListRepositories(ctx context.Context, userID, provider stri
 	}
 }
 
-func (s *GitService) listGitHubRepos(ctx context.Context, token string) ([]models.GitRepository, error) {
-	reqURL := "https://api.github.com/user/repos?per_page=100&sort=updated"
+func (s *GitService) fetchGitAPI(ctx context.Context, reqURL, token string, headers map[string]string, target interface{}) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	req.Header.Set("Authorization", "Bearer "+token)
-	req.Header.Set("Accept", "application/vnd.github+json")
+	for k, v := range headers {
+		req.Header.Set(k, v)
+	}
 	resp, err := s.httpClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("github api request failed: %w", err)
+		return fmt.Errorf("api request failed: %w", err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("github api returned status %d: %s", resp.StatusCode, string(body))
+		return fmt.Errorf("api returned status %d: %s", resp.StatusCode, string(body))
 	}
+	if err := json.NewDecoder(resp.Body).Decode(target); err != nil {
+		return fmt.Errorf("failed to decode response: %w", err)
+	}
+	return nil
+}
+
+func (s *GitService) listGitHubRepos(ctx context.Context, token string) ([]models.GitRepository, error) {
+	reqURL := "https://api.github.com/user/repos?per_page=100&sort=updated"
 	var ghRepos []struct {
 		ID       int64  `json:"id"`
 		Name     string `json:"name"`
@@ -173,9 +182,15 @@ func (s *GitService) listGitHubRepos(ctx context.Context, token string) ([]model
 		HTMLURL  string `json:"html_url"`
 		Default  string `json:"default_branch"`
 	}
-	if err := json.NewDecoder(resp.Body).Decode(&ghRepos); err != nil {
-		return nil, fmt.Errorf("failed to decode github repositories: %w", err)
+
+	err := s.fetchGitAPI(ctx, reqURL, token, map[string]string{
+		"Accept": "application/vnd.github+json",
+	}, &ghRepos)
+
+	if err != nil {
+		return nil, fmt.Errorf("github: %w", err)
 	}
+
 	var results []models.GitRepository
 	for _, r := range ghRepos {
 		results = append(results, models.GitRepository{
@@ -193,20 +208,6 @@ func (s *GitService) listGitHubRepos(ctx context.Context, token string) ([]model
 
 func (s *GitService) listGitLabRepos(ctx context.Context, token string) ([]models.GitRepository, error) {
 	reqURL := "https://gitlab.com/api/v4/projects?membership=true&per_page=100&order_by=updated_at"
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Authorization", "Bearer "+token)
-	resp, err := s.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("gitlab api request failed: %w", err)
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("gitlab api returned status %d: %s", resp.StatusCode, string(body))
-	}
 	var glRepos []struct {
 		ID         int64  `json:"id"`
 		Name       string `json:"name"`
@@ -216,9 +217,12 @@ func (s *GitService) listGitLabRepos(ctx context.Context, token string) ([]model
 		HTMLURL    string `json:"web_url"`
 		Default    string `json:"default_branch"`
 	}
-	if err := json.NewDecoder(resp.Body).Decode(&glRepos); err != nil {
-		return nil, fmt.Errorf("failed to decode gitlab projects: %w", err)
+
+	err := s.fetchGitAPI(ctx, reqURL, token, nil, &glRepos)
+	if err != nil {
+		return nil, fmt.Errorf("gitlab: %w", err)
 	}
+
 	var results []models.GitRepository
 	for _, r := range glRepos {
 		results = append(results, models.GitRepository{
