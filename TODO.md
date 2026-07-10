@@ -9,7 +9,7 @@
 
   **How `deployer.go`, `container_manager.go` & `stats_monitor.go` complete the deployment:**
 
-- [x] **Enterprise PaaS Core Services & Advanced API (`internal/api/` & `internal/engine/`)**:
+- [x] **Enterprise PaaS Core Services & Advanced API (`internal/handlers/` & `internal/engine/`)**:
   - **Email (SMTP / Resend)**: SMTP host, port, user, password; or Resend API key. Send templated emails for team/project member invitations (with copy-link fallback) and deployment success/failure alerts. Commercial cloud will use AWS SES instead.
   - **Slack**: Enabled toggle, webhook URL, send test notification.
   - **Discord**: Enabled toggle, webhook URL, ping enable/disable, send test notification.
@@ -19,12 +19,6 @@
   - **Notification Preferences**: Per-project toggle to enable/disable each channel independently for deployment events.
 - [ ] **Rollback Logic & Cleanup**: Automatically clean up orphaned containers and perform rollbacks if a deployment fails midway.
   - [ ] **Database Hardening**: Apply/preserve Redis authentication during restores/deploys, and allow passing custom command arguments to database containers.
-
-- [ ] **Refactor `internal/services/` into `internal/jobs/` + `internal/actions/`**:
-  - `internal/jobs/` — async/queued operations (deploy, backup, send email, cron executions)
-  - `internal/actions/` — single-purpose CQRS operations (create project, invite member, rollback, etc.)
-  - Keep `internal/engine/` for Docker-specific orchestration (builders, container manager, deployer coordinator, stats monitor)
-  - Keep `internal/services/` for remaining cross-cutting business logic (token service, service linker)
 
 ---
 
