@@ -15,6 +15,7 @@ import (
 	"github.com/docker/docker/client"
 
 	"vessel.dev/vessel/internal/models"
+	"vessel.dev/vessel/internal/templates"
 	"vessel.dev/vessel/internal/utils"
 )
 
@@ -40,40 +41,61 @@ func (d *DatabaseDeployer) SpinUp(ctx context.Context, dbConfig *models.Database
 	var envVars []string
 	var cmd []string
 	var containerMountPath string
-	switch strings.ToLower(dbConfig.Engine) {
-	case "postgres", "postgresql":
-		imageName = "postgres:" + getVersionOrDefault(dbConfig.Version, "16-alpine")
-		envVars = []string{
-			"POSTGRES_USER=" + dbConfig.Username,
-			"POSTGRES_PASSWORD=" + dbConfig.Password,
-			"POSTGRES_DB=" + dbConfig.DatabaseName,
+	tmplMgr, err := templates.NewManager()
+	if err != nil {
+		return "", fmt.Errorf("failed to initialize template manager: %w", err)
+	}
+
+	composeFile, err := tmplMgr.GetTemplate(strings.ToLower(dbConfig.Engine))
+	if err != nil {
+		return "", fmt.Errorf("unsupported database engine %s: %w", dbConfig.Engine, err)
+	}
+
+	// Get the main service (usually the same name as the engine)
+	tmplService, exists := composeFile.Services[strings.ToLower(dbConfig.Engine)]
+	if !exists {
+		// Fallback to the first service if names don't exactly match
+		for _, s := range composeFile.Services {
+			tmplService = s
+			break
 		}
-		containerMountPath = "/var/lib/postgresql/data"
-	case "mysql":
-		imageName = "mysql:" + getVersionOrDefault(dbConfig.Version, "8.0")
-		envVars = []string{
-			"MYSQL_ROOT_PASSWORD=" + dbConfig.Password,
-			"MYSQL_USER=" + dbConfig.Username,
-			"MYSQL_PASSWORD=" + dbConfig.Password,
-			"MYSQL_DATABASE=" + dbConfig.DatabaseName,
+	}
+
+	imageName = tmplService.Image
+	if dbConfig.Version != "" && !strings.Contains(imageName, ":") {
+		imageName = imageName + ":" + dbConfig.Version
+	} else if dbConfig.Version != "" {
+		// Replace version tag
+		parts := strings.Split(imageName, ":")
+		imageName = parts[0] + ":" + dbConfig.Version
+	}
+
+	// Resolve EnvVars
+	for _, ev := range tmplService.Environment {
+		resolved := strings.ReplaceAll(ev, "${db.password}", dbConfig.Password)
+		resolved = strings.ReplaceAll(resolved, "${db.username}", dbConfig.Username)
+		resolved = strings.ReplaceAll(resolved, "${db.database_name}", dbConfig.DatabaseName)
+		envVars = append(envVars, resolved)
+	}
+
+	// Resolve Command overrides
+	for _, c := range tmplService.Command {
+		resolved := strings.ReplaceAll(c, "${db.password}", dbConfig.Password)
+		resolved = strings.ReplaceAll(resolved, "${db.username}", dbConfig.Username)
+		if resolved != "" {
+			cmd = append(cmd, resolved)
 		}
-		containerMountPath = "/var/lib/mysql"
-	case "redis":
-		imageName = "redis:" + getVersionOrDefault(dbConfig.Version, "7-alpine")
-		if dbConfig.Password != "" {
-			cmd = []string{"redis-server", "--requirepass", dbConfig.Password}
+	}
+
+	// Mount path (assume first volume defined in template)
+	if len(tmplService.Volumes) > 0 {
+		// Volumes are like "pg-data:/var/lib/postgresql/data"
+		parts := strings.Split(tmplService.Volumes[0], ":")
+		if len(parts) >= 2 {
+			containerMountPath = parts[1]
 		}
+	} else {
 		containerMountPath = "/data"
-	case "mongodb", "mongo":
-		imageName = "mongo:" + getVersionOrDefault(dbConfig.Version, "7.0")
-		envVars = []string{
-			"MONGO_INITDB_ROOT_USERNAME=" + dbConfig.Username,
-			"MONGO_INITDB_ROOT_PASSWORD=" + dbConfig.Password,
-			"MONGO_INITDB_DATABASE=" + dbConfig.DatabaseName,
-		}
-		containerMountPath = "/data/db"
-	default:
-		return "", fmt.Errorf("unsupported database engine: %s", dbConfig.Engine)
 	}
 	pullResp, err := d.dockerClient.ImagePull(ctx, imageName, dockertypes.ImagePullOptions{})
 	if err == nil {
