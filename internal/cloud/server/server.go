@@ -11,6 +11,9 @@ type Server struct {
 	agentHandler   *handlers.AgentHandler
 	wizardHandler  *handlers.WizardHandler
 	billingHandler *handlers.BillingHandler
+	authHandler    *handlers.AuthHandler
+	userHandler    *handlers.UserHandler
+	adminHandler   *handlers.AdminHandler
 }
 
 func NewServer() *Server {
@@ -25,6 +28,9 @@ func NewServer() *Server {
 		agentHandler:   handlers.NewAgentHandler(),
 		wizardHandler:  handlers.NewWizardHandler(),
 		billingHandler: handlers.NewBillingHandler(),
+		authHandler:    handlers.NewAuthHandler(),
+		userHandler:    handlers.NewUserHandler(),
+		adminHandler:   handlers.NewAdminHandler(),
 	}
 
 	s.registerRoutes()
@@ -45,7 +51,13 @@ func (s *Server) registerRoutes() {
 	api.POST("/billing/stripe/webhook", s.billingHandler.HandleStripeWebhook)
 	api.POST("/billing/paddle/webhook", s.billingHandler.HandlePaddleWebhook)
 
-	// TODO: Mount handlers for audit, etc.
+	api.POST("/auth/register", s.authHandler.Register)
+	api.POST("/auth/login", s.authHandler.Login)
+
+	api.GET("/users/me", s.userHandler.GetProfile)
+
+	api.GET("/admin/stats", s.adminHandler.GetSystemStats)
+	api.GET("/admin/audit-logs", s.adminHandler.GetAuditLogs)
 }
 
 func (s *Server) Start(address string) error {
