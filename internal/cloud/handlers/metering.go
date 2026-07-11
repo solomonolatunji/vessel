@@ -5,13 +5,17 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"vessel.dev/vessel/internal/cloud/services"
 )
 
 type MeteringHandler struct {
+	meteringService services.MeteringService
 }
 
-func NewMeteringHandler() *MeteringHandler {
-	return &MeteringHandler{}
+func NewMeteringHandler(meteringService services.MeteringService) *MeteringHandler {
+	return &MeteringHandler{
+		meteringService: meteringService,
+	}
 }
 
 type UsageReport struct {
@@ -36,10 +40,14 @@ func (h *MeteringHandler) ReportUsage(c echo.Context) error {
 	}
 
 	// TODO: Validate agent token sending this report
-	// TODO: Store metrics in PostgreSQL `cloud_usage_logs` table
-	// TODO: Push line items to Stripe/Paddle usage-based billing APIs if threshold met
 
-	log.Printf("Received usage report for team %s: %d deploys, %d hours", req.TeamID, req.Deployments, req.ContainerHours)
+	err := h.meteringService.RecordUsage(req.TeamID, req.Deployments, req.ContainerHours, req.BandwidthGB)
+	if err != nil {
+		log.Printf("Error recording usage for team %s: %v", req.TeamID, err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to record usage"})
+	}
+
+	log.Printf("Successfully recorded usage report for team %s: %d deploys, %d hours", req.TeamID, req.Deployments, req.ContainerHours)
 
 	return c.JSON(http.StatusOK, map[string]string{"status": "recorded"})
 }

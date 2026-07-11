@@ -105,7 +105,7 @@ migrations/                 # PostgreSQL schema migrations
 - [ ] **Billing & Subscription Integration**:
   - Integrate Stripe checkout and subscription management (`Hobby / Pro / Team` tiers).
   - [x] Implement automated BYOS seat limits and deployment rate limiting.
-  - Usage metering — track deployments, container hours, bandwidth per account for billing.
+  - [x] Usage metering — track deployments, container hours, bandwidth per account for billing.
   - Integrate GrowthBook for feature flag gating of Pro/Team features and gradual rollouts.
 
 - [ ] **Enterprise Features**:

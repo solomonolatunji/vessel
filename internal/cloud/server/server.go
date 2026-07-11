@@ -5,6 +5,7 @@ import (
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
 	"vessel.dev/vessel/internal/cloud/handlers"
 	vesselMiddleware "vessel.dev/vessel/internal/cloud/middleware"
+	"vessel.dev/vessel/internal/cloud/services"
 )
 
 type Server struct {
@@ -33,7 +34,7 @@ func NewServer() *Server {
 		authHandler:     handlers.NewAuthHandler(),
 		userHandler:     handlers.NewUserHandler(),
 		adminHandler:    handlers.NewAdminHandler(),
-		meteringHandler: handlers.NewMeteringHandler(),
+		meteringHandler: handlers.NewMeteringHandler(services.NewMeteringService()),
 	}
 
 	s.registerRoutes()
