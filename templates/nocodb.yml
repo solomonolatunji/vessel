@@ -1,0 +1,6 @@
+version: '3'
+services:
+  nocodb:
+    image: nocodb/nocodb:latest
+    environment:
+      NC_DB: "mysql://db:3306?u=root&p=password&d=nocodb"

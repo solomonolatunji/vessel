@@ -1,0 +1,7 @@
+version: '3'
+services:
+  plausible:
+    image: plausible/analytics:latest
+    environment:
+      - BASE_URL=https://analytics.example.com
+      - SECRET_KEY_BASE=random_secret

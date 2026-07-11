@@ -61,12 +61,12 @@
 
 ## 📦 Phase 5: Production Docker & Script Verification
 
-- [ ] Build unified multi-stage `Dockerfile` packaging `dashboard/dist/` inside the `vesseld` Go binary.
-- [ ] Test end-to-end `deploy/install.sh` and `scripts/upgrade.sh` inside isolated test containers.
-- [ ] **Downgrade Support**: `scripts/downgrade.sh` — backup DB, pull previous version, restart. Detect version mismatch on startup.
-- [ ] **CI Smoke Test**: `scripts/railpack-smoke.sh` — spin up a test container, verify build + healthcheck.
-- [ ] **Cloud Upgrade**: `scripts/cloud_upgrade.sh` — zero-downtime migration for cloud Postgres + API.
-- [ ] **One-Click Service Templates**: `templates/` — Docker Compose stubs for popular services (Gitea, WordPress, Plausible, NocoDB, etc.), selectable from the dashboard.
+- [x] Build unified multi-stage `Dockerfile` packaging `dashboard/dist/` inside the `vesseld` Go binary.
+- [x] Test end-to-end `deploy/install.sh` and `scripts/upgrade.sh` inside isolated test containers.
+- [x] **Downgrade Support**: `scripts/downgrade.sh` — backup DB, pull previous version, restart. Detect version mismatch on startup.
+- [x] **CI Smoke Test**: `scripts/railpack-smoke.sh` — spin up a test container, verify build + healthcheck.
+- [x] **Cloud Upgrade**: `scripts/cloud_upgrade.sh` — zero-downtime migration for cloud Postgres + API.
+- [x] **One-Click Service Templates**: `templates/` — Docker Compose stubs for popular services (Gitea, WordPress, Plausible, NocoDB, etc.), selectable from the dashboard.
 
 ---
 
@@ -102,7 +102,7 @@ migrations/                 # PostgreSQL schema migrations
   - [x] Immutable audit log
   - [x] "Connect Server" 1-Click Wizard generating unique install tokens: `curl -fsSL https://get.vessel.dev/agent | sh -s -- --token=vsl_live_xyz`
   - [x] Multi-server fleet deployment dashboard allowing 1-click deployments to multiple geographic VPS regions
-- [ ] **Billing & Subscription Integration**:
+- [x] **Billing & Subscription Integration**:
   - [x] Integrate Stripe checkout and subscription management (`Hobby / Pro / Team` tiers).
   - [x] Implement automated BYOS seat limits and deployment rate limiting.
   - [x] Usage metering — track deployments, container hours, bandwidth per account for billing.
@@ -126,5 +126,5 @@ migrations/                 # PostgreSQL schema migrations
 - [x] **REST API to MCP Bridge**:
   - Expose Vessel's REST API as an MCP server (`@modelcontextprotocol/sdk`) so AI agents (Claude Code, Cursor, etc.) can deploy apps, manage databases, and query logs programmatically.
   - Implement Local stdio transport for the CLI daemon and SSE/WebSocket transport for the Cloud.
-- [ ] **SDKs**:
+- [x] **SDKs**:
   - Publish an official Vessel API client SDK for Node.js and Go.

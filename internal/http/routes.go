@@ -7,6 +7,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
+	"vessel.dev/vessel/dashboard"
 	_ "vessel.dev/vessel/docs"
 )
 
@@ -183,16 +184,48 @@ func (s *Server) registerRoutes() {
 
 func (s *Server) setupSPAFallback() {
 	staticDir := os.Getenv("VESSEL_STATIC_DIR")
-	if staticDir == "" {
-		staticDir = "dashboard/dist"
+	
+	// If VESSEL_STATIC_DIR is explicitly provided, serve from disk
+	if staticDir != "" {
+		if stat, err := os.Stat(staticDir); err == nil && stat.IsDir() {
+			s.router.GET("/*", func(c echo.Context) error {
+				path := filepath.Join(staticDir, filepath.Clean(c.Request().URL.Path))
+				if _, err := os.Stat(path); os.IsNotExist(err) {
+					return c.File(filepath.Join(staticDir, "index.html"))
+				}
+				return c.File(path)
+			})
+			return
+		}
 	}
-	if stat, err := os.Stat(staticDir); err == nil && stat.IsDir() {
-		s.router.GET("/*", func(c echo.Context) error {
-			path := filepath.Join(staticDir, filepath.Clean(c.Request().URL.Path))
-			if _, err := os.Stat(path); os.IsNotExist(err) {
-				return c.File(filepath.Join(staticDir, "index.html"))
+
+	// Otherwise, use the embedded dist filesystem
+	s.router.GET("/*", func(c echo.Context) error {
+		reqPath := filepath.Clean(c.Request().URL.Path)
+		if reqPath == "/" || reqPath == "." {
+			reqPath = "index.html"
+		}
+		
+		// Try to read the file from embedded fs
+		content, err := dashboard.DistFS.ReadFile("dist/" + reqPath)
+		if err != nil {
+			// Fallback to index.html for SPA routing
+			indexContent, err := dashboard.DistFS.ReadFile("dist/index.html")
+			if err != nil {
+				return c.String(http.StatusNotFound, "Dashboard not built. Please run 'npm run build' in the dashboard directory.")
 			}
-			return c.File(path)
-		})
-	}
+			return c.HTMLBlob(http.StatusOK, indexContent)
+		}
+
+		// Detect content type
+		contentType := http.DetectContentType(content)
+		if filepath.Ext(reqPath) == ".css" {
+			contentType = "text/css"
+		} else if filepath.Ext(reqPath) == ".js" {
+			contentType = "application/javascript"
+		} else if filepath.Ext(reqPath) == ".svg" {
+			contentType = "image/svg+xml"
+		}
+		return c.Blob(http.StatusOK, contentType, content)
+	})
 }

@@ -28,6 +28,9 @@ RUN go mod download
 # Copy backend source code
 COPY . .
 
+# Copy built dashboard static assets to be embedded
+COPY --from=dashboard-builder /app/dashboard/dist ./dashboard/dist
+
 # Build self-contained binary with CGO disabled
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags="-w -s" -o /vesseld ./cmd/vesseld
 
@@ -41,16 +44,12 @@ RUN apk add --no-cache ca-certificates tzdata docker-cli git openssh-client curl
 # Copy binary from daemon-builder
 COPY --from=daemon-builder /vesseld /usr/local/bin/vesseld
 
-# Copy built dashboard static assets to /var/www/vessel/dashboard/dist
-COPY --from=dashboard-builder /app/dashboard/dist ./dashboard/dist
-
 # Ensure data directory exists
 RUN mkdir -p /var/www/vessel/data
 
 # Environment variables
 ENV PORT=8080 \
-    VESSEL_DATA_DIR=/var/www/vessel/data \
-    VESSEL_STATIC_DIR=/var/www/vessel/dashboard/dist
+    VESSEL_DATA_DIR=/var/www/vessel/data
 
 EXPOSE 8080 80 443
 
