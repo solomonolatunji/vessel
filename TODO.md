@@ -37,11 +37,12 @@
   - Multi-line secure `.env` key-value editor with instant encryption and 1-click rolling container restart.
   - User profile settings (`Update Name/Email/Password`, `Manage CLI Personal Access Tokens`).
   - **Scoped API Keys Manager (`/settings/tokens`)**: Modal to create API keys with granular RBAC checkboxes (`deploy:write`, `logs:read`, `env:read`, `db:manage`), IP allowlist restriction, and expiry dates.
-- [ ] **Server Settings & Domain Management**:
+- [ ] **Server Settings & Domain Management (BYOK Architecture)**:
   - **Global Wildcard Domain Configurator**: Input box in Server Settings for `DefaultWildcardDomain` (e.g. `cloud.yourdomain.com`) to enable instant Caddy v2 Let's Encrypt wildcard subdomains for all apps.
   - **OAuth Provider Manager (`/settings/auth`)**: Table of OAuth providers with enable/disable toggles, client ID/secret fields, redirect URI display, and provider-specific fields (base URL, tenant).
   - **2FA Setup Page**: TOTP QR code scanner, verification code input, recovery codes display.
-  - **Notification Integrations Page (`/settings/notifications`)**: Per-provider configuration cards with enable toggle and fields — SMTP (host, port, user, password), Resend (API key), Slack (webhook URL), Discord (webhook URL, ping toggle), Telegram (bot token, chat ID), Pushover (user key, API token), Generic Webhook (POST URL). Each card has a "Send Test" button.
+  - **Notification Integrations Page (`/settings/notifications`)**: Per-provider configuration cards (Bring Your Own Key) for App-level notifications — SMTP, Resend, Slack, Discord, Telegram, Pushover, Generic Webhooks. Protects platform email reputation by keeping app-level outbound emails under user-controlled API keys.
+  - **AI Settings Page (`/settings/ai`)**: "Bring Your Own Key" configuration for OpenAI/Anthropic to unlock unlimited AI Deployment Diagnostics and MCP features (prevents runaway API costs while empowering users).
   - **Advanced Settings Page (`/settings/advanced`)**: Registration allowed toggle, custom DNS resolvers, API IP allowlist (CIDR input), MCP server toggle.
   - **Update Settings Page (`/settings/updates`)**: Auto-update toggle, update check frequency cron input, manual "Check for Updates" button with status display.
 
