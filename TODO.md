@@ -104,7 +104,7 @@ migrations/                 # PostgreSQL schema migrations
   - Multi-server fleet deployment dashboard allowing 1-click deployments to multiple geographic VPS regions
 - [ ] **Billing & Subscription Integration**:
   - Integrate Stripe checkout and subscription management (`Hobby / Pro / Team` tiers).
-  - Implement automated BYOS seat limits and deployment rate limiting.
+  - [x] Implement automated BYOS seat limits and deployment rate limiting.
   - Usage metering — track deployments, container hours, bandwidth per account for billing.
   - Integrate GrowthBook for feature flag gating of Pro/Team features and gradual rollouts.
 
@@ -114,8 +114,8 @@ migrations/                 # PostgreSQL schema migrations
   - **Email Delivery**: Use AWS SES for all transactional emails (invites, alerts) — no SMTP config needed on cloud.
   - **Custom Branding**: White-label dashboard with custom domain, logo, and colors for enterprise tenants.
 - [ ] **Self-Hosted License & Telemetry**:
-	- Optional telemetry ping (version, anonymous usage stats) for upgrade notifications and feature analytics.
-	- License key system for self-hosted enterprise tier with offline activation.
+  - Optional telemetry ping (version, anonymous usage stats) for upgrade notifications and feature analytics.
+  - License key system for self-hosted enterprise tier with offline activation.
 
 ---
 

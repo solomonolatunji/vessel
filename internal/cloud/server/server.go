@@ -2,8 +2,9 @@ package server
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	echoMiddleware "github.com/labstack/echo/v4/middleware"
 	"vessel.dev/vessel/internal/cloud/handlers"
+	vesselMiddleware "vessel.dev/vessel/internal/cloud/middleware"
 )
 
 type Server struct {
@@ -20,9 +21,9 @@ type Server struct {
 func NewServer() *Server {
 	e := echo.New()
 
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-	e.Use(middleware.CORS())
+	e.Use(echoMiddleware.Logger())
+	e.Use(echoMiddleware.Recover())
+	e.Use(echoMiddleware.CORS())
 
 	s := &Server{
 		router:          e,
@@ -43,12 +44,18 @@ func NewServer() *Server {
 func (s *Server) registerRoutes() {
 	api := s.router.Group("/api/cloud")
 
+	// Global middleware
+	api.Use(echoMiddleware.Logger())
+	api.Use(echoMiddleware.Recover())
+
 	api.GET("/health", func(c echo.Context) error {
 		return c.JSON(200, map[string]string{"status": "ok", "service": "vessel-cloud"})
 	})
 
 	api.GET("/agent/connect", s.agentHandler.AcceptConnection)
-	api.POST("/wizard/token", s.wizardHandler.GenerateAgentToken)
+
+	// Agent & Wizard routes
+	api.POST("/wizard/token", s.wizardHandler.GenerateAgentToken, vesselMiddleware.SeatLimitGuard())
 
 	api.POST("/billing/stripe/webhook", s.billingHandler.HandleStripeWebhook)
 	api.POST("/billing/stripe/checkout", s.billingHandler.CreateStripeCheckout)
@@ -66,7 +73,7 @@ func (s *Server) registerRoutes() {
 	api.GET("/admin/stats", s.adminHandler.GetSystemStats)
 	api.GET("/admin/audit-logs", s.adminHandler.GetAuditLogs)
 
-	api.POST("/fleet/deploy", s.agentHandler.DeployToFleet)
+	api.POST("/fleet/deploy", s.agentHandler.DeployToFleet, vesselMiddleware.DeploymentRateLimiter())
 }
 
 func (s *Server) Start(address string) error {
