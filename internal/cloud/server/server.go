@@ -7,8 +7,9 @@ import (
 )
 
 type Server struct {
-	router       *echo.Echo
-	agentHandler *handlers.AgentHandler
+	router        *echo.Echo
+	agentHandler  *handlers.AgentHandler
+	wizardHandler *handlers.WizardHandler
 }
 
 func NewServer() *Server {
@@ -19,8 +20,9 @@ func NewServer() *Server {
 	e.Use(middleware.CORS())
 
 	s := &Server{
-		router:       e,
-		agentHandler: handlers.NewAgentHandler(),
+		router:        e,
+		agentHandler:  handlers.NewAgentHandler(),
+		wizardHandler: handlers.NewWizardHandler(),
 	}
 
 	s.registerRoutes()
@@ -36,6 +38,7 @@ func (s *Server) registerRoutes() {
 	})
 
 	api.GET("/agent/connect", s.agentHandler.AcceptConnection)
+	api.POST("/wizard/token", s.wizardHandler.GenerateAgentToken)
 
 	// TODO: Mount handlers for billing, audit, etc.
 }

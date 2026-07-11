@@ -95,12 +95,12 @@ migrations/                 # PostgreSQL schema migrations
 ```
 
 - [ ] **Vessel Cloud Backend (`internal/cloud/`)**:
-  - Initialize cloud API server with PostgreSQL database
-  - Agent connection acceptor — accepts inbound WebSocket tunnels from `vesseld --agent` instances
-  - Stripe, Paddle, and Paystack billing integration
-  - SES transactional email
-  - Immutable audit log
-  - "Connect Server" 1-Click Wizard generating unique install tokens: `curl -fsSL https://get.vessel.dev/agent | sh -s -- --token=vsl_live_xyz`
+  - [x] Initialize cloud API server with PostgreSQL database
+  - [x] Agent connection acceptor — accepts inbound WebSocket tunnels from `vesseld --agent` instances
+  - [ ] Stripe, Paddle, and Paystack billing integration
+  - [ ] SES transactional email
+  - [ ] Immutable audit log
+  - [x] "Connect Server" 1-Click Wizard generating unique install tokens: `curl -fsSL https://get.vessel.dev/agent | sh -s -- --token=vsl_live_xyz`
   - Multi-server fleet deployment dashboard allowing 1-click deployments to multiple geographic VPS regions
 - [ ] **Billing & Subscription Integration**:
   - Integrate Stripe checkout and subscription management (`Hobby / Pro / Team` tiers).

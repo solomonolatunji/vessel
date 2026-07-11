@@ -39,10 +39,10 @@ func (h *AgentHandler) AcceptConnection(c echo.Context) error {
 	if token == "" {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Missing Authorization header"})
 	}
-	
+
 	// TODO: Validate token against PostgreSQL (CloudDB) to get tenant/server ID
 	// For now, we just use the raw token as the identifier
-	serverID := token 
+	serverID := token
 
 	ws, err := upgrader.Upgrade(c.Response(), c.Request(), nil)
 	if err != nil {
