@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"vessel.dev/vessel/internal/events"
-	"vessel.dev/vessel/internal/models"
+	"vessl.dev/vessl/internal/events"
+	"vessl.dev/vessl/internal/models"
 )
 
 type DeploymentListeners struct {

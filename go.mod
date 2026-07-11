@@ -1,4 +1,4 @@
-module vessel.dev/vessel
+module vessl.dev/vessl
 
 go 1.25.11
 

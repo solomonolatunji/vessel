@@ -11,7 +11,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"
 
-	"vessel.dev/vessel/internal/models"
+	"vessl.dev/vessl/internal/models"
 )
 
 func (s *DatabaseService) QueryDatabase(ctx context.Context, id string, query string) (*models.DatabaseQueryResponse, error) {

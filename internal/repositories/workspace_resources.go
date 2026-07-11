@@ -9,7 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"vessel.dev/vessel/internal/models"
+	"vessl.dev/vessl/internal/models"
 )
 
 func (r *WorkspaceSQLiteRepository) CreateTrustedDomain(ctx context.Context, d *models.TrustedDomain) error {

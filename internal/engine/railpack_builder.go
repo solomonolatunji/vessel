@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/docker/docker/client"
-	"vessel.dev/vessel/internal/utils"
+	"vessl.dev/vessl/internal/utils"
 )
 
 type RailpackBuilder struct {

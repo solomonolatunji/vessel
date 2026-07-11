@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"time"
 
-	"vessel.dev/vessel/internal/models"
+	"vessl.dev/vessl/internal/models"
 )
 
 type TeamEmailSettingsRepository interface {

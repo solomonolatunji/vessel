@@ -14,9 +14,9 @@ import (
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
 
-	"vessel.dev/vessel/internal/models"
-	"vessel.dev/vessel/internal/templates"
-	"vessel.dev/vessel/internal/utils"
+	"vessl.dev/vessl/internal/models"
+	"vessl.dev/vessl/internal/templates"
+	"vessl.dev/vessl/internal/utils"
 )
 
 type DatabaseDeployer struct {

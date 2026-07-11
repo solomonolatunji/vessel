@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"vessel.dev/vessel/internal/models"
-	"vessel.dev/vessel/internal/vault"
+	"vessl.dev/vessl/internal/models"
+	"vessl.dev/vessl/internal/vault"
 )
 
 type VercelRepository struct {

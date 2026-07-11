@@ -17,9 +17,9 @@ import (
 
 	"github.com/google/uuid"
 
-	"vessel.dev/vessel/internal/models"
-	"vessel.dev/vessel/internal/repositories"
-	"vessel.dev/vessel/internal/utils"
+	"vessl.dev/vessl/internal/models"
+	"vessl.dev/vessl/internal/repositories"
+	"vessl.dev/vessl/internal/utils"
 )
 
 type GitService struct {

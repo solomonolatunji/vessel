@@ -9,7 +9,7 @@ import (
 
 	"github.com/docker/docker/client"
 
-	"vessel.dev/vessel/internal/models"
+	"vessl.dev/vessl/internal/models"
 )
 
 type BuildStrategy string

@@ -5,7 +5,7 @@ set -eo pipefail
 
 RELEASE=${VESSEL_VERSION:-latest}
 VESSEL_DIR=/vessel
-COMPOSE_URL="https://raw.githubusercontent.com/getvessel/vessel/main/docker-compose.yml"
+COMPOSE_URL="https://raw.githubusercontent.com/vesslhq/vessl/main/docker-compose.yml"
 
 echo "🛰️  Vessel — Installing v${RELEASE}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -37,7 +37,7 @@ curl -fsSL "$COMPOSE_URL" -o "$VESSEL_DIR/docker-compose.yml"
 
 if [ ! -f "$VESSEL_DIR/.env" ]; then
   echo "🔑 Generating .env file..."
-  ENV_URL="https://raw.githubusercontent.com/getvessel/vessel/main/.env.example"
+  ENV_URL="https://raw.githubusercontent.com/vesslhq/vessl/main/.env.example"
   curl -fsSL "$ENV_URL" -o "$VESSEL_DIR/.env"
   # Generate a random 32-character string for JWT secret
   JWT_SECRET=$(head -c 24 /dev/urandom | base64)

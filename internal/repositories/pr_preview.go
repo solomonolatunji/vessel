@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 
-	"vessel.dev/vessel/internal/models"
+	"vessl.dev/vessl/internal/models"
 )
 
 type PRPreviewRepository interface {

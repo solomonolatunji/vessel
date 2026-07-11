@@ -6,12 +6,12 @@ import (
 
 	"github.com/docker/docker/client"
 
-	"vessel.dev/vessel/internal/core"
-	"vessel.dev/vessel/internal/engine"
-	"vessel.dev/vessel/internal/handlers"
-	"vessel.dev/vessel/internal/repositories"
-	"vessel.dev/vessel/internal/services"
-	"vessel.dev/vessel/internal/vault"
+	"vessl.dev/vessl/internal/core"
+	"vessl.dev/vessl/internal/engine"
+	"vessl.dev/vessl/internal/handlers"
+	"vessl.dev/vessl/internal/repositories"
+	"vessl.dev/vessl/internal/services"
+	"vessl.dev/vessl/internal/vault"
 )
 
 type appRepositories struct {

@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"vessel.dev/vessel/internal/services"
+	"vessl.dev/vessl/internal/services"
 )
 
 type ServerlessHandler struct {

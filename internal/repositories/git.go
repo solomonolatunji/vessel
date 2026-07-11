@@ -5,11 +5,11 @@ import (
 	"database/sql"
 	"errors"
 	"time"
-	"vessel.dev/vessel/internal/utils"
+	"vessl.dev/vessl/internal/utils"
 
 	"github.com/google/uuid"
 
-	"vessel.dev/vessel/internal/models"
+	"vessl.dev/vessl/internal/models"
 )
 
 type GitRepository interface {

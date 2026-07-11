@@ -10,7 +10,7 @@ import (
 	"runtime"
 	"time"
 
-	"vessel.dev/vessel/internal/repositories"
+	"vessl.dev/vessl/internal/repositories"
 )
 
 type TelemetryPayload struct {

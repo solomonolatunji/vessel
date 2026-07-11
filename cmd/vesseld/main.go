@@ -23,15 +23,15 @@ import (
 
 	_ "modernc.org/sqlite"
 
-	"vessel.dev/vessel/internal/core"
-	vesseldb "vessel.dev/vessel/internal/db"
-	"vessel.dev/vessel/internal/engine"
-	vesselhttp "vessel.dev/vessel/internal/http"
-	"vessel.dev/vessel/internal/models"
-	"vessel.dev/vessel/internal/proxy"
-	"vessel.dev/vessel/internal/repositories"
-	"vessel.dev/vessel/internal/services"
-	"vessel.dev/vessel/internal/vault"
+	"vessl.dev/vessl/internal/core"
+	vesseldb "vessl.dev/vessl/internal/db"
+	"vessl.dev/vessl/internal/engine"
+	vesselhttp "vessl.dev/vessl/internal/http"
+	"vessl.dev/vessl/internal/models"
+	"vessl.dev/vessl/internal/proxy"
+	"vessl.dev/vessl/internal/repositories"
+	"vessl.dev/vessl/internal/services"
+	"vessl.dev/vessl/internal/vault"
 )
 
 const vesselVersion = "0.1.0-alpha"

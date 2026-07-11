@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"sync"
 
-	"vessel.dev/vessel/internal/models"
+	"vessl.dev/vessl/internal/models"
 )
 
 type CanvasRepository interface {

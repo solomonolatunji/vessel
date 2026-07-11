@@ -6,7 +6,7 @@ import (
 	"os"
 	"strconv"
 
-	"vessel.dev/vessel/internal/utils"
+	"vessl.dev/vessl/internal/utils"
 )
 
 func GetAvailablePort() (int, error) {

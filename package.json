@@ -1,5 +1,5 @@
 {
-  "name": "vessel",
+  "name": "vessl",
   "private": true,
   "version": "0.1.0",
   "description": "Self-hosted PaaS — turn any bare-metal VPS into your own private Vercel & Railway.",

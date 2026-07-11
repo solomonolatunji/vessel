@@ -6,7 +6,7 @@ import (
 
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
-	"vessel.dev/vessel/internal/services"
+	"vessl.dev/vessl/internal/services"
 )
 
 type Bridge struct {

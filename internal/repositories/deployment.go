@@ -10,7 +10,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"vessel.dev/vessel/internal/models"
+	"vessl.dev/vessl/internal/models"
 )
 
 type DeploymentRepository interface {

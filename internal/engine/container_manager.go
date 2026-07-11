@@ -11,7 +11,7 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 
-	"vessel.dev/vessel/internal/utils"
+	"vessl.dev/vessl/internal/utils"
 )
 
 type ContainerManager struct {

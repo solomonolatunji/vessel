@@ -14,9 +14,9 @@ import (
 
 	"github.com/google/uuid"
 
-	"vessel.dev/vessel/internal/engine"
-	"vessel.dev/vessel/internal/models"
-	"vessel.dev/vessel/internal/repositories"
+	"vessl.dev/vessl/internal/engine"
+	"vessl.dev/vessl/internal/models"
+	"vessl.dev/vessl/internal/repositories"
 )
 
 type PRPreviewService struct {

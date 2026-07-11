@@ -7,8 +7,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
-	"vessel.dev/vessel/dashboard"
-	_ "vessel.dev/vessel/docs"
+	"vessl.dev/vessl/dashboard"
+	_ "vessl.dev/vessl/docs"
 )
 
 func (s *Server) registerRoutes() {

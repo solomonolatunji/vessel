@@ -6,8 +6,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"vessel.dev/vessel/internal/models"
-	"vessel.dev/vessel/internal/services"
+	"vessl.dev/vessl/internal/models"
+	"vessl.dev/vessl/internal/services"
 )
 
 type GitAppsHandler struct {

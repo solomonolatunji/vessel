@@ -10,15 +10,15 @@ import (
 	echomiddleware "github.com/labstack/echo/v4/middleware"
 	"github.com/mark3labs/mcp-go/server"
 
-	"vessel.dev/vessel/internal/core"
-	"vessel.dev/vessel/internal/engine"
-	"vessel.dev/vessel/internal/handlers"
-	"vessel.dev/vessel/internal/http/middleware"
-	"vessel.dev/vessel/internal/mcp"
-	"vessel.dev/vessel/internal/models"
-	"vessel.dev/vessel/internal/proxy"
-	"vessel.dev/vessel/internal/services"
-	"vessel.dev/vessel/internal/vault"
+	"vessl.dev/vessl/internal/core"
+	"vessl.dev/vessl/internal/engine"
+	"vessl.dev/vessl/internal/handlers"
+	"vessl.dev/vessl/internal/http/middleware"
+	"vessl.dev/vessl/internal/mcp"
+	"vessl.dev/vessl/internal/models"
+	"vessl.dev/vessl/internal/proxy"
+	"vessl.dev/vessl/internal/services"
+	"vessl.dev/vessl/internal/vault"
 )
 
 type Server struct {

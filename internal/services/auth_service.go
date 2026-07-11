@@ -9,8 +9,8 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 
-	"vessel.dev/vessel/internal/models"
-	"vessel.dev/vessel/internal/repositories"
+	"vessl.dev/vessl/internal/models"
+	"vessl.dev/vessl/internal/repositories"
 )
 
 type AuthService struct {

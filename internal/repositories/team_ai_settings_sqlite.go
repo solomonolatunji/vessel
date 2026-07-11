@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"time"
 
-	"vessel.dev/vessel/internal/models"
-	"vessel.dev/vessel/internal/utils"
+	"vessl.dev/vessl/internal/models"
+	"vessl.dev/vessl/internal/utils"
 )
 
 type TeamAISettingsRepository interface {

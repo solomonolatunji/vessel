@@ -3,7 +3,7 @@ package engine
 import (
 	"time"
 
-	"vessel.dev/vessel/internal/models"
+	"vessl.dev/vessl/internal/models"
 )
 
 type DeployerStore interface {

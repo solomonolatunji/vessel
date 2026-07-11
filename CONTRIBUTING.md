@@ -76,13 +76,13 @@ npm --version
 
 ## 3. Fork and Clone
 
-1. Fork [vessel](https://github.com/getvessel/vessel) on GitHub.
+1. Fork [vessel](https://github.com/vesslhq/vessl) on GitHub.
 2. Clone your fork:
 
 ```bash
 git clone https://github.com/<your-username>/vessel.git
 cd vessel
-git remote add upstream https://github.com/getvessel/vessel.git
+git remote add upstream https://github.com/vesslhq/vessl.git
 ```
 
 ---

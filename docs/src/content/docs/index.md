@@ -9,7 +9,7 @@ hero:
       link: /docs/getting-started/
       variant: primary
     - text: View on GitHub
-      link: https://github.com/getvessel/vessel
+      link: https://github.com/vesslhq/vessl
       variant: secondary
 ---
 

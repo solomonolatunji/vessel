@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"vessel.dev/vessel/internal/repositories"
+	"vessl.dev/vessl/internal/repositories"
 )
 
 type ServiceLinker struct {

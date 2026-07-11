@@ -11,8 +11,8 @@ import (
 	"net/url"
 	"os"
 
-	"vessel.dev/vessel/internal/models"
-	"vessel.dev/vessel/internal/repositories"
+	"vessl.dev/vessl/internal/models"
+	"vessl.dev/vessl/internal/repositories"
 )
 
 type VercelService struct {

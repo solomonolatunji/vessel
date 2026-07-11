@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"vessel.dev/vessel/internal/models"
+	"vessl.dev/vessl/internal/models"
 )
 
 type SettingsRepository interface {

@@ -9,7 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/sashabaranov/go-openai"
 
-	"vessel.dev/vessel/internal/services"
+	"vessl.dev/vessl/internal/services"
 )
 
 const (
