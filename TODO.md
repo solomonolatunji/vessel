@@ -66,59 +66,59 @@
 
 ### Step 1 — DB Schema (`internal/cloud/repos/migrations.go`)
 
-- [ ] Add columns to `cloud_users`: `role` (`user`|`admin`|`staff`), `email_verified BOOLEAN`, `verified_at`, `otp_code VARCHAR(6)`, `otp_expires_at TIMESTAMP`
-- [ ] Add `cloud_admin_users` table (or reuse `cloud_users` with `role='admin'`) — decide: same table, `role` field gates access
+- [x] Add columns to `cloud_users`: `role` (`user`|`admin`|`staff`), `email_verified BOOLEAN`, `verified_at`, `otp_code VARCHAR(6)`, `otp_expires_at TIMESTAMP`
+- [x] Add `cloud_admin_users` table (or reuse `cloud_users` with `role='admin'`) — decide: same table, `role` field gates access
 
 ### Step 2 — Email Templates (`internal/cloud/views/emails/`)
 
-- [ ] `welcome.tmpl` — sent on successful registration (fields: `Name`, `DashboardURL`)
-- [ ] `verify_email.tmpl` — email verification link (fields: `Name`, `VerifyURL`)
-- [ ] `otp_reset.tmpl` — password reset OTP (fields: `Name`, `OTPCode`, `ExpiresIn`)
-- [ ] `billing_alert.tmpl` — replace hardcoded HTML in `mailer.go` (fields: `Amount`)
-- [ ] Update `MailerService` to use `html/template` rendering from `.tmpl` files (same pattern as `internal/views/emails/notification.tmpl`)
+- [x] `welcome.tmpl` — sent on successful registration (fields: `Name`, `DashboardURL`)
+- [x] `verify_email.tmpl` — email verification link (fields: `Name`, `VerifyURL`)
+- [x] `otp_reset.tmpl` — password reset OTP (fields: `Name`, `OTPCode`, `ExpiresIn`)
+- [x] `billing_alert.tmpl` — replace hardcoded HTML in `mailer.go` (fields: `Amount`)
+- [x] Update `MailerService` to use `html/template` rendering from `.tmpl` files (same pattern as `internal/views/emails/notification.tmpl`)
 
 ### Step 3 — Auth Repo (`internal/cloud/repos/auth_repo.go`)
 
-- [ ] `CreateUser(ctx, user)` — insert into `cloud_users`
-- [ ] `GetUserByEmail(ctx, email)` — lookup for login / forgot password
-- [ ] `GetUserByID(ctx, id)` — lookup for JWT validation
-- [ ] `SaveOTP(ctx, userID, code, expiresAt)` — write OTP + expiry
-- [ ] `ClearOTP(ctx, userID)` — nullify after successful reset
-- [ ] `UpdatePassword(ctx, userID, hash)` — bcrypt hash update
-- [ ] `MarkEmailVerified(ctx, userID)` — set `email_verified=true`, `verified_at=now`
+- [x] `CreateUser(ctx, user)` — insert into `cloud_users`
+- [x] `GetUserByEmail(ctx, email)` — lookup for login / forgot password
+- [x] `GetUserByID(ctx, id)` — lookup for JWT validation
+- [x] `SaveOTP(ctx, userID, code, expiresAt)` — write OTP + expiry
+- [x] `ClearOTP(ctx, userID)` — nullify after successful reset
+- [x] `UpdatePassword(ctx, userID, hash)` — bcrypt hash update
+- [x] `MarkEmailVerified(ctx, userID)` — set `email_verified=true`, `verified_at=now`
 
 ### Step 4 — Auth Service (`internal/cloud/services/auth_service.go`)
 
-- [ ] `Register(email, password, name)` → hash password, insert user, send `welcome.tmpl` + `verify_email.tmpl`, return JWT
-- [ ] `Login(email, password)` → verify hash, check `email_verified`, return JWT with `{id, email, role}` claims
-- [ ] `ForgotPassword(email)` → generate 6-digit OTP, 15-min expiry, send `otp_reset.tmpl`
-- [ ] `ResetPassword(email, otp, newPassword)` → validate OTP not expired, bcrypt new password, clear OTP
-- [ ] `VerifyEmail(token)` → validate signed token, call `MarkEmailVerified`
-- [ ] JWT: sign with `VESSEL_CLOUD_JWT_SECRET` (separate from self-host daemon secret)
+- [x] `Register(email, password, name)` → hash password, insert user, send `welcome.tmpl` + `verify_email.tmpl`, return JWT
+- [x] `Login(email, password)` → verify hash, check `email_verified`, return JWT with `{id, email, role}` claims
+- [x] `ForgotPassword(email)` → generate 6-digit OTP, 15-min expiry, send `otp_reset.tmpl`
+- [x] `ResetPassword(email, otp, newPassword)` → validate OTP not expired, bcrypt new password, clear OTP
+- [x] `VerifyEmail(token)` → validate signed token, call `MarkEmailVerified`
+- [x] JWT: sign with `VESSEL_CLOUD_JWT_SECRET` (separate from self-host daemon secret)
 
 ### Step 5 — Auth Handler (`internal/cloud/handlers/auth.go`)
 
-- [ ] `POST /cloud/auth/register` → `AuthService.Register`
-- [ ] `POST /cloud/auth/login` → `AuthService.Login`
-- [ ] `POST /cloud/auth/forgot-password` → `AuthService.ForgotPassword`
-- [ ] `POST /cloud/auth/reset-password` → `AuthService.ResetPassword`
-- [ ] `GET  /cloud/auth/verify-email?token=` → `AuthService.VerifyEmail`
+- [x] `POST /cloud/auth/register` → `AuthService.Register`
+- [x] `POST /cloud/auth/login` → `AuthService.Login`
+- [x] `POST /cloud/auth/forgot-password` → `AuthService.ForgotPassword`
+- [x] `POST /cloud/auth/reset-password` → `AuthService.ResetPassword`
+- [x] `GET  /cloud/auth/verify-email?token=` → `AuthService.VerifyEmail`
 
 ### Step 6 — Auth Middleware (`internal/cloud/middleware/auth.go`)
 
-- [ ] `RequireCloudAuth()` — parse + validate cloud JWT, inject `CloudUser` into echo context
-- [ ] `RequireAdmin()` — assert `role == "admin"` from context user, 403 otherwise
-- [ ] `RequireStaff()` — assert `role == "admin" || role == "staff"`
+- [x] `RequireCloudAuth()` — parse + validate cloud JWT, inject `CloudUser` into echo context
+- [x] `RequireAdmin()` — assert `role == "admin"` from context user, 403 otherwise
+- [x] `RequireStaff()` — assert `role == "admin" || role == "staff"`
 
 ### Step 7 — Wire AdminHandler to real data (`internal/cloud/handlers/admin.go`)
 
-- [ ] Replace hardcoded mock stats with real `CloudRepo` queries (`COUNT cloud_users`, `COUNT cloud_servers`, `COUNT cloud_subscriptions WHERE status='active'`)
-- [ ] Replace mock audit logs with real `CloudRepo.ListAuditLogs(ctx, page, limit)`
-- [ ] Add `cloud_admin_users` seeding: env var `CLOUD_ADMIN_EMAIL` + `CLOUD_ADMIN_PASSWORD` on first boot
+- [x] Replace hardcoded mock stats with real `CloudRepo` queries (`COUNT cloud_users`, `COUNT cloud_servers`, `COUNT cloud_subscriptions WHERE status='active'`)
+- [x] Replace mock audit logs with real `CloudRepo.ListAuditLogs(ctx, page, limit)`
+- [x] Add `cloud_admin_users` seeding: env var `CLOUD_ADMIN_EMAIL` + `CLOUD_ADMIN_PASSWORD` on first boot
 
 ### Step 8 — Add missing env vars
 
-- [ ] Add `VESSEL_CLOUD_JWT_SECRET` to `.env.cloud.example`
+- [x] Add `VESSEL_CLOUD_JWT_SECRET` to `.env.cloud.example`
 
 ---
 

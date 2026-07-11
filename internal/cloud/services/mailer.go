@@ -1,8 +1,10 @@
 package services
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"html/template"
 	"log"
 	"os"
 
@@ -11,13 +13,16 @@ import (
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/ses"
 	"github.com/aws/aws-sdk-go-v2/service/ses/types"
+	emails "vessel.dev/vessel/internal/cloud/views/emails"
 )
 
+// MailerService sends transactional emails via AWS SES.
 type MailerService struct {
 	awsClient *ses.Client
 	fromEmail string
 }
 
+// NewMailerService initialises the SES client from environment variables.
 func NewMailerService(ctx context.Context) (*MailerService, error) {
 	region := os.Getenv("AWS_REGION")
 	if region == "" {
@@ -56,25 +61,68 @@ func NewMailerService(ctx context.Context) (*MailerService, error) {
 	}, nil
 }
 
-func (s *MailerService) SendWelcomeEmail(ctx context.Context, toAddress string, name string) error {
+// renderTemplate renders an embedded email template with the given data.
+func (s *MailerService) renderTemplate(name string, data any) (string, error) {
+	tmplContent, err := emails.Templates.ReadFile(name)
+	if err != nil {
+		return "", fmt.Errorf("reading template %s: %w", name, err)
+	}
+
+	tmpl, err := template.New(name).Parse(string(tmplContent))
+	if err != nil {
+		return "", fmt.Errorf("parsing template %s: %w", name, err)
+	}
+
+	var buf bytes.Buffer
+	if err := tmpl.Execute(&buf, data); err != nil {
+		return "", fmt.Errorf("executing template %s: %w", name, err)
+	}
+
+	return buf.String(), nil
+}
+
+// SendWelcomeEmail sends a welcome + verify-email link to a newly registered user.
+func (s *MailerService) SendWelcomeEmail(ctx context.Context, toAddress, name, verifyURL string) error {
 	log.Printf("[SES] Sending Welcome Email to %s", toAddress)
 
-	htmlBody := fmt.Sprintf(`
-		<h1>Welcome to Vessel Cloud, %s!</h1>
-		<p>We're thrilled to have you. You can now deploy apps to your own connected servers or use our managed regions.</p>
-		<p>Happy shipping!</p>
-	`, name)
+	htmlBody, err := s.renderTemplate("welcome.tmpl", map[string]string{
+		"Name":      name,
+		"VerifyURL": verifyURL,
+	})
+	if err != nil {
+		return err
+	}
 
 	return s.sendEmail(ctx, toAddress, "Welcome to Vessel Cloud", htmlBody)
 }
 
-func (s *MailerService) SendBillingAlert(ctx context.Context, toAddress string, amount float64) error {
+// SendOTPResetEmail sends a password-reset OTP to the user's email address.
+func (s *MailerService) SendOTPResetEmail(ctx context.Context, toAddress, name, otpCode, expiresIn string) error {
+	log.Printf("[SES] Sending OTP Reset Email to %s", toAddress)
+
+	htmlBody, err := s.renderTemplate("otp_reset.tmpl", map[string]string{
+		"Name":      name,
+		"OTPCode":   otpCode,
+		"ExpiresIn": expiresIn,
+	})
+	if err != nil {
+		return err
+	}
+
+	return s.sendEmail(ctx, toAddress, "Your Vessel Cloud Password Reset Code", htmlBody)
+}
+
+// SendBillingAlert sends a payment-failure alert email.
+func (s *MailerService) SendBillingAlert(ctx context.Context, toAddress string, amount float64, billingURL string) error {
 	log.Printf("[SES] Sending Billing Alert to %s (Amount: %.2f)", toAddress, amount)
 
-	htmlBody := fmt.Sprintf(`
-		<h1>Payment Failed</h1>
-		<p>Your recent payment of $%.2f failed. Please update your payment method to avoid service interruption.</p>
-	`, amount)
+	htmlBody, err := s.renderTemplate("billing_alert.tmpl", map[string]interface{}{
+		"Amount":     amount,
+		"BillingURL": billingURL,
+	})
+	if err != nil {
+		return err
+	}
 
 	return s.sendEmail(ctx, toAddress, "Action Required: Payment Failed", htmlBody)
 }

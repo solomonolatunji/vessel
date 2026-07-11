@@ -3,12 +3,18 @@ package repos
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/lib/pq"
 	"log"
+
+	_ "github.com/lib/pq"
 )
 
 type CloudDB struct {
 	db *sql.DB
+}
+
+// DB returns the underlying *sql.DB for repos that need raw SQL access.
+func (c *CloudDB) DB() *sql.DB {
+	return c.db
 }
 
 func NewCloudDB(dsn string) (*CloudDB, error) {
@@ -23,6 +29,10 @@ func NewCloudDB(dsn string) (*CloudDB, error) {
 
 	if err := RunCloudMigrations(db); err != nil {
 		return nil, fmt.Errorf("failed to run cloud migrations: %w", err)
+	}
+
+	if err := SeedAdminUser(db); err != nil {
+		log.Printf("Warning: failed to seed admin user: %v", err)
 	}
 
 	return &CloudDB{db: db}, nil

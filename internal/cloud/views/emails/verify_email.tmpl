@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><style>body{font-family:sans-serif;line-height:1.6;color:#333}.container{max-width:600px;margin:0 auto;padding:24px}.btn{display:inline-block;padding:10px 20px;background:#0f172a;color:#fff;text-decoration:none;border-radius:6px;margin-top:16px}</style></head>
+<body><div class="container">
+  <h2>Verify your email, {{.Name}}</h2>
+  <p>Click the button below to verify your email address. This link expires in 24 hours.</p>
+  <a class="btn" href="{{.VerifyURL}}">Verify Email</a>
+  <p style="margin-top:24px;font-size:13px;color:#666">If you didn't request this, ignore this email.</p>
+</div></body>
+</html>

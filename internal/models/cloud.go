@@ -46,3 +46,20 @@ type CloudTelemetryLog struct {
 	ActiveApps    int
 	ReportedAt    time.Time
 }
+
+// CloudUser represents a user of the Vessel Cloud platform.
+// It is backed by the cloud_users PostgreSQL table (managed via database/sql, not gorm).
+type CloudUser struct {
+	ID                   string
+	Email                string
+	FullName             string
+	PasswordHash         string
+	Role                 string // 'user' | 'admin' | 'staff'
+	EmailVerified        bool
+	VerifiedAt           *time.Time
+	VerifyToken          string
+	VerifyTokenExpiresAt *time.Time
+	OTPCode              string
+	OTPExpiresAt         *time.Time
+	CreatedAt            time.Time
+}

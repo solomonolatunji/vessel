@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><style>body{font-family:sans-serif;line-height:1.6;color:#333}.container{max-width:600px;margin:0 auto;padding:24px}.otp{font-size:36px;font-weight:bold;letter-spacing:8px;color:#0f172a;margin:24px 0}</style></head>
+<body><div class="container">
+  <h2>Password Reset</h2>
+  <p>Hi {{.Name}}, use the code below to reset your password. It expires in {{.ExpiresIn}}.</p>
+  <div class="otp">{{.OTPCode}}</div>
+  <p style="font-size:13px;color:#666">If you didn't request a password reset, ignore this email.</p>
+</div></body>
+</html>
