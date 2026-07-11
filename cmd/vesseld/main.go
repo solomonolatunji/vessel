@@ -70,6 +70,7 @@ func main() {
 	isAgent := flag.Bool("agent", false, "Run in agent mode")
 	agentToken := flag.String("token", "", "Agent auth token")
 	serverURL := flag.String("server", "", "Controller server WSS URL")
+	isMCP := flag.Bool("mcp", false, "Run local MCP stdio server")
 	flag.Parse()
 	log.Printf(" Booting Vessel Daemon (`vesseld`) v%s [%s/%s]...", vesselVersion, runtime.GOOS, runtime.GOARCH)
 	if *isAgent {
@@ -126,6 +127,15 @@ func main() {
 
 	deployer := engine.NewDeployer(dockerClient, &dbDeployerStore{db: db, vault: vlt})
 	apiServer := vesselhttp.NewServer(db, vlt, deployer, traefikMgr, dockerClient)
+
+	if *isMCP {
+		log.Printf("Starting MCP stdio server...")
+		if err := apiServer.StartMCPStdio(); err != nil {
+			log.Fatalf("MCP Server exited: %v", err)
+		}
+		return
+	}
+
 	log.Printf(" Vessel control plane listening on %s", addr)
 	if err := http.ListenAndServe(addr, apiServer.Handler()); err != nil {
 		log.Fatalf(" Server crashed: %v", err)

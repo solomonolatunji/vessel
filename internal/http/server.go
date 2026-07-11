@@ -8,6 +8,7 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/labstack/echo/v4"
 	echomiddleware "github.com/labstack/echo/v4/middleware"
+	"github.com/mark3labs/mcp-go/server"
 
 	"vessel.dev/vessel/internal/dispatch"
 	"vessel.dev/vessel/internal/engine"
@@ -19,10 +20,12 @@ import (
 	"vessel.dev/vessel/internal/repositories"
 	"vessel.dev/vessel/internal/services"
 	"vessel.dev/vessel/internal/vault"
+	"vessel.dev/vessel/internal/mcpbridge"
 )
 
 type Server struct {
 	router                 *echo.Echo
+	mcpBridge              *mcpbridge.Bridge
 	deployer               *engine.Deployer
 	traefikManager         *proxy.TraefikManager
 	dockerClient           *client.Client
@@ -131,6 +134,8 @@ func NewServer(db *sql.DB, vault *vault.Vault, deployer *engine.Deployer, traefi
 
 	serverlessService := services.NewServerlessService(serverlessRepo)
 
+	mcpBridge := mcpbridge.NewBridge(projectService, appService, dbService)
+
 	authGuard := middleware.NewAuthGuard(tokenService, settingsService, psService)
 	e := echo.New()
 	e.Use(echomiddleware.Logger())
@@ -138,6 +143,7 @@ func NewServer(db *sql.DB, vault *vault.Vault, deployer *engine.Deployer, traefi
 	e.Use(echomiddleware.CORS())
 	srv := &Server{
 		router:                 e,
+		mcpBridge:              mcpBridge,
 		deployer:               deployer,
 		traefikManager:         traefikManager,
 		dockerClient:           dockerClient,
@@ -195,4 +201,23 @@ func (s *Server) Handler() http.Handler {
 
 func GetUserClaimsFromContext(ctx context.Context) *models.UserClaims {
 	return middleware.GetUserClaimsFromContext(ctx)
+}
+
+func (s *Server) StartMCPStdio() error {
+	mcpServer := s.mcpBridge.MCPServer()
+	return server.ServeStdio(mcpServer)
+}
+
+func (s *Server) HandleMCPSSE(c echo.Context) error {
+	mcpServer := s.mcpBridge.MCPServer()
+	sseServer := server.NewSSEServer(mcpServer)
+	sseServer.SSEHandler().ServeHTTP(c.Response().Writer, c.Request())
+	return nil
+}
+
+func (s *Server) HandleMCPMessage(c echo.Context) error {
+	mcpServer := s.mcpBridge.MCPServer()
+	sseServer := server.NewSSEServer(mcpServer)
+	sseServer.MessageHandler().ServeHTTP(c.Response().Writer, c.Request())
+	return nil
 }
