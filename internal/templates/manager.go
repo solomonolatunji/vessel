@@ -9,6 +9,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+//go:embed compose/*.yaml
 var templateFiles embed.FS
 
 type Manager struct {

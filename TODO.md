@@ -126,5 +126,5 @@ migrations/                 # PostgreSQL schema migrations
 - [x] **REST API to MCP Bridge**:
   - Expose Vessel's REST API as an MCP server (`@modelcontextprotocol/sdk`) so AI agents (Claude Code, Cursor, etc.) can deploy apps, manage databases, and query logs programmatically.
   - Implement Local stdio transport for the CLI daemon and SSE/WebSocket transport for the Cloud.
-- [x] **SDKs**:
+- [ ] **SDKs**:
   - Publish an official Vessel API client SDK for Node.js and Go.
