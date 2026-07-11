@@ -1,6 +1,15 @@
 package server
 
 import (
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
+	"crypto/x509/pkix"
+	"fmt"
+	"math/big"
+	"os"
+	"time"
+
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
 	"gorm.io/gorm"
@@ -11,18 +20,19 @@ import (
 )
 
 type Server struct {
-	router          *echo.Echo
-	db              *gorm.DB
-	repo            repos.CloudRepo
-	agentHandler    *handlers.AgentHandler
-	wizardHandler   *handlers.WizardHandler
-	billingHandler  *handlers.BillingHandler
-	authHandler     *handlers.AuthHandler
-	userHandler     *handlers.UserHandler
+	router           *echo.Echo
+	db               *gorm.DB
+	repo             repos.CloudRepo
+	agentHandler     *handlers.AgentHandler
+	wizardHandler    *handlers.WizardHandler
+	billingHandler   *handlers.BillingHandler
+	authHandler      *handlers.AuthHandler
+	userHandler      *handlers.UserHandler
 	adminHandler     *handlers.AdminHandler
 	meteringHandler  *handlers.MeteringHandler
 	telemetryHandler *handlers.TelemetryHandler
 	teamHandler      *handlers.TeamHandler
+	ssoHandler       *handlers.SSOHandler
 }
 
 func NewServer(db *gorm.DB) *Server {
@@ -34,18 +44,25 @@ func NewServer(db *gorm.DB) *Server {
 
 	repo := repos.NewCloudRepo(db)
 
+	ssoHandler, err := createSSOHandler()
+	if err != nil {
+		// Just log and continue, SSO will be disabled
+	}
+
 	s := &Server{
-		router:          e,
-		db:              db,
-		repo:            repo,
-		agentHandler:    handlers.NewAgentHandler(),
-		wizardHandler:   handlers.NewWizardHandler(),
-		billingHandler:  handlers.NewBillingHandler(),
-		authHandler:     handlers.NewAuthHandler(),
+
+		router:           e,
+		db:               db,
+		repo:             repo,
+		agentHandler:     handlers.NewAgentHandler(),
+		wizardHandler:    handlers.NewWizardHandler(),
+		billingHandler:   handlers.NewBillingHandler(),
+		authHandler:      handlers.NewAuthHandler(),
 		userHandler:      handlers.NewUserHandler(),
 		adminHandler:     handlers.NewAdminHandler(),
 		meteringHandler:  handlers.NewMeteringHandler(services.NewMeteringService(repo)),
 		telemetryHandler: handlers.NewTelemetryHandler(repo),
+		ssoHandler:       ssoHandler,
 		teamHandler:      handlers.NewTeamHandler(repo),
 	}
 
@@ -56,6 +73,19 @@ func NewServer(db *gorm.DB) *Server {
 
 func (s *Server) registerRoutes() {
 	api := s.router.Group("/api/cloud")
+
+	if s.ssoHandler != nil {
+		s.ssoHandler.RegisterRoutes(s.router.Group("/api/cloud/sso"))
+
+		// Protected route example
+		api.GET("/sso/protected", func(c echo.Context) error {
+			session := c.Get("saml_session")
+			return c.JSON(200, map[string]interface{}{
+				"status":  "success",
+				"session": session,
+			})
+		}, s.ssoHandler.RequireSAML())
+	}
 
 	// Global middleware
 	api.Use(echoMiddleware.Logger())
@@ -82,7 +112,7 @@ func (s *Server) registerRoutes() {
 	api.POST("/auth/login", s.authHandler.Login)
 
 	api.GET("/users/me", s.userHandler.GetProfile)
-	
+
 	api.PATCH("/teams/:id/branding", s.teamHandler.UpdateBranding)
 
 	api.GET("/admin/stats", s.adminHandler.GetSystemStats)
@@ -96,4 +126,35 @@ func (s *Server) registerRoutes() {
 
 func (s *Server) Start(address string) error {
 	return s.router.Start(address)
+}
+
+func createSSOHandler() (*handlers.SSOHandler, error) {
+	metadataURL := os.Getenv("SAML_IDP_METADATA_URL")
+	if metadataURL == "" {
+		return nil, fmt.Errorf("SAML_IDP_METADATA_URL not set")
+	}
+
+	// Generate SP Key and Cert
+	key, _ := rsa.GenerateKey(rand.Reader, 2048)
+	template := x509.Certificate{
+		SerialNumber: big.NewInt(1),
+		Subject: pkix.Name{
+			Organization: []string{"Vessel Cloud"},
+		},
+		NotBefore:             time.Now(),
+		NotAfter:              time.Now().Add(time.Hour * 24 * 365),
+		KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
+		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
+		BasicConstraintsValid: true,
+	}
+
+	certBytes, _ := x509.CreateCertificate(rand.Reader, &template, &template, &key.PublicKey, key)
+	cert, _ := x509.ParseCertificate(certBytes)
+
+	baseURL := os.Getenv("VESSEL_CLOUD_URL")
+	if baseURL == "" {
+		baseURL = "http://localhost:8080"
+	}
+
+	return handlers.NewSSOHandler(baseURL, metadataURL, key, cert)
 }
