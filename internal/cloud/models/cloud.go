@@ -32,3 +32,14 @@ type CloudUsageLog struct {
 	BandwidthGB    int
 	ReportedAt     time.Time
 }
+
+type CloudTelemetryLog struct {
+	gorm.Model
+	InstanceID    string `gorm:"index"`
+	Version       string
+	OS            string
+	Arch          string
+	ActiveServers int
+	ActiveApps    int
+	ReportedAt    time.Time
+}

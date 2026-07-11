@@ -30,6 +30,7 @@ import (
 	"vessel.dev/vessel/internal/models"
 	"vessel.dev/vessel/internal/proxy"
 	"vessel.dev/vessel/internal/repositories"
+	"vessel.dev/vessel/internal/services"
 	"vessel.dev/vessel/internal/vault"
 )
 
@@ -115,6 +116,9 @@ func main() {
 	if err := traefikMgr.EnsureTraefikRunning(context.Background()); err != nil {
 		log.Printf(" Warning: Failed to start Traefik proxy: %v", err)
 	}
+
+	// Start Telemetry Reporter
+	services.StartTelemetryReporter(db, vesselVersion)
 
 	host := os.Getenv("HOST")
 

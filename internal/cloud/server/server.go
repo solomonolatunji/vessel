@@ -19,8 +19,9 @@ type Server struct {
 	billingHandler  *handlers.BillingHandler
 	authHandler     *handlers.AuthHandler
 	userHandler     *handlers.UserHandler
-	adminHandler    *handlers.AdminHandler
-	meteringHandler *handlers.MeteringHandler
+	adminHandler     *handlers.AdminHandler
+	meteringHandler  *handlers.MeteringHandler
+	telemetryHandler *handlers.TelemetryHandler
 }
 
 func NewServer(db *gorm.DB) *Server {
@@ -40,9 +41,10 @@ func NewServer(db *gorm.DB) *Server {
 		wizardHandler:   handlers.NewWizardHandler(),
 		billingHandler:  handlers.NewBillingHandler(),
 		authHandler:     handlers.NewAuthHandler(),
-		userHandler:     handlers.NewUserHandler(),
-		adminHandler:    handlers.NewAdminHandler(),
-		meteringHandler: handlers.NewMeteringHandler(services.NewMeteringService(repo)),
+		userHandler:      handlers.NewUserHandler(),
+		adminHandler:     handlers.NewAdminHandler(),
+		meteringHandler:  handlers.NewMeteringHandler(services.NewMeteringService(repo)),
+		telemetryHandler: handlers.NewTelemetryHandler(repo),
 	}
 
 	s.registerRoutes()
@@ -83,6 +85,8 @@ func (s *Server) registerRoutes() {
 	api.GET("/admin/audit-logs", s.adminHandler.GetAuditLogs)
 
 	api.POST("/fleet/deploy", s.agentHandler.DeployToFleet, vesselMiddleware.DeploymentRateLimiter(s.repo))
+
+	api.POST("/telemetry/ping", s.telemetryHandler.ReceivePing)
 }
 
 func (s *Server) Start(address string) error {

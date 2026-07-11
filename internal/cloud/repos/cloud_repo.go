@@ -14,6 +14,8 @@ type CloudRepo interface {
 	GetActiveServerCount(teamID uint) (int64, error)
 	GetDeploymentsInLastHour(teamID uint) (int64, error)
 	LogUsage(usage *models.CloudUsageLog) error
+	// Telemetry
+	LogTelemetry(logEntry *models.CloudTelemetryLog) error
 }
 
 type cloudRepo struct {
@@ -70,4 +72,8 @@ func (r *cloudRepo) GetDeploymentsInLastHour(teamID uint) (int64, error) {
 
 func (r *cloudRepo) LogUsage(usage *models.CloudUsageLog) error {
 	return r.db.Create(usage).Error
+}
+
+func (r *cloudRepo) LogTelemetry(logEntry *models.CloudTelemetryLog) error {
+	return r.db.Create(logEntry).Error
 }

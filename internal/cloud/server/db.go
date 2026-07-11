@@ -25,6 +25,7 @@ func InitDatabase() *gorm.DB {
 		&models.CloudTeam{},
 		&models.CloudServer{},
 		&models.CloudUsageLog{},
+		&models.CloudTelemetryLog{},
 	); err != nil {
 		log.Fatalf("Failed to run cloud database migrations: %v", err)
 	}

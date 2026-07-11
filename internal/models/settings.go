@@ -45,6 +45,7 @@ type ServerSettings struct {
 	DefaultWildcardDomain       string `json:"defaultWildcardDomain,omitempty"`
 	UpdateCheckCron             string `json:"updateCheckCron"`
 	AutoUpdateEnabled           bool   `json:"autoUpdateEnabled"`
+	TelemetryEnabled            bool   `json:"telemetryEnabled"`
 	CurrentVersion              string `json:"currentVersion"`
 	LatestVersion               string `json:"latestVersion"`
 	LastUpdateCheck             string `json:"lastUpdateCheck"`
