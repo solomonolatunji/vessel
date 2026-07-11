@@ -48,7 +48,6 @@ func (d *DispatcherService) Send(event *models.NotificationEvent) error {
 			continue
 		}
 
-		// Check if event type matches
 		var events []string
 		if len(c.Events) > 0 {
 			if err := json.Unmarshal(c.Events, &events); err == nil {
@@ -81,7 +80,6 @@ func (d *DispatcherService) Send(event *models.NotificationEvent) error {
 				_ = d.sendWebhook(cfg.WebhookURL, event)
 			}
 		case "smtp":
-			// ... simplified smtp logic here if needed
 		}
 	}
 	return nil
@@ -116,7 +114,6 @@ func (d *DispatcherService) sendGlobalTest(event *models.NotificationEvent) erro
 		}
 	case "telegram":
 		if settings.TelegramEnabled && settings.TelegramBotToken != "" && settings.TelegramChatID != "" {
-			// telegram specific logic
 			url := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", settings.TelegramBotToken)
 			payload := map[string]string{
 				"chat_id": settings.TelegramChatID,

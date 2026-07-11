@@ -27,7 +27,6 @@ type TelemetryPayload struct {
 	ActiveApps    int    `json:"active_apps"`
 }
 
-// ReceivePing receives anonymous telemetry pings from OSS instances
 // @Summary Receive Telemetry Ping
 // @Description Receives anonymous telemetry pings from OSS instances
 // @Tags Cloud-Telemetry
@@ -45,7 +44,6 @@ func (h *TelemetryHandler) ReceivePing(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Missing required fields"})
 	}
 
-	// We simply fire and forget into the DB using the repo
 	logEntry := &models.CloudTelemetryLog{
 		InstanceID:    payload.InstanceID,
 		Version:       payload.Version,

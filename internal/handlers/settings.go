@@ -125,7 +125,6 @@ func (h *SettingsHandler) ActivateLicense(c echo.Context) error {
 		return c.JSON(http.StatusForbidden, map[string]string{"error": err.Error()})
 	}
 
-	// Update local settings with the license details
 	s, err := h.settingsService.GetSettings(c.Request().Context())
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to load settings"})

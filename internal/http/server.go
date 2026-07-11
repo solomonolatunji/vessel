@@ -58,6 +58,7 @@ type Server struct {
 	notificationHandler    *handlers.NotificationHandler
 	gitAppsHandler         *handlers.GitAppsHandler
 	aiSettingsHandler      *handlers.AISettingsHandler
+	emailSettingsHandler   *handlers.EmailSettingsHandler
 	aiDiagnosticsHandler   *handlers.AIDiagnosticsHandler
 	vercelHandler          *handlers.VercelHandler
 	serverlessHandler      *handlers.ServerlessHandler

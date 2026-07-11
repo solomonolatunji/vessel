@@ -19,28 +19,23 @@ const (
 	VesselNetworkName    = "vessel-network"
 )
 
-// TraefikManager handles bootstrapping and managing the central Traefik proxy.
 type TraefikManager struct {
 	dockerClient *client.Client
 	tlsEmail     string
 }
 
-// NewTraefikManager creates a new proxy manager for routing application traffic.
 func NewTraefikManager(cli *client.Client, tlsEmail string) *TraefikManager {
 	return &TraefikManager{dockerClient: cli, tlsEmail: tlsEmail}
 }
 
-// EnsureTraefikRunning checks if the Traefik container and vessel-network exist, creating/starting them if not.
 func (m *TraefikManager) EnsureTraefikRunning(ctx context.Context) error {
 	if err := m.ensureNetwork(ctx); err != nil {
 		return fmt.Errorf("failed to ensure network: %w", err)
 	}
 
-	// Check if container exists
 	_, err := m.dockerClient.ContainerInspect(ctx, TraefikContainerName)
 	if err != nil {
 		if client.IsErrNotFound(err) {
-			// Container doesn't exist, create it
 			if err := m.createTraefikContainer(ctx); err != nil {
 				return fmt.Errorf("failed to create traefik: %w", err)
 			}
@@ -49,7 +44,6 @@ func (m *TraefikManager) EnsureTraefikRunning(ctx context.Context) error {
 		}
 	}
 
-	// Start it
 	if err := m.dockerClient.ContainerStart(ctx, TraefikContainerName, container.StartOptions{}); err != nil {
 		return fmt.Errorf("failed to start traefik: %w", err)
 	}
@@ -73,7 +67,6 @@ func (m *TraefikManager) ensureNetwork(ctx context.Context) error {
 }
 
 func (m *TraefikManager) createTraefikContainer(ctx context.Context) error {
-	// Ensure we have the image
 	imageRef := "traefik:v3.0"
 	out, err := m.dockerClient.ImagePull(ctx, imageRef, types.ImagePullOptions{})
 	if err == nil {
@@ -112,7 +105,6 @@ func (m *TraefikManager) createTraefikContainer(ctx context.Context) error {
 	return nil
 }
 
-// buildTraefikCmdArgs generates the startup arguments for Traefik proxy.
 func (m *TraefikManager) buildTraefikCmdArgs() []string {
 	cmdArgs := []string{
 		"--api.insecure=true", // Enable dashboard (do not expose in prod)
@@ -135,7 +127,6 @@ func (m *TraefikManager) buildTraefikCmdArgs() []string {
 	return cmdArgs
 }
 
-// buildTraefikMounts generates the volume mounts for Traefik (docker socket + letsencrypt storage).
 func (m *TraefikManager) buildTraefikMounts() []mount.Mount {
 	mounts := []mount.Mount{
 		{
@@ -154,7 +145,6 @@ func (m *TraefikManager) buildTraefikMounts() []mount.Mount {
 	return mounts
 }
 
-// buildPortBindings generates the port mappings for the Traefik container.
 func (m *TraefikManager) buildPortBindings() nat.PortMap {
 	return nat.PortMap{
 		"80/tcp":   []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: "80"}},

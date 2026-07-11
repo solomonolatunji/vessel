@@ -10,6 +10,22 @@ type TeamAISettings struct {
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 }
+
+type TeamEmailSettings struct {
+	ID              string    `json:"id"`
+	TeamID          string    `json:"teamId"`
+	SMTPHost        string    `json:"smtpHost,omitempty"`
+	SMTPPort        int       `json:"smtpPort,omitempty"`
+	SMTPUser        string    `json:"smtpUser,omitempty"`
+	SMTPPassword    string    `json:"smtpPassword,omitempty"`
+	SMTPFromName    string    `json:"smtpFromName,omitempty"`
+	SMTPFromAddress string    `json:"smtpFromAddress,omitempty"`
+	ResendAPIKey    string    `json:"resendApiKey,omitempty"`
+	UseResend       bool      `json:"useResend"`
+	CreatedAt       time.Time `json:"createdAt"`
+	UpdatedAt       time.Time `json:"updatedAt"`
+}
+
 type ServerSettings struct {
 	ID                          string `json:"id"`
 	CaddyWildcardIP             string `json:"caddyWildcardIp"`
@@ -43,6 +59,8 @@ type ServerSettings struct {
 	IPAllowlist                 string `json:"ipAllowlist"`
 	MCPServerEnabled            bool   `json:"mcpServerEnabled"`
 	DefaultWildcardDomain       string `json:"defaultWildcardDomain,omitempty"`
+	DefaultOpenAIKey            string `json:"defaultOpenAIKey,omitempty"`
+	DefaultAnthropicKey         string `json:"defaultAnthropicKey,omitempty"`
 	UpdateCheckCron             string `json:"updateCheckCron"`
 	AutoUpdateEnabled           bool   `json:"autoUpdateEnabled"`
 	TelemetryEnabled            bool   `json:"telemetryEnabled"`

@@ -16,7 +16,6 @@ func NewVercelHandler(vs *services.VercelService) *VercelHandler {
 	return &VercelHandler{vercelService: vs}
 }
 
-// Callback endpoint (GET /api/v1/oauth/vercel/callback)
 // @Summary Callback endpoint
 // @Description Callback endpoint
 // @Tags Oauth
@@ -45,7 +44,6 @@ func (h *VercelHandler) Callback(c echo.Context) error {
 	})
 }
 
-// List Projects (GET /api/v1/vercel/projects)
 // @Summary ListProjects endpoint
 // @Description ListProjects endpoint
 // @Tags Vercel
@@ -74,7 +72,6 @@ func (h *VercelHandler) ListProjects(c echo.Context) error {
 	})
 }
 
-// Get Env Vars (GET /api/v1/vercel/projects/:id/env)
 // @Summary GetProjectEnv endpoint
 // @Description GetProjectEnv endpoint
 // @Tags Vercel

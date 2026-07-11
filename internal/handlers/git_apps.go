@@ -18,8 +18,6 @@ func NewGitAppsHandler(gs *services.GitAppsService) *GitAppsHandler {
 	return &GitAppsHandler{gitAppsService: gs}
 }
 
-// --- Handler Factories ---
-
 type getFunc[T any] func(ctx context.Context, id string) (*T, error)
 type listFunc[T any] func(ctx context.Context, teamID string) ([]T, error)
 type saveFunc[T any] func(ctx context.Context, app *T) error
@@ -79,8 +77,6 @@ func deleteAppHandler(del deleteFunc) echo.HandlerFunc {
 		return c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
 	}
 }
-
-// ---- GitHub Apps ----
 
 // @Summary ExchangeGithubManifestCode endpoint
 // @Description ExchangeGithubManifestCode endpoint
@@ -156,8 +152,6 @@ func (h *GitAppsHandler) DeleteGithubApp(c echo.Context) error {
 	return deleteAppHandler(h.gitAppsService.DeleteGithubApp)(c)
 }
 
-// ---- GitLab Apps ----
-
 // @Summary ListGitlabApps endpoint
 // @Description ListGitlabApps endpoint
 // @Tags Settings
@@ -203,8 +197,6 @@ func (h *GitAppsHandler) SaveGitlabApp(c echo.Context) error {
 func (h *GitAppsHandler) DeleteGitlabApp(c echo.Context) error {
 	return deleteAppHandler(h.gitAppsService.DeleteGitlabApp)(c)
 }
-
-// ---- Bitbucket Apps ----
 
 // @Summary ListBitbucketApps endpoint
 // @Description ListBitbucketApps endpoint

@@ -51,10 +51,8 @@ func (d *DatabaseDeployer) SpinUp(ctx context.Context, dbConfig *models.Database
 		return "", fmt.Errorf("unsupported database engine %s: %w", dbConfig.Engine, err)
 	}
 
-	// Get the main service (usually the same name as the engine)
 	tmplService, exists := composeFile.Services[strings.ToLower(dbConfig.Engine)]
 	if !exists {
-		// Fallback to the first service if names don't exactly match
 		for _, s := range composeFile.Services {
 			tmplService = s
 			break
@@ -65,12 +63,10 @@ func (d *DatabaseDeployer) SpinUp(ctx context.Context, dbConfig *models.Database
 	if dbConfig.Version != "" && !strings.Contains(imageName, ":") {
 		imageName = imageName + ":" + dbConfig.Version
 	} else if dbConfig.Version != "" {
-		// Replace version tag
 		parts := strings.Split(imageName, ":")
 		imageName = parts[0] + ":" + dbConfig.Version
 	}
 
-	// Resolve EnvVars
 	for _, ev := range tmplService.Environment {
 		resolved := strings.ReplaceAll(ev, "${db.password}", dbConfig.Password)
 		resolved = strings.ReplaceAll(resolved, "${db.username}", dbConfig.Username)
@@ -78,11 +74,9 @@ func (d *DatabaseDeployer) SpinUp(ctx context.Context, dbConfig *models.Database
 		envVars = append(envVars, resolved)
 	}
 
-	// Resolve Command overrides
 	for i := 0; i < len(tmplService.Command); i++ {
 		c := tmplService.Command[i]
 		if c == "--requirepass" && dbConfig.Password == "" {
-			// Skip both --requirepass and the password placeholder if password is not set
 			i++
 			continue
 		}
@@ -98,9 +92,7 @@ func (d *DatabaseDeployer) SpinUp(ctx context.Context, dbConfig *models.Database
 		cmd = append(cmd, args...)
 	}
 
-	// Mount path (assume first volume defined in template)
 	if len(tmplService.Volumes) > 0 {
-		// Volumes are like "pg-data:/var/lib/postgresql/data"
 		parts := strings.Split(tmplService.Volumes[0], ":")
 		if len(parts) >= 2 {
 			containerMountPath = parts[1]

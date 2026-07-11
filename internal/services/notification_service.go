@@ -54,8 +54,6 @@ func (s *NotificationService) TestGlobalNotification(ctx context.Context, provid
 	if s.dispatcher == nil {
 		return errors.New("dispatcher unavailable")
 	}
-	// For global notifications, we will pass a special TeamID like "global"
-	// We also pass the specific provider in EventType to target only that provider in the dispatcher
 	dashboardURL := os.Getenv("VESSEL_DASHBOARD_URL")
 	if dashboardURL == "" {
 		dashboardURL = "http://localhost:3000"

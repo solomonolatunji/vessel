@@ -24,7 +24,6 @@ func NewServerlessRepository(db *sql.DB) ServerlessRepository {
 }
 
 func (r *sqliteServerlessRepo) SaveCode(ctx context.Context, serviceID, runtime, codeContent string) (*models.ServerlessFunctionCode, error) {
-	// check if exists
 	existing, err := r.GetCodeByServiceID(ctx, serviceID)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return nil, err

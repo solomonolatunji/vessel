@@ -14,7 +14,6 @@ import (
 func (s *Server) registerRoutes() {
 	apiGroup := s.router.Group("/api")
 
-	// Swagger UI
 	s.router.GET("/docs", func(c echo.Context) error {
 		return c.Redirect(http.StatusMovedPermanently, "/docs/index.html")
 	})
@@ -150,7 +149,6 @@ func (s *Server) registerRoutes() {
 	authGroup.POST("/auth/2fa/disable", s.oauthHandler.Disable2FA)
 	apiGroup.GET("/ws/terminal/:id", s.terminalHandler.HandleWebSocket)
 
-	// Git Apps
 	apiGroup.POST("/settings/git_apps/github/manifest-callback", s.gitAppsHandler.ExchangeGithubManifestCode, s.authGuard.RequireRole("admin"))
 	authGroup.GET("/settings/git_apps/github", s.gitAppsHandler.ListGithubApps)
 	authGroup.GET("/settings/git_apps/github/:id", s.gitAppsHandler.GetGithubApp)
@@ -167,13 +165,13 @@ func (s *Server) registerRoutes() {
 	apiGroup.PUT("/settings/git_apps/bitbucket", s.gitAppsHandler.SaveBitbucketApp, s.authGuard.RequireRole("admin"))
 	apiGroup.DELETE("/settings/git_apps/bitbucket/:id", s.gitAppsHandler.DeleteBitbucketApp, s.authGuard.RequireRole("admin"))
 
-	// AI Settings
 	authGroup.GET("/teams/:teamId/ai_settings", s.aiSettingsHandler.Get)
 	apiGroup.PUT("/teams/:teamId/ai_settings", s.aiSettingsHandler.Save, s.authGuard.RequireAuth())
-	// AI Diagnostics
+	// Email Settings
+	authGroup.GET("/teams/:teamId/email_settings", s.emailSettingsHandler.GetTeamEmailSettings)
+	apiGroup.PUT("/teams/:teamId/email_settings", s.emailSettingsHandler.SaveTeamEmailSettings, s.authGuard.RequireAuth())
 	authGroup.POST("/deployments/:id/diagnostics", s.aiDiagnosticsHandler.Analyze)
 
-	// Vercel Integration
 	authGroup.GET("/oauth/vercel/callback", s.vercelHandler.Callback)
 	authGroup.GET("/vercel/projects", s.vercelHandler.ListProjects)
 	authGroup.GET("/vercel/projects/:id/env", s.vercelHandler.GetProjectEnv)
@@ -185,7 +183,6 @@ func (s *Server) registerRoutes() {
 func (s *Server) setupSPAFallback() {
 	staticDir := os.Getenv("VESSEL_STATIC_DIR")
 
-	// If VESSEL_STATIC_DIR is explicitly provided, serve from disk
 	if staticDir != "" {
 		if stat, err := os.Stat(staticDir); err == nil && stat.IsDir() {
 			s.router.GET("/*", func(c echo.Context) error {
@@ -199,17 +196,14 @@ func (s *Server) setupSPAFallback() {
 		}
 	}
 
-	// Otherwise, use the embedded dist filesystem
 	s.router.GET("/*", func(c echo.Context) error {
 		reqPath := filepath.Clean(c.Request().URL.Path)
 		if reqPath == "/" || reqPath == "." {
 			reqPath = "index.html"
 		}
 
-		// Try to read the file from embedded fs
 		content, err := dashboard.DistFS.ReadFile("dist/" + reqPath)
 		if err != nil {
-			// Fallback to index.html for SPA routing
 			indexContent, err := dashboard.DistFS.ReadFile("dist/index.html")
 			if err != nil {
 				return c.String(http.StatusNotFound, "Dashboard not built. Please run 'npm run build' in the dashboard directory.")
@@ -217,7 +211,6 @@ func (s *Server) setupSPAFallback() {
 			return c.HTMLBlob(http.StatusOK, indexContent)
 		}
 
-		// Detect content type
 		contentType := http.DetectContentType(content)
 		if filepath.Ext(reqPath) == ".css" {
 			contentType = "text/css"

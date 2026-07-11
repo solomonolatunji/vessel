@@ -22,8 +22,6 @@ func NewGitAppsService(repo repositories.GitAppRepository) *GitAppsService {
 	return &GitAppsService{repo: repo}
 }
 
-// --- Generic Helpers ---
-
 func listApps[T any](ctx context.Context, teamID string, listFn func(context.Context, string) ([]T, error)) ([]T, error) {
 	if teamID == "" {
 		return nil, errors.New("team ID is required")
@@ -57,8 +55,6 @@ func deleteApp(ctx context.Context, id string, deleteFn func(context.Context, st
 	}
 	return deleteFn(ctx, id)
 }
-
-// ---- GitHub Apps ----
 
 type githubManifestConversionResponse struct {
 	ID            int    `json:"id"`
@@ -138,8 +134,6 @@ func (s *GitAppsService) DeleteGithubApp(ctx context.Context, id string) error {
 	return deleteApp(ctx, id, s.repo.DeleteGithubApp)
 }
 
-// ---- GitLab Apps ----
-
 func (s *GitAppsService) ListGitlabApps(ctx context.Context, teamID string) ([]models.GitlabApp, error) {
 	return listApps(ctx, teamID, s.repo.ListGitlabApps)
 }
@@ -155,8 +149,6 @@ func (s *GitAppsService) SaveGitlabApp(ctx context.Context, app *models.GitlabAp
 func (s *GitAppsService) DeleteGitlabApp(ctx context.Context, id string) error {
 	return deleteApp(ctx, id, s.repo.DeleteGitlabApp)
 }
-
-// ---- Bitbucket Apps ----
 
 func (s *GitAppsService) ListBitbucketApps(ctx context.Context, teamID string) ([]models.BitbucketApp, error) {
 	return listApps(ctx, teamID, s.repo.ListBitbucketApps)

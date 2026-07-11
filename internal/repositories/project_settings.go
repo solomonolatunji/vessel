@@ -90,7 +90,6 @@ func (r *ProjectSettingsSQLiteRepository) ListWebhooksByProject(ctx context.Cont
 func (r *ProjectSettingsSQLiteRepository) deleteByIDAndProject(ctx context.Context, table, id, projectID, entityName string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	// table is safe here because it's hardcoded internally
 	query := fmt.Sprintf("DELETE FROM %s WHERE id = ? AND project_id = ?", table)
 	res, err := r.db.ExecContext(ctx, query, id, projectID)
 	if err != nil {

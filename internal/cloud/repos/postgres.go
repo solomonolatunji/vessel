@@ -12,7 +12,6 @@ type CloudDB struct {
 }
 
 func NewCloudDB(dsn string) (*CloudDB, error) {
-	// Stub setup for PG connection
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		return nil, err

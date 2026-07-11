@@ -13,19 +13,16 @@ import (
 )
 
 type GitAppRepository interface {
-	// Github App
 	ListGithubApps(ctx context.Context, teamID string) ([]models.GithubApp, error)
 	GetGithubApp(ctx context.Context, id string) (*models.GithubApp, error)
 	SaveGithubApp(ctx context.Context, app *models.GithubApp) error
 	DeleteGithubApp(ctx context.Context, id string) error
 
-	// Gitlab App
 	ListGitlabApps(ctx context.Context, teamID string) ([]models.GitlabApp, error)
 	GetGitlabApp(ctx context.Context, id string) (*models.GitlabApp, error)
 	SaveGitlabApp(ctx context.Context, app *models.GitlabApp) error
 	DeleteGitlabApp(ctx context.Context, id string) error
 
-	// Bitbucket App
 	ListBitbucketApps(ctx context.Context, teamID string) ([]models.BitbucketApp, error)
 	GetBitbucketApp(ctx context.Context, id string) (*models.BitbucketApp, error)
 	SaveBitbucketApp(ctx context.Context, app *models.BitbucketApp) error
@@ -109,8 +106,6 @@ func deleteApp(ctx context.Context, db *sql.DB, tableName, id string) error {
 	return err
 }
 
-// ---- GitHub Apps ----
-
 func (r *GitAppSQLiteRepository) ListGithubApps(ctx context.Context, teamID string) ([]models.GithubApp, error) {
 	query := `SELECT id, team_id, name, app_id, installation_id, client_id, is_public, created_at, updated_at FROM github_apps WHERE team_id = ?`
 	return listApps(ctx, r.db, query, teamID, func(s scanner, a *models.GithubApp) error {
@@ -159,8 +154,6 @@ func (r *GitAppSQLiteRepository) DeleteGithubApp(ctx context.Context, id string)
 	return deleteApp(ctx, r.db, "github_apps", id)
 }
 
-// ---- GitLab Apps ----
-
 func (r *GitAppSQLiteRepository) ListGitlabApps(ctx context.Context, teamID string) ([]models.GitlabApp, error) {
 	query := `SELECT id, team_id, name, app_id, api_url, is_public, created_at, updated_at FROM gitlab_apps WHERE team_id = ?`
 	return listApps(ctx, r.db, query, teamID, func(s scanner, a *models.GitlabApp) error {
@@ -203,8 +196,6 @@ func (r *GitAppSQLiteRepository) SaveGitlabApp(ctx context.Context, app *models.
 func (r *GitAppSQLiteRepository) DeleteGitlabApp(ctx context.Context, id string) error {
 	return deleteApp(ctx, r.db, "gitlab_apps", id)
 }
-
-// ---- Bitbucket Apps ----
 
 func (r *GitAppSQLiteRepository) ListBitbucketApps(ctx context.Context, teamID string) ([]models.BitbucketApp, error) {
 	query := `SELECT id, team_id, name, workspace, client_id, is_public, created_at, updated_at FROM bitbucket_apps WHERE team_id = ?`

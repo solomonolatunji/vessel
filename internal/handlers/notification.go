@@ -29,7 +29,6 @@ func (h *NotificationHandler) ListChannels(c echo.Context) error {
 	}
 	teamID := c.QueryParam("teamId")
 	if teamID == "" {
-		// fallback for now
 		teamID = "default"
 	}
 	channels, err := h.notificationService.ListChannels(c.Request().Context(), teamID)
@@ -113,7 +112,6 @@ func (h *NotificationHandler) TestNotification(c echo.Context) error {
 		})
 	}
 
-	// For testing a specific team channel
 	err := h.notificationService.TestTeamNotification(c.Request().Context(), req.TeamID, req.ChannelID)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})

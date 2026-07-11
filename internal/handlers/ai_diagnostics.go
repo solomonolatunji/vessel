@@ -117,7 +117,6 @@ func (h *AIDiagnosticsHandler) Analyze(c echo.Context) error {
 			break
 		}
 
-		// Vercel AI SDK text stream format `0:"text"`
 		chunk := response.Choices[0].Delta.Content
 		if chunk != "" {
 			c.Response().Write([]byte(fmt.Sprintf("0:%q\n", chunk)))

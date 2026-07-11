@@ -70,7 +70,6 @@ func (r *cloudRepo) GetDeploymentsInLastHour(teamID uint) (int64, error) {
 		Scan(&count)
 
 	if err != nil {
-		// Might be null if no deployments
 		return 0, nil
 	}
 	return count, nil

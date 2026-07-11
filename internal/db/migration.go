@@ -11,7 +11,6 @@ import (
 //go:embed schema/*.sql
 var schemaFS embed.FS
 
-// RunMigrations applies embedded SQL files in alphabetical order.
 func RunMigrations(db *sql.DB) error {
 	entries, err := schemaFS.ReadDir("schema")
 	if err != nil {

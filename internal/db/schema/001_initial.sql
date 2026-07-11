@@ -408,6 +408,8 @@ CREATE TABLE IF NOT EXISTS server_settings (
 			ip_allowlist TEXT DEFAULT '',
 			mcp_server_enabled BOOLEAN DEFAULT TRUE,
 			default_wildcard_domain TEXT DEFAULT '',
+			default_openai_key TEXT DEFAULT '',
+			default_anthropic_key TEXT DEFAULT '',
 			update_check_cron TEXT DEFAULT '0 * * * *',
 			auto_update_enabled BOOLEAN DEFAULT FALSE,
 			current_version TEXT DEFAULT '0.1.0',
@@ -499,4 +501,20 @@ CREATE TABLE IF NOT EXISTS team_ai_settings (
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 		);;
+
+
+CREATE TABLE IF NOT EXISTS team_email_settings (
+	id TEXT PRIMARY KEY,
+	team_id TEXT UNIQUE NOT NULL,
+	smtp_host TEXT DEFAULT '',
+	smtp_port INTEGER DEFAULT 587,
+	smtp_user TEXT DEFAULT '',
+	encrypted_smtp_password TEXT DEFAULT '',
+	smtp_from_name TEXT DEFAULT '',
+	smtp_from_address TEXT DEFAULT '',
+	encrypted_resend_api_key TEXT DEFAULT '',
+	use_resend BOOLEAN DEFAULT FALSE,
+	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);;
 

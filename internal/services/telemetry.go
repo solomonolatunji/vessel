@@ -27,7 +27,6 @@ func StartTelemetryReporter(db *sql.DB, version string) {
 		ticker := time.NewTicker(24 * time.Hour)
 		defer ticker.Stop()
 
-		// Do an initial ping shortly after startup
 		time.Sleep(5 * time.Minute)
 		pingTelemetry(db, version)
 
@@ -44,8 +43,6 @@ func pingTelemetry(db *sql.DB, version string) {
 		return
 	}
 
-	// By default, we can assume telemetry is enabled unless explicitly disabled,
-	// or we can strictly check if it's enabled. Let's strictly check:
 	if !settings.TelemetryEnabled {
 		return
 	}
@@ -71,7 +68,6 @@ func pingTelemetry(db *sql.DB, version string) {
 		return
 	}
 
-	// Ping the cloud endpoint
 	req, err := http.NewRequest("POST", "https://cloud.vessel.dev/api/cloud/telemetry/ping", bytes.NewBuffer(body))
 	if err != nil {
 		return

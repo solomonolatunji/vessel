@@ -20,7 +20,6 @@ func InitDatabase() *gorm.DB {
 		log.Fatalf("Failed to connect to cloud database: %v", err)
 	}
 
-	// Auto-migrate cloud models
 	if err := db.AutoMigrate(
 		&models.CloudTeam{},
 		&models.CloudServer{},

@@ -181,8 +181,6 @@ func (u *UpdaterService) DeployUpdate(ctx context.Context) error {
 		return fmt.Errorf("failed finalizing update deployment: %w", err)
 	}
 
-	// Trigger the shell script asynchronously.
-	// The container will be recreated, killing this process mid-execution, which is expected.
 	go func() {
 		scriptPath := "/vessel/scripts/upgrade.sh"
 		if _, err := os.Stat(scriptPath); os.IsNotExist(err) {

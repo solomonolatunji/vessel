@@ -6,7 +6,6 @@ import (
 	"github.com/docker/docker/api/types/container"
 )
 
-// ApplyCustomDNS parses the comma-separated DNS list from settings and applies it to the host configuration.
 func ApplyCustomDNS(hostCfg *container.HostConfig, customDNS string) {
 	if strings.TrimSpace(customDNS) == "" {
 		return

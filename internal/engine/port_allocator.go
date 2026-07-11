@@ -9,8 +9,6 @@ import (
 	"vessel.dev/vessel/internal/utils"
 )
 
-// GetAvailablePort finds an open port on the host within the configured bounds.
-// Uses DEPLOY_HOST_PORT_START and DEPLOY_HOST_PORT_END from env vars if present.
 func GetAvailablePort() (int, error) {
 	startStr := os.Getenv("DEPLOY_HOST_PORT_START")
 	endStr := os.Getenv("DEPLOY_HOST_PORT_END")

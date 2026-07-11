@@ -26,7 +26,7 @@ func NewSettingsSQLiteRepository(db *sql.DB) *SettingsSQLiteRepository {
 	return &SettingsSQLiteRepository{db: db}
 }
 
-const serverSettingsColumns = `id, caddy_wildcard_ip, discord_webhook_url, discord_ping_enabled, discord_enabled, slack_webhook_url, slack_enabled, telegram_bot_token, telegram_chat_id, telegram_enabled, smtp_host, smtp_port, smtp_user, smtp_password, smtp_from_name, smtp_from_address, smtp_enabled, resend_api_key, resend_enabled, pushover_user_key, pushover_api_token, pushover_enabled, generic_webhook_url, generic_webhook_enabled, notification_alerts, registration_enabled, registration_domain_allowlist, custom_dns_resolvers, dns_validation_enabled, ip_allowlist, mcp_server_enabled, default_wildcard_domain, update_check_cron, auto_update_enabled, current_version, latest_version, last_update_check, updated_at`
+const serverSettingsColumns = `id, caddy_wildcard_ip, discord_webhook_url, discord_ping_enabled, discord_enabled, slack_webhook_url, slack_enabled, telegram_bot_token, telegram_chat_id, telegram_enabled, smtp_host, smtp_port, smtp_user, smtp_password, smtp_from_name, smtp_from_address, smtp_enabled, resend_api_key, resend_enabled, pushover_user_key, pushover_api_token, pushover_enabled, generic_webhook_url, generic_webhook_enabled, notification_alerts, registration_enabled, registration_domain_allowlist, custom_dns_resolvers, dns_validation_enabled, ip_allowlist, mcp_server_enabled, default_wildcard_domain, default_openai_key, default_anthropic_key, update_check_cron, auto_update_enabled, current_version, latest_version, last_update_check, updated_at`
 
 func scanServerSettings(scanner interface{ Scan(dest ...any) error }, cfg *models.ServerSettings) error {
 	return scanner.Scan(
@@ -34,7 +34,7 @@ func scanServerSettings(scanner interface{ Scan(dest ...any) error }, cfg *model
 		&cfg.SMTPHost, &cfg.SMTPPort, &cfg.SMTPUser, &cfg.SMTPPassword, &cfg.SMTPFromName, &cfg.SMTPFromAddress, &cfg.SMTPEnabled,
 		&cfg.ResendAPIKey, &cfg.ResendEnabled, &cfg.PushoverUserKey, &cfg.PushoverAPIToken, &cfg.PushoverEnabled, &cfg.GenericWebhookURL, &cfg.GenericWebhookEnabled,
 		&cfg.NotificationAlerts,
-		&cfg.RegistrationEnabled, &cfg.RegistrationDomainAllowlist, &cfg.CustomDNSResolvers, &cfg.DNSValidationEnabled, &cfg.IPAllowlist, &cfg.MCPServerEnabled, &cfg.DefaultWildcardDomain,
+		&cfg.RegistrationEnabled, &cfg.RegistrationDomainAllowlist, &cfg.CustomDNSResolvers, &cfg.DNSValidationEnabled, &cfg.IPAllowlist, &cfg.MCPServerEnabled, &cfg.DefaultWildcardDomain, &cfg.DefaultOpenAIKey, &cfg.DefaultAnthropicKey,
 		&cfg.UpdateCheckCron, &cfg.AutoUpdateEnabled, &cfg.CurrentVersion, &cfg.LatestVersion, &cfg.LastUpdateCheck, &cfg.UpdatedAt,
 	)
 }
@@ -45,7 +45,7 @@ func serverSettingsArgs(cfg *models.ServerSettings) []any {
 		cfg.SMTPHost, cfg.SMTPPort, cfg.SMTPUser, cfg.SMTPPassword, cfg.SMTPFromName, cfg.SMTPFromAddress, cfg.SMTPEnabled,
 		cfg.ResendAPIKey, cfg.ResendEnabled, cfg.PushoverUserKey, cfg.PushoverAPIToken, cfg.PushoverEnabled, cfg.GenericWebhookURL, cfg.GenericWebhookEnabled,
 		cfg.NotificationAlerts,
-		cfg.RegistrationEnabled, cfg.RegistrationDomainAllowlist, cfg.CustomDNSResolvers, cfg.DNSValidationEnabled, cfg.IPAllowlist, cfg.MCPServerEnabled, cfg.DefaultWildcardDomain,
+		cfg.RegistrationEnabled, cfg.RegistrationDomainAllowlist, cfg.CustomDNSResolvers, cfg.DNSValidationEnabled, cfg.IPAllowlist, cfg.MCPServerEnabled, cfg.DefaultWildcardDomain, cfg.DefaultOpenAIKey, cfg.DefaultAnthropicKey,
 		cfg.UpdateCheckCron, cfg.AutoUpdateEnabled, cfg.CurrentVersion, cfg.LatestVersion, cfg.LastUpdateCheck, cfg.UpdatedAt,
 	}
 }
@@ -70,7 +70,7 @@ func (r *SettingsSQLiteRepository) GetServerSettings(ctx context.Context) (*mode
 			LatestVersion:        "0.1.0",
 			UpdatedAt:            time.Now().UTC().Format(time.RFC3339),
 		}
-		query := fmt.Sprintf(`INSERT INTO server_settings (%s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, serverSettingsColumns)
+		query := fmt.Sprintf(`INSERT INTO server_settings (%s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, serverSettingsColumns)
 		_, _ = r.db.ExecContext(ctx, query, serverSettingsArgs(defaultSettings)...)
 		return defaultSettings, nil
 	}
@@ -88,7 +88,7 @@ func (r *SettingsSQLiteRepository) UpdateServerSettings(ctx context.Context, cfg
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	query := fmt.Sprintf(`INSERT INTO server_settings (%s)
-	          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	          ON CONFLICT(id) DO UPDATE SET
 	          caddy_wildcard_ip = excluded.caddy_wildcard_ip,
 	          discord_webhook_url = excluded.discord_webhook_url,
@@ -121,6 +121,8 @@ func (r *SettingsSQLiteRepository) UpdateServerSettings(ctx context.Context, cfg
 	          ip_allowlist = excluded.ip_allowlist,
 	          mcp_server_enabled = excluded.mcp_server_enabled,
 	          default_wildcard_domain = excluded.default_wildcard_domain,
+	          default_openai_key = excluded.default_openai_key,
+	          default_anthropic_key = excluded.default_anthropic_key,
 	          update_check_cron = excluded.update_check_cron,
 	          auto_update_enabled = excluded.auto_update_enabled,
 	          current_version = excluded.current_version,

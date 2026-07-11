@@ -8,7 +8,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// RunCloudMigrations ensures the PostgreSQL schema is up to date
 func RunCloudMigrations(db *sql.DB) error {
 	queries := []string{
 		`CREATE TABLE IF NOT EXISTS cloud_users (

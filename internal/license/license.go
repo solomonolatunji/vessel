@@ -23,7 +23,6 @@ var (
 	ErrExpiredLicense = errors.New("expired license key")
 )
 
-// GenerateLicense creates a signed license key using an Ed25519 private key (base64 encoded)
 func GenerateLicense(privateKeyBase64, teamID, plan string, maxSeats int, expiry time.Time) (string, error) {
 	keyBytes, err := base64.StdEncoding.DecodeString(privateKeyBase64)
 	if err != nil {
@@ -51,7 +50,6 @@ func GenerateLicense(privateKeyBase64, teamID, plan string, maxSeats int, expiry
 	return token.SignedString(privKey)
 }
 
-// VerifyLicense checks a license key against an Ed25519 public key (base64 encoded)
 func VerifyLicense(publicKeyBase64, licenseKey string) (*Claims, error) {
 	keyBytes, err := base64.StdEncoding.DecodeString(publicKeyBase64)
 	if err != nil {
