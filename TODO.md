@@ -101,12 +101,12 @@ migrations/                 # PostgreSQL schema migrations
   - [x] SES transactional email
   - [x] Immutable audit log
   - [x] "Connect Server" 1-Click Wizard generating unique install tokens: `curl -fsSL https://get.vessel.dev/agent | sh -s -- --token=vsl_live_xyz`
-  - Multi-server fleet deployment dashboard allowing 1-click deployments to multiple geographic VPS regions
+  - [x] Multi-server fleet deployment dashboard allowing 1-click deployments to multiple geographic VPS regions
 - [ ] **Billing & Subscription Integration**:
-  - Integrate Stripe checkout and subscription management (`Hobby / Pro / Team` tiers).
+  - [x] Integrate Stripe checkout and subscription management (`Hobby / Pro / Team` tiers).
   - [x] Implement automated BYOS seat limits and deployment rate limiting.
   - [x] Usage metering — track deployments, container hours, bandwidth per account for billing.
-  - Integrate GrowthBook for feature flag gating of Pro/Team features and gradual rollouts.
+  - [x] Integrate GrowthBook for feature flag gating of Pro/Team features and gradual rollouts.
 
 - [ ] **Enterprise Features**:
   - **SSO / SAML**: Enterprise single sign-on with Okta, Azure AD, Google Workspace.
