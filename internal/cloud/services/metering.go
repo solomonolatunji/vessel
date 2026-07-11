@@ -7,28 +7,23 @@ import (
 
 	"github.com/stripe/stripe-go/v78"
 	"github.com/stripe/stripe-go/v78/billing/meterevent"
-	"vessel.dev/vessel/internal/cloud/repos"
 	"vessel.dev/vessel/internal/cloud/models"
+	"vessel.dev/vessel/internal/cloud/repos"
 )
 
 type MeteringService interface {
 	RecordUsage(teamID uint, deployments int, containerHours int, bandwidthGB int) error
-	ReportToStripe(customerID string, eventName string, value int) error
 }
 
-type DefaultMeteringService struct{
+type DefaultMeteringService struct {
 	repo repos.CloudRepo
 }
 
 func NewMeteringService(repo repos.CloudRepo) *DefaultMeteringService {
-	return &DefaultMeteringService{
-		repo: repo,
-	}
+	return &DefaultMeteringService{repo: repo}
 }
 
-// RecordUsage stores usage internally in our database and conditionally pushes it to external billing providers
 func (s *DefaultMeteringService) RecordUsage(teamID uint, deployments int, containerHours int, bandwidthGB int) error {
-	// Save the raw metrics to Postgres table `cloud_usage_logs`
 	err := s.repo.LogUsage(&models.CloudUsageLog{
 		TeamID:         teamID,
 		Deployments:    deployments,
@@ -42,32 +37,27 @@ func (s *DefaultMeteringService) RecordUsage(teamID uint, deployments int, conta
 
 	team, err := s.repo.GetTeamByID(teamID)
 	if err != nil || team == nil {
-		return err // Team not found or DB error
+		return err
 	}
 
-	customerStripeID := team.StripeCustomerID
-	if customerStripeID == "" {
-		return nil // Not connected to Stripe
+	if team.StripeCustomerID == "" {
+		return nil
 	}
 
-	// Report metric events to Stripe if they are on a metered plan
 	if deployments > 0 {
-		err := s.ReportToStripe(customerStripeID, "deployments_meter", deployments)
-		if err != nil {
+		if err := s.reportToStripe(team.StripeCustomerID, "deployments_meter", deployments); err != nil {
 			log.Printf("Failed to report deployment usage to Stripe for %d: %v", teamID, err)
 		}
 	}
-	
+
 	if containerHours > 0 {
-		err := s.ReportToStripe(customerStripeID, "container_hours_meter", containerHours)
-		if err != nil {
+		if err := s.reportToStripe(team.StripeCustomerID, "container_hours_meter", containerHours); err != nil {
 			log.Printf("Failed to report container usage to Stripe for %d: %v", teamID, err)
 		}
 	}
 
 	if bandwidthGB > 0 {
-		err := s.ReportToStripe(customerStripeID, "bandwidth_gb_meter", bandwidthGB)
-		if err != nil {
+		if err := s.reportToStripe(team.StripeCustomerID, "bandwidth_gb_meter", bandwidthGB); err != nil {
 			log.Printf("Failed to report bandwidth usage to Stripe for %d: %v", teamID, err)
 		}
 	}
@@ -75,9 +65,7 @@ func (s *DefaultMeteringService) RecordUsage(teamID uint, deployments int, conta
 	return nil
 }
 
-// ReportToStripe pushes a single usage record to Stripe's v2 metered billing API
-func (s *DefaultMeteringService) ReportToStripe(customerID string, eventName string, value int) error {
-	// Create a new metering event in Stripe
+func (s *DefaultMeteringService) reportToStripe(customerID string, eventName string, value int) error {
 	params := &stripe.BillingMeterEventParams{
 		EventName: stripe.String(eventName),
 		Payload: map[string]string{
@@ -88,9 +76,5 @@ func (s *DefaultMeteringService) ReportToStripe(customerID string, eventName str
 	}
 
 	_, err := meterevent.New(params)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }

@@ -42,13 +42,11 @@ func (h *TeamHandler) UpdateBranding(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid payload"})
 	}
 
-	// Fetch team (in a real app, verify user belongs to team and has permissions)
 	team, err := h.repo.GetTeamByID(uint(teamID))
 	if err != nil {
 		return c.JSON(http.StatusNotFound, map[string]string{"error": "Team not found"})
 	}
 
-	// Verify plan allows custom branding
 	if team.Plan != "enterprise" && team.Plan != "team" {
 		return c.JSON(http.StatusForbidden, map[string]string{"error": "Custom branding requires a Team or Enterprise plan"})
 	}

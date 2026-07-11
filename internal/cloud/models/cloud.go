@@ -9,13 +9,12 @@ import (
 type CloudTeam struct {
 	gorm.Model
 	Name             string `gorm:"uniqueIndex"`
-	Plan             string `gorm:"default:'hobby'"` // hobby, pro, team
+	Plan             string `gorm:"default:'hobby'"`
 	StripeCustomerID string
 	PaddleCustomerID string `gorm:"index"`
-	// Branding
-	CustomDomain string
-	LogoURL      string
-	PrimaryColor string
+	CustomDomain     string
+	LogoURL          string
+	PrimaryColor     string
 }
 
 type CloudServer struct {
@@ -46,4 +45,14 @@ type CloudTelemetryLog struct {
 	ActiveServers int
 	ActiveApps    int
 	ReportedAt    time.Time
+}
+
+type AuditLog struct {
+	gorm.Model
+	TeamID    string
+	UserID    string
+	Action    string
+	Resource  string
+	IPAddress string
+	Timestamp time.Time
 }

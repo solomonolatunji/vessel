@@ -29,7 +29,6 @@ func NewMailerService(ctx context.Context) (*MailerService, error) {
 		fromEmail = "noreply@vessel.dev"
 	}
 
-	// Use explicit credentials if provided, otherwise default to environment
 	var cfg aws.Config
 	var err error
 
@@ -57,7 +56,6 @@ func NewMailerService(ctx context.Context) (*MailerService, error) {
 	}, nil
 }
 
-// SendWelcomeEmail sends an onboarding email to a new cloud user
 func (s *MailerService) SendWelcomeEmail(ctx context.Context, toAddress string, name string) error {
 	log.Printf("[SES] Sending Welcome Email to %s", toAddress)
 
@@ -70,7 +68,6 @@ func (s *MailerService) SendWelcomeEmail(ctx context.Context, toAddress string, 
 	return s.sendEmail(ctx, toAddress, "Welcome to Vessel Cloud", htmlBody)
 }
 
-// SendBillingAlert sends a failed payment notification
 func (s *MailerService) SendBillingAlert(ctx context.Context, toAddress string, amount float64) error {
 	log.Printf("[SES] Sending Billing Alert to %s (Amount: %.2f)", toAddress, amount)
 

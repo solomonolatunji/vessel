@@ -6,6 +6,7 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"fmt"
+	"log"
 	"math/big"
 	"os"
 	"time"
@@ -44,18 +45,17 @@ func NewServer(db *gorm.DB) *Server {
 
 	repo := repos.NewCloudRepo(db)
 
-	ssoHandler, err := createSSOHandler()
+	ssoHandler, err := newSSOHandler()
 	if err != nil {
-		// Just log and continue, SSO will be disabled
+		log.Printf("SSO disabled: %v", err)
 	}
 
 	s := &Server{
-
 		router:           e,
 		db:               db,
 		repo:             repo,
 		agentHandler:     handlers.NewAgentHandler(),
-		wizardHandler:    handlers.NewWizardHandler(),
+		wizardHandler:    handlers.NewWizardHandler(repo),
 		billingHandler:   handlers.NewBillingHandler(),
 		authHandler:      handlers.NewAuthHandler(),
 		userHandler:      handlers.NewUserHandler(),
@@ -76,18 +76,14 @@ func (s *Server) registerRoutes() {
 
 	if s.ssoHandler != nil {
 		s.ssoHandler.RegisterRoutes(s.router.Group("/api/cloud/sso"))
-
-		// Protected route example
-		api.GET("/sso/protected", func(c echo.Context) error {
-			session := c.Get("saml_session")
+		api.GET("/sso/session", func(c echo.Context) error {
 			return c.JSON(200, map[string]interface{}{
 				"status":  "success",
-				"session": session,
+				"session": c.Get("saml_session"),
 			})
 		}, s.ssoHandler.RequireSAML())
 	}
 
-	// Global middleware
 	api.Use(echoMiddleware.Logger())
 	api.Use(echoMiddleware.Recover())
 
@@ -96,13 +92,10 @@ func (s *Server) registerRoutes() {
 	})
 
 	api.GET("/agent/connect", s.agentHandler.AcceptConnection)
-
-	// Agent & Wizard routes
 	api.POST("/wizard/token", s.wizardHandler.GenerateAgentToken, vesselMiddleware.SeatLimitGuard(s.repo))
 
 	api.POST("/billing/stripe/webhook", s.billingHandler.HandleStripeWebhook)
 	api.POST("/billing/stripe/checkout", s.billingHandler.CreateStripeCheckout)
-
 	api.POST("/billing/paddle/webhook", s.billingHandler.HandlePaddleWebhook)
 	api.POST("/billing/paddle/checkout", s.billingHandler.CreatePaddleCheckout)
 
@@ -120,7 +113,6 @@ func (s *Server) registerRoutes() {
 	api.POST("/admin/licenses", s.adminHandler.GenerateOfflineLicense)
 
 	api.POST("/fleet/deploy", s.agentHandler.DeployToFleet, vesselMiddleware.DeploymentRateLimiter(s.repo))
-
 	api.POST("/telemetry/ping", s.telemetryHandler.ReceivePing)
 }
 
@@ -128,19 +120,16 @@ func (s *Server) Start(address string) error {
 	return s.router.Start(address)
 }
 
-func createSSOHandler() (*handlers.SSOHandler, error) {
+func newSSOHandler() (*handlers.SSOHandler, error) {
 	metadataURL := os.Getenv("SAML_IDP_METADATA_URL")
 	if metadataURL == "" {
 		return nil, fmt.Errorf("SAML_IDP_METADATA_URL not set")
 	}
 
-	// Generate SP Key and Cert
 	key, _ := rsa.GenerateKey(rand.Reader, 2048)
 	template := x509.Certificate{
-		SerialNumber: big.NewInt(1),
-		Subject: pkix.Name{
-			Organization: []string{"Vessel Cloud"},
-		},
+		SerialNumber:          big.NewInt(1),
+		Subject:               pkix.Name{Organization: []string{"Vessel Cloud"}},
 		NotBefore:             time.Now(),
 		NotAfter:              time.Now().Add(time.Hour * 24 * 365),
 		KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,

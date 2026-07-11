@@ -7,18 +7,17 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
+	"vessel.dev/vessel/internal/cloud/repos"
 )
 
 type WizardHandler struct {
-	// In reality we would inject a CloudDB repo here to store tokens
-	// db *repos.CloudDB
+	repo repos.CloudRepo
 }
 
-func NewWizardHandler() *WizardHandler {
-	return &WizardHandler{}
+func NewWizardHandler(repo repos.CloudRepo) *WizardHandler {
+	return &WizardHandler{repo: repo}
 }
 
-// GenerateAgentToken creates a new token and stores it in the db for a server
 // @Summary Generate an agent connection token
 // @Description Generates a unique secure token that the remote server uses to connect to Vessel Cloud
 // @Tags Cloud-Wizard
@@ -27,22 +26,22 @@ func NewWizardHandler() *WizardHandler {
 // @Success 200 {object} map[string]interface{}
 // @Router /cloud/wizard/token [post]
 func (h *WizardHandler) GenerateAgentToken(c echo.Context) error {
-	// 1. Validate user's team ID from session/JWT
-	// teamID := "team_default" // Mocked
-
-	// 2. Generate secure token
-	bytes := make([]byte, 32)
-	if _, err := rand.Read(bytes); err != nil {
+	token, err := generateSecureToken()
+	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to generate token"})
 	}
-	token := "vsl_live_" + hex.EncodeToString(bytes)
-
-	// 3. Save to database (mocked for now)
-	// err := h.db.CreateServerToken(teamID, "My New Server", token)
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"token":           token,
 		"install_command": "curl -fsSL https://get.vessel.dev/agent | sh -s -- --token=" + token,
-		"expires_at":      time.Now().Add(24 * time.Hour), // The token is valid for 24h to connect for the first time
+		"expires_at":      time.Now().Add(24 * time.Hour),
 	})
+}
+
+func generateSecureToken() (string, error) {
+	b := make([]byte, 32)
+	if _, err := rand.Read(b); err != nil {
+		return "", err
+	}
+	return "vsl_live_" + hex.EncodeToString(b), nil
 }

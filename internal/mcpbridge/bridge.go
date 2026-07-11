@@ -9,7 +9,6 @@ import (
 	"vessel.dev/vessel/internal/services"
 )
 
-// Bridge creates an MCP server bound to Vessel's internal services
 type Bridge struct {
 	server         *server.MCPServer
 	projectService *services.ProjectService
@@ -57,8 +56,6 @@ func (b *Bridge) registerTools() {
 }
 
 func (b *Bridge) handleListProjects(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	// Simple fetch for all workspaces - here we just get all projects globally (for admin/stdio)
-	// Usually MCP agents will run as the admin locally via stdio.
 	projects, err := b.projectService.ListProjects(ctx)
 	if err != nil {
 		return mcp.NewToolResultError(err.Error()), nil

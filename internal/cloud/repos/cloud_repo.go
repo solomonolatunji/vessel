@@ -1,6 +1,7 @@
 package repos
 
 import (
+	"context"
 	"errors"
 	"time"
 
@@ -15,8 +16,8 @@ type CloudRepo interface {
 	GetActiveServerCount(teamID uint) (int64, error)
 	GetDeploymentsInLastHour(teamID uint) (int64, error)
 	LogUsage(usage *models.CloudUsageLog) error
-	// Telemetry
 	LogTelemetry(logEntry *models.CloudTelemetryLog) error
+	InsertAuditLog(ctx context.Context, entry *models.AuditLog) error
 }
 
 type cloudRepo struct {
@@ -67,7 +68,7 @@ func (r *cloudRepo) GetDeploymentsInLastHour(teamID uint) (int64, error) {
 		Select("SUM(deployments)").
 		Row().
 		Scan(&count)
-	
+
 	if err != nil {
 		// Might be null if no deployments
 		return 0, nil
@@ -81,4 +82,8 @@ func (r *cloudRepo) LogUsage(usage *models.CloudUsageLog) error {
 
 func (r *cloudRepo) LogTelemetry(logEntry *models.CloudTelemetryLog) error {
 	return r.db.Create(logEntry).Error
+}
+
+func (r *cloudRepo) InsertAuditLog(ctx context.Context, entry *models.AuditLog) error {
+	return r.db.WithContext(ctx).Create(entry).Error
 }

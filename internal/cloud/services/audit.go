@@ -4,9 +4,11 @@ import (
 	"context"
 	"log"
 	"time"
+
+	"vessel.dev/vessel/internal/cloud/models"
+	"vessel.dev/vessel/internal/cloud/repos"
 )
 
-// AuditEvent represents an action taken by a user/system
 type AuditEvent struct {
 	ID        string
 	TeamID    string
@@ -18,20 +20,25 @@ type AuditEvent struct {
 }
 
 type AuditService struct {
-	// db *repos.CloudDB
+	repo repos.CloudRepo
 }
 
-func NewAuditService() *AuditService {
-	return &AuditService{}
+func NewAuditService(repo repos.CloudRepo) *AuditService {
+	return &AuditService{repo: repo}
 }
 
-// LogEvent securely records an audit event
 func (s *AuditService) LogEvent(ctx context.Context, event AuditEvent) error {
 	event.Timestamp = time.Now()
 
-	// Mock: in production this inserts into an append-only Postgres table or separate data store
 	log.Printf("[AUDIT] Team: %s | User: %s | Action: %s | Resource: %s",
 		event.TeamID, event.UserID, event.Action, event.Resource)
 
-	return nil
+	return s.repo.InsertAuditLog(ctx, &models.AuditLog{
+		TeamID:    event.TeamID,
+		UserID:    event.UserID,
+		Action:    event.Action,
+		Resource:  event.Resource,
+		IPAddress: event.IPAddress,
+		Timestamp: event.Timestamp,
+	})
 }

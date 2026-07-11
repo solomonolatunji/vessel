@@ -41,7 +41,6 @@ func (h *TelemetryHandler) ReceivePing(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid telemetry payload"})
 	}
 
-	// Basic validation
 	if payload.InstanceID == "" || payload.Version == "" {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Missing required fields"})
 	}
@@ -59,7 +58,6 @@ func (h *TelemetryHandler) ReceivePing(c echo.Context) error {
 
 	if err := h.repo.LogTelemetry(logEntry); err != nil {
 		log.Printf("Failed to store telemetry ping: %v", err)
-		// We return 200 OK anyway to not block the OSS instance
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{"status": "ok"})

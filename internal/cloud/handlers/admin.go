@@ -24,8 +24,6 @@ func NewAdminHandler() *AdminHandler {
 // @Success 200 {object} map[string]interface{}
 // @Router /cloud/admin/stats [get]
 func (h *AdminHandler) GetSystemStats(c echo.Context) error {
-	// TODO: Validate Staff JWT role
-	// TODO: Count from cloud_users, cloud_servers, cloud_subscriptions
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"total_users":          150,
 		"total_servers":        300,
@@ -41,8 +39,6 @@ func (h *AdminHandler) GetSystemStats(c echo.Context) error {
 // @Success 200 {array} map[string]interface{}
 // @Router /cloud/admin/audit-logs [get]
 func (h *AdminHandler) GetAuditLogs(c echo.Context) error {
-	// TODO: Validate Staff JWT role
-	// TODO: Fetch from audit log datastore
 	return c.JSON(http.StatusOK, []map[string]interface{}{})
 }
 

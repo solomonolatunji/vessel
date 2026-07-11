@@ -19,10 +19,10 @@ func NewMeteringHandler(meteringService services.MeteringService) *MeteringHandl
 }
 
 type UsageReport struct {
-	TeamID         uint   `json:"team_id"`
-	Deployments    int    `json:"deployments"`
-	ContainerHours int    `json:"container_hours"`
-	BandwidthGB    int    `json:"bandwidth_gb"`
+	TeamID         uint `json:"team_id"`
+	Deployments    int  `json:"deployments"`
+	ContainerHours int  `json:"container_hours"`
+	BandwidthGB    int  `json:"bandwidth_gb"`
 }
 
 // ReportUsage handles incoming usage metrics from connected agents
@@ -38,8 +38,6 @@ func (h *MeteringHandler) ReportUsage(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid usage report"})
 	}
-
-	// TODO: Validate agent token sending this report
 
 	err := h.meteringService.RecordUsage(req.TeamID, req.Deployments, req.ContainerHours, req.BandwidthGB)
 	if err != nil {

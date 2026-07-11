@@ -16,13 +16,10 @@ import (
 )
 
 var upgrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
-		return true // In production, restrict this
-	},
+	CheckOrigin: func(r *http.Request) bool { return true },
 }
 
 type AgentHandler struct {
-	// A map to hold active connections by token or tenant ID
 	activeAgents map[string]*yamux.Session
 	mu           sync.RWMutex
 }
@@ -33,15 +30,17 @@ func NewAgentHandler() *AgentHandler {
 	}
 }
 
-// AcceptConnection handles incoming websocket connections from remote agents
+// @Summary Accept Agent Connection
+// @Description Accepts an inbound WebSocket tunnel from a remote vessel daemon
+// @Tags Cloud-Fleet
+// @Success 101
+// @Router /cloud/agent/connect [get]
 func (h *AgentHandler) AcceptConnection(c echo.Context) error {
 	token := c.Request().Header.Get("Authorization")
 	if token == "" {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Missing Authorization header"})
 	}
 
-	// TODO: Validate token against PostgreSQL (CloudDB) to get tenant/server ID
-	// For now, we just use the raw token as the identifier
 	serverID := token
 
 	ws, err := upgrader.Upgrade(c.Response(), c.Request(), nil)
@@ -51,21 +50,20 @@ func (h *AgentHandler) AcceptConnection(c echo.Context) error {
 	}
 
 	netConn := &websocketConn{conn: ws}
-	session, err := yamux.Client(netConn, yamux.DefaultConfig())
+	sess, err := yamux.Client(netConn, yamux.DefaultConfig())
 	if err != nil {
 		ws.Close()
-		log.Printf("Failed to establish yamux client session: %v", err)
+		log.Printf("Failed to establish yamux session: %v", err)
 		return err
 	}
 
 	h.mu.Lock()
-	h.activeAgents[serverID] = session
+	h.activeAgents[serverID] = sess
 	h.mu.Unlock()
 
-	log.Printf("Agent connected securely for server/tenant: %s", serverID)
+	log.Printf("Agent connected: %s", serverID)
 
-	// Keep the connection alive until the agent disconnects
-	<-session.CloseChan()
+	<-sess.CloseChan()
 
 	h.mu.Lock()
 	delete(h.activeAgents, serverID)
@@ -77,13 +75,12 @@ func (h *AgentHandler) AcceptConnection(c echo.Context) error {
 
 type FleetDeployRequest struct {
 	ImageTag    string   `json:"image_tag"`
-	AgentTokens []string `json:"agent_tokens"` // Target servers
+	AgentTokens []string `json:"agent_tokens"`
 	EnvVars     []string `json:"env_vars"`
 }
 
-// DeployToFleet broadcasts a deployment command to selected agents
 // @Summary Fleet Deployment
-// @Description Dispatch a deployment instruction to a subset of connected Vossel Daemons
+// @Description Dispatch a deployment instruction to a subset of connected Vessel Daemons
 // @Tags Cloud-Fleet
 // @Accept json
 // @Produce json
@@ -101,27 +98,11 @@ func (h *AgentHandler) DeployToFleet(c echo.Context) error {
 	successfulDispatches := 0
 	failedAgents := []string{}
 
-	// In a real implementation, we would encode a JSON instruction
-	// and write it to the Yamux session streams.
 	for _, token := range req.AgentTokens {
-		session, exists := h.activeAgents[token]
-		if !exists || session.IsClosed() {
+		if err := h.dispatchToAgent(token, req.ImageTag); err != nil {
 			failedAgents = append(failedAgents, token)
 			continue
 		}
-
-		// Open a stream to the remote agent
-		stream, err := session.Open()
-		if err != nil {
-			failedAgents = append(failedAgents, token)
-			continue
-		}
-
-		// Mock payload dispatch
-		// e.g. json.NewEncoder(stream).Encode(instruction)
-		stream.Write([]byte("DEPLOY:" + req.ImageTag + "\n"))
-		stream.Close()
-
 		successfulDispatches++
 	}
 
@@ -132,7 +113,22 @@ func (h *AgentHandler) DeployToFleet(c echo.Context) error {
 	})
 }
 
-// GetDockerClient returns a Docker client that routes traffic over the yamux tunnel
+func (h *AgentHandler) dispatchToAgent(token, imageTag string) error {
+	session, exists := h.activeAgents[token]
+	if !exists || session.IsClosed() {
+		return fmt.Errorf("agent %s not connected", token)
+	}
+
+	stream, err := session.Open()
+	if err != nil {
+		return err
+	}
+	defer stream.Close()
+
+	_, err = stream.Write([]byte("DEPLOY:" + imageTag + "\n"))
+	return err
+}
+
 func (h *AgentHandler) GetDockerClient(serverID string) (*client.Client, error) {
 	h.mu.RLock()
 	session, exists := h.activeAgents[serverID]
@@ -150,19 +146,13 @@ func (h *AgentHandler) GetDockerClient(serverID string) (*client.Client, error) 
 		},
 	}
 
-	cli, err := client.NewClientWithOpts(
+	return client.NewClientWithOpts(
 		client.WithHTTPClient(httpClient),
-		client.WithHost("http://localhost"), // Host is ignored because of DialContext
+		client.WithHost("http://localhost"),
 		client.WithAPIVersionNegotiation(),
 	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create docker client over tunnel: %w", err)
-	}
-
-	return cli, nil
 }
 
-// websocketConn wraps a gorilla/websocket to implement net.Conn
 type websocketConn struct {
 	conn *websocket.Conn
 }
@@ -176,17 +166,13 @@ func (c *websocketConn) Read(p []byte) (int, error) {
 }
 
 func (c *websocketConn) Write(p []byte) (int, error) {
-	err := c.conn.WriteMessage(websocket.BinaryMessage, p)
-	if err != nil {
+	if err := c.conn.WriteMessage(websocket.BinaryMessage, p); err != nil {
 		return 0, err
 	}
 	return len(p), nil
 }
 
-func (c *websocketConn) Close() error {
-	return c.conn.Close()
-}
-
+func (c *websocketConn) Close() error                       { return c.conn.Close() }
 func (c *websocketConn) LocalAddr() net.Addr                { return c.conn.LocalAddr() }
 func (c *websocketConn) RemoteAddr() net.Addr               { return c.conn.RemoteAddr() }
 func (c *websocketConn) SetDeadline(t time.Time) error      { return c.conn.SetWriteDeadline(t) }

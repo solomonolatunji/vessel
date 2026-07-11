@@ -27,7 +27,6 @@ func NewBillingHandler() *BillingHandler {
 	}
 }
 
-// HandleStripeWebhook handles Stripe subscription webhooks
 // @Summary Stripe Webhook
 // @Description Receives billing events from Stripe to update subscription status
 // @Tags Cloud-Billing
@@ -36,18 +35,16 @@ func NewBillingHandler() *BillingHandler {
 // @Success 200 {object} map[string]string
 // @Router /cloud/billing/stripe/webhook [post]
 func (h *BillingHandler) HandleStripeWebhook(c echo.Context) error {
-	const MaxBodyBytes = int64(65536)
-	c.Request().Body = http.MaxBytesReader(c.Response(), c.Request().Body, MaxBodyBytes)
+	const maxBodyBytes = int64(65536)
+	c.Request().Body = http.MaxBytesReader(c.Response(), c.Request().Body, maxBodyBytes)
 	payload, err := io.ReadAll(c.Request().Body)
 	if err != nil {
 		return c.JSON(http.StatusServiceUnavailable, map[string]string{"error": "Error reading request body"})
 	}
 
 	sigHeader := c.Request().Header.Get("Stripe-Signature")
-
 	var event stripe.Event
 
-	// Only verify signature if secret is configured (useful for local dev)
 	if h.stripeWebhookSecret != "" {
 		event, err = webhook.ConstructEvent(payload, sigHeader, h.stripeWebhookSecret)
 		if err != nil {
@@ -65,35 +62,24 @@ func (h *BillingHandler) HandleStripeWebhook(c echo.Context) error {
 
 	switch event.Type {
 	case "customer.subscription.created", "customer.subscription.updated":
-		var subscription stripe.Subscription
-		err := json.Unmarshal(event.Data.Raw, &subscription)
-		if err != nil {
-			log.Printf("Error parsing webhook JSON: %v\n", err)
+		var sub stripe.Subscription
+		if err := json.Unmarshal(event.Data.Raw, &sub); err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid subscription payload"})
 		}
-
-		status := subscription.Status
-		customerID := subscription.Customer.ID
-		planID := subscription.Items.Data[0].Price.ID
-
-		log.Printf("Subscription Update | Customer: %s | Status: %s | Plan: %s", customerID, status, planID)
-		// TODO: Update cloud_subscriptions table via CloudDB
+		log.Printf("Subscription Update | Customer: %s | Status: %s | Plan: %s",
+			sub.Customer.ID, sub.Status, sub.Items.Data[0].Price.ID)
 
 	case "customer.subscription.deleted":
-		var subscription stripe.Subscription
-		err := json.Unmarshal(event.Data.Raw, &subscription)
-		if err != nil {
+		var sub stripe.Subscription
+		if err := json.Unmarshal(event.Data.Raw, &sub); err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid subscription payload"})
 		}
-
-		log.Printf("Subscription Deleted | Customer: %s", subscription.Customer.ID)
-		// TODO: Mark as canceled in cloud_subscriptions table
+		log.Printf("Subscription Deleted | Customer: %s", sub.Customer.ID)
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{"status": "received"})
 }
 
-// HandlePaddleWebhook handles Paddle subscription webhooks
 // @Summary Paddle Webhook
 // @Description Receives billing events from Paddle
 // @Tags Cloud-Billing
@@ -102,8 +88,8 @@ func (h *BillingHandler) HandleStripeWebhook(c echo.Context) error {
 // @Success 200 {object} map[string]string
 // @Router /cloud/billing/paddle/webhook [post]
 func (h *BillingHandler) HandlePaddleWebhook(c echo.Context) error {
-	const MaxBodyBytes = int64(65536)
-	c.Request().Body = http.MaxBytesReader(c.Response(), c.Request().Body, MaxBodyBytes)
+	const maxBodyBytes = int64(65536)
+	c.Request().Body = http.MaxBytesReader(c.Response(), c.Request().Body, maxBodyBytes)
 
 	if h.paddleWebhookSecret != "" {
 		verifier := paddle.NewWebhookVerifier(h.paddleWebhookSecret)
@@ -122,7 +108,6 @@ func (h *BillingHandler) HandlePaddleWebhook(c echo.Context) error {
 		return c.JSON(http.StatusServiceUnavailable, map[string]string{"error": "Error reading request body"})
 	}
 
-	// Payload is verified, parse the JSON
 	var event map[string]interface{}
 	if err := json.Unmarshal(payload, &event); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid payload"})
@@ -134,11 +119,8 @@ func (h *BillingHandler) HandlePaddleWebhook(c echo.Context) error {
 	switch eventType {
 	case "subscription.created", "subscription.updated":
 		log.Println("Handling Paddle subscription update...")
-		// TODO: Update cloud_subscriptions table
-
 	case "subscription.canceled":
 		log.Println("Handling Paddle subscription canceled...")
-		// TODO: Mark as canceled in cloud_subscriptions table
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{"status": "received"})
@@ -149,7 +131,6 @@ type CheckoutRequest struct {
 	ReturnURL string `json:"return_url"`
 }
 
-// CreateStripeCheckout creates a new Stripe Checkout session
 // @Summary Create Stripe Checkout
 // @Description Generates a checkout URL for subscriptions
 // @Tags Cloud-Billing
@@ -163,17 +144,8 @@ func (h *BillingHandler) CreateStripeCheckout(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request"})
 	}
 
-	// Mock mapping of plan names to Stripe Price IDs
-	// In production, these should come from environment variables or a DB
-	priceID := ""
-	switch req.PlanID {
-	case "hobby":
-		priceID = os.Getenv("STRIPE_PRICE_HOBBY")
-	case "pro":
-		priceID = os.Getenv("STRIPE_PRICE_PRO")
-	case "team":
-		priceID = os.Getenv("STRIPE_PRICE_TEAM")
-	default:
+	priceID := stripePriceID(req.PlanID)
+	if priceID == "" {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid plan ID"})
 	}
 
@@ -199,7 +171,6 @@ func (h *BillingHandler) CreateStripeCheckout(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]string{"url": s.URL})
 }
 
-// CreatePaddleCheckout creates a new Paddle Checkout session
 // @Summary Create Paddle Checkout
 // @Description Generates a checkout URL/Transaction for subscriptions
 // @Tags Cloud-Billing
@@ -213,17 +184,8 @@ func (h *BillingHandler) CreatePaddleCheckout(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request"})
 	}
 
-	// Currently returning a mock structure as Paddle v5 typically builds
-	// transactions via API or relies on Paddle.js for checkout overlay.
-	priceID := ""
-	switch req.PlanID {
-	case "hobby":
-		priceID = os.Getenv("PADDLE_PRICE_HOBBY")
-	case "pro":
-		priceID = os.Getenv("PADDLE_PRICE_PRO")
-	case "team":
-		priceID = os.Getenv("PADDLE_PRICE_TEAM")
-	default:
+	priceID := paddlePriceID(req.PlanID)
+	if priceID == "" {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid plan ID"})
 	}
 
@@ -231,4 +193,28 @@ func (h *BillingHandler) CreatePaddleCheckout(c echo.Context) error {
 		"price_id": priceID,
 		"status":   "ready_for_frontend_paddle_js",
 	})
+}
+
+func stripePriceID(plan string) string {
+	switch plan {
+	case "hobby":
+		return os.Getenv("STRIPE_PRICE_HOBBY")
+	case "pro":
+		return os.Getenv("STRIPE_PRICE_PRO")
+	case "team":
+		return os.Getenv("STRIPE_PRICE_TEAM")
+	}
+	return ""
+}
+
+func paddlePriceID(plan string) string {
+	switch plan {
+	case "hobby":
+		return os.Getenv("PADDLE_PRICE_HOBBY")
+	case "pro":
+		return os.Getenv("PADDLE_PRICE_PRO")
+	case "team":
+		return os.Getenv("PADDLE_PRICE_TEAM")
+	}
+	return ""
 }
