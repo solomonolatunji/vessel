@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -15,6 +16,68 @@ type GitAppsHandler struct {
 
 func NewGitAppsHandler(gs *services.GitAppsService) *GitAppsHandler {
 	return &GitAppsHandler{gitAppsService: gs}
+}
+
+// --- Handler Factories ---
+
+type getFunc[T any] func(ctx context.Context, id string) (*T, error)
+type listFunc[T any] func(ctx context.Context, teamID string) ([]T, error)
+type saveFunc[T any] func(ctx context.Context, app *T) error
+type deleteFunc func(ctx context.Context, id string) error
+
+func listAppsHandler[T any](list listFunc[T]) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		teamID := c.QueryParam("teamId")
+		if teamID == "" {
+			teamID = "default"
+		}
+		apps, err := list(c.Request().Context(), teamID)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+		if apps == nil {
+			apps = []T{}
+		}
+		return c.JSON(http.StatusOK, apps)
+	}
+}
+
+func getAppHandler[T any](get getFunc[T]) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id := c.Param("id")
+		app, err := get(c.Request().Context(), id)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+		if app == nil {
+			return c.JSON(http.StatusNotFound, map[string]string{"error": "App not found"})
+		}
+		return c.JSON(http.StatusOK, app)
+	}
+}
+
+func saveAppHandler[T any](save saveFunc[T], setTeamID func(*T, string)) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var app T
+		if err := c.Bind(&app); err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		}
+		setTeamID(&app, "default")
+		if err := save(c.Request().Context(), &app); err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+		return c.JSON(http.StatusOK, app)
+	}
+}
+
+func deleteAppHandler(del deleteFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id := c.Param("id")
+		if err := del(c.Request().Context(), id); err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+		return c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
+	}
 }
 
 // ---- GitHub Apps ----
@@ -54,18 +117,7 @@ func (h *GitAppsHandler) ExchangeGithubManifestCode(c echo.Context) error {
 // @Produce json
 // @Router /api/settings/git_apps/github [get]
 func (h *GitAppsHandler) ListGithubApps(c echo.Context) error {
-	teamID := c.QueryParam("teamId")
-	if teamID == "" {
-		teamID = "default"
-	}
-	apps, err := h.gitAppsService.ListGithubApps(c.Request().Context(), teamID)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
-	}
-	if apps == nil {
-		apps = []models.GithubApp{} // Return empty array instead of null
-	}
-	return c.JSON(http.StatusOK, apps)
+	return listAppsHandler(h.gitAppsService.ListGithubApps)(c)
 }
 
 // @Summary GetGithubApp endpoint
@@ -76,15 +128,7 @@ func (h *GitAppsHandler) ListGithubApps(c echo.Context) error {
 // @Param id path string true "id"
 // @Router /api/settings/git_apps/github/{id} [get]
 func (h *GitAppsHandler) GetGithubApp(c echo.Context) error {
-	id := c.Param("id")
-	app, err := h.gitAppsService.GetGithubApp(c.Request().Context(), id)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
-	}
-	if app == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "App not found"})
-	}
-	return c.JSON(http.StatusOK, app)
+	return getAppHandler(h.gitAppsService.GetGithubApp)(c)
 }
 
 // @Summary SaveGithubApp endpoint
@@ -94,17 +138,11 @@ func (h *GitAppsHandler) GetGithubApp(c echo.Context) error {
 // @Produce json
 // @Router /api/settings/git_apps/github [put]
 func (h *GitAppsHandler) SaveGithubApp(c echo.Context) error {
-	var app models.GithubApp
-	if err := c.Bind(&app); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
-	}
-	if app.TeamID == "" {
-		app.TeamID = "default"
-	}
-	if err := h.gitAppsService.SaveGithubApp(c.Request().Context(), &app); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
-	}
-	return c.JSON(http.StatusOK, app)
+	return saveAppHandler(h.gitAppsService.SaveGithubApp, func(a *models.GithubApp, t string) {
+		if a.TeamID == "" {
+			a.TeamID = t
+		}
+	})(c)
 }
 
 // @Summary DeleteGithubApp endpoint
@@ -115,11 +153,7 @@ func (h *GitAppsHandler) SaveGithubApp(c echo.Context) error {
 // @Param id path string true "id"
 // @Router /api/settings/git_apps/github/{id} [delete]
 func (h *GitAppsHandler) DeleteGithubApp(c echo.Context) error {
-	id := c.Param("id")
-	if err := h.gitAppsService.DeleteGithubApp(c.Request().Context(), id); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
-	}
-	return c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
+	return deleteAppHandler(h.gitAppsService.DeleteGithubApp)(c)
 }
 
 // ---- GitLab Apps ----
@@ -131,18 +165,7 @@ func (h *GitAppsHandler) DeleteGithubApp(c echo.Context) error {
 // @Produce json
 // @Router /api/settings/git_apps/gitlab [get]
 func (h *GitAppsHandler) ListGitlabApps(c echo.Context) error {
-	teamID := c.QueryParam("teamId")
-	if teamID == "" {
-		teamID = "default"
-	}
-	apps, err := h.gitAppsService.ListGitlabApps(c.Request().Context(), teamID)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
-	}
-	if apps == nil {
-		apps = []models.GitlabApp{}
-	}
-	return c.JSON(http.StatusOK, apps)
+	return listAppsHandler(h.gitAppsService.ListGitlabApps)(c)
 }
 
 // @Summary GetGitlabApp endpoint
@@ -153,15 +176,7 @@ func (h *GitAppsHandler) ListGitlabApps(c echo.Context) error {
 // @Param id path string true "id"
 // @Router /api/settings/git_apps/gitlab/{id} [get]
 func (h *GitAppsHandler) GetGitlabApp(c echo.Context) error {
-	id := c.Param("id")
-	app, err := h.gitAppsService.GetGitlabApp(c.Request().Context(), id)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
-	}
-	if app == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "App not found"})
-	}
-	return c.JSON(http.StatusOK, app)
+	return getAppHandler(h.gitAppsService.GetGitlabApp)(c)
 }
 
 // @Summary SaveGitlabApp endpoint
@@ -171,17 +186,11 @@ func (h *GitAppsHandler) GetGitlabApp(c echo.Context) error {
 // @Produce json
 // @Router /api/settings/git_apps/gitlab [put]
 func (h *GitAppsHandler) SaveGitlabApp(c echo.Context) error {
-	var app models.GitlabApp
-	if err := c.Bind(&app); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
-	}
-	if app.TeamID == "" {
-		app.TeamID = "default"
-	}
-	if err := h.gitAppsService.SaveGitlabApp(c.Request().Context(), &app); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
-	}
-	return c.JSON(http.StatusOK, app)
+	return saveAppHandler(h.gitAppsService.SaveGitlabApp, func(a *models.GitlabApp, t string) {
+		if a.TeamID == "" {
+			a.TeamID = t
+		}
+	})(c)
 }
 
 // @Summary DeleteGitlabApp endpoint
@@ -192,11 +201,7 @@ func (h *GitAppsHandler) SaveGitlabApp(c echo.Context) error {
 // @Param id path string true "id"
 // @Router /api/settings/git_apps/gitlab/{id} [delete]
 func (h *GitAppsHandler) DeleteGitlabApp(c echo.Context) error {
-	id := c.Param("id")
-	if err := h.gitAppsService.DeleteGitlabApp(c.Request().Context(), id); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
-	}
-	return c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
+	return deleteAppHandler(h.gitAppsService.DeleteGitlabApp)(c)
 }
 
 // ---- Bitbucket Apps ----
@@ -208,18 +213,7 @@ func (h *GitAppsHandler) DeleteGitlabApp(c echo.Context) error {
 // @Produce json
 // @Router /api/settings/git_apps/bitbucket [get]
 func (h *GitAppsHandler) ListBitbucketApps(c echo.Context) error {
-	teamID := c.QueryParam("teamId")
-	if teamID == "" {
-		teamID = "default"
-	}
-	apps, err := h.gitAppsService.ListBitbucketApps(c.Request().Context(), teamID)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
-	}
-	if apps == nil {
-		apps = []models.BitbucketApp{}
-	}
-	return c.JSON(http.StatusOK, apps)
+	return listAppsHandler(h.gitAppsService.ListBitbucketApps)(c)
 }
 
 // @Summary GetBitbucketApp endpoint
@@ -230,15 +224,7 @@ func (h *GitAppsHandler) ListBitbucketApps(c echo.Context) error {
 // @Param id path string true "id"
 // @Router /api/settings/git_apps/bitbucket/{id} [get]
 func (h *GitAppsHandler) GetBitbucketApp(c echo.Context) error {
-	id := c.Param("id")
-	app, err := h.gitAppsService.GetBitbucketApp(c.Request().Context(), id)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
-	}
-	if app == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "App not found"})
-	}
-	return c.JSON(http.StatusOK, app)
+	return getAppHandler(h.gitAppsService.GetBitbucketApp)(c)
 }
 
 // @Summary SaveBitbucketApp endpoint
@@ -248,17 +234,11 @@ func (h *GitAppsHandler) GetBitbucketApp(c echo.Context) error {
 // @Produce json
 // @Router /api/settings/git_apps/bitbucket [put]
 func (h *GitAppsHandler) SaveBitbucketApp(c echo.Context) error {
-	var app models.BitbucketApp
-	if err := c.Bind(&app); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
-	}
-	if app.TeamID == "" {
-		app.TeamID = "default"
-	}
-	if err := h.gitAppsService.SaveBitbucketApp(c.Request().Context(), &app); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
-	}
-	return c.JSON(http.StatusOK, app)
+	return saveAppHandler(h.gitAppsService.SaveBitbucketApp, func(a *models.BitbucketApp, t string) {
+		if a.TeamID == "" {
+			a.TeamID = t
+		}
+	})(c)
 }
 
 // @Summary DeleteBitbucketApp endpoint
@@ -269,9 +249,5 @@ func (h *GitAppsHandler) SaveBitbucketApp(c echo.Context) error {
 // @Param id path string true "id"
 // @Router /api/settings/git_apps/bitbucket/{id} [delete]
 func (h *GitAppsHandler) DeleteBitbucketApp(c echo.Context) error {
-	id := c.Param("id")
-	if err := h.gitAppsService.DeleteBitbucketApp(c.Request().Context(), id); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
-	}
-	return c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
+	return deleteAppHandler(h.gitAppsService.DeleteBitbucketApp)(c)
 }
