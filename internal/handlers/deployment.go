@@ -49,6 +49,13 @@ func (h *DeploymentHandler) ListServiceDeployments(c echo.Context) error {
 // @Produce json
 // @Param id path string true "id"
 // @Router /api/backups/{id}/trigger [post]
+// @Summary Trigger Deployment
+// @Description Trigger Deployment
+// @Tags Deployments
+// @Accept json
+// @Produce json
+// @Param serviceId path string true "Service ID"
+// @Router /api/services/{serviceId}/deploy [post]
 func (h *DeploymentHandler) Trigger(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	if serviceID == "" {

@@ -22,6 +22,12 @@ func NewTeamHandler(s *services.TeamService) *TeamHandler {
 // @Accept json
 // @Produce json
 // @Router /api/workspaces [get]
+// @Summary List Teams
+// @Description List Teams
+// @Tags Teams
+// @Accept json
+// @Produce json
+// @Router /api/teams [get]
 func (h *TeamHandler) List(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -40,6 +46,12 @@ func (h *TeamHandler) List(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Router /api/workspaces [post]
+// @Summary Create Team
+// @Description Create Team
+// @Tags Teams
+// @Accept json
+// @Produce json
+// @Router /api/teams [post]
 func (h *TeamHandler) Create(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -65,6 +77,13 @@ func (h *TeamHandler) Create(c echo.Context) error {
 // @Produce json
 // @Param teamId path string true "teamId"
 // @Router /api/teams/{teamId}/ai_settings [get]
+// @Summary Get Team
+// @Description Get Team
+// @Tags Teams
+// @Accept json
+// @Produce json
+// @Param id path string true "Team ID"
+// @Router /api/teams/{id} [get]
 func (h *TeamHandler) Get(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -84,6 +103,13 @@ func (h *TeamHandler) Get(c echo.Context) error {
 // @Produce json
 // @Param id path string true "id"
 // @Router /api/workspaces/{id} [delete]
+// @Summary Delete Team
+// @Description Delete Team
+// @Tags Teams
+// @Accept json
+// @Produce json
+// @Param id path string true "Team ID"
+// @Router /api/teams/{id} [delete]
 func (h *TeamHandler) Delete(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {

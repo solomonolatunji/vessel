@@ -23,6 +23,13 @@ func NewServiceVarHandler(s *services.AppService) *ServiceVarHandler {
 // @Accept json
 // @Produce json
 // @Router /api/workspaces [get]
+// @Summary List Service Variables
+// @Description List Service Variables
+// @Tags ServiceVariables
+// @Accept json
+// @Produce json
+// @Param serviceId path string true "Service ID"
+// @Router /api/services/{serviceId}/variables [get]
 func (h *ServiceVarHandler) List(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	list, err := h.appService.ListVariablesByService(c.Request().Context(), serviceID)
@@ -38,6 +45,13 @@ func (h *ServiceVarHandler) List(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Router /api/workspaces [post]
+// @Summary Create Service Variable
+// @Description Create Service Variable
+// @Tags ServiceVariables
+// @Accept json
+// @Produce json
+// @Param serviceId path string true "Service ID"
+// @Router /api/services/{serviceId}/variables [post]
 func (h *ServiceVarHandler) Create(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	var req models.Variable
@@ -65,6 +79,14 @@ func (h *ServiceVarHandler) Create(c echo.Context) error {
 // @Produce json
 // @Param id path string true "id"
 // @Router /api/workspaces/{id} [put]
+// @Summary Update Service Variable
+// @Description Update Service Variable
+// @Tags ServiceVariables
+// @Accept json
+// @Produce json
+// @Param serviceId path string true "Service ID"
+// @Param id path string true "Variable ID"
+// @Router /api/services/{serviceId}/variables/{id} [put]
 func (h *ServiceVarHandler) Update(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	id := c.Param("id")
@@ -87,6 +109,14 @@ func (h *ServiceVarHandler) Update(c echo.Context) error {
 // @Produce json
 // @Param id path string true "id"
 // @Router /api/workspaces/{id} [delete]
+// @Summary Delete Service Variable
+// @Description Delete Service Variable
+// @Tags ServiceVariables
+// @Accept json
+// @Produce json
+// @Param serviceId path string true "Service ID"
+// @Param id path string true "Variable ID"
+// @Router /api/services/{serviceId}/variables/{id} [delete]
 func (h *ServiceVarHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	if err := h.appService.DeleteVariable(c.Request().Context(), id); err != nil {

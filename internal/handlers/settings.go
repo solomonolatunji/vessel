@@ -107,6 +107,12 @@ func (h *SettingsHandler) DeleteTeamNotificationChannel(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Router /api/settings/license [post]
+// @Summary Activate License
+// @Description Activate License
+// @Tags Settings
+// @Accept json
+// @Produce json
+// @Router /api/settings/license [post]
 func (h *SettingsHandler) ActivateLicense(c echo.Context) error {
 	var payload struct {
 		LicenseKey string `json:"license_key"`

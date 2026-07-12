@@ -69,6 +69,13 @@ func (h *EnvironmentHandler) Create(c echo.Context) error {
 // @Produce json
 // @Param id path string true "id"
 // @Router /api/workspaces/{id} [delete]
+// @Summary Delete Environment
+// @Description Delete Environment
+// @Tags Environments
+// @Accept json
+// @Produce json
+// @Param id path string true "Environment ID"
+// @Router /api/environments/{id} [delete]
 func (h *EnvironmentHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {

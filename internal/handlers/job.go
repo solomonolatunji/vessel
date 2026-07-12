@@ -60,6 +60,13 @@ func (h *JobHandler) Create(c echo.Context) error {
 // @Produce json
 // @Param teamId path string true "teamId"
 // @Router /api/teams/{teamId}/ai_settings [get]
+// @Summary Get Job
+// @Description Get Job
+// @Tags Jobs
+// @Accept json
+// @Produce json
+// @Param id path string true "Job ID"
+// @Router /api/jobs/{id} [get]
 func (h *JobHandler) Get(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -79,6 +86,13 @@ func (h *JobHandler) Get(c echo.Context) error {
 // @Produce json
 // @Param id path string true "id"
 // @Router /api/workspaces/{id} [delete]
+// @Summary Delete Job
+// @Description Delete Job
+// @Tags Jobs
+// @Accept json
+// @Produce json
+// @Param id path string true "Job ID"
+// @Router /api/jobs/{id} [delete]
 func (h *JobHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {

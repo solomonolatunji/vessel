@@ -209,6 +209,14 @@ func (h *ProjectSettingsHandler) AddMember(c echo.Context) error {
 // @Param id path string true "id"
 // @Param userId path string true "userId"
 // @Router /api/teams/{id}/members/{userId} [delete]
+// @Summary Remove Project Member
+// @Description Remove Project Member
+// @Tags ProjectSettings
+// @Accept json
+// @Produce json
+// @Param projectId path string true "Project ID"
+// @Param id path string true "User ID"
+// @Router /api/projects/{projectId}/members/{id} [delete]
 func (h *ProjectSettingsHandler) RemoveMember(c echo.Context) error {
 	projectID := c.Param("projectId")
 	id := c.Param("id")

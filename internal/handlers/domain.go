@@ -69,6 +69,13 @@ func (h *DomainHandler) Create(c echo.Context) error {
 // @Produce json
 // @Param id path string true "id"
 // @Router /api/workspaces/{id} [delete]
+// @Summary Delete Domain
+// @Description Delete Domain
+// @Tags Domains
+// @Accept json
+// @Produce json
+// @Param id path string true "Domain ID"
+// @Router /api/domains/{id} [delete]
 func (h *DomainHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {

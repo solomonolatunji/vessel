@@ -114,8 +114,9 @@ func (h *AppHandler) ListByProject(c echo.Context) error {
 // @Tags Teams
 // @Accept json
 // @Produce json
-// @Param teamId path string true "teamId"
-// @Router /api/teams/{teamId}/ai_settings [get]
+// @Summary Get App Service
+// @Description Get App Service
+// @Tags AppServices
 func (h *AppHandler) Get(c echo.Context) error {
 	id := c.Param("id")
 	svc, err := h.appService.GetAppService(c.Request().Context(), id)
@@ -131,10 +132,11 @@ func (h *AppHandler) Get(c echo.Context) error {
 // @Summary Update endpoint
 // @Description Update endpoint
 // @Tags Workspaces
+// @Summary Update App Service
+// @Description Update App Service
+// @Tags AppServices
 // @Accept json
 // @Produce json
-// @Param id path string true "id"
-// @Router /api/workspaces/{id} [put]
 func (h *AppHandler) Update(c echo.Context) error {
 	id := c.Param("id")
 	existing, err := h.appService.GetAppService(c.Request().Context(), id)
@@ -168,12 +170,13 @@ func (h *AppHandler) Update(c echo.Context) error {
 }
 
 // @Summary Delete endpoint
-// @Description Delete endpoint
-// @Tags Workspaces
+// @Summary Delete App Service
+// @Description Delete App Service
+// @Tags AppServices
 // @Accept json
 // @Produce json
-// @Param id path string true "id"
-// @Router /api/workspaces/{id} [delete]
+// @Param id path string true "App ID"
+// @Router /api/apps/{id} [delete]
 func (h *AppHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	existing, err := h.appService.GetAppService(c.Request().Context(), id)

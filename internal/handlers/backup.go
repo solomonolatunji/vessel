@@ -23,6 +23,12 @@ func NewBackupHandler(s *services.BackupService) *BackupHandler {
 // @Accept json
 // @Produce json
 // @Router /api/workspaces [get]
+// @Summary List Backups
+// @Description List Backups
+// @Tags Backups
+// @Accept json
+// @Produce json
+// @Router /api/backups [get]
 func (h *BackupHandler) List(c echo.Context) error {
 	projectID := c.QueryParam("projectId")
 	if projectID == "" {
@@ -41,6 +47,12 @@ func (h *BackupHandler) List(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Router /api/workspaces [post]
+// @Summary Create Backup
+// @Description Create Backup
+// @Tags Backups
+// @Accept json
+// @Produce json
+// @Router /api/backups [post]
 func (h *BackupHandler) Create(c echo.Context) error {
 	var cfg models.BackupConfig
 	if err := c.Bind(&cfg); err != nil {
@@ -59,6 +71,13 @@ func (h *BackupHandler) Create(c echo.Context) error {
 // @Produce json
 // @Param teamId path string true "teamId"
 // @Router /api/teams/{teamId}/ai_settings [get]
+// @Summary Get Backup
+// @Description Get Backup
+// @Tags Backups
+// @Accept json
+// @Produce json
+// @Param id path string true "Backup ID"
+// @Router /api/backups/{id} [get]
 func (h *BackupHandler) Get(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -78,6 +97,13 @@ func (h *BackupHandler) Get(c echo.Context) error {
 // @Produce json
 // @Param id path string true "id"
 // @Router /api/workspaces/{id} [delete]
+// @Summary Delete Backup
+// @Description Delete Backup
+// @Tags Backups
+// @Accept json
+// @Produce json
+// @Param id path string true "Backup ID"
+// @Router /api/backups/{id} [delete]
 func (h *BackupHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	projectID := c.QueryParam("projectId")
