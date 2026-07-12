@@ -23,7 +23,7 @@ func NewProjectHandler(s *services.ProjectService) *ProjectHandler {
 // @Tags Projects
 // @Accept json
 // @Produce json
-// @Router /api/projects [get]
+// @Router /projects [get]
 func (h *ProjectHandler) ListProjects(c echo.Context) error {
 	projects, err := h.projectService.ListProjects(c.Request().Context())
 	if err != nil {
@@ -48,7 +48,7 @@ func (h *ProjectHandler) ListProjects(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param request body models.CreateProjectRequest true "Payload"
-// @Router /api/projects [post]
+// @Router /projects [post]
 func (h *ProjectHandler) CreateProject(c echo.Context) error {
 	var req models.CreateProjectRequest
 	if err := c.Bind(&req); err != nil {
@@ -71,7 +71,7 @@ func (h *ProjectHandler) CreateProject(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/projects/{id} [get]
+// @Router /projects/{id} [get]
 func (h *ProjectHandler) GetProject(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -94,7 +94,7 @@ func (h *ProjectHandler) GetProject(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/projects/{id} [delete]
+// @Router /projects/{id} [delete]
 func (h *ProjectHandler) DeleteProject(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {

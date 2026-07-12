@@ -35,7 +35,7 @@ func (h *CanvasHandler) ListCanvasSummaries(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/projects/{id}/summary [get]
+// @Router /projects/{id}/summary [get]
 func (h *CanvasHandler) GetCanvasSummary(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -54,7 +54,7 @@ func (h *CanvasHandler) GetCanvasSummary(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/environments/{id}/canvas [get]
+// @Router /environments/{id}/canvas [get]
 func (h *CanvasHandler) GetEnvironmentCanvas(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {

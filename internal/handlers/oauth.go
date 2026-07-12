@@ -29,7 +29,7 @@ type Verify2FARequest struct {
 // @Tags Settings
 // @Accept json
 // @Produce json
-// @Router /api/settings/oauth/providers [get]
+// @Router /settings/oauth/providers [get]
 func (h *OAuthHandler) ListProviders(c echo.Context) error {
 	providers, err := h.oauthService.ListProviders(c.Request().Context())
 	if err != nil {
@@ -44,7 +44,7 @@ func (h *OAuthHandler) ListProviders(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param request body models.OAuthProviderConfig true "Payload"
-// @Router /api/settings/oauth/providers [put]
+// @Router /settings/oauth/providers [put]
 func (h *OAuthHandler) SaveProvider(c echo.Context) error {
 	var p models.OAuthProviderConfig
 	if err := c.Bind(&p); err != nil {
@@ -62,7 +62,7 @@ func (h *OAuthHandler) SaveProvider(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param provider path string true "provider"
-// @Router /api/auth/oauth/{provider} [get]
+// @Router /auth/oauth/{provider} [get]
 func (h *OAuthHandler) OAuthRedirect(c echo.Context) error {
 	providerName := strings.TrimPrefix(c.Request().URL.Path, "/api/auth/oauth/")
 	if idx := strings.Index(providerName, "/"); idx != -1 {
@@ -90,7 +90,7 @@ func (h *OAuthHandler) OAuthRedirect(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param provider path string true "provider"
-// @Router /api/auth/oauth/{provider}/callback [get]
+// @Router /auth/oauth/{provider}/callback [get]
 func (h *OAuthHandler) OAuthCallback(c echo.Context) error {
 	providerName := strings.TrimPrefix(c.Request().URL.Path, "/api/auth/oauth/")
 	providerName = strings.TrimSuffix(providerName, "/callback")
@@ -111,7 +111,7 @@ func (h *OAuthHandler) OAuthCallback(c echo.Context) error {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Router /api/auth/2fa/setup [post]
+// @Router /auth/2fa/setup [post]
 func (h *OAuthHandler) Setup2FA(c echo.Context) error {
 	claims := ExtractClaims(c)
 	if claims == nil || claims.UserID == "" {
@@ -130,7 +130,7 @@ func (h *OAuthHandler) Setup2FA(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param request body handlers.Verify2FARequest true "Payload"
-// @Router /api/auth/2fa/verify [post]
+// @Router /auth/2fa/verify [post]
 func (h *OAuthHandler) Verify2FA(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -151,7 +151,7 @@ func (h *OAuthHandler) Verify2FA(c echo.Context) error {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Router /api/auth/2fa/disable [post]
+// @Router /auth/2fa/disable [post]
 func (h *OAuthHandler) Disable2FA(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {

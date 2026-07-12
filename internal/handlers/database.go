@@ -39,7 +39,7 @@ func (h *DatabaseHandler) verifyProjectOwnership(c echo.Context, projectID strin
 // @Tags Databases
 // @Accept json
 // @Produce json
-// @Router /api/databases [get]
+// @Router /databases [get]
 func (h *DatabaseHandler) ListDatabases(c echo.Context) error {
 	databases, err := h.databaseService.ListDatabases(c.Request().Context())
 	if err != nil {
@@ -68,7 +68,7 @@ func (h *DatabaseHandler) ListDatabases(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param request body models.CreateDatabaseRequest true "Payload"
-// @Router /api/databases [post]
+// @Router /databases [post]
 func (h *DatabaseHandler) CreateDatabase(c echo.Context) error {
 	var req models.CreateDatabaseRequest
 	if err := c.Bind(&req); err != nil {
@@ -90,7 +90,7 @@ func (h *DatabaseHandler) CreateDatabase(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/databases/{id} [get]
+// @Router /databases/{id} [get]
 func (h *DatabaseHandler) GetDatabase(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -112,7 +112,7 @@ func (h *DatabaseHandler) GetDatabase(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/databases/{id} [delete]
+// @Router /databases/{id} [delete]
 func (h *DatabaseHandler) DeleteDatabase(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -137,7 +137,7 @@ func (h *DatabaseHandler) DeleteDatabase(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/databases/{id}/start [post]
+// @Router /databases/{id}/start [post]
 func (h *DatabaseHandler) StartDatabase(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -163,7 +163,7 @@ func (h *DatabaseHandler) StartDatabase(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/databases/{id}/stop [post]
+// @Router /databases/{id}/stop [post]
 func (h *DatabaseHandler) StopDatabase(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -189,7 +189,7 @@ func (h *DatabaseHandler) StopDatabase(c echo.Context) error {
 // @Produce json
 // @Param id path string true "id"
 // @Param request body models.DatabaseQueryRequest true "Payload"
-// @Router /api/databases/{id}/query [post]
+// @Router /databases/{id}/query [post]
 func (h *DatabaseHandler) QueryDatabase(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {

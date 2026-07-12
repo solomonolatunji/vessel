@@ -599,7 +599,7 @@ info:
   title: Vessl API
   version: "1.0"
 paths:
-  /api/apps/{id}:
+  /apps/{id}:
     delete:
       consumes:
       - application/json
@@ -654,7 +654,7 @@ paths:
       summary: Update App Service
       tags:
       - AppServices
-  /api/auth/2fa/disable:
+  /auth/2fa/disable:
     post:
       consumes:
       - application/json
@@ -665,7 +665,7 @@ paths:
       summary: Disable2FA endpoint
       tags:
       - Auth
-  /api/auth/2fa/setup:
+  /auth/2fa/setup:
     post:
       consumes:
       - application/json
@@ -676,7 +676,7 @@ paths:
       summary: Setup2FA endpoint
       tags:
       - Auth
-  /api/auth/2fa/verify:
+  /auth/2fa/verify:
     post:
       consumes:
       - application/json
@@ -694,7 +694,7 @@ paths:
       summary: Verify2FA endpoint
       tags:
       - Auth
-  /api/auth/logout:
+  /auth/logout:
     post:
       consumes:
       - application/json
@@ -705,7 +705,7 @@ paths:
       summary: Logout endpoint
       tags:
       - Auth
-  /api/auth/oauth/{provider}:
+  /auth/oauth/{provider}:
     get:
       consumes:
       - application/json
@@ -722,7 +722,7 @@ paths:
       summary: OAuthRedirect endpoint
       tags:
       - Auth
-  /api/auth/oauth/{provider}/callback:
+  /auth/oauth/{provider}/callback:
     get:
       consumes:
       - application/json
@@ -739,7 +739,7 @@ paths:
       summary: OAuthCallback endpoint
       tags:
       - Auth
-  /api/auth/signin:
+  /auth/signin:
     post:
       consumes:
       - application/json
@@ -757,7 +757,7 @@ paths:
       summary: Login endpoint
       tags:
       - Auth
-  /api/auth/signup:
+  /auth/signup:
     post:
       consumes:
       - application/json
@@ -775,7 +775,7 @@ paths:
       summary: Register endpoint
       tags:
       - Auth
-  /api/backups:
+  /backups:
     get:
       consumes:
       - application/json
@@ -803,7 +803,7 @@ paths:
       summary: Create Backup
       tags:
       - Backups
-  /api/backups/{id}:
+  /backups/{id}:
     delete:
       consumes:
       - application/json
@@ -836,7 +836,7 @@ paths:
       summary: Get Backup
       tags:
       - Backups
-  /api/backups/{id}/trigger:
+  /backups/{id}/trigger:
     post:
       consumes:
       - application/json
@@ -853,7 +853,7 @@ paths:
       summary: Trigger endpoint
       tags:
       - Backups
-  /api/databases:
+  /databases:
     get:
       consumes:
       - application/json
@@ -881,7 +881,7 @@ paths:
       summary: CreateDatabase endpoint
       tags:
       - Databases
-  /api/databases/{id}:
+  /databases/{id}:
     delete:
       consumes:
       - application/json
@@ -914,7 +914,7 @@ paths:
       summary: GetDatabase endpoint
       tags:
       - Databases
-  /api/databases/{id}/query:
+  /databases/{id}/query:
     post:
       consumes:
       - application/json
@@ -937,7 +937,7 @@ paths:
       summary: QueryDatabase endpoint
       tags:
       - Databases
-  /api/databases/{id}/start:
+  /databases/{id}/start:
     post:
       consumes:
       - application/json
@@ -954,7 +954,7 @@ paths:
       summary: StartDatabase endpoint
       tags:
       - Databases
-  /api/databases/{id}/stop:
+  /databases/{id}/stop:
     post:
       consumes:
       - application/json
@@ -971,7 +971,7 @@ paths:
       summary: StopDatabase endpoint
       tags:
       - Databases
-  /api/deployments/{id}/diagnostics:
+  /deployments/{id}/diagnostics:
     post:
       consumes:
       - application/json
@@ -988,7 +988,7 @@ paths:
       summary: Analyze endpoint
       tags:
       - Deployments
-  /api/deployments/{id}/logs:
+  /deployments/{id}/logs:
     get:
       consumes:
       - application/json
@@ -1005,7 +1005,7 @@ paths:
       summary: GetLogs endpoint
       tags:
       - Deployments
-  /api/deployments/{id}/rollback:
+  /deployments/{id}/rollback:
     post:
       consumes:
       - application/json
@@ -1022,7 +1022,7 @@ paths:
       summary: Rollback endpoint
       tags:
       - Deployments
-  /api/domains/{id}:
+  /domains/{id}:
     delete:
       consumes:
       - application/json
@@ -1039,7 +1039,7 @@ paths:
       summary: Delete Domain
       tags:
       - Projects
-  /api/environments/{id}:
+  /environments/{id}:
     delete:
       consumes:
       - application/json
@@ -1056,7 +1056,7 @@ paths:
       summary: Delete Environment
       tags:
       - Environments
-  /api/environments/{id}/apps:
+  /environments/{id}/apps:
     get:
       consumes:
       - application/json
@@ -1095,7 +1095,7 @@ paths:
       summary: Create endpoint
       tags:
       - AppServices
-  /api/environments/{id}/canvas:
+  /environments/{id}/canvas:
     get:
       consumes:
       - application/json
@@ -1112,7 +1112,7 @@ paths:
       summary: GetEnvironmentCanvas endpoint
       tags:
       - Environments
-  /api/git/connect:
+  /git/connect:
     post:
       consumes:
       - application/json
@@ -1130,7 +1130,7 @@ paths:
       summary: Connect endpoint
       tags:
       - Git
-  /api/git/connect/{provider}:
+  /git/connect/{provider}:
     delete:
       consumes:
       - application/json
@@ -1147,7 +1147,7 @@ paths:
       summary: Disconnect endpoint
       tags:
       - Git
-  /api/git/repos:
+  /git/repos:
     get:
       consumes:
       - application/json
@@ -1158,7 +1158,7 @@ paths:
       summary: ListRepos endpoint
       tags:
       - Git
-  /api/git/status:
+  /git/status:
     get:
       consumes:
       - application/json
@@ -1169,7 +1169,7 @@ paths:
       summary: Status endpoint
       tags:
       - Git
-  /api/jobs:
+  /jobs:
     get:
       consumes:
       - application/json
@@ -1197,7 +1197,7 @@ paths:
       summary: Create endpoint
       tags:
       - Jobs
-  /api/jobs/{id}:
+  /jobs/{id}:
     delete:
       consumes:
       - application/json
@@ -1230,7 +1230,7 @@ paths:
       summary: Get Job
       tags:
       - Jobs
-  /api/jobs/{id}/trigger:
+  /jobs/{id}/trigger:
     post:
       consumes:
       - application/json
@@ -1247,7 +1247,7 @@ paths:
       summary: Run endpoint
       tags:
       - Jobs
-  /api/oauth/vercel/callback:
+  /oauth/vercel/callback:
     get:
       consumes:
       - application/json
@@ -1258,7 +1258,7 @@ paths:
       summary: Callback endpoint
       tags:
       - Auth
-  /api/profile:
+  /profile:
     get:
       consumes:
       - application/json
@@ -1286,7 +1286,7 @@ paths:
       summary: UpdateProfile endpoint
       tags:
       - Users
-  /api/profile/tokens:
+  /profile/tokens:
     get:
       consumes:
       - application/json
@@ -1314,7 +1314,7 @@ paths:
       summary: CreatePAT endpoint
       tags:
       - Users
-  /api/profile/tokens/{id}:
+  /profile/tokens/{id}:
     delete:
       consumes:
       - application/json
@@ -1331,7 +1331,7 @@ paths:
       summary: DeletePAT endpoint
       tags:
       - Users
-  /api/projects:
+  /projects:
     get:
       consumes:
       - application/json
@@ -1359,7 +1359,7 @@ paths:
       summary: CreateProject endpoint
       tags:
       - Projects
-  /api/projects/{id}:
+  /projects/{id}:
     delete:
       consumes:
       - application/json
@@ -1392,7 +1392,7 @@ paths:
       summary: GetProject endpoint
       tags:
       - Projects
-  /api/projects/{id}/apps:
+  /projects/{id}/apps:
     get:
       consumes:
       - application/json
@@ -1409,7 +1409,7 @@ paths:
       summary: ListByProject endpoint
       tags:
       - AppServices
-  /api/projects/{id}/deploy:
+  /projects/{id}/deploy:
     post:
       consumes:
       - application/json
@@ -1426,7 +1426,7 @@ paths:
       summary: DeployProject endpoint
       tags:
       - Projects
-  /api/projects/{id}/domains:
+  /projects/{id}/domains:
     get:
       consumes:
       - application/json
@@ -1465,7 +1465,7 @@ paths:
       summary: Create domain
       tags:
       - Projects
-  /api/projects/{id}/env:
+  /projects/{id}/env:
     get:
       consumes:
       - application/json
@@ -1498,7 +1498,7 @@ paths:
       summary: SetVars endpoint
       tags:
       - Projects
-  /api/projects/{id}/environments:
+  /projects/{id}/environments:
     get:
       consumes:
       - application/json
@@ -1532,7 +1532,7 @@ paths:
       summary: Create endpoint
       tags:
       - Environments
-  /api/projects/{id}/summary:
+  /projects/{id}/summary:
     get:
       consumes:
       - application/json
@@ -1549,7 +1549,7 @@ paths:
       summary: GetCanvasSummary endpoint
       tags:
       - Projects
-  /api/projects/{projectId}/members:
+  /projects/{projectId}/members:
     get:
       consumes:
       - application/json
@@ -1588,7 +1588,7 @@ paths:
       summary: AddMember endpoint
       tags:
       - Projects
-  /api/projects/{projectId}/members/{id}:
+  /projects/{projectId}/members/{id}:
     delete:
       consumes:
       - application/json
@@ -1625,7 +1625,7 @@ paths:
       tags:
       - Teams
       - Projects
-  /api/projects/{projectId}/tokens:
+  /projects/{projectId}/tokens:
     get:
       consumes:
       - application/json
@@ -1664,7 +1664,7 @@ paths:
       summary: CreateToken endpoint
       tags:
       - Projects
-  /api/projects/{projectId}/tokens/{id}:
+  /projects/{projectId}/tokens/{id}:
     delete:
       consumes:
       - application/json
@@ -1686,7 +1686,7 @@ paths:
       summary: DeleteToken endpoint
       tags:
       - Projects
-  /api/projects/{projectId}/webhooks:
+  /projects/{projectId}/webhooks:
     get:
       consumes:
       - application/json
@@ -1725,7 +1725,7 @@ paths:
       summary: CreateWebhook endpoint
       tags:
       - Projects
-  /api/projects/{projectId}/webhooks/{id}:
+  /projects/{projectId}/webhooks/{id}:
     delete:
       consumes:
       - application/json
@@ -1747,7 +1747,7 @@ paths:
       summary: DeleteWebhook endpoint
       tags:
       - Projects
-  /api/s3-destinations:
+  /s3-destinations:
     get:
       consumes:
       - application/json
@@ -1758,7 +1758,7 @@ paths:
       summary: ListS3Destinations endpoint
       tags:
       - Backups
-  /api/s3-destinations/{id}:
+  /s3-destinations/{id}:
     delete:
       consumes:
       - application/json
@@ -1775,7 +1775,7 @@ paths:
       summary: DeleteS3Destination endpoint
       tags:
       - Backups
-  /api/services/{serviceId}/deploy:
+  /services/{serviceId}/deploy:
     post:
       consumes:
       - application/json
@@ -1792,7 +1792,7 @@ paths:
       summary: Trigger Deployment
       tags:
       - Deployments
-  /api/services/{serviceId}/deployments:
+  /services/{serviceId}/deployments:
     get:
       consumes:
       - application/json
@@ -1809,7 +1809,7 @@ paths:
       summary: ListServiceDeployments endpoint
       tags:
       - AppServices
-  /api/services/{serviceId}/metrics:
+  /services/{serviceId}/metrics:
     get:
       consumes:
       - application/json
@@ -1826,7 +1826,7 @@ paths:
       summary: GetMetrics endpoint
       tags:
       - AppServices
-  /api/services/{serviceId}/serverless/code:
+  /services/{serviceId}/serverless/code:
     get:
       consumes:
       - application/json
@@ -1859,7 +1859,7 @@ paths:
       summary: SaveCode endpoint
       tags:
       - AppServices
-  /api/services/{serviceId}/variables:
+  /services/{serviceId}/variables:
     get:
       consumes:
       - application/json
@@ -1898,7 +1898,7 @@ paths:
       summary: Create Service Variable
       tags:
       - AppServices
-  /api/services/{serviceId}/variables/{id}:
+  /services/{serviceId}/variables/{id}:
     delete:
       consumes:
       - application/json
@@ -1947,7 +1947,7 @@ paths:
       summary: Update Service Variable
       tags:
       - AppServices
-  /api/settings:
+  /settings:
     put:
       consumes:
       - application/json
@@ -1965,7 +1965,7 @@ paths:
       summary: UpdateSettings endpoint
       tags:
       - Settings
-  /api/settings/git_apps/bitbucket/{id}:
+  /settings/git_apps/bitbucket/{id}:
     delete:
       consumes:
       - application/json
@@ -1982,7 +1982,7 @@ paths:
       summary: DeleteBitbucketApp endpoint
       tags:
       - Settings
-  /api/settings/git_apps/github/manifest-callback:
+  /settings/git_apps/github/manifest-callback:
     post:
       consumes:
       - application/json
@@ -2000,7 +2000,7 @@ paths:
       summary: ExchangeGithubManifestCode endpoint
       tags:
       - Settings
-  /api/settings/license:
+  /settings/license:
     post:
       consumes:
       - application/json
@@ -2023,7 +2023,7 @@ paths:
       tags:
       - Settings
       - Settings
-  /api/settings/notifications:
+  /settings/notifications:
     get:
       consumes:
       - application/json
@@ -2051,7 +2051,7 @@ paths:
       summary: SaveChannel endpoint
       tags:
       - Settings
-  /api/settings/notifications/{id}:
+  /settings/notifications/{id}:
     delete:
       consumes:
       - application/json
@@ -2084,7 +2084,7 @@ paths:
       summary: GetTeamNotificationChannel endpoint
       tags:
       - Settings
-  /api/settings/notifications/test:
+  /settings/notifications/test:
     post:
       consumes:
       - application/json
@@ -2102,7 +2102,7 @@ paths:
       summary: TestNotification endpoint
       tags:
       - Settings
-  /api/settings/oauth/providers:
+  /settings/oauth/providers:
     get:
       consumes:
       - application/json
@@ -2130,7 +2130,7 @@ paths:
       summary: SaveProvider endpoint
       tags:
       - Settings
-  /api/settings/updates/deploy:
+  /settings/updates/deploy:
     post:
       consumes:
       - application/json
@@ -2141,7 +2141,7 @@ paths:
       summary: DeployUpdate endpoint
       tags:
       - Settings
-  /api/storage:
+  /storage:
     post:
       consumes:
       - application/json
@@ -2159,7 +2159,7 @@ paths:
       summary: CreateStorage endpoint
       tags:
       - Storage
-  /api/storage/{id}:
+  /storage/{id}:
     get:
       consumes:
       - application/json
@@ -2176,7 +2176,7 @@ paths:
       summary: GetStorage endpoint
       tags:
       - Storage
-  /api/storage/{id}/start:
+  /storage/{id}/start:
     post:
       consumes:
       - application/json
@@ -2193,7 +2193,7 @@ paths:
       summary: StartStorage endpoint
       tags:
       - Storage
-  /api/storage/{id}/stop:
+  /storage/{id}/stop:
     post:
       consumes:
       - application/json
@@ -2210,7 +2210,7 @@ paths:
       summary: StopStorage endpoint
       tags:
       - Storage
-  /api/team-invites/{token}:
+  /team-invites/{token}:
     get:
       consumes:
       - application/json
@@ -2227,7 +2227,7 @@ paths:
       summary: GetInvite endpoint
       tags:
       - Teams
-  /api/team-invites/{token}/accept:
+  /team-invites/{token}/accept:
     post:
       consumes:
       - application/json
@@ -2244,7 +2244,7 @@ paths:
       summary: AcceptInvite endpoint
       tags:
       - Teams
-  /api/teams:
+  /teams:
     get:
       consumes:
       - application/json
@@ -2272,7 +2272,7 @@ paths:
       summary: Create Team
       tags:
       - Teams
-  /api/teams/{id}:
+  /teams/{id}:
     delete:
       consumes:
       - application/json
@@ -2305,7 +2305,7 @@ paths:
       summary: Get Team
       tags:
       - Teams
-  /api/teams/{id}/invite:
+  /teams/{id}/invite:
     post:
       consumes:
       - application/json
@@ -2328,7 +2328,7 @@ paths:
       summary: InviteMember endpoint
       tags:
       - Teams
-  /api/teams/{id}/members:
+  /teams/{id}/members:
     get:
       consumes:
       - application/json
@@ -2345,7 +2345,7 @@ paths:
       summary: ListMembers endpoint
       tags:
       - Teams
-  /api/teams/{id}/members/{userId}:
+  /teams/{id}/members/{userId}:
     delete:
       consumes:
       - application/json
@@ -2367,7 +2367,7 @@ paths:
       summary: RemoveMember endpoint
       tags:
       - Teams
-  /api/teams/{teamId}/ai_settings:
+  /teams/{teamId}/ai_settings:
     get:
       consumes:
       - application/json
@@ -2406,7 +2406,7 @@ paths:
       summary: Save endpoint
       tags:
       - Teams
-  /api/teams/{teamId}/audit-logs:
+  /teams/{teamId}/audit-logs:
     get:
       consumes:
       - application/json
@@ -2423,7 +2423,7 @@ paths:
       summary: ListAuditLogs endpoint
       tags:
       - Workspaces
-  /api/teams/{teamId}/email_settings:
+  /teams/{teamId}/email_settings:
     get:
       consumes:
       - application/json
@@ -2462,7 +2462,7 @@ paths:
       summary: Save Team Email Settings
       tags:
       - Settings
-  /api/teams/{teamId}/ssh-keys:
+  /teams/{teamId}/ssh-keys:
     get:
       consumes:
       - application/json
@@ -2501,7 +2501,7 @@ paths:
       summary: CreateSSHKey endpoint
       tags:
       - Workspaces
-  /api/teams/{teamId}/trusted-domains:
+  /teams/{teamId}/trusted-domains:
     get:
       consumes:
       - application/json
@@ -2540,7 +2540,7 @@ paths:
       summary: CreateTrustedDomain endpoint
       tags:
       - Workspaces
-  /api/vercel/projects:
+  /vercel/projects:
     get:
       consumes:
       - application/json
@@ -2551,7 +2551,7 @@ paths:
       summary: ListProjects endpoint
       tags:
       - Projects
-  /api/vercel/projects/{id}/env:
+  /vercel/projects/{id}/env:
     get:
       consumes:
       - application/json
@@ -2568,7 +2568,7 @@ paths:
       summary: GetProjectEnv endpoint
       tags:
       - Projects
-  /api/webhooks/git/{projectId}:
+  /webhooks/git/{projectId}:
     post:
       consumes:
       - application/json
@@ -2585,7 +2585,7 @@ paths:
       summary: HandleProjectWebhook endpoint
       tags:
       - Webhooks
-  /api/webhooks/git/services/{serviceId}:
+  /webhooks/git/services/{serviceId}:
     post:
       consumes:
       - application/json
@@ -2602,7 +2602,7 @@ paths:
       summary: HandleServiceWebhook endpoint
       tags:
       - Webhooks
-  /api/webhooks/github/services/{serviceId}:
+  /webhooks/github/services/{serviceId}:
     post:
       consumes:
       - application/json
@@ -2625,7 +2625,7 @@ paths:
       summary: HandleGitHubWebhook endpoint
       tags:
       - Webhooks
-  /api/workspaces:
+  /workspaces:
     post:
       consumes:
       - application/json
@@ -2643,7 +2643,7 @@ paths:
       summary: Create endpoint
       tags:
       - Workspaces
-  /api/workspaces/{id}:
+  /workspaces/{id}:
     delete:
       consumes:
       - application/json
@@ -2698,7 +2698,7 @@ paths:
       summary: Update endpoint
       tags:
       - Workspaces
-  /api/ws/services/{id}/terminal:
+  /ws/services/{id}/terminal:
     get:
       consumes:
       - application/json

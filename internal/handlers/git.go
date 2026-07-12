@@ -23,7 +23,7 @@ func NewGitHandler(s *services.GitService) *GitHandler {
 // @Accept json
 // @Produce json
 // @Param request body models.GitConnectRequest true "Payload"
-// @Router /api/git/connect [post]
+// @Router /git/connect [post]
 func (h *GitHandler) Connect(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -45,7 +45,7 @@ func (h *GitHandler) Connect(c echo.Context) error {
 // @Tags Git
 // @Accept json
 // @Produce json
-// @Router /api/git/status [get]
+// @Router /git/status [get]
 func (h *GitHandler) Status(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -64,7 +64,7 @@ func (h *GitHandler) Status(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param provider path string true "provider"
-// @Router /api/git/connect/{provider} [delete]
+// @Router /git/connect/{provider} [delete]
 func (h *GitHandler) Disconnect(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -85,7 +85,7 @@ func (h *GitHandler) Disconnect(c echo.Context) error {
 // @Tags Git
 // @Accept json
 // @Produce json
-// @Router /api/git/repos [get]
+// @Router /git/repos [get]
 func (h *GitHandler) ListRepos(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {

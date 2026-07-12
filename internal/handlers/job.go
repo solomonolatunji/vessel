@@ -22,7 +22,7 @@ func NewJobHandler(s *services.JobService) *JobHandler {
 // @Tags Jobs
 // @Accept json
 // @Produce json
-// @Router /api/jobs [get]
+// @Router /jobs [get]
 func (h *JobHandler) ListProjectJobs(c echo.Context) error {
 	projectID := c.QueryParam("projectId")
 	if projectID == "" {
@@ -41,7 +41,7 @@ func (h *JobHandler) ListProjectJobs(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param request body models.Job true "Payload"
-// @Router /api/jobs [post]
+// @Router /jobs [post]
 func (h *JobHandler) Create(c echo.Context) error {
 	var j models.Job
 	if err := c.Bind(&j); err != nil {
@@ -60,7 +60,7 @@ func (h *JobHandler) Create(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "Job ID"
-// @Router /api/jobs/{id} [get]
+// @Router /jobs/{id} [get]
 func (h *JobHandler) Get(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -79,7 +79,7 @@ func (h *JobHandler) Get(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "Job ID"
-// @Router /api/jobs/{id} [delete]
+// @Router /jobs/{id} [delete]
 func (h *JobHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -97,7 +97,7 @@ func (h *JobHandler) Delete(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/jobs/{id}/trigger [post]
+// @Router /jobs/{id}/trigger [post]
 func (h *JobHandler) Run(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {

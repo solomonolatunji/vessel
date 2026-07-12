@@ -23,7 +23,7 @@ func NewDomainHandler(s *services.EnvironmentService) *DomainHandler {
 // @Accept json
 // @Produce json
 // @Param id path string true "Project ID"
-// @Router /api/projects/{id}/domains [get]
+// @Router /projects/{id}/domains [get]
 func (h *DomainHandler) ListByProject(c echo.Context) error {
 	projectID := c.Param("id")
 	if projectID == "" {
@@ -43,7 +43,7 @@ func (h *DomainHandler) ListByProject(c echo.Context) error {
 // @Produce json
 // @Param id path string true "Project ID"
 // @Param request body models.DomainConfig true "Payload"
-// @Router /api/projects/{id}/domains [post]
+// @Router /projects/{id}/domains [post]
 func (h *DomainHandler) Create(c echo.Context) error {
 	projectID := c.Param("id")
 	if projectID == "" {
@@ -70,7 +70,7 @@ func (h *DomainHandler) Create(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "Domain ID"
-// @Router /api/domains/{id} [delete]
+// @Router /domains/{id} [delete]
 func (h *DomainHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {

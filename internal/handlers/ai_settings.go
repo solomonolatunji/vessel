@@ -23,7 +23,7 @@ func NewAISettingsHandler(s *services.AISettingsService) *AISettingsHandler {
 // @Accept json
 // @Produce json
 // @Param teamId path string true "teamId"
-// @Router /api/teams/{teamId}/ai_settings [get]
+// @Router /teams/{teamId}/ai_settings [get]
 func (h *AISettingsHandler) Get(c echo.Context) error {
 	teamID := c.Param("teamId")
 	if teamID == "" {
@@ -47,7 +47,7 @@ func (h *AISettingsHandler) Get(c echo.Context) error {
 // @Produce json
 // @Param teamId path string true "teamId"
 // @Param request body models.TeamAISettings true "Payload"
-// @Router /api/teams/{teamId}/ai_settings [put]
+// @Router /teams/{teamId}/ai_settings [put]
 func (h *AISettingsHandler) Save(c echo.Context) error {
 	teamID := c.Param("teamId")
 	if teamID == "" {

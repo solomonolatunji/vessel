@@ -33,7 +33,7 @@ type RegisterRequest struct {
 // @Accept json
 // @Produce json
 // @Param request body RegisterRequest true "Registration credentials"
-// @Router /api/auth/signup [post]
+// @Router /auth/signup [post]
 func (h *AuthHandler) Register(c echo.Context) error {
 	var payload RegisterRequest
 	if err := c.Bind(&payload); err != nil {
@@ -56,7 +56,7 @@ func (h *AuthHandler) Register(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param request body AuthRequest true "Login credentials"
-// @Router /api/auth/signin [post]
+// @Router /auth/signin [post]
 func (h *AuthHandler) Login(c echo.Context) error {
 	var payload AuthRequest
 	if err := c.Bind(&payload); err != nil {
@@ -78,7 +78,7 @@ func (h *AuthHandler) Login(c echo.Context) error {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Router /api/auth/logout [post]
+// @Router /auth/logout [post]
 func (h *AuthHandler) Logout(c echo.Context) error {
 	ClearAuthCookie(c)
 	return c.JSON(http.StatusOK, map[string]string{"status": "logged out"})

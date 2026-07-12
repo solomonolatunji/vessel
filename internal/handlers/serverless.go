@@ -28,7 +28,7 @@ type SaveCodeRequest struct {
 // @Accept json
 // @Produce json
 // @Param serviceId path string true "serviceId"
-// @Router /api/services/{serviceId}/serverless/code [post]
+// @Router /services/{serviceId}/serverless/code [post]
 func (h *ServerlessHandler) SaveCode(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	if serviceID == "" {
@@ -57,7 +57,7 @@ func (h *ServerlessHandler) SaveCode(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param serviceId path string true "serviceId"
-// @Router /api/services/{serviceId}/serverless/code [get]
+// @Router /services/{serviceId}/serverless/code [get]
 func (h *ServerlessHandler) GetCode(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	if serviceID == "" {

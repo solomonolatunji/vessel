@@ -39,7 +39,7 @@ func (h *StorageHandler) ListStorage(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param request body models.Storage true "Payload"
-// @Router /api/storage [post]
+// @Router /storage [post]
 func (h *StorageHandler) CreateStorage(c echo.Context) error {
 	var st models.Storage
 	if err := c.Bind(&st); err != nil {
@@ -58,7 +58,7 @@ func (h *StorageHandler) CreateStorage(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/storage/{id} [get]
+// @Router /storage/{id} [get]
 func (h *StorageHandler) GetStorage(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -94,7 +94,7 @@ func (h *StorageHandler) DeleteStorage(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/storage/{id}/start [post]
+// @Router /storage/{id}/start [post]
 func (h *StorageHandler) StartStorage(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -113,7 +113,7 @@ func (h *StorageHandler) StartStorage(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/storage/{id}/stop [post]
+// @Router /storage/{id}/stop [post]
 func (h *StorageHandler) StopStorage(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {

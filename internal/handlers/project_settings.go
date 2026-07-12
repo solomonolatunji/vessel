@@ -23,7 +23,7 @@ func NewProjectSettingsHandler(s *services.ProjectSettingsService) *ProjectSetti
 // @Accept json
 // @Produce json
 // @Param projectId path string true "projectId"
-// @Router /api/projects/{projectId}/webhooks [get]
+// @Router /projects/{projectId}/webhooks [get]
 func (h *ProjectSettingsHandler) ListWebhooks(c echo.Context) error {
 	projectID := c.Param("projectId")
 	if projectID == "" {
@@ -43,7 +43,7 @@ func (h *ProjectSettingsHandler) ListWebhooks(c echo.Context) error {
 // @Produce json
 // @Param projectId path string true "projectId"
 // @Param request body models.Webhook true "Payload"
-// @Router /api/projects/{projectId}/webhooks [post]
+// @Router /projects/{projectId}/webhooks [post]
 func (h *ProjectSettingsHandler) CreateWebhook(c echo.Context) error {
 	projectID := c.Param("projectId")
 	if projectID == "" {
@@ -68,7 +68,7 @@ func (h *ProjectSettingsHandler) CreateWebhook(c echo.Context) error {
 // @Produce json
 // @Param projectId path string true "projectId"
 // @Param id path string true "id"
-// @Router /api/projects/{projectId}/webhooks/{id} [delete]
+// @Router /projects/{projectId}/webhooks/{id} [delete]
 func (h *ProjectSettingsHandler) DeleteWebhook(c echo.Context) error {
 	projectID := c.Param("projectId")
 	id := c.Param("id")
@@ -87,7 +87,7 @@ func (h *ProjectSettingsHandler) DeleteWebhook(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param projectId path string true "projectId"
-// @Router /api/projects/{projectId}/tokens [get]
+// @Router /projects/{projectId}/tokens [get]
 func (h *ProjectSettingsHandler) ListTokens(c echo.Context) error {
 	projectID := c.Param("projectId")
 	if projectID == "" {
@@ -107,7 +107,7 @@ func (h *ProjectSettingsHandler) ListTokens(c echo.Context) error {
 // @Produce json
 // @Param projectId path string true "projectId"
 // @Param request body models.CreateTokenRequest true "Payload"
-// @Router /api/projects/{projectId}/tokens [post]
+// @Router /projects/{projectId}/tokens [post]
 func (h *ProjectSettingsHandler) CreateToken(c echo.Context) error {
 	projectID := c.Param("projectId")
 	if projectID == "" {
@@ -147,7 +147,7 @@ func (h *ProjectSettingsHandler) CreateToken(c echo.Context) error {
 // @Produce json
 // @Param projectId path string true "projectId"
 // @Param id path string true "id"
-// @Router /api/projects/{projectId}/tokens/{id} [delete]
+// @Router /projects/{projectId}/tokens/{id} [delete]
 func (h *ProjectSettingsHandler) DeleteToken(c echo.Context) error {
 	projectID := c.Param("projectId")
 	id := c.Param("id")
@@ -166,7 +166,7 @@ func (h *ProjectSettingsHandler) DeleteToken(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/projects/{projectId}/members [get]
+// @Router /projects/{projectId}/members [get]
 func (h *ProjectSettingsHandler) ListMembers(c echo.Context) error {
 	projectID := c.Param("projectId")
 	if projectID == "" {
@@ -186,7 +186,7 @@ func (h *ProjectSettingsHandler) ListMembers(c echo.Context) error {
 // @Produce json
 // @Param projectId path string true "projectId"
 // @Param request body models.ProjectMember true "Payload"
-// @Router /api/projects/{projectId}/members [post]
+// @Router /projects/{projectId}/members [post]
 func (h *ProjectSettingsHandler) AddMember(c echo.Context) error {
 	projectID := c.Param("projectId")
 	if projectID == "" {
@@ -218,7 +218,7 @@ func (h *ProjectSettingsHandler) AddMember(c echo.Context) error {
 // @Produce json
 // @Param projectId path string true "Project ID"
 // @Param id path string true "User ID"
-// @Router /api/projects/{projectId}/members/{id} [delete]
+// @Router /projects/{projectId}/members/{id} [delete]
 func (h *ProjectSettingsHandler) RemoveMember(c echo.Context) error {
 	projectID := c.Param("projectId")
 	id := c.Param("id")

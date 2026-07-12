@@ -21,7 +21,7 @@ func NewEmailSettingsHandler(svc *services.EmailSettingsService) *EmailSettingsH
 // @Accept json
 // @Produce json
 // @Param teamId path string true "Team ID"
-// @Router /api/teams/{teamId}/email_settings [get]
+// @Router /teams/{teamId}/email_settings [get]
 func (h *EmailSettingsHandler) GetTeamEmailSettings(c echo.Context) error {
 	teamID := c.Param("teamId")
 	settings, err := h.svc.GetTeamEmailSettings(c.Request().Context(), teamID)
@@ -44,7 +44,7 @@ func (h *EmailSettingsHandler) GetTeamEmailSettings(c echo.Context) error {
 // @Produce json
 // @Param teamId path string true "Team ID"
 // @Param request body models.TeamEmailSettings true "Payload"
-// @Router /api/teams/{teamId}/email_settings [put]
+// @Router /teams/{teamId}/email_settings [put]
 func (h *EmailSettingsHandler) SaveTeamEmailSettings(c echo.Context) error {
 	teamID := c.Param("teamId")
 	var req models.TeamEmailSettings

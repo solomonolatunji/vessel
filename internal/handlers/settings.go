@@ -43,7 +43,7 @@ func (h *SettingsHandler) GetSettings(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param request body models.ServerSettings true "Payload"
-// @Router /api/settings [put]
+// @Router /settings [put]
 func (h *SettingsHandler) UpdateSettings(c echo.Context) error {
 	var payload models.ServerSettings
 	if err := c.Bind(&payload); err != nil {
@@ -87,7 +87,7 @@ func (h *SettingsHandler) SaveTeamNotificationChannel(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/settings/notifications/{id} [get]
+// @Router /settings/notifications/{id} [get]
 func (h *SettingsHandler) GetTeamNotificationChannel(c echo.Context) error {
 	id := c.Param("id")
 	channel, err := h.settingsService.GetTeamNotificationChannel(c.Request().Context(), id)
@@ -116,7 +116,7 @@ func (h *SettingsHandler) DeleteTeamNotificationChannel(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param request body handlers.ActivateLicenseRequest true "Payload"
-// @Router /api/settings/license [post]
+// @Router /settings/license [post]
 func (h *SettingsHandler) ActivateLicense(c echo.Context) error {
 	var payload ActivateLicenseRequest
 	if err := c.Bind(&payload); err != nil {

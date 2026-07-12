@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/apps/{id}": {
+        "/apps/{id}": {
             "get": {
                 "description": "Get App Service",
                 "consumes": [
@@ -95,7 +95,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/auth/2fa/disable": {
+        "/auth/2fa/disable": {
             "post": {
                 "description": "Disable2FA endpoint",
                 "consumes": [
@@ -111,7 +111,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/auth/2fa/setup": {
+        "/auth/2fa/setup": {
             "post": {
                 "description": "Setup2FA endpoint",
                 "consumes": [
@@ -127,7 +127,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/auth/2fa/verify": {
+        "/auth/2fa/verify": {
             "post": {
                 "description": "Verify2FA endpoint",
                 "consumes": [
@@ -154,7 +154,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/auth/logout": {
+        "/auth/logout": {
             "post": {
                 "description": "Logout endpoint",
                 "consumes": [
@@ -170,7 +170,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/auth/oauth/{provider}": {
+        "/auth/oauth/{provider}": {
             "get": {
                 "description": "OAuthRedirect endpoint",
                 "consumes": [
@@ -195,7 +195,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/auth/oauth/{provider}/callback": {
+        "/auth/oauth/{provider}/callback": {
             "get": {
                 "description": "OAuthCallback endpoint",
                 "consumes": [
@@ -220,7 +220,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/auth/signin": {
+        "/auth/signin": {
             "post": {
                 "description": "Login endpoint",
                 "consumes": [
@@ -247,7 +247,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/auth/signup": {
+        "/auth/signup": {
             "post": {
                 "description": "Register endpoint",
                 "consumes": [
@@ -274,7 +274,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/backups": {
+        "/backups": {
             "get": {
                 "description": "List Backups",
                 "consumes": [
@@ -315,7 +315,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/backups/{id}": {
+        "/backups/{id}": {
             "get": {
                 "description": "Get Backup",
                 "consumes": [
@@ -363,7 +363,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/backups/{id}/trigger": {
+        "/backups/{id}/trigger": {
             "post": {
                 "description": "Trigger endpoint",
                 "consumes": [
@@ -388,7 +388,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/databases": {
+        "/databases": {
             "get": {
                 "description": "ListDatabases endpoint",
                 "consumes": [
@@ -429,7 +429,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/databases/{id}": {
+        "/databases/{id}": {
             "get": {
                 "description": "GetDatabase endpoint",
                 "consumes": [
@@ -477,7 +477,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/databases/{id}/query": {
+        "/databases/{id}/query": {
             "post": {
                 "description": "QueryDatabase endpoint",
                 "consumes": [
@@ -511,7 +511,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/databases/{id}/start": {
+        "/databases/{id}/start": {
             "post": {
                 "description": "StartDatabase endpoint",
                 "consumes": [
@@ -536,7 +536,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/databases/{id}/stop": {
+        "/databases/{id}/stop": {
             "post": {
                 "description": "StopDatabase endpoint",
                 "consumes": [
@@ -561,7 +561,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/deployments/{id}/diagnostics": {
+        "/deployments/{id}/diagnostics": {
             "post": {
                 "description": "Analyze endpoint",
                 "consumes": [
@@ -586,7 +586,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/deployments/{id}/logs": {
+        "/deployments/{id}/logs": {
             "get": {
                 "description": "GetLogs endpoint",
                 "consumes": [
@@ -611,7 +611,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/deployments/{id}/rollback": {
+        "/deployments/{id}/rollback": {
             "post": {
                 "description": "Rollback endpoint",
                 "consumes": [
@@ -636,7 +636,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/domains/{id}": {
+        "/domains/{id}": {
             "delete": {
                 "description": "Delete Domain",
                 "consumes": [
@@ -661,7 +661,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/environments/{id}": {
+        "/environments/{id}": {
             "delete": {
                 "description": "Delete Environment",
                 "consumes": [
@@ -686,7 +686,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/environments/{id}/apps": {
+        "/environments/{id}/apps": {
             "get": {
                 "description": "ListByEnvironment endpoint",
                 "consumes": [
@@ -743,7 +743,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/environments/{id}/canvas": {
+        "/environments/{id}/canvas": {
             "get": {
                 "description": "GetEnvironmentCanvas endpoint",
                 "consumes": [
@@ -768,7 +768,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/git/connect": {
+        "/git/connect": {
             "post": {
                 "description": "Connect endpoint",
                 "consumes": [
@@ -795,7 +795,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/git/connect/{provider}": {
+        "/git/connect/{provider}": {
             "delete": {
                 "description": "Disconnect endpoint",
                 "consumes": [
@@ -820,7 +820,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/git/repos": {
+        "/git/repos": {
             "get": {
                 "description": "ListRepos endpoint",
                 "consumes": [
@@ -836,7 +836,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/git/status": {
+        "/git/status": {
             "get": {
                 "description": "Status endpoint",
                 "consumes": [
@@ -852,7 +852,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/jobs": {
+        "/jobs": {
             "get": {
                 "description": "ListProjectJobs endpoint",
                 "consumes": [
@@ -893,7 +893,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/jobs/{id}": {
+        "/jobs/{id}": {
             "get": {
                 "description": "Get Job",
                 "consumes": [
@@ -941,7 +941,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/jobs/{id}/trigger": {
+        "/jobs/{id}/trigger": {
             "post": {
                 "description": "Run endpoint",
                 "consumes": [
@@ -966,7 +966,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/oauth/vercel/callback": {
+        "/oauth/vercel/callback": {
             "get": {
                 "description": "Callback endpoint",
                 "consumes": [
@@ -982,7 +982,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/profile": {
+        "/profile": {
             "get": {
                 "description": "GetProfile endpoint",
                 "consumes": [
@@ -1023,7 +1023,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/profile/tokens": {
+        "/profile/tokens": {
             "get": {
                 "description": "ListPATs endpoint",
                 "consumes": [
@@ -1064,7 +1064,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/profile/tokens/{id}": {
+        "/profile/tokens/{id}": {
             "delete": {
                 "description": "DeletePAT endpoint",
                 "consumes": [
@@ -1089,7 +1089,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/projects": {
+        "/projects": {
             "get": {
                 "description": "ListProjects endpoint",
                 "consumes": [
@@ -1130,7 +1130,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/projects/{id}": {
+        "/projects/{id}": {
             "get": {
                 "description": "GetProject endpoint",
                 "consumes": [
@@ -1178,7 +1178,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/projects/{id}/apps": {
+        "/projects/{id}/apps": {
             "get": {
                 "description": "ListByProject endpoint",
                 "consumes": [
@@ -1203,7 +1203,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/projects/{id}/deploy": {
+        "/projects/{id}/deploy": {
             "post": {
                 "description": "DeployProject endpoint",
                 "consumes": [
@@ -1228,7 +1228,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/projects/{id}/domains": {
+        "/projects/{id}/domains": {
             "get": {
                 "description": "List domains by project",
                 "consumes": [
@@ -1285,7 +1285,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/projects/{id}/env": {
+        "/projects/{id}/env": {
             "get": {
                 "description": "GetVars endpoint",
                 "consumes": [
@@ -1333,7 +1333,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/projects/{id}/environments": {
+        "/projects/{id}/environments": {
             "get": {
                 "description": "ListByProject endpoint",
                 "consumes": [
@@ -1383,7 +1383,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/projects/{id}/summary": {
+        "/projects/{id}/summary": {
             "get": {
                 "description": "GetCanvasSummary endpoint",
                 "consumes": [
@@ -1408,7 +1408,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/projects/{projectId}/members": {
+        "/projects/{projectId}/members": {
             "get": {
                 "description": "ListMembers endpoint",
                 "consumes": [
@@ -1465,7 +1465,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/projects/{projectId}/members/{id}": {
+        "/projects/{projectId}/members/{id}": {
             "delete": {
                 "description": "RemoveMember endpoint\nRemove Project Member",
                 "consumes": [
@@ -1514,7 +1514,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/projects/{projectId}/tokens": {
+        "/projects/{projectId}/tokens": {
             "get": {
                 "description": "ListTokens endpoint",
                 "consumes": [
@@ -1571,7 +1571,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/projects/{projectId}/tokens/{id}": {
+        "/projects/{projectId}/tokens/{id}": {
             "delete": {
                 "description": "DeleteToken endpoint",
                 "consumes": [
@@ -1603,7 +1603,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/projects/{projectId}/webhooks": {
+        "/projects/{projectId}/webhooks": {
             "get": {
                 "description": "ListWebhooks endpoint",
                 "consumes": [
@@ -1660,7 +1660,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/projects/{projectId}/webhooks/{id}": {
+        "/projects/{projectId}/webhooks/{id}": {
             "delete": {
                 "description": "DeleteWebhook endpoint",
                 "consumes": [
@@ -1692,7 +1692,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/s3-destinations": {
+        "/s3-destinations": {
             "get": {
                 "description": "ListS3Destinations endpoint",
                 "consumes": [
@@ -1708,7 +1708,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/s3-destinations/{id}": {
+        "/s3-destinations/{id}": {
             "delete": {
                 "description": "DeleteS3Destination endpoint",
                 "consumes": [
@@ -1733,7 +1733,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/services/{serviceId}/deploy": {
+        "/services/{serviceId}/deploy": {
             "post": {
                 "description": "Trigger Deployment",
                 "consumes": [
@@ -1758,7 +1758,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/services/{serviceId}/deployments": {
+        "/services/{serviceId}/deployments": {
             "get": {
                 "description": "ListServiceDeployments endpoint",
                 "consumes": [
@@ -1783,7 +1783,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/services/{serviceId}/metrics": {
+        "/services/{serviceId}/metrics": {
             "get": {
                 "description": "GetMetrics endpoint",
                 "consumes": [
@@ -1808,7 +1808,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/services/{serviceId}/serverless/code": {
+        "/services/{serviceId}/serverless/code": {
             "get": {
                 "description": "GetCode endpoint",
                 "consumes": [
@@ -1856,7 +1856,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/services/{serviceId}/variables": {
+        "/services/{serviceId}/variables": {
             "get": {
                 "description": "List Service Variables",
                 "consumes": [
@@ -1913,7 +1913,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/services/{serviceId}/variables/{id}": {
+        "/services/{serviceId}/variables/{id}": {
             "put": {
                 "description": "Update Service Variable",
                 "consumes": [
@@ -1984,7 +1984,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/settings": {
+        "/settings": {
             "put": {
                 "description": "UpdateSettings endpoint",
                 "consumes": [
@@ -2011,7 +2011,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/settings/git_apps/bitbucket/{id}": {
+        "/settings/git_apps/bitbucket/{id}": {
             "delete": {
                 "description": "DeleteBitbucketApp endpoint",
                 "consumes": [
@@ -2036,7 +2036,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/settings/git_apps/github/manifest-callback": {
+        "/settings/git_apps/github/manifest-callback": {
             "post": {
                 "description": "ExchangeGithubManifestCode endpoint",
                 "consumes": [
@@ -2063,7 +2063,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/settings/license": {
+        "/settings/license": {
             "post": {
                 "description": "Activates offline license key\nActivate License",
                 "consumes": [
@@ -2093,7 +2093,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/settings/notifications": {
+        "/settings/notifications": {
             "get": {
                 "description": "ListChannels endpoint",
                 "consumes": [
@@ -2134,7 +2134,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/settings/notifications/test": {
+        "/settings/notifications/test": {
             "post": {
                 "description": "TestNotification endpoint",
                 "consumes": [
@@ -2161,7 +2161,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/settings/notifications/{id}": {
+        "/settings/notifications/{id}": {
             "get": {
                 "description": "GetTeamNotificationChannel endpoint",
                 "consumes": [
@@ -2209,7 +2209,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/settings/oauth/providers": {
+        "/settings/oauth/providers": {
             "get": {
                 "description": "ListProviders endpoint",
                 "consumes": [
@@ -2250,7 +2250,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/settings/updates/deploy": {
+        "/settings/updates/deploy": {
             "post": {
                 "description": "DeployUpdate endpoint",
                 "consumes": [
@@ -2266,7 +2266,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/storage": {
+        "/storage": {
             "post": {
                 "description": "CreateStorage endpoint",
                 "consumes": [
@@ -2293,7 +2293,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/storage/{id}": {
+        "/storage/{id}": {
             "get": {
                 "description": "GetStorage endpoint",
                 "consumes": [
@@ -2318,7 +2318,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/storage/{id}/start": {
+        "/storage/{id}/start": {
             "post": {
                 "description": "StartStorage endpoint",
                 "consumes": [
@@ -2343,7 +2343,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/storage/{id}/stop": {
+        "/storage/{id}/stop": {
             "post": {
                 "description": "StopStorage endpoint",
                 "consumes": [
@@ -2368,7 +2368,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/team-invites/{token}": {
+        "/team-invites/{token}": {
             "get": {
                 "description": "GetInvite endpoint",
                 "consumes": [
@@ -2393,7 +2393,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/team-invites/{token}/accept": {
+        "/team-invites/{token}/accept": {
             "post": {
                 "description": "AcceptInvite endpoint",
                 "consumes": [
@@ -2418,7 +2418,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/teams": {
+        "/teams": {
             "get": {
                 "description": "List Teams",
                 "consumes": [
@@ -2459,7 +2459,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/teams/{id}": {
+        "/teams/{id}": {
             "get": {
                 "description": "Get Team",
                 "consumes": [
@@ -2507,7 +2507,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/teams/{id}/invite": {
+        "/teams/{id}/invite": {
             "post": {
                 "description": "InviteMember endpoint",
                 "consumes": [
@@ -2541,7 +2541,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/teams/{id}/members": {
+        "/teams/{id}/members": {
             "get": {
                 "description": "ListMembers endpoint",
                 "consumes": [
@@ -2566,7 +2566,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/teams/{id}/members/{userId}": {
+        "/teams/{id}/members/{userId}": {
             "delete": {
                 "description": "RemoveMember endpoint",
                 "consumes": [
@@ -2598,7 +2598,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/teams/{teamId}/ai_settings": {
+        "/teams/{teamId}/ai_settings": {
             "get": {
                 "description": "Get endpoint",
                 "consumes": [
@@ -2655,7 +2655,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/teams/{teamId}/audit-logs": {
+        "/teams/{teamId}/audit-logs": {
             "get": {
                 "description": "ListAuditLogs endpoint",
                 "consumes": [
@@ -2680,7 +2680,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/teams/{teamId}/email_settings": {
+        "/teams/{teamId}/email_settings": {
             "get": {
                 "description": "Get Team Email Settings",
                 "consumes": [
@@ -2737,7 +2737,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/teams/{teamId}/ssh-keys": {
+        "/teams/{teamId}/ssh-keys": {
             "get": {
                 "description": "ListSSHKeys endpoint",
                 "consumes": [
@@ -2794,7 +2794,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/teams/{teamId}/trusted-domains": {
+        "/teams/{teamId}/trusted-domains": {
             "get": {
                 "description": "ListTrustedDomains endpoint",
                 "consumes": [
@@ -2851,7 +2851,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/vercel/projects": {
+        "/vercel/projects": {
             "get": {
                 "description": "ListProjects endpoint",
                 "consumes": [
@@ -2867,7 +2867,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/vercel/projects/{id}/env": {
+        "/vercel/projects/{id}/env": {
             "get": {
                 "description": "GetProjectEnv endpoint",
                 "consumes": [
@@ -2892,7 +2892,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/webhooks/git/services/{serviceId}": {
+        "/webhooks/git/services/{serviceId}": {
             "post": {
                 "description": "HandleServiceWebhook endpoint",
                 "consumes": [
@@ -2917,7 +2917,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/webhooks/git/{projectId}": {
+        "/webhooks/git/{projectId}": {
             "post": {
                 "description": "HandleProjectWebhook endpoint",
                 "consumes": [
@@ -2942,7 +2942,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/webhooks/github/services/{serviceId}": {
+        "/webhooks/github/services/{serviceId}": {
             "post": {
                 "description": "HandleGitHubWebhook endpoint",
                 "consumes": [
@@ -2976,7 +2976,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/workspaces": {
+        "/workspaces": {
             "post": {
                 "description": "Create endpoint",
                 "consumes": [
@@ -3003,7 +3003,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/workspaces/{id}": {
+        "/workspaces/{id}": {
             "get": {
                 "description": "Get endpoint",
                 "consumes": [
@@ -3083,7 +3083,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/ws/services/{id}/terminal": {
+        "/ws/services/{id}/terminal": {
             "get": {
                 "description": "HandleWebSocket endpoint\nHandle Terminal WebSocket",
                 "consumes": [

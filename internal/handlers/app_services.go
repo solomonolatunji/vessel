@@ -41,7 +41,7 @@ func (h *AppHandler) verifyProjectOwnership(c echo.Context, projectID string) er
 // @Produce json
 // @Param id path string true "Environment ID"
 // @Param request body models.AppService true "Payload"
-// @Router /api/environments/{id}/apps [post]
+// @Router /environments/{id}/apps [post]
 func (h *AppHandler) Create(c echo.Context) error {
 	envID := c.Param("id")
 	var req models.AppService
@@ -71,7 +71,7 @@ func (h *AppHandler) Create(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/environments/{id}/apps [get]
+// @Router /environments/{id}/apps [get]
 func (h *AppHandler) ListByEnvironment(c echo.Context) error {
 	envID := c.Param("id")
 	apps, err := h.appService.ListByEnvironment(c.Request().Context(), envID)
@@ -98,7 +98,7 @@ func (h *AppHandler) ListByEnvironment(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/projects/{id}/apps [get]
+// @Router /projects/{id}/apps [get]
 func (h *AppHandler) ListByProject(c echo.Context) error {
 	projectID := c.Param("id")
 	if err := h.verifyProjectOwnership(c, projectID); err != nil {
@@ -117,7 +117,7 @@ func (h *AppHandler) ListByProject(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "App ID"
-// @Router /api/apps/{id} [get]
+// @Router /apps/{id} [get]
 func (h *AppHandler) Get(c echo.Context) error {
 	id := c.Param("id")
 	svc, err := h.appService.GetAppService(c.Request().Context(), id)
@@ -137,7 +137,7 @@ func (h *AppHandler) Get(c echo.Context) error {
 // @Produce json
 // @Param id path string true "App ID"
 // @Param request body models.AppService true "Payload"
-// @Router /api/apps/{id} [put]
+// @Router /apps/{id} [put]
 func (h *AppHandler) Update(c echo.Context) error {
 	id := c.Param("id")
 	existing, err := h.appService.GetAppService(c.Request().Context(), id)
@@ -176,7 +176,7 @@ func (h *AppHandler) Update(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "App ID"
-// @Router /api/apps/{id} [delete]
+// @Router /apps/{id} [delete]
 func (h *AppHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	existing, err := h.appService.GetAppService(c.Request().Context(), id)

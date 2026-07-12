@@ -30,7 +30,7 @@ type InviteTeamMemberRequest struct {
 // @Tags Teams
 // @Accept json
 // @Produce json
-// @Router /api/teams [get]
+// @Router /teams [get]
 func (h *TeamHandler) List(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -49,7 +49,7 @@ func (h *TeamHandler) List(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param request body handlers.CreateTeamRequest true "Payload"
-// @Router /api/teams [post]
+// @Router /teams [post]
 func (h *TeamHandler) Create(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -72,7 +72,7 @@ func (h *TeamHandler) Create(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "Team ID"
-// @Router /api/teams/{id} [get]
+// @Router /teams/{id} [get]
 func (h *TeamHandler) Get(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -91,7 +91,7 @@ func (h *TeamHandler) Get(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "Team ID"
-// @Router /api/teams/{id} [delete]
+// @Router /teams/{id} [delete]
 func (h *TeamHandler) Delete(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -113,7 +113,7 @@ func (h *TeamHandler) Delete(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/teams/{id}/members [get]
+// @Router /teams/{id}/members [get]
 func (h *TeamHandler) ListMembers(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -133,7 +133,7 @@ func (h *TeamHandler) ListMembers(c echo.Context) error {
 // @Produce json
 // @Param id path string true "id"
 // @Param request body handlers.InviteTeamMemberRequest true "Payload"
-// @Router /api/teams/{id}/invite [post]
+// @Router /teams/{id}/invite [post]
 func (h *TeamHandler) InviteMember(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -157,7 +157,7 @@ func (h *TeamHandler) InviteMember(c echo.Context) error {
 // @Produce json
 // @Param id path string true "id"
 // @Param userId path string true "userId"
-// @Router /api/teams/{id}/members/{userId} [delete]
+// @Router /teams/{id}/members/{userId} [delete]
 func (h *TeamHandler) RemoveMember(c echo.Context) error {
 	id := c.Param("id")
 	targetUserID := c.Param("userId")
@@ -176,7 +176,7 @@ func (h *TeamHandler) RemoveMember(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param token path string true "token"
-// @Router /api/team-invites/{token} [get]
+// @Router /team-invites/{token} [get]
 func (h *TeamHandler) GetInvite(c echo.Context) error {
 	token := c.Param("token")
 	if token == "" {
@@ -195,7 +195,7 @@ func (h *TeamHandler) GetInvite(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param token path string true "token"
-// @Router /api/team-invites/{token}/accept [post]
+// @Router /team-invites/{token}/accept [post]
 func (h *TeamHandler) AcceptInvite(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {

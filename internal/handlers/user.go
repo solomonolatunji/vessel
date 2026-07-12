@@ -45,7 +45,7 @@ func (h *UserHandler) ListUsers(c echo.Context) error {
 // @Tags Users
 // @Accept json
 // @Produce json
-// @Router /api/profile [get]
+// @Router /profile [get]
 func (h *UserHandler) GetProfile(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -66,7 +66,7 @@ func (h *UserHandler) GetProfile(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param request body handlers.UpdateProfileRequest true "Payload"
-// @Router /api/profile [put]
+// @Router /profile [put]
 func (h *UserHandler) UpdateProfile(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -100,7 +100,7 @@ func (h *UserHandler) UpdateProfile(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param request body handlers.CreatePATRequest true "Payload"
-// @Router /api/profile/tokens [post]
+// @Router /profile/tokens [post]
 func (h *UserHandler) CreatePAT(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -125,7 +125,7 @@ func (h *UserHandler) CreatePAT(c echo.Context) error {
 // @Tags Users
 // @Accept json
 // @Produce json
-// @Router /api/profile/tokens [get]
+// @Router /profile/tokens [get]
 func (h *UserHandler) ListPATs(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -144,7 +144,7 @@ func (h *UserHandler) ListPATs(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/profile/tokens/{id} [delete]
+// @Router /profile/tokens/{id} [delete]
 func (h *UserHandler) DeletePAT(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {

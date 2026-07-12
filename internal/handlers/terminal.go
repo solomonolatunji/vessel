@@ -53,7 +53,7 @@ func NewTerminalHandler(
 // @Summary Handle Terminal WebSocket
 // @Description Handle Terminal WebSocket
 // @Tags Terminal
-// @Router /api/ws/services/{id}/terminal [get]
+// @Router /ws/services/{id}/terminal [get]
 func (h *TerminalHandler) HandleWebSocket(c echo.Context) error {
 	if h.tokenService != nil {
 		tokenStr := middleware.ExtractTokenFromRequest(c)

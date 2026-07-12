@@ -50,7 +50,7 @@ func (h *UpdaterHandler) CheckUpdate(c echo.Context) error {
 // @Tags Settings
 // @Accept json
 // @Produce json
-// @Router /api/settings/updates/deploy [post]
+// @Router /settings/updates/deploy [post]
 func (h *UpdaterHandler) DeployUpdate(c echo.Context) error {
 	if h.updaterService == nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "updater service not initialized"})

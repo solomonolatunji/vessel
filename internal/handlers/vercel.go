@@ -21,7 +21,7 @@ func NewVercelHandler(vs *services.VercelService) *VercelHandler {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Router /api/oauth/vercel/callback [get]
+// @Router /oauth/vercel/callback [get]
 func (h *VercelHandler) Callback(c echo.Context) error {
 	code := c.QueryParam("code")
 	if code == "" {
@@ -49,7 +49,7 @@ func (h *VercelHandler) Callback(c echo.Context) error {
 // @Tags Projects
 // @Accept json
 // @Produce json
-// @Router /api/vercel/projects [get]
+// @Router /vercel/projects [get]
 func (h *VercelHandler) ListProjects(c echo.Context) error {
 	user := GetUserClaimsFromContext(c.Request().Context())
 	if user == nil {
@@ -78,7 +78,7 @@ func (h *VercelHandler) ListProjects(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/vercel/projects/{id}/env [get]
+// @Router /vercel/projects/{id}/env [get]
 func (h *VercelHandler) GetProjectEnv(c echo.Context) error {
 	user := GetUserClaimsFromContext(c.Request().Context())
 	if user == nil {

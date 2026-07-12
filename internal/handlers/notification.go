@@ -28,7 +28,7 @@ type TestNotificationRequest struct {
 // @Tags Settings
 // @Accept json
 // @Produce json
-// @Router /api/settings/notifications [get]
+// @Router /settings/notifications [get]
 func (h *NotificationHandler) ListChannels(c echo.Context) error {
 	if c.Request().Method != http.MethodGet {
 		return c.JSON(http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
@@ -50,7 +50,7 @@ func (h *NotificationHandler) ListChannels(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param request body models.TeamNotificationChannel true "Payload"
-// @Router /api/settings/notifications [put]
+// @Router /settings/notifications [put]
 func (h *NotificationHandler) SaveChannel(c echo.Context) error {
 	if c.Request().Method != http.MethodPut && c.Request().Method != http.MethodPost {
 		return c.JSON(http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
@@ -74,7 +74,7 @@ func (h *NotificationHandler) SaveChannel(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/settings/notifications/{id} [delete]
+// @Router /settings/notifications/{id} [delete]
 func (h *NotificationHandler) DeleteChannel(c echo.Context) error {
 	if c.Request().Method != http.MethodDelete {
 		return c.JSON(http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
@@ -95,7 +95,7 @@ func (h *NotificationHandler) DeleteChannel(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param request body handlers.TestNotificationRequest true "Payload"
-// @Router /api/settings/notifications/test [post]
+// @Router /settings/notifications/test [post]
 func (h *NotificationHandler) TestNotification(c echo.Context) error {
 	if c.Request().Method != http.MethodPost {
 		return c.JSON(http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})

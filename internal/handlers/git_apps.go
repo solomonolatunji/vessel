@@ -89,7 +89,7 @@ func deleteAppHandler(del deleteFunc) echo.HandlerFunc {
 // @Accept json
 // @Produce json
 // @Param request body handlers.GitAppsManifestRequest true "Payload"
-// @Router /api/settings/git_apps/github/manifest-callback [post]
+// @Router /settings/git_apps/github/manifest-callback [post]
 func (h *GitAppsHandler) ExchangeGithubManifestCode(c echo.Context) error {
 	var payload GitAppsManifestRequest
 
@@ -231,7 +231,7 @@ func (h *GitAppsHandler) SaveBitbucketApp(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/settings/git_apps/bitbucket/{id} [delete]
+// @Router /settings/git_apps/bitbucket/{id} [delete]
 func (h *GitAppsHandler) DeleteBitbucketApp(c echo.Context) error {
 	return deleteAppHandler(h.gitAppsService.DeleteBitbucketApp)(c)
 }

@@ -22,7 +22,7 @@ func NewProjectEnvHandler(s *services.EnvironmentService) *ProjectEnvHandler {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/projects/{id}/env [get]
+// @Router /projects/{id}/env [get]
 func (h *ProjectEnvHandler) GetVars(c echo.Context) error {
 	projectID := c.Param("id")
 	if projectID == "" {
@@ -44,7 +44,7 @@ func (h *ProjectEnvHandler) GetVars(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/projects/{id}/env [put]
+// @Router /projects/{id}/env [put]
 func (h *ProjectEnvHandler) SetVars(c echo.Context) error {
 	projectID := c.Param("id")
 	if projectID == "" {
