@@ -1,0 +1,144 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const plans = [
+  {
+    name: 'Open Source',
+    price: 'Free',
+    period: 'forever',
+    description: 'Self-host on your own server. Full control, full access.',
+    highlight: false,
+    cta: 'Get started',
+    ctaHref: 'https://docs.vessl.dev/self-host',
+    features: [
+      'Unlimited apps & databases',
+      'Git-push deploys (GitHub, GitLab, Gitea)',
+      'Real-time terminal',
+      'Automatic SSL via Let\'s Encrypt',
+      'Encrypted secrets vault',
+      'Pull request preview environments',
+      'MCP server for AI tools',
+      'Self-managed updates',
+      'Community support',
+    ],
+  },
+  {
+    name: 'Cloud Starter',
+    price: '$19',
+    period: 'per team / month',
+    description: 'Vessl Cloud control plane with managed fleet dashboard.',
+    highlight: true,
+    cta: 'Start free trial',
+    ctaHref: 'https://app.vessl.dev',
+    features: [
+      'Everything in Open Source',
+      'Vessl Cloud fleet dashboard',
+      'Up to 3 connected agents',
+      'Usage metering & billing alerts',
+      '5 team seats',
+      'Deployment history & audit logs',
+      'Email notifications',
+      'Priority support',
+    ],
+  },
+  {
+    name: 'Cloud Pro',
+    price: '$79',
+    period: 'per team / month',
+    description: 'For teams running production workloads across multiple servers.',
+    highlight: false,
+    cta: 'Contact us',
+    ctaHref: 'mailto:hello@vessl.dev',
+    features: [
+      'Everything in Starter',
+      'Unlimited connected agents',
+      'SSO / SAML integration',
+      'Advanced usage analytics',
+      'Unlimited team seats',
+      'Custom domain for dashboard',
+      'SLA guarantee',
+      'Dedicated support channel',
+    ],
+  },
+];
+---
+
+<Layout title="Pricing — Vessl" description="Simple, transparent pricing. Start free with the open-source edition or connect to Vessl Cloud for fleet management and team features.">
+
+  <section class="max-w-5xl mx-auto px-4 py-20 text-center">
+
+    <!-- Glow -->
+    <div class="absolute top-24 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-[var(--color-primary)]/15 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--color-primary)]/30 bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-medium mb-5">
+        Simple pricing
+      </div>
+      <h1 class="text-4xl md:text-5xl font-extrabold text-[var(--color-foreground)] mb-4">Start free. Scale when ready.</h1>
+      <p class="text-[var(--color-muted-foreground)] max-w-xl mx-auto mb-14">
+        The open-source edition is free forever. Upgrade to Vessl Cloud when you need fleet management, team features, and usage alerts.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+      {plans.map(plan => (
+        <div class={`rounded-2xl border p-8 text-left transition-all duration-300 relative ${
+          plan.highlight
+            ? 'border-[var(--color-primary)]/50 bg-gradient-to-b from-[var(--color-primary)]/10 to-[var(--color-surface)] shadow-xl shadow-[var(--color-primary)]/10'
+            : 'border-[var(--color-border)] bg-[var(--color-surface)]'
+        }`}>
+          {plan.highlight && (
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2 text-xs px-3 py-1 rounded-full bg-[var(--color-primary)] text-white font-bold">Most popular</div>
+          )}
+
+          <h2 class="text-lg font-bold text-[var(--color-foreground)] mb-1">{plan.name}</h2>
+          <p class="text-sm text-[var(--color-muted-foreground)] mb-5">{plan.description}</p>
+
+          <div class="mb-6">
+            <span class="text-4xl font-extrabold text-[var(--color-foreground)]">{plan.price}</span>
+            <span class="text-sm text-[var(--color-muted-foreground)] ml-2">{plan.period}</span>
+          </div>
+
+          <a href={plan.ctaHref} class={`w-full inline-flex items-center justify-center py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 mb-8 ${
+            plan.highlight
+              ? 'bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white shadow-md shadow-[var(--color-primary)]/30'
+              : 'border border-[var(--color-border)] text-[var(--color-foreground)] hover:bg-[var(--color-background)]'
+          }`}>
+            {plan.cta}
+          </a>
+
+          <ul class="space-y-3">
+            {plan.features.map(f => (
+              <li class="flex items-start gap-2 text-sm text-[var(--color-muted-foreground)]">
+                <svg class={`size-4 mt-0.5 shrink-0 ${plan.highlight ? 'text-[var(--color-primary)]' : 'text-[var(--color-muted-foreground)]'}`} fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                {f}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <!-- FAQ -->
+    <div class="mt-20 max-w-2xl mx-auto text-left">
+      <h2 class="text-2xl font-extrabold text-[var(--color-foreground)] mb-8 text-center">Frequently asked</h2>
+      <div class="space-y-4">
+        {[
+          { q: 'Is the self-hosted version really free?', a: 'Yes. The core Vessl daemon is MIT licensed and free forever. You run it on your own server and we never charge for it.' },
+          { q: 'What is an "agent"?', a: 'An agent is a Vessl daemon (vessld) running on one of your servers. It connects to Vessl Cloud via a secure Yamux tunnel over WebSockets so you can manage it from the dashboard.' },
+          { q: 'Can I switch from self-hosted to Cloud later?', a: 'Absolutely. Install the daemon as normal, register it with a Cloud token, and it will show up in your fleet dashboard immediately.' },
+          { q: 'Does Vessl store my data?', a: 'The self-hosted edition stores everything on your server. Vessl Cloud only stores the control-plane metadata (team info, usage metrics, deployment history). Your container data never leaves your server.' },
+        ].map(faq => (
+          <details class="group rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 cursor-pointer">
+            <summary class="font-semibold text-[var(--color-foreground)] list-none flex items-center justify-between">
+              {faq.q}
+              <svg class="size-4 text-[var(--color-muted-foreground)] group-open:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <p class="mt-3 text-sm text-[var(--color-muted-foreground)] leading-relaxed">{faq.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+
+  </section>
+</Layout>

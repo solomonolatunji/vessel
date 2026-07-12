@@ -1,23 +1,82 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
-</html>
+---
+import '../styles/global.css';
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Vessl — Self-hosting with superpowers',
+  description = 'Deploy apps, databases, and services to your own server. Open-source, lightweight, and built for teams.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+  </head>
+  <body class="bg-[var(--color-background)] text-[var(--color-foreground)] font-sans antialiased overflow-x-hidden">
+
+    <!-- Nav -->
+    <header class="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[var(--color-background)]/80 backdrop-blur-md">
+      <nav class="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
+        <a href="/" class="flex items-center gap-2 font-bold text-lg tracking-tight">
+          <span class="size-7 rounded-lg bg-[var(--color-primary)] flex items-center justify-center text-white text-xs font-black">V</span>
+          Vessl
+        </a>
+
+        <div class="hidden md:flex items-center gap-1 text-sm">
+          <a href="/#features" class="px-3 py-2 rounded-md text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-surface)] transition-colors">Features</a>
+          <a href="/pricing" class="px-3 py-2 rounded-md text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-surface)] transition-colors">Pricing</a>
+          <a href="/changelog" class="px-3 py-2 rounded-md text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-surface)] transition-colors">Changelog</a>
+          <a href="https://docs.vessl.dev" target="_blank" class="px-3 py-2 rounded-md text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-surface)] transition-colors">Docs</a>
+          <a href="https://github.com/techxteam/vessl" target="_blank" class="px-3 py-2 rounded-md text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-surface)] transition-colors">GitHub</a>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <a href="https://github.com/techxteam/vessl" target="_blank" class="hidden md:flex items-center gap-2 text-sm text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] transition-colors">
+            <svg class="size-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path></svg>
+          </a>
+          <a href="https://app.vessl.dev" class="text-sm font-semibold px-4 py-2 rounded-lg bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white transition-colors">
+            Get Started
+          </a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-24 border-t border-[var(--color-border)]">
+      <div class="max-w-6xl mx-auto px-4 py-12 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-2">
+          <span class="size-6 rounded-md bg-[var(--color-primary)] flex items-center justify-center text-white text-xs font-black">V</span>
+          <span class="text-sm text-[var(--color-muted-foreground)]">© 2026 Vessl. Open-source & free forever.</span>
+        </div>
+        <div class="flex flex-wrap justify-center items-center gap-6 text-sm text-[var(--color-muted-foreground)]">
+          <a href="/pricing" class="hover:text-[var(--color-foreground)] transition-colors">Pricing</a>
+          <a href="/changelog" class="hover:text-[var(--color-foreground)] transition-colors">Changelog</a>
+          <a href="https://docs.vessl.dev" target="_blank" class="hover:text-[var(--color-foreground)] transition-colors">Docs</a>
+          <a href="https://github.com/techxteam/vessl" target="_blank" class="hover:text-[var(--color-foreground)] transition-colors">GitHub</a>
+        </div>
+      </div>
+    </footer>
+
+  </body>
+</html>

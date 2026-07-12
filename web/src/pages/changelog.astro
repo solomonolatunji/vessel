@@ -1,0 +1,115 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const entries = [
+  {
+    version: 'v0.4.0',
+    date: 'July 2026',
+    badge: 'Latest',
+    badgeColor: 'bg-[var(--color-primary)]/20 text-[var(--color-primary)] border border-[var(--color-primary)]/30',
+    changes: [
+      { type: 'feat', text: 'Fleet & agents handshake via Yamux over WebSockets' },
+      { type: 'feat', text: 'Usage metering aggregation and billing alerts' },
+      { type: 'feat', text: 'Agent telemetry reporting loop (container hours, deployments)' },
+      { type: 'refactor', text: 'Removed Google Wire — manual constructor injection throughout' },
+      { type: 'refactor', text: 'Extracted dependency wiring to setup.go in both vessl and vessl-cloud' },
+      { type: 'fix', text: 'Deprecated echoMiddleware.Logger replaced with RequestLoggerWithConfig' },
+    ],
+  },
+  {
+    version: 'v0.3.0',
+    date: 'June 2026',
+    badge: null,
+    badgeColor: '',
+    changes: [
+      { type: 'feat', text: 'Notifications module with email (Resend) and webhook channels' },
+      { type: 'feat', text: 'SSO / SAML handler with env-based configuration' },
+      { type: 'feat', text: 'Vessl Cloud metering handler with repo-authenticated usage reporting' },
+      { type: 'feat', text: 'Admin and internal staff routing split from public feature routes' },
+      { type: 'fix', text: 'service/notifications renamed to avoid double-nesting' },
+    ],
+  },
+  {
+    version: 'v0.2.0',
+    date: 'May 2026',
+    badge: null,
+    badgeColor: '',
+    changes: [
+      { type: 'feat', text: 'Pull request preview environments' },
+      { type: 'feat', text: 'MCP bridge — expose deployments to AI tools via Model Context Protocol' },
+      { type: 'feat', text: 'OAuth 2.0 integrations (GitHub, GitLab)' },
+      { type: 'feat', text: 'Canvas feature for visual project layout' },
+      { type: 'feat', text: 'Serverless function deployments' },
+    ],
+  },
+  {
+    version: 'v0.1.0',
+    date: 'April 2026',
+    badge: null,
+    badgeColor: '',
+    changes: [
+      { type: 'feat', text: 'Initial release — single-binary Vessl daemon' },
+      { type: 'feat', text: 'Docker-based app and database deployments' },
+      { type: 'feat', text: 'Traefik reverse proxy integration with automatic SSL' },
+      { type: 'feat', text: 'Encrypted secrets vault' },
+      { type: 'feat', text: 'Git webhook push-to-deploy' },
+      { type: 'feat', text: 'Real-time browser terminal' },
+    ],
+  },
+];
+
+const typeStyle: Record<string, string> = {
+  feat: 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]',
+  fix: 'bg-yellow-500/10 text-yellow-400',
+  refactor: 'bg-blue-500/10 text-blue-400',
+  break: 'bg-red-500/10 text-red-400',
+};
+---
+
+<Layout title="Changelog — Vessl" description="What's new in Vessl. Every release, every improvement, every fix.">
+
+  <section class="max-w-3xl mx-auto px-4 py-20">
+
+    <div class="mb-14">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] text-xs text-[var(--color-muted-foreground)] font-medium mb-5">
+        Release notes
+      </div>
+      <h1 class="text-4xl font-extrabold text-[var(--color-foreground)] mb-3">Changelog</h1>
+      <p class="text-[var(--color-muted-foreground)]">Every update to Vessl and Vessl Cloud, in reverse chronological order.</p>
+    </div>
+
+    <div class="relative">
+      <!-- Timeline line -->
+      <div class="absolute left-0 top-0 bottom-0 w-px bg-[var(--color-border)] ml-[3px]"></div>
+
+      <div class="space-y-14 pl-8">
+        {entries.map(entry => (
+          <div class="relative">
+            <!-- Dot -->
+            <div class="absolute -left-8 top-1.5 size-2 rounded-full bg-[var(--color-primary)] ring-4 ring-[var(--color-background)]"></div>
+
+            <div class="flex items-center gap-3 mb-4 flex-wrap">
+              <h2 class="text-xl font-extrabold text-[var(--color-foreground)]">{entry.version}</h2>
+              {entry.badge && (
+                <span class={`text-xs px-2 py-0.5 rounded-full font-semibold ${entry.badgeColor}`}>{entry.badge}</span>
+              )}
+              <span class="text-sm text-[var(--color-muted-foreground)]">{entry.date}</span>
+            </div>
+
+            <ul class="space-y-2.5">
+              {entry.changes.map(c => (
+                <li class="flex items-start gap-3 text-sm text-[var(--color-muted-foreground)]">
+                  <span class={`text-xs px-1.5 py-0.5 rounded font-bold font-mono shrink-0 mt-0.5 ${typeStyle[c.type] ?? 'bg-[var(--color-surface)] text-[var(--color-muted-foreground)]'}`}>
+                    {c.type}
+                  </span>
+                  {c.text}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+
+  </section>
+</Layout>
