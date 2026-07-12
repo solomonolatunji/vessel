@@ -195,3 +195,17 @@ src/
 - [ ] Git webhook and repository connection flow.
 - [ ] "Super Admin" settings panel for self-hosted Vessl instance updates.
 - [ ] Dark Mode refinements and responsive design checks.
+
+### Detailed UX & UI Requirements (Migrated from TODO.md)
+
+- **Glassmorphism Sidebar:** Responsive dark-mode glassmorphism sidebar with system health indicators (CPU, RAM, Docker Status).
+- **Shared Confirmation Dialogs:** Robust shared components to prevent accidental deletions of services, databases, domains, and env vars.
+- **Guard Active Deployments:** UI logic to disable system updates or conflicting actions while an active deployment is running.
+- **Project Wizard:** 1-click connect with GitHub/GitLab OAuth or public Git URL -> Select Branch -> Configure Build Port.
+- **Build Strategy Configurator:** Dropdown to select build engine (Dockerfile, Nixpacks, Buildpacks, Railpack) and toggle BuildKit caching.
+- **Secret Vault:** Multi-line secure `.env` key-value editor with instant encryption and 1-click rolling container restart.
+- **API Keys Manager:** Modal to create API keys with granular RBAC checkboxes (`deploy:write`, `logs:read`, `env:read`, `db:manage`), IP allowlist, and expiry dates.
+- **BYOK (Bring Your Own Key) Architecture:**
+  - _Notifications:_ Per-provider config cards (SMTP, Resend, Slack, Discord) to protect platform email reputation.
+  - _AI Settings:_ OpenAI/Anthropic keys to unlock deployment diagnostics.
+- **Advanced Networking:** Global Wildcard Domain Configurator, Custom DNS Resolvers, and API IP CIDR allowlists.
