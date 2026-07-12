@@ -9,48 +9,210 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WorkspaceRouteImport } from './routes/_workspace'
+import { Route as ProjectRouteImport } from './routes/_project'
+import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as SplatRouteImport } from './routes/$'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as WorkspaceIndexRouteImport } from './routes/_workspace/index'
+import { Route as WorkspaceSettingsRouteImport } from './routes/_workspace/settings'
+import { Route as WorkspaceProjectsRouteImport } from './routes/_workspace/projects'
+import { Route as WorkspaceDatabasesRouteImport } from './routes/_workspace/databases'
+import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
+import { Route as AuthLoginRouteImport } from './routes/_auth/login'
+import { Route as ProjectProjectIdIndexRouteImport } from './routes/_project/$projectId/index'
+import { Route as ProjectProjectIdSettingsRouteImport } from './routes/_project/$projectId/settings'
+import { Route as ProjectProjectIdDeploymentsRouteImport } from './routes/_project/$projectId/deployments'
+import { Route as ProjectProjectIdServicesServiceIdRouteImport } from './routes/_project/$projectId/services/$serviceId'
 
+const WorkspaceRoute = WorkspaceRouteImport.update({
+  id: '/_workspace',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectRoute = ProjectRouteImport.update({
+  id: '/_project',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/_auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SplatRoute = SplatRouteImport.update({
   id: '/$',
   path: '/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const WorkspaceIndexRoute = WorkspaceIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => WorkspaceRoute,
 } as any)
+const WorkspaceSettingsRoute = WorkspaceSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => WorkspaceRoute,
+} as any)
+const WorkspaceProjectsRoute = WorkspaceProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => WorkspaceRoute,
+} as any)
+const WorkspaceDatabasesRoute = WorkspaceDatabasesRouteImport.update({
+  id: '/databases',
+  path: '/databases',
+  getParentRoute: () => WorkspaceRoute,
+} as any)
+const AuthRegisterRoute = AuthRegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AuthRoute,
+} as any)
+const ProjectProjectIdIndexRoute = ProjectProjectIdIndexRouteImport.update({
+  id: '/$projectId/',
+  path: '/$projectId/',
+  getParentRoute: () => ProjectRoute,
+} as any)
+const ProjectProjectIdSettingsRoute =
+  ProjectProjectIdSettingsRouteImport.update({
+    id: '/$projectId/settings',
+    path: '/$projectId/settings',
+    getParentRoute: () => ProjectRoute,
+  } as any)
+const ProjectProjectIdDeploymentsRoute =
+  ProjectProjectIdDeploymentsRouteImport.update({
+    id: '/$projectId/deployments',
+    path: '/$projectId/deployments',
+    getParentRoute: () => ProjectRoute,
+  } as any)
+const ProjectProjectIdServicesServiceIdRoute =
+  ProjectProjectIdServicesServiceIdRouteImport.update({
+    id: '/$projectId/services/$serviceId',
+    path: '/$projectId/services/$serviceId',
+    getParentRoute: () => ProjectRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
   '/$': typeof SplatRoute
+  '/': typeof WorkspaceIndexRoute
+  '/login': typeof AuthLoginRoute
+  '/register': typeof AuthRegisterRoute
+  '/databases': typeof WorkspaceDatabasesRoute
+  '/projects': typeof WorkspaceProjectsRoute
+  '/settings': typeof WorkspaceSettingsRoute
+  '/$projectId/deployments': typeof ProjectProjectIdDeploymentsRoute
+  '/$projectId/settings': typeof ProjectProjectIdSettingsRoute
+  '/$projectId/': typeof ProjectProjectIdIndexRoute
+  '/$projectId/services/$serviceId': typeof ProjectProjectIdServicesServiceIdRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/$': typeof SplatRoute
+  '/': typeof WorkspaceIndexRoute
+  '/login': typeof AuthLoginRoute
+  '/register': typeof AuthRegisterRoute
+  '/databases': typeof WorkspaceDatabasesRoute
+  '/projects': typeof WorkspaceProjectsRoute
+  '/settings': typeof WorkspaceSettingsRoute
+  '/$projectId/deployments': typeof ProjectProjectIdDeploymentsRoute
+  '/$projectId/settings': typeof ProjectProjectIdSettingsRoute
+  '/$projectId': typeof ProjectProjectIdIndexRoute
+  '/$projectId/services/$serviceId': typeof ProjectProjectIdServicesServiceIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
   '/$': typeof SplatRoute
+  '/_auth': typeof AuthRouteWithChildren
+  '/_project': typeof ProjectRouteWithChildren
+  '/_workspace': typeof WorkspaceRouteWithChildren
+  '/_auth/login': typeof AuthLoginRoute
+  '/_auth/register': typeof AuthRegisterRoute
+  '/_workspace/databases': typeof WorkspaceDatabasesRoute
+  '/_workspace/projects': typeof WorkspaceProjectsRoute
+  '/_workspace/settings': typeof WorkspaceSettingsRoute
+  '/_workspace/': typeof WorkspaceIndexRoute
+  '/_project/$projectId/deployments': typeof ProjectProjectIdDeploymentsRoute
+  '/_project/$projectId/settings': typeof ProjectProjectIdSettingsRoute
+  '/_project/$projectId/': typeof ProjectProjectIdIndexRoute
+  '/_project/$projectId/services/$serviceId': typeof ProjectProjectIdServicesServiceIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$'
+  fullPaths:
+    | '/$'
+    | '/'
+    | '/login'
+    | '/register'
+    | '/databases'
+    | '/projects'
+    | '/settings'
+    | '/$projectId/deployments'
+    | '/$projectId/settings'
+    | '/$projectId/'
+    | '/$projectId/services/$serviceId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$'
-  id: '__root__' | '/' | '/$'
+  to:
+    | '/$'
+    | '/'
+    | '/login'
+    | '/register'
+    | '/databases'
+    | '/projects'
+    | '/settings'
+    | '/$projectId/deployments'
+    | '/$projectId/settings'
+    | '/$projectId'
+    | '/$projectId/services/$serviceId'
+  id:
+    | '__root__'
+    | '/$'
+    | '/_auth'
+    | '/_project'
+    | '/_workspace'
+    | '/_auth/login'
+    | '/_auth/register'
+    | '/_workspace/databases'
+    | '/_workspace/projects'
+    | '/_workspace/settings'
+    | '/_workspace/'
+    | '/_project/$projectId/deployments'
+    | '/_project/$projectId/settings'
+    | '/_project/$projectId/'
+    | '/_project/$projectId/services/$serviceId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   SplatRoute: typeof SplatRoute
+  AuthRoute: typeof AuthRouteWithChildren
+  ProjectRoute: typeof ProjectRouteWithChildren
+  WorkspaceRoute: typeof WorkspaceRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_workspace': {
+      id: '/_workspace'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof WorkspaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_project': {
+      id: '/_project'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof ProjectRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$': {
       id: '/$'
       path: '/$'
@@ -58,19 +220,132 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_workspace/': {
+      id: '/_workspace/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof WorkspaceIndexRouteImport
+      parentRoute: typeof WorkspaceRoute
+    }
+    '/_workspace/settings': {
+      id: '/_workspace/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof WorkspaceSettingsRouteImport
+      parentRoute: typeof WorkspaceRoute
+    }
+    '/_workspace/projects': {
+      id: '/_workspace/projects'
+      path: '/projects'
+      fullPath: '/projects'
+      preLoaderRoute: typeof WorkspaceProjectsRouteImport
+      parentRoute: typeof WorkspaceRoute
+    }
+    '/_workspace/databases': {
+      id: '/_workspace/databases'
+      path: '/databases'
+      fullPath: '/databases'
+      preLoaderRoute: typeof WorkspaceDatabasesRouteImport
+      parentRoute: typeof WorkspaceRoute
+    }
+    '/_auth/register': {
+      id: '/_auth/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof AuthRegisterRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/login': {
+      id: '/_auth/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_project/$projectId/': {
+      id: '/_project/$projectId/'
+      path: '/$projectId'
+      fullPath: '/$projectId/'
+      preLoaderRoute: typeof ProjectProjectIdIndexRouteImport
+      parentRoute: typeof ProjectRoute
+    }
+    '/_project/$projectId/settings': {
+      id: '/_project/$projectId/settings'
+      path: '/$projectId/settings'
+      fullPath: '/$projectId/settings'
+      preLoaderRoute: typeof ProjectProjectIdSettingsRouteImport
+      parentRoute: typeof ProjectRoute
+    }
+    '/_project/$projectId/deployments': {
+      id: '/_project/$projectId/deployments'
+      path: '/$projectId/deployments'
+      fullPath: '/$projectId/deployments'
+      preLoaderRoute: typeof ProjectProjectIdDeploymentsRouteImport
+      parentRoute: typeof ProjectRoute
+    }
+    '/_project/$projectId/services/$serviceId': {
+      id: '/_project/$projectId/services/$serviceId'
+      path: '/$projectId/services/$serviceId'
+      fullPath: '/$projectId/services/$serviceId'
+      preLoaderRoute: typeof ProjectProjectIdServicesServiceIdRouteImport
+      parentRoute: typeof ProjectRoute
     }
   }
 }
 
+interface AuthRouteChildren {
+  AuthLoginRoute: typeof AuthLoginRoute
+  AuthRegisterRoute: typeof AuthRegisterRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthLoginRoute: AuthLoginRoute,
+  AuthRegisterRoute: AuthRegisterRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
+interface ProjectRouteChildren {
+  ProjectProjectIdDeploymentsRoute: typeof ProjectProjectIdDeploymentsRoute
+  ProjectProjectIdSettingsRoute: typeof ProjectProjectIdSettingsRoute
+  ProjectProjectIdIndexRoute: typeof ProjectProjectIdIndexRoute
+  ProjectProjectIdServicesServiceIdRoute: typeof ProjectProjectIdServicesServiceIdRoute
+}
+
+const ProjectRouteChildren: ProjectRouteChildren = {
+  ProjectProjectIdDeploymentsRoute: ProjectProjectIdDeploymentsRoute,
+  ProjectProjectIdSettingsRoute: ProjectProjectIdSettingsRoute,
+  ProjectProjectIdIndexRoute: ProjectProjectIdIndexRoute,
+  ProjectProjectIdServicesServiceIdRoute:
+    ProjectProjectIdServicesServiceIdRoute,
+}
+
+const ProjectRouteWithChildren =
+  ProjectRoute._addFileChildren(ProjectRouteChildren)
+
+interface WorkspaceRouteChildren {
+  WorkspaceDatabasesRoute: typeof WorkspaceDatabasesRoute
+  WorkspaceProjectsRoute: typeof WorkspaceProjectsRoute
+  WorkspaceSettingsRoute: typeof WorkspaceSettingsRoute
+  WorkspaceIndexRoute: typeof WorkspaceIndexRoute
+}
+
+const WorkspaceRouteChildren: WorkspaceRouteChildren = {
+  WorkspaceDatabasesRoute: WorkspaceDatabasesRoute,
+  WorkspaceProjectsRoute: WorkspaceProjectsRoute,
+  WorkspaceSettingsRoute: WorkspaceSettingsRoute,
+  WorkspaceIndexRoute: WorkspaceIndexRoute,
+}
+
+const WorkspaceRouteWithChildren = WorkspaceRoute._addFileChildren(
+  WorkspaceRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   SplatRoute: SplatRoute,
+  AuthRoute: AuthRouteWithChildren,
+  ProjectRoute: ProjectRouteWithChildren,
+  WorkspaceRoute: WorkspaceRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
