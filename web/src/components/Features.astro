@@ -1,0 +1,88 @@
+---
+const features = [
+  {
+    icon: `<path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/>`,
+    title: 'Canvas View',
+    desc: 'See your entire environment at a glance — apps, databases, and their connections laid out as a live topology map, not a flat list.',
+  },
+  {
+    icon: `<rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/>`,
+    title: 'Traefik-backed Routing',
+    desc: 'Vessl spins up and manages Traefik automatically — zero-config load balancing, path routing, and automatic SSL for every service you deploy.',
+  },
+  {
+    icon: `<path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 22-7z"/>`,
+    title: 'Git-native Deployments',
+    desc: 'Connect GitHub, GitLab, or Gitea. Push a branch, get a deployment. No YAML pipelines. No external CI required.',
+  },
+  {
+    icon: `<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>`,
+    title: 'Environment Scoping',
+    desc: 'Group apps and services into named environments — staging, production, preview — each with isolated variables and their own deployment flow.',
+  },
+  {
+    icon: `<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>`,
+    title: 'Database Snapshots',
+    desc: 'Schedule automatic database backups to any S3-compatible storage. Configure retention windows and restore from any checkpoint.',
+  },
+  {
+    icon: `<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>`,
+    title: 'AI Settings Layer',
+    desc: 'Each team configures its own LLM provider — OpenAI, Anthropic, local Ollama. Vessl routes completions, never stores keys plaintext.',
+  },
+  {
+    icon: `<path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/>`,
+    title: 'Usage Metering',
+    desc: 'The cloud tracks container-hours, deployments, and bandwidth per team. Set thresholds, get notified, never hit an unexpected bill.',
+  },
+  {
+    icon: `<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>`,
+    title: 'Yamux Tunnel Fleet',
+    desc: 'Vessl Cloud connects to your daemons via an encrypted Yamux tunnel — no port-forwarding, no VPN. Your servers are never directly exposed.',
+  },
+  {
+    icon: `<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>`,
+    title: 'Scoped Secret Vars',
+    desc: 'Inject environment variables per-service or per-environment. Secrets encrypted at rest, never visible in logs or build output.',
+  },
+  {
+    icon: `<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>`,
+    title: 'Cron Jobs',
+    desc: 'Define recurring jobs alongside your services — same project, same env vars, same log stream. No separate scheduler needed.',
+  },
+  {
+    icon: `<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 13.5a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.06 2.68h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16.92z"/>`,
+    title: 'Notification Channels',
+    desc: 'Route events — build failure, cert expiry, usage spikes — to email, webhook, or Discord. Configurable per project.',
+  },
+  {
+    icon: `<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>`,
+    title: 'Team Workspaces',
+    desc: 'Invite members, assign roles, and isolate projects per team. The Cloud dashboard enforces plan limits so billing stays predictable.',
+  },
+];
+---
+
+<section id="features" class="py-24 scroll-mt-20">
+  <div class="mx-auto max-w-7xl px-6">
+    <h2 class="text-[clamp(1.8rem,4vw,3.5rem)] font-extrabold text-[var(--color-foreground)] mb-4 text-center">
+      Everything on your server<span class="text-[var(--color-primary)]">.</span>
+    </h2>
+    <p class="text-[var(--color-muted-foreground)] text-sm mb-16 max-w-xl text-center mx-auto">
+      Vessl isn't a wrapper — it's a daemon with real opinions: Traefik for routing, Docker for isolation, S3 for backups, Yamux for the fleet tunnel.
+    </p>
+    <dl class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-10">
+      {features.map(f => (
+        <div class="flex flex-col">
+          <dt class="flex items-center gap-3 font-semibold text-sm text-[var(--color-foreground)] mb-2">
+            <span class="size-8 rounded-lg bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/20 flex items-center justify-center shrink-0">
+              <svg class="size-4 text-[var(--color-primary)]" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" set:html={f.icon}/>
+            </span>
+            {f.title}
+          </dt>
+          <dd class="text-sm text-[var(--color-muted-foreground)] leading-relaxed pl-11">{f.desc}</dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>
