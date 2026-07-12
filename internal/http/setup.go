@@ -54,7 +54,6 @@ func NewServer(db *sql.DB, v *vault.Vault, deployer *engine.Deployer, traefikMan
 	teamEmailSettingsSQLiteRepository := repositories.NewTeamEmailSettingsSQLiteRepository(db, v)
 	canvasSQLiteRepository := repositories.NewCanvasSQLiteRepository(db, environmentSQLiteRepository)
 	deploymentSQLiteRepository := repositories.NewDeploymentSQLiteRepository(db)
-	teamSQLiteRepository := repositories.NewTeamSQLiteRepository(db)
 	workspaceSQLiteRepository := repositories.NewWorkspaceSQLiteRepository(db)
 	oAuthSQLiteRepository := repositories.NewOAuthSQLiteRepository(db)
 	gitSQLiteRepository := repositories.NewGitSQLiteRepository(db, v)
@@ -89,8 +88,7 @@ func NewServer(db *sql.DB, v *vault.Vault, deployer *engine.Deployer, traefikMan
 	canvasService := services.NewCanvasService(canvasSQLiteRepository)
 	deploymentService := services.NewDeploymentService(deploymentSQLiteRepository, appServiceSQLiteRepository, projectSQLiteRepository, deployer)
 	backupService := services.NewBackupService(backupSQLiteRepository, s3DestinationSQLiteRepository, backupManager)
-	teamService := services.NewTeamService(teamSQLiteRepository, userSQLiteRepository)
-	workspaceService := services.NewWorkspaceService(workspaceSQLiteRepository)
+	workspaceService := services.NewWorkspaceService(workspaceSQLiteRepository, userSQLiteRepository)
 	userService := services.NewUserService(userSQLiteRepository)
 	authService := services.NewAuthService(userSQLiteRepository, settingsSQLiteRepository, tokenService)
 	oAuthService := services.NewOAuthService(oAuthSQLiteRepository, userSQLiteRepository, tokenService)
@@ -120,7 +118,6 @@ func NewServer(db *sql.DB, v *vault.Vault, deployer *engine.Deployer, traefikMan
 	serviceVarHandler := handlers.NewServiceVarHandler(appService)
 	projectSettingsHandler := handlers.NewProjectSettingsHandler(projectSettingsService)
 	backupHandler := handlers.NewBackupHandler(backupService)
-	teamHandler := handlers.NewTeamHandler(teamService)
 	workspaceHandler := handlers.NewWorkspaceHandler(workspaceService)
 	settingsHandler := handlers.NewSettingsHandler(settingsService)
 	updaterHandler := handlers.NewUpdaterHandler(updaterService)
@@ -162,7 +159,6 @@ func NewServer(db *sql.DB, v *vault.Vault, deployer *engine.Deployer, traefikMan
 		serviceVarHandler:      serviceVarHandler,
 		projectSettingsHandler: projectSettingsHandler,
 		backupHandler:          backupHandler,
-		teamHandler:            teamHandler,
 		workspaceHandler:       workspaceHandler,
 		settingsHandler:        settingsHandler,
 		updaterHandler:         updaterHandler,

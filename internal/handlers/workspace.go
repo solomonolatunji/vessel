@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 
@@ -37,16 +38,29 @@ type CreateSSHKeyRequest struct {
 // @Tags Workspaces
 // @Accept json
 // @Produce json
+// @Param page query int false "Page number"
+// @Param limit query int false "Items per page"
 func (h *WorkspaceHandler) List(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
 		return utils.Error(c, http.StatusUnauthorized, "unauthorized")
 	}
-	wsList, err := h.workspaceService.ListWorkspaces(c.Request().Context(), userID)
+
+	page, _ := strconv.Atoi(c.QueryParam("page"))
+	if page < 1 {
+		page = 1
+	}
+	limit, _ := strconv.Atoi(c.QueryParam("limit"))
+	if limit < 1 {
+		limit = 10
+	}
+	offset := (page - 1) * limit
+
+	wsList, total, err := h.workspaceService.ListWorkspaces(c.Request().Context(), userID, limit, offset)
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return utils.Success(c, "Operation successful", wsList)
+	return utils.Paginated(c, "Operation successful", wsList, total, page, limit)
 }
 
 // @Summary Create endpoint
@@ -142,11 +156,11 @@ func (h *WorkspaceHandler) Delete(c echo.Context) error {
 // @Param teamId path string true "teamId"
 // @Router /teams/{teamId}/trusted-domains [get]
 func (h *WorkspaceHandler) ListTrustedDomains(c echo.Context) error {
-	teamID := c.Param("teamId")
-	if teamID == "" {
+	workspaceID := c.Param("teamId")
+	if workspaceID == "" {
 		return utils.Error(c, http.StatusBadRequest, "missing teamId parameter")
 	}
-	domains, err := h.workspaceService.ListTrustedDomains(c.Request().Context(), teamID)
+	domains, err := h.workspaceService.ListTrustedDomains(c.Request().Context(), workspaceID)
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
@@ -162,15 +176,15 @@ func (h *WorkspaceHandler) ListTrustedDomains(c echo.Context) error {
 // @Param request body handlers.CreateTrustedDomainRequest true "Payload"
 // @Router /teams/{teamId}/trusted-domains [post]
 func (h *WorkspaceHandler) CreateTrustedDomain(c echo.Context) error {
-	teamID := c.Param("teamId")
-	if teamID == "" {
+	workspaceID := c.Param("teamId")
+	if workspaceID == "" {
 		return utils.Error(c, http.StatusBadRequest, "missing teamId parameter")
 	}
 	var payload CreateTrustedDomainRequest
 	if err := c.Bind(&payload); err != nil {
 		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
-	td, err := h.workspaceService.AddTrustedDomain(c.Request().Context(), teamID, payload.Domain)
+	td, err := h.workspaceService.AddTrustedDomain(c.Request().Context(), workspaceID, payload.Domain)
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
@@ -202,11 +216,11 @@ func (h *WorkspaceHandler) DeleteTrustedDomain(c echo.Context) error {
 // @Param teamId path string true "teamId"
 // @Router /teams/{teamId}/ssh-keys [get]
 func (h *WorkspaceHandler) ListSSHKeys(c echo.Context) error {
-	teamID := c.Param("teamId")
-	if teamID == "" {
+	workspaceID := c.Param("teamId")
+	if workspaceID == "" {
 		return utils.Error(c, http.StatusBadRequest, "missing teamId parameter")
 	}
-	keys, err := h.workspaceService.ListSSHKeys(c.Request().Context(), teamID)
+	keys, err := h.workspaceService.ListSSHKeys(c.Request().Context(), workspaceID)
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
@@ -222,15 +236,15 @@ func (h *WorkspaceHandler) ListSSHKeys(c echo.Context) error {
 // @Param request body handlers.CreateSSHKeyRequest true "Payload"
 // @Router /teams/{teamId}/ssh-keys [post]
 func (h *WorkspaceHandler) CreateSSHKey(c echo.Context) error {
-	teamID := c.Param("teamId")
-	if teamID == "" {
+	workspaceID := c.Param("teamId")
+	if workspaceID == "" {
 		return utils.Error(c, http.StatusBadRequest, "missing teamId parameter")
 	}
 	var payload CreateSSHKeyRequest
 	if err := c.Bind(&payload); err != nil {
 		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
-	key, err := h.workspaceService.AddSSHKey(c.Request().Context(), teamID, payload.Name, payload.PublicKey)
+	key, err := h.workspaceService.AddSSHKey(c.Request().Context(), workspaceID, payload.Name, payload.PublicKey)
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
@@ -262,13 +276,94 @@ func (h *WorkspaceHandler) DeleteSSHKey(c echo.Context) error {
 // @Param teamId path string true "teamId"
 // @Router /teams/{teamId}/audit-logs [get]
 func (h *WorkspaceHandler) ListAuditLogs(c echo.Context) error {
-	teamID := c.Param("teamId")
-	if teamID == "" {
+	workspaceID := c.Param("teamId")
+	if workspaceID == "" {
 		return utils.Error(c, http.StatusBadRequest, "missing teamId parameter")
 	}
-	logs, err := h.workspaceService.ListAuditLogs(c.Request().Context(), teamID, 100)
+
+	page, _ := strconv.Atoi(c.QueryParam("page"))
+	if page < 1 {
+		page = 1
+	}
+	limit, _ := strconv.Atoi(c.QueryParam("limit"))
+	if limit < 1 {
+		limit = 10
+	}
+	offset := (page - 1) * limit
+
+	logs, total, err := h.workspaceService.ListAuditLogs(c.Request().Context(), workspaceID, limit, offset)
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return utils.Success(c, "Operation successful", logs)
+	return utils.Paginated(c, "Operation successful", logs, total, page, limit)
+}
+
+func (h *WorkspaceHandler) ListMembers(c echo.Context) error {
+	id := c.Param("id")
+	if id == "" {
+		return utils.Error(c, http.StatusBadRequest, "missing workspace id")
+	}
+	members, err := h.workspaceService.ListMembers(c.Request().Context(), id)
+	if err != nil {
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
+	}
+	return utils.Success(c, "Operation successful", members)
+}
+
+func (h *WorkspaceHandler) InviteMember(c echo.Context) error {
+	id := c.Param("id")
+	if id == "" {
+		return utils.Error(c, http.StatusBadRequest, "missing workspace id")
+	}
+	var req struct {
+		Email string `json:"email"`
+		Role  string `json:"role"`
+	}
+	if err := c.Bind(&req); err != nil {
+		return utils.Error(c, http.StatusBadRequest, "valid email required")
+	}
+	inv, err := h.workspaceService.InviteMember(c.Request().Context(), id, req.Email, req.Role)
+	if err != nil {
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
+	}
+	return utils.Created(c, "Created successfully", inv)
+}
+
+func (h *WorkspaceHandler) RemoveMember(c echo.Context) error {
+	id := c.Param("id")
+	targetUserID := c.Param("userId")
+	if id == "" || targetUserID == "" {
+		return utils.Error(c, http.StatusBadRequest, "missing workspace id or userId")
+	}
+	if err := h.workspaceService.RemoveMember(c.Request().Context(), id, targetUserID); err != nil {
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
+	}
+	return c.NoContent(http.StatusNoContent)
+}
+
+func (h *WorkspaceHandler) GetInvite(c echo.Context) error {
+	token := c.Param("token")
+	if token == "" {
+		return utils.Error(c, http.StatusBadRequest, "missing invite token")
+	}
+	inv, err := h.workspaceService.GetInvite(c.Request().Context(), token)
+	if err != nil || inv == nil {
+		return utils.Error(c, http.StatusNotFound, "invite not found or expired")
+	}
+	return utils.Success(c, "Operation successful", inv)
+}
+
+func (h *WorkspaceHandler) AcceptInvite(c echo.Context) error {
+	userID := ExtractUserID(c)
+	if userID == "" {
+		return utils.Error(c, http.StatusUnauthorized, "unauthorized")
+	}
+	token := c.Param("token")
+	if token == "" {
+		return utils.Error(c, http.StatusBadRequest, "missing invite token")
+	}
+	if err := h.workspaceService.AcceptInvite(c.Request().Context(), token, userID); err != nil {
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
+	}
+	return utils.Success(c, "Operation successful", map[string]string{"status": "accepted"})
 }

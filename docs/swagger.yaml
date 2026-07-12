@@ -24,11 +24,6 @@ definitions:
       publicKey:
         type: string
     type: object
-  handlers.CreateTeamRequest:
-    properties:
-      name:
-        type: string
-    type: object
   handlers.CreateTrustedDomainRequest:
     properties:
       domain:
@@ -62,13 +57,6 @@ definitions:
                 type: string
             type: object
         type: object
-    type: object
-  handlers.InviteTeamMemberRequest:
-    properties:
-      email:
-        type: string
-      role:
-        type: string
     type: object
   handlers.RegisterRequest:
     properties:
@@ -2227,163 +2215,6 @@ paths:
       summary: StopStorage endpoint
       tags:
       - Storage
-  /team-invites/{token}:
-    get:
-      consumes:
-      - application/json
-      description: GetInvite endpoint
-      parameters:
-      - description: token
-        in: path
-        name: token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: GetInvite endpoint
-      tags:
-      - Teams
-  /team-invites/{token}/accept:
-    post:
-      consumes:
-      - application/json
-      description: AcceptInvite endpoint
-      parameters:
-      - description: token
-        in: path
-        name: token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: AcceptInvite endpoint
-      tags:
-      - Teams
-  /teams:
-    get:
-      consumes:
-      - application/json
-      description: List Teams
-      produces:
-      - application/json
-      responses: {}
-      summary: List Teams
-      tags:
-      - Teams
-    post:
-      consumes:
-      - application/json
-      description: Create Team
-      parameters:
-      - description: Payload
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.CreateTeamRequest'
-      produces:
-      - application/json
-      responses: {}
-      summary: Create Team
-      tags:
-      - Teams
-  /teams/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete Team
-      parameters:
-      - description: Team ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: Delete Team
-      tags:
-      - Teams
-    get:
-      consumes:
-      - application/json
-      description: Get Team
-      parameters:
-      - description: Team ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: Get Team
-      tags:
-      - Teams
-  /teams/{id}/invite:
-    post:
-      consumes:
-      - application/json
-      description: InviteMember endpoint
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Payload
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.InviteTeamMemberRequest'
-      produces:
-      - application/json
-      responses: {}
-      summary: InviteMember endpoint
-      tags:
-      - Teams
-  /teams/{id}/members:
-    get:
-      consumes:
-      - application/json
-      description: ListMembers endpoint
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: ListMembers endpoint
-      tags:
-      - Teams
-  /teams/{id}/members/{userId}:
-    delete:
-      consumes:
-      - application/json
-      description: RemoveMember endpoint
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: userId
-        in: path
-        name: userId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: RemoveMember endpoint
-      tags:
-      - Teams
   /teams/{teamId}/ai_settings:
     get:
       consumes:

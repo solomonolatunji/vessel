@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS projects (
 			id TEXT PRIMARY KEY,
-			team_id TEXT DEFAULT '',
+			workspace_id TEXT DEFAULT '',
 			name TEXT UNIQUE NOT NULL,
 			description TEXT DEFAULT '',
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -126,11 +126,11 @@ CREATE TABLE IF NOT EXISTS user_vercel_accounts (
 			id TEXT PRIMARY KEY,
 			user_id TEXT NOT NULL,
 			encrypted_access_token TEXT NOT NULL,
-			team_id TEXT, -- Vercel team ID if they authenticated a team, or NULL for personal account
+			workspace_id TEXT, -- Vercel team ID if they authenticated a team, or NULL for personal account
 			account_name TEXT NOT NULL,
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-			UNIQUE(user_id, team_id)
+			UNIQUE(user_id, workspace_id)
 		);;
 
 CREATE TABLE IF NOT EXISTS environments (
@@ -310,28 +310,20 @@ CREATE TABLE IF NOT EXISTS s3_destinations (
 			created_at TEXT
 		);;
 
-CREATE TABLE IF NOT EXISTS teams (
-			id TEXT PRIMARY KEY,
-			name TEXT NOT NULL,
-			avatar_url TEXT DEFAULT '',
-			preferred_region TEXT DEFAULT 'local',
-			owner_id TEXT NOT NULL,
-			created_at TEXT,
-			updated_at TEXT
-		);;
 
-CREATE TABLE IF NOT EXISTS team_members (
+
+CREATE TABLE IF NOT EXISTS workspace_members (
 			id TEXT PRIMARY KEY,
-			team_id TEXT NOT NULL,
+			workspace_id TEXT NOT NULL,
 			user_id TEXT NOT NULL,
 			user_email TEXT,
 			role TEXT NOT NULL,
 			joined_at TEXT
 		);;
 
-CREATE TABLE IF NOT EXISTS team_invites (
+CREATE TABLE IF NOT EXISTS workspace_invites (
 			id TEXT PRIMARY KEY,
-			team_id TEXT NOT NULL,
+			workspace_id TEXT NOT NULL,
 			email TEXT NOT NULL,
 			role TEXT NOT NULL,
 			token TEXT UNIQUE NOT NULL,
@@ -352,7 +344,7 @@ CREATE TABLE IF NOT EXISTS workspaces (
 
 CREATE TABLE IF NOT EXISTS workspace_trusted_domains (
 			id TEXT PRIMARY KEY,
-			team_id TEXT NOT NULL,
+			workspace_id TEXT NOT NULL,
 			domain TEXT NOT NULL,
 			role TEXT DEFAULT 'developer',
 			created_at TEXT
@@ -360,7 +352,7 @@ CREATE TABLE IF NOT EXISTS workspace_trusted_domains (
 
 CREATE TABLE IF NOT EXISTS workspace_ssh_keys (
 			id TEXT PRIMARY KEY,
-			team_id TEXT NOT NULL,
+			workspace_id TEXT NOT NULL,
 			name TEXT NOT NULL,
 			public_key TEXT NOT NULL,
 			created_at TEXT
@@ -368,7 +360,7 @@ CREATE TABLE IF NOT EXISTS workspace_ssh_keys (
 
 CREATE TABLE IF NOT EXISTS workspace_audit_logs (
 			id TEXT PRIMARY KEY,
-			team_id TEXT NOT NULL,
+			workspace_id TEXT NOT NULL,
 			project_id TEXT,
 			environment_id TEXT,
 			action TEXT NOT NULL,
@@ -428,9 +420,9 @@ CREATE TABLE IF NOT EXISTS personal_access_tokens (
 			created_at TEXT
 		);;
 
-CREATE TABLE IF NOT EXISTS team_notification_channels (
+CREATE TABLE IF NOT EXISTS workspace_notification_channels (
 			id TEXT PRIMARY KEY,
-			team_id TEXT NOT NULL,
+			workspace_id TEXT NOT NULL,
 			provider TEXT NOT NULL,
 			config JSON NOT NULL,
 			events JSON NOT NULL,
@@ -441,7 +433,7 @@ CREATE TABLE IF NOT EXISTS team_notification_channels (
 
 CREATE TABLE IF NOT EXISTS github_apps (
 			id TEXT PRIMARY KEY,
-			team_id TEXT NOT NULL,
+			workspace_id TEXT NOT NULL,
 			name TEXT NOT NULL,
 			app_id TEXT NOT NULL,
 			installation_id TEXT,
@@ -456,7 +448,7 @@ CREATE TABLE IF NOT EXISTS github_apps (
 
 CREATE TABLE IF NOT EXISTS gitlab_apps (
 			id TEXT PRIMARY KEY,
-			team_id TEXT NOT NULL,
+			workspace_id TEXT NOT NULL,
 			name TEXT NOT NULL,
 			app_id TEXT NOT NULL,
 			app_secret TEXT NOT NULL,
@@ -469,7 +461,7 @@ CREATE TABLE IF NOT EXISTS gitlab_apps (
 
 CREATE TABLE IF NOT EXISTS bitbucket_apps (
 			id TEXT PRIMARY KEY,
-			team_id TEXT NOT NULL,
+			workspace_id TEXT NOT NULL,
 			name TEXT NOT NULL,
 			workspace TEXT NOT NULL,
 			client_id TEXT NOT NULL,
@@ -493,9 +485,9 @@ CREATE TABLE IF NOT EXISTS oauth_providers (
 			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 		);;
 
-CREATE TABLE IF NOT EXISTS team_ai_settings (
+CREATE TABLE IF NOT EXISTS workspace_ai_settings (
 			id TEXT PRIMARY KEY,
-			team_id TEXT UNIQUE NOT NULL,
+			workspace_id TEXT UNIQUE NOT NULL,
 			provider TEXT NOT NULL,
 			encrypted_api_key TEXT NOT NULL,
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -503,9 +495,9 @@ CREATE TABLE IF NOT EXISTS team_ai_settings (
 		);;
 
 
-CREATE TABLE IF NOT EXISTS team_email_settings (
+CREATE TABLE IF NOT EXISTS workspace_email_settings (
 	id TEXT PRIMARY KEY,
-	team_id TEXT UNIQUE NOT NULL,
+	workspace_id TEXT UNIQUE NOT NULL,
 	smtp_host TEXT DEFAULT '',
 	smtp_port INTEGER DEFAULT 587,
 	smtp_user TEXT DEFAULT '',

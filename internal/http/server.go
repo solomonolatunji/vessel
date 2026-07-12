@@ -39,7 +39,6 @@ type Server struct {
 	serviceVarHandler      *handlers.ServiceVarHandler
 	projectSettingsHandler *handlers.ProjectSettingsHandler
 	backupHandler          *handlers.BackupHandler
-	teamHandler            *handlers.TeamHandler
 	workspaceHandler       *handlers.WorkspaceHandler
 	settingsHandler        *handlers.SettingsHandler
 	updaterHandler         *handlers.UpdaterHandler

@@ -7,8 +7,8 @@ import (
 	"errors"
 	"time"
 
+	"crypto/sha256"
 	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
 
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/repositories"
@@ -72,15 +72,17 @@ func (s *UserService) CreatePAT(ctx context.Context, userID, name string, expire
 	bytes := make([]byte, 32)
 	rand.Read(bytes)
 	rawToken := "vpt_" + hex.EncodeToString(bytes)
-	hash, err := bcrypt.GenerateFromPassword([]byte(rawToken), bcrypt.DefaultCost)
-	if err != nil {
-		return nil, "", err
-	}
+
+	// Use SHA256 for PATs instead of bcrypt to avoid the 72-byte limit and for better performance
+	hasher := sha256.New()
+	hasher.Write([]byte(rawToken))
+	hash := hex.EncodeToString(hasher.Sum(nil))
+
 	pat := &models.PersonalAccessToken{
 		ID:        uuid.New().String(),
 		UserID:    userID,
 		Name:      name,
-		TokenHash: string(hash),
+		TokenHash: hash,
 		CreatedAt: time.Now(),
 	}
 	if expiresAt != nil {
