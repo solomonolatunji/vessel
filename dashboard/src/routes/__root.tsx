@@ -3,6 +3,7 @@ import type { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, HeadContent, Scripts } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import { Shell } from '../components/layout/Shell';
+import { TooltipProvider } from '../components/ui/tooltip';
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools';
 import appCss from '../styles.css?url';
 
@@ -21,7 +22,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Vessl Dashboard',
       },
     ],
     links: [
@@ -41,7 +42,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body className="dark">
-        <Shell>{children}</Shell>
+        <TooltipProvider>
+          <Shell>{children}</Shell>
+        </TooltipProvider>
         <TanStackDevtools
           config={{
             position: 'bottom-right',
