@@ -35,6 +35,7 @@
 
 <body>
   <div class="container">
+    {{if .Name}}<p>Hi {{.Name}},</p>{{end}}
     <div class="header">{{.Title}}</div>
     <p>{{.Message}}</p>
     <p><a class="btn" href="{{.URL}}">View in Dashboard</a></p>

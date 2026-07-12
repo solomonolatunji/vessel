@@ -83,7 +83,7 @@ func NewServer(db *sql.DB, v *vault.Vault, deployer *engine.Deployer, traefikMan
 	serviceLinker := services.NewServiceLinker(databaseSQLiteRepository, storageSQLiteRepository)
 	emailSettingsService := services.NewEmailSettingsService(teamEmailSettingsSQLiteRepository)
 	mailerService := notifications.NewMailerService(emailSettingsService)
-	dispatcherService := core.NewDispatcherService(notificationSQLiteRepository, settingsSQLiteRepository, mailerService)
+	dispatcherService := core.NewDispatcherService(notificationSQLiteRepository, settingsSQLiteRepository, userSQLiteRepository, mailerService)
 	storageService := services.NewStorageService(storageSQLiteRepository, storageDeployer)
 	jobService := services.NewJobService(jobSQLiteRepository, cronManager)
 	canvasService := services.NewCanvasService(canvasSQLiteRepository)

@@ -1,5 +1,7 @@
 Subject: ⚠️ Backup Failed: {{.TargetName}}
 
+{{if .Name}}Hi {{.Name}},
+{{end}}
 A scheduled backup for **{{.TargetName}}** has failed!
 
 - Time: {{.Time}}

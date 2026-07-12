@@ -1,5 +1,7 @@
 Subject: 💾 Backup Successful: {{.TargetName}}
 
+{{if .Name}}Hi {{.Name}},
+{{end}}
 A scheduled backup for **{{.TargetName}}** has completed successfully.
 
 - Size: {{.Size}}

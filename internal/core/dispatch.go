@@ -14,6 +14,7 @@ import (
 type DispatcherService struct {
 	notifRepo    repositories.NotificationRepository
 	settingsRepo repositories.SettingsRepository
+	userRepo     repositories.UserRepository
 	mailer       interface {
 		SendTeamEmail(ctx context.Context, teamID, templateName string, toAddress string, subject string, data any) error
 	}
@@ -23,8 +24,8 @@ type Mailer interface {
 	SendTeamEmail(ctx context.Context, teamID, templateName string, toAddress string, subject string, data any) error
 }
 
-func NewDispatcherService(notifRepo repositories.NotificationRepository, settingsRepo repositories.SettingsRepository, mailer Mailer) *DispatcherService {
-	return &DispatcherService{notifRepo: notifRepo, settingsRepo: settingsRepo, mailer: mailer}
+func NewDispatcherService(notifRepo repositories.NotificationRepository, settingsRepo repositories.SettingsRepository, userRepo repositories.UserRepository, mailer Mailer) *DispatcherService {
+	return &DispatcherService{notifRepo: notifRepo, settingsRepo: settingsRepo, userRepo: userRepo, mailer: mailer}
 }
 
 func (d *DispatcherService) Dispatch(event *models.NotificationEvent) {
@@ -113,9 +114,17 @@ func (d *DispatcherService) Send(event *models.NotificationEvent) error {
 				ToEmail string `json:"toEmail"`
 			}
 			if json.Unmarshal(c.Config, &cfg) == nil && cfg.ToEmail != "" && d.mailer != nil {
+				name := ""
+				if d.userRepo != nil {
+					u, err := d.userRepo.GetUserByEmail(context.Background(), cfg.ToEmail)
+					if err == nil && u != nil && u.Name != "" {
+						name = u.Name
+					}
+				}
 				_ = d.mailer.SendTeamEmail(context.Background(), event.TeamID, "notification", cfg.ToEmail, event.Title, map[string]string{
 					"Message": event.Message,
 					"URL":     event.URL,
+					"Name":    name,
 				})
 			}
 		}

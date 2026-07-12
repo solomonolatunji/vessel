@@ -1,5 +1,7 @@
 Subject: ✅ Deployment Successful: {{.ProjectName}}
 
+{{if .Name}}Hi {{.Name}},
+{{end}}
 Your recent deployment for project **{{.ProjectName}}** was successful!
 
 - Environment: {{.Environment}}

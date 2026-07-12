@@ -1,5 +1,7 @@
 Subject: ❌ Deployment Failed: {{.ProjectName}}
 
+{{if .Name}}Hi {{.Name}},
+{{end}}
 Your recent deployment for project **{{.ProjectName}}** has failed.
 
 - Environment: {{.Environment}}
