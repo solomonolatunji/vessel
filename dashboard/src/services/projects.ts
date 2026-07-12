@@ -1,9 +1,9 @@
-import type { CreateProjectRequest, ProjectConfig } from "#/interfaces/project";
-import { apiClient } from "./instance";
+import type { CreateProjectRequest, ProjectConfig } from '#/interfaces/project';
+import { apiClient } from './instance';
 
 export const projectsService = {
   listProjects: async (): Promise<ProjectConfig[]> => {
-    const { data } = await apiClient.get<ProjectConfig[]>("/projects");
+    const { data } = await apiClient.get<ProjectConfig[]>('/projects');
     return data;
   },
 
@@ -12,10 +12,8 @@ export const projectsService = {
     return data;
   },
 
-  createProject: async (
-    payload: CreateProjectRequest,
-  ): Promise<ProjectConfig> => {
-    const { data } = await apiClient.post<ProjectConfig>("/projects", payload);
+  createProject: async (payload: CreateProjectRequest): Promise<ProjectConfig> => {
+    const { data } = await apiClient.post<ProjectConfig>('/projects', payload);
     return data;
   },
 
