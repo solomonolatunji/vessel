@@ -22,11 +22,11 @@ func NewGitAppsService(repo repositories.GitAppRepository) *GitAppsService {
 	return &GitAppsService{repo: repo}
 }
 
-func listApps[T any](ctx context.Context, teamID string, listFn func(context.Context, string) ([]T, error)) ([]T, error) {
-	if teamID == "" {
+func listApps[T any](ctx context.Context, workspaceID string, listFn func(context.Context, string) ([]T, error)) ([]T, error) {
+	if workspaceID == "" {
 		return nil, errors.New("team ID is required")
 	}
-	return listFn(ctx, teamID)
+	return listFn(ctx, workspaceID)
 }
 
 func getApp[T any](ctx context.Context, id string, getFn func(context.Context, string) (*T, error)) (*T, error) {
@@ -36,11 +36,11 @@ func getApp[T any](ctx context.Context, id string, getFn func(context.Context, s
 	return getFn(ctx, id)
 }
 
-func saveApp[T any](ctx context.Context, app *T, getTeamID func(*T) string, getID func(*T) string, setID func(*T, string), saveFn func(context.Context, *T) error) error {
+func saveApp[T any](ctx context.Context, app *T, getWorkspaceID func(*T) string, getID func(*T) string, setID func(*T, string), saveFn func(context.Context, *T) error) error {
 	if app == nil {
 		return errors.New("app config is required")
 	}
-	if getTeamID(app) == "" {
+	if getWorkspaceID(app) == "" {
 		return errors.New("team ID is required")
 	}
 	if getID(app) == "" {
@@ -67,12 +67,12 @@ type githubManifestConversionResponse struct {
 	Name          string `json:"name"`
 }
 
-func (s *GitAppsService) ExchangeGithubManifestCode(ctx context.Context, code string, teamID string) (*models.GithubApp, error) {
+func (s *GitAppsService) ExchangeGithubManifestCode(ctx context.Context, code string, workspaceID string) (*models.GithubApp, error) {
 	if code == "" {
 		return nil, errors.New("conversion code is required")
 	}
-	if teamID == "" {
-		teamID = "default"
+	if workspaceID == "" {
+		workspaceID = "default"
 	}
 
 	url := fmt.Sprintf("https://api.github.com/app-manifests/%s/conversions", code)
@@ -101,7 +101,7 @@ func (s *GitAppsService) ExchangeGithubManifestCode(ctx context.Context, code st
 
 	app := &models.GithubApp{
 		ID:            uuid.NewString(),
-		TeamID:        teamID,
+		WorkspaceID:   workspaceID,
 		Name:          conversion.Name,
 		AppID:         fmt.Sprintf("%d", conversion.ID),
 		ClientID:      conversion.ClientID,
@@ -118,8 +118,8 @@ func (s *GitAppsService) ExchangeGithubManifestCode(ctx context.Context, code st
 	return app, nil
 }
 
-func (s *GitAppsService) ListGithubApps(ctx context.Context, teamID string) ([]models.GithubApp, error) {
-	return listApps(ctx, teamID, s.repo.ListGithubApps)
+func (s *GitAppsService) ListGithubApps(ctx context.Context, workspaceID string) ([]models.GithubApp, error) {
+	return listApps(ctx, workspaceID, s.repo.ListGithubApps)
 }
 
 func (s *GitAppsService) GetGithubApp(ctx context.Context, id string) (*models.GithubApp, error) {
@@ -127,15 +127,15 @@ func (s *GitAppsService) GetGithubApp(ctx context.Context, id string) (*models.G
 }
 
 func (s *GitAppsService) SaveGithubApp(ctx context.Context, app *models.GithubApp) error {
-	return saveApp(ctx, app, func(a *models.GithubApp) string { return a.TeamID }, func(a *models.GithubApp) string { return a.ID }, func(a *models.GithubApp, id string) { a.ID = id }, s.repo.SaveGithubApp)
+	return saveApp(ctx, app, func(a *models.GithubApp) string { return a.WorkspaceID }, func(a *models.GithubApp) string { return a.ID }, func(a *models.GithubApp, id string) { a.ID = id }, s.repo.SaveGithubApp)
 }
 
 func (s *GitAppsService) DeleteGithubApp(ctx context.Context, id string) error {
 	return deleteApp(ctx, id, s.repo.DeleteGithubApp)
 }
 
-func (s *GitAppsService) ListGitlabApps(ctx context.Context, teamID string) ([]models.GitlabApp, error) {
-	return listApps(ctx, teamID, s.repo.ListGitlabApps)
+func (s *GitAppsService) ListGitlabApps(ctx context.Context, workspaceID string) ([]models.GitlabApp, error) {
+	return listApps(ctx, workspaceID, s.repo.ListGitlabApps)
 }
 
 func (s *GitAppsService) GetGitlabApp(ctx context.Context, id string) (*models.GitlabApp, error) {
@@ -143,15 +143,15 @@ func (s *GitAppsService) GetGitlabApp(ctx context.Context, id string) (*models.G
 }
 
 func (s *GitAppsService) SaveGitlabApp(ctx context.Context, app *models.GitlabApp) error {
-	return saveApp(ctx, app, func(a *models.GitlabApp) string { return a.TeamID }, func(a *models.GitlabApp) string { return a.ID }, func(a *models.GitlabApp, id string) { a.ID = id }, s.repo.SaveGitlabApp)
+	return saveApp(ctx, app, func(a *models.GitlabApp) string { return a.WorkspaceID }, func(a *models.GitlabApp) string { return a.ID }, func(a *models.GitlabApp, id string) { a.ID = id }, s.repo.SaveGitlabApp)
 }
 
 func (s *GitAppsService) DeleteGitlabApp(ctx context.Context, id string) error {
 	return deleteApp(ctx, id, s.repo.DeleteGitlabApp)
 }
 
-func (s *GitAppsService) ListBitbucketApps(ctx context.Context, teamID string) ([]models.BitbucketApp, error) {
-	return listApps(ctx, teamID, s.repo.ListBitbucketApps)
+func (s *GitAppsService) ListBitbucketApps(ctx context.Context, workspaceID string) ([]models.BitbucketApp, error) {
+	return listApps(ctx, workspaceID, s.repo.ListBitbucketApps)
 }
 
 func (s *GitAppsService) GetBitbucketApp(ctx context.Context, id string) (*models.BitbucketApp, error) {
@@ -159,7 +159,7 @@ func (s *GitAppsService) GetBitbucketApp(ctx context.Context, id string) (*model
 }
 
 func (s *GitAppsService) SaveBitbucketApp(ctx context.Context, app *models.BitbucketApp) error {
-	return saveApp(ctx, app, func(a *models.BitbucketApp) string { return a.TeamID }, func(a *models.BitbucketApp) string { return a.ID }, func(a *models.BitbucketApp, id string) { a.ID = id }, s.repo.SaveBitbucketApp)
+	return saveApp(ctx, app, func(a *models.BitbucketApp) string { return a.WorkspaceID }, func(a *models.BitbucketApp) string { return a.ID }, func(a *models.BitbucketApp, id string) { a.ID = id }, s.repo.SaveBitbucketApp)
 }
 
 func (s *GitAppsService) DeleteBitbucketApp(ctx context.Context, id string) error {

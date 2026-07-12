@@ -85,7 +85,6 @@ func (r *CanvasSQLiteRepository) ListCanvasSummaries(ctx context.Context) ([]mod
 		summary := models.CanvasSummary{
 			ID:                 project.ID,
 			WorkspaceID:        project.WorkspaceID,
-			TeamID:             project.TeamID,
 			Name:               project.Name,
 			Description:        project.Description,
 			CreatedAt:          project.CreatedAt,
@@ -150,7 +149,6 @@ func (r *CanvasSQLiteRepository) GetCanvasSummary(ctx context.Context, id string
 	summary := &models.CanvasSummary{
 		ID:                 project.ID,
 		WorkspaceID:        project.WorkspaceID,
-		TeamID:             project.TeamID,
 		Name:               project.Name,
 		Description:        project.Description,
 		CreatedAt:          project.CreatedAt,

@@ -2,18 +2,18 @@ package models
 
 import "time"
 
-type TeamAISettings struct {
-	ID        string    `json:"id"`
-	TeamID    string    `json:"teamId"`
-	Provider  string    `json:"provider"`
-	APIKey    string    `json:"apiKey,omitempty"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+type WorkspaceAISettings struct {
+	ID          string    `json:"id"`
+	WorkspaceID string    `json:"workspaceId"`
+	Provider    string    `json:"provider"`
+	APIKey      string    `json:"apiKey,omitempty"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
-type TeamEmailSettings struct {
+type WorkspaceEmailSettings struct {
 	ID              string    `json:"id"`
-	TeamID          string    `json:"teamId"`
+	WorkspaceID     string    `json:"workspaceId"`
 	SMTPHost        string    `json:"smtpHost,omitempty"`
 	SMTPPort        int       `json:"smtpPort,omitempty"`
 	SMTPUser        string    `json:"smtpUser,omitempty"`

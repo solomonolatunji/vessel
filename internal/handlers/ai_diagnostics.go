@@ -64,7 +64,7 @@ func (h *AIDiagnosticsHandler) Analyze(c echo.Context) error {
 		return utils.Error(c, http.StatusNotFound, "project not found")
 	}
 
-	settings, err := h.aiService.Get(c.Request().Context(), project.TeamID)
+	settings, err := h.aiService.Get(c.Request().Context(), project.WorkspaceID)
 	if err != nil || settings == nil {
 		return utils.Error(c, http.StatusNotFound, "AI settings not configured for this team")
 	}

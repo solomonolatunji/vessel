@@ -1432,7 +1432,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Teams"
+                    "Workspaces"
                 ],
                 "summary": "ListMembers endpoint",
                 "parameters": [
@@ -1491,7 +1491,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Teams",
+                    "Workspaces",
                     "Projects"
                 ],
                 "summary": "Remove Project Member",
@@ -2153,7 +2153,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.TeamNotificationChannel"
+                            "$ref": "#/definitions/models.WorkspaceNotificationChannel"
                         }
                     }
                 ],
@@ -2189,7 +2189,7 @@ const docTemplate = `{
         },
         "/settings/notifications/{id}": {
             "get": {
-                "description": "GetTeamNotificationChannel endpoint",
+                "description": "GetWorkspaceNotificationChannel endpoint",
                 "consumes": [
                     "application/json"
                 ],
@@ -2199,7 +2199,7 @@ const docTemplate = `{
                 "tags": [
                     "Settings"
                 ],
-                "summary": "GetTeamNotificationChannel endpoint",
+                "summary": "GetWorkspaceNotificationChannel endpoint",
                 "parameters": [
                     {
                         "type": "string",
@@ -2389,259 +2389,6 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/teams/{teamId}/ai_settings": {
-            "get": {
-                "description": "Get endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Teams"
-                ],
-                "summary": "Get endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "teamId",
-                        "name": "teamId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "put": {
-                "description": "Save endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Teams"
-                ],
-                "summary": "Save endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "teamId",
-                        "name": "teamId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Payload",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.TeamAISettings"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/teams/{teamId}/audit-logs": {
-            "get": {
-                "description": "ListAuditLogs endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces"
-                ],
-                "summary": "ListAuditLogs endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "teamId",
-                        "name": "teamId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/teams/{teamId}/email_settings": {
-            "get": {
-                "description": "Get Team Email Settings",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "Get Team Email Settings",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Team ID",
-                        "name": "teamId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "put": {
-                "description": "Save Team Email Settings",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "Save Team Email Settings",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Team ID",
-                        "name": "teamId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Payload",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.TeamEmailSettings"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/teams/{teamId}/ssh-keys": {
-            "get": {
-                "description": "ListSSHKeys endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces"
-                ],
-                "summary": "ListSSHKeys endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "teamId",
-                        "name": "teamId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "post": {
-                "description": "CreateSSHKey endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces"
-                ],
-                "summary": "CreateSSHKey endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "teamId",
-                        "name": "teamId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Payload",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handlers.CreateSSHKeyRequest"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/teams/{teamId}/trusted-domains": {
-            "get": {
-                "description": "ListTrustedDomains endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces"
-                ],
-                "summary": "ListTrustedDomains endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "teamId",
-                        "name": "teamId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "post": {
-                "description": "CreateTrustedDomain endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces"
-                ],
-                "summary": "CreateTrustedDomain endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "teamId",
-                        "name": "teamId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Payload",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handlers.CreateTrustedDomainRequest"
-                        }
                     }
                 ],
                 "responses": {}
@@ -2909,6 +2656,259 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/workspaces/{workspaceId}/ai_settings": {
+            "get": {
+                "description": "Get endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "summary": "Get endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "workspaceId",
+                        "name": "workspaceId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "put": {
+                "description": "Save endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "summary": "Save endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "workspaceId",
+                        "name": "workspaceId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.WorkspaceAISettings"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/workspaces/{workspaceId}/audit-logs": {
+            "get": {
+                "description": "ListAuditLogs endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "summary": "ListAuditLogs endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "workspaceId",
+                        "name": "workspaceId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/workspaces/{workspaceId}/email_settings": {
+            "get": {
+                "description": "Get Team Email Settings",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "Get Team Email Settings",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Team ID",
+                        "name": "workspaceId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "put": {
+                "description": "Save Team Email Settings",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "Save Team Email Settings",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Team ID",
+                        "name": "workspaceId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.WorkspaceEmailSettings"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/workspaces/{workspaceId}/ssh-keys": {
+            "get": {
+                "description": "ListSSHKeys endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "summary": "ListSSHKeys endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "workspaceId",
+                        "name": "workspaceId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "post": {
+                "description": "CreateSSHKey endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "summary": "CreateSSHKey endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "workspaceId",
+                        "name": "workspaceId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.CreateSSHKeyRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/workspaces/{workspaceId}/trusted-domains": {
+            "get": {
+                "description": "ListTrustedDomains endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "summary": "ListTrustedDomains endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "workspaceId",
+                        "name": "workspaceId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "post": {
+                "description": "CreateTrustedDomain endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "summary": "CreateTrustedDomain endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "workspaceId",
+                        "name": "workspaceId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.CreateTrustedDomainRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/ws/services/{id}/terminal": {
             "get": {
                 "description": "HandleWebSocket endpoint\nHandle Terminal WebSocket",
@@ -2997,7 +2997,7 @@ const docTemplate = `{
                 "code": {
                     "type": "string"
                 },
-                "teamId": {
+                "workspaceId": {
                     "type": "string"
                 }
             }
@@ -3052,7 +3052,7 @@ const docTemplate = `{
                 "provider": {
                     "type": "string"
                 },
-                "teamId": {
+                "workspaceId": {
                     "type": "string"
                 }
             }
@@ -3241,7 +3241,7 @@ const docTemplate = `{
                 "repository_url": {
                     "type": "string"
                 },
-                "teamId": {
+                "workspaceId": {
                     "type": "string"
                 }
             }
@@ -3670,73 +3670,6 @@ const docTemplate = `{
                 }
             }
         },
-        "models.TeamAISettings": {
-            "type": "object",
-            "properties": {
-                "apiKey": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "provider": {
-                    "type": "string"
-                },
-                "teamId": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.TeamEmailSettings": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "resendApiKey": {
-                    "type": "string"
-                },
-                "smtpFromAddress": {
-                    "type": "string"
-                },
-                "smtpFromName": {
-                    "type": "string"
-                },
-                "smtpHost": {
-                    "type": "string"
-                },
-                "smtpPassword": {
-                    "type": "string"
-                },
-                "smtpPort": {
-                    "type": "integer"
-                },
-                "smtpUser": {
-                    "type": "string"
-                },
-                "teamId": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "useResend": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "models.TeamNotificationChannel": {
-            "type": "object"
-        },
         "models.Variable": {
             "type": "object",
             "properties": {
@@ -3823,6 +3756,73 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "models.WorkspaceAISettings": {
+            "type": "object",
+            "properties": {
+                "apiKey": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "provider": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "workspaceId": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.WorkspaceEmailSettings": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "resendApiKey": {
+                    "type": "string"
+                },
+                "smtpFromAddress": {
+                    "type": "string"
+                },
+                "smtpFromName": {
+                    "type": "string"
+                },
+                "smtpHost": {
+                    "type": "string"
+                },
+                "smtpPassword": {
+                    "type": "string"
+                },
+                "smtpPort": {
+                    "type": "integer"
+                },
+                "smtpUser": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "useResend": {
+                    "type": "boolean"
+                },
+                "workspaceId": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.WorkspaceNotificationChannel": {
+            "type": "object"
         }
     },
     "securityDefinitions": {

@@ -22,11 +22,11 @@ func NewEmailSettingsHandler(svc *services.EmailSettingsService) *EmailSettingsH
 // @Tags Settings
 // @Accept json
 // @Produce json
-// @Param teamId path string true "Team ID"
-// @Router /teams/{teamId}/email_settings [get]
-func (h *EmailSettingsHandler) GetTeamEmailSettings(c echo.Context) error {
-	teamID := c.Param("teamId")
-	settings, err := h.svc.GetTeamEmailSettings(c.Request().Context(), teamID)
+// @Param workspaceId path string true "Team ID"
+// @Router /workspaces/{workspaceId}/email_settings [get]
+func (h *EmailSettingsHandler) GetWorkspaceEmailSettings(c echo.Context) error {
+	workspaceID := c.Param("workspaceId")
+	settings, err := h.svc.GetWorkspaceEmailSettings(c.Request().Context(), workspaceID)
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
@@ -44,18 +44,18 @@ func (h *EmailSettingsHandler) GetTeamEmailSettings(c echo.Context) error {
 // @Tags Settings
 // @Accept json
 // @Produce json
-// @Param teamId path string true "Team ID"
-// @Param request body models.TeamEmailSettings true "Payload"
-// @Router /teams/{teamId}/email_settings [put]
-func (h *EmailSettingsHandler) SaveTeamEmailSettings(c echo.Context) error {
-	teamID := c.Param("teamId")
-	var req models.TeamEmailSettings
+// @Param workspaceId path string true "Team ID"
+// @Param request body models.WorkspaceEmailSettings true "Payload"
+// @Router /workspaces/{workspaceId}/email_settings [put]
+func (h *EmailSettingsHandler) SaveWorkspaceEmailSettings(c echo.Context) error {
+	workspaceID := c.Param("workspaceId")
+	var req models.WorkspaceEmailSettings
 	if err := c.Bind(&req); err != nil {
 		return utils.Error(c, http.StatusBadRequest, "invalid request body")
 	}
 
-	req.TeamID = teamID
-	if err := h.svc.SaveTeamEmailSettings(c.Request().Context(), &req); err != nil {
+	req.WorkspaceID = workspaceID
+	if err := h.svc.SaveWorkspaceEmailSettings(c.Request().Context(), &req); err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 

@@ -19,17 +19,17 @@ type CloudTeam struct {
 
 type CloudServer struct {
 	gorm.Model
-	TeamID    uint
-	ServerID  string `gorm:"uniqueIndex"`
-	Name      string
-	IPAddress string
-	IsActive  bool
-	LastPing  time.Time
+	WorkspaceID uint
+	ServerID    string `gorm:"uniqueIndex"`
+	Name        string
+	IPAddress   string
+	IsActive    bool
+	LastPing    time.Time
 }
 
 type CloudUsageLog struct {
 	gorm.Model
-	TeamID         uint
+	WorkspaceID    uint
 	Deployments    int
 	ContainerHours int
 	BandwidthGB    int

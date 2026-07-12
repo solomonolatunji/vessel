@@ -57,51 +57,51 @@ func (h *SettingsHandler) UpdateSettings(c echo.Context) error {
 	return utils.Success(c, "Operation successful", payload)
 }
 
-func (h *SettingsHandler) ListTeamNotificationChannels(c echo.Context) error {
-	teamID := c.QueryParam("teamId")
-	if teamID == "" {
-		teamID = "default"
+func (h *SettingsHandler) ListWorkspaceNotificationChannels(c echo.Context) error {
+	workspaceID := c.QueryParam("workspaceId")
+	if workspaceID == "" {
+		workspaceID = "default"
 	}
-	channels, err := h.settingsService.ListTeamNotificationChannels(c.Request().Context(), teamID)
+	channels, err := h.settingsService.ListWorkspaceNotificationChannels(c.Request().Context(), workspaceID)
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return utils.Success(c, "Operation successful", channels)
 }
 
-func (h *SettingsHandler) SaveTeamNotificationChannel(c echo.Context) error {
-	var payload models.TeamNotificationChannel
+func (h *SettingsHandler) SaveWorkspaceNotificationChannel(c echo.Context) error {
+	var payload models.WorkspaceNotificationChannel
 	if err := c.Bind(&payload); err != nil {
 		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
-	if payload.TeamID == "" {
-		payload.TeamID = "default"
+	if payload.WorkspaceID == "" {
+		payload.WorkspaceID = "default"
 	}
-	if err := h.settingsService.SaveTeamNotificationChannel(c.Request().Context(), &payload); err != nil {
+	if err := h.settingsService.SaveWorkspaceNotificationChannel(c.Request().Context(), &payload); err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return utils.Success(c, "Operation successful", payload)
 }
 
-// @Summary GetTeamNotificationChannel endpoint
-// @Description GetTeamNotificationChannel endpoint
+// @Summary GetWorkspaceNotificationChannel endpoint
+// @Description GetWorkspaceNotificationChannel endpoint
 // @Tags Settings
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
 // @Router /settings/notifications/{id} [get]
-func (h *SettingsHandler) GetTeamNotificationChannel(c echo.Context) error {
+func (h *SettingsHandler) GetWorkspaceNotificationChannel(c echo.Context) error {
 	id := c.Param("id")
-	channel, err := h.settingsService.GetTeamNotificationChannel(c.Request().Context(), id)
+	channel, err := h.settingsService.GetWorkspaceNotificationChannel(c.Request().Context(), id)
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return utils.Success(c, "Operation successful", channel)
 }
 
-func (h *SettingsHandler) DeleteTeamNotificationChannel(c echo.Context) error {
+func (h *SettingsHandler) DeleteWorkspaceNotificationChannel(c echo.Context) error {
 	id := c.Param("id")
-	if err := h.settingsService.DeleteTeamNotificationChannel(c.Request().Context(), id); err != nil {
+	if err := h.settingsService.DeleteWorkspaceNotificationChannel(c.Request().Context(), id); err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return utils.Success(c, "Operation successful", map[string]string{"status": "deleted"})

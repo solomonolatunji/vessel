@@ -22,23 +22,23 @@ func NewNotificationService(repo repositories.NotificationRepository, dispatcher
 	return &NotificationService{repo: repo, dispatcher: dispatcher}
 }
 
-func (s *NotificationService) ListChannels(ctx context.Context, teamID string) ([]models.TeamNotificationChannel, error) {
-	if teamID == "" {
-		return nil, errors.New("teamId required")
+func (s *NotificationService) ListChannels(ctx context.Context, workspaceID string) ([]models.WorkspaceNotificationChannel, error) {
+	if workspaceID == "" {
+		return nil, errors.New("workspaceId required")
 	}
-	return s.repo.ListChannelsByTeam(ctx, teamID)
+	return s.repo.ListChannelsByTeam(ctx, workspaceID)
 }
 
-func (s *NotificationService) GetChannel(ctx context.Context, id string) (*models.TeamNotificationChannel, error) {
+func (s *NotificationService) GetChannel(ctx context.Context, id string) (*models.WorkspaceNotificationChannel, error) {
 	if id == "" {
 		return nil, errors.New("id required")
 	}
 	return s.repo.GetChannel(ctx, id)
 }
 
-func (s *NotificationService) SaveChannel(ctx context.Context, c *models.TeamNotificationChannel) error {
-	if c == nil || c.TeamID == "" {
-		return errors.New("valid channel with teamId required")
+func (s *NotificationService) SaveChannel(ctx context.Context, c *models.WorkspaceNotificationChannel) error {
+	if c == nil || c.WorkspaceID == "" {
+		return errors.New("valid channel with workspaceId required")
 	}
 	return s.repo.SaveChannel(ctx, c)
 }
@@ -59,16 +59,16 @@ func (s *NotificationService) TestGlobalNotification(ctx context.Context, provid
 		dashboardURL = "http://localhost:3000"
 	}
 	return s.dispatcher.Send(&models.NotificationEvent{
-		TeamID:    "global_test",
-		EventType: "test_global_" + provider,
-		Title:     "Global Test Notification from Vessl",
-		Message:   "If you see this, your global integration is working correctly!",
-		Level:     "info",
-		URL:       dashboardURL + "/settings/notifications",
+		WorkspaceID: "global_test",
+		EventType:   "test_global_" + provider,
+		Title:       "Global Test Notification from Vessl",
+		Message:     "If you see this, your global integration is working correctly!",
+		Level:       "info",
+		URL:         dashboardURL + "/settings/notifications",
 	})
 }
 
-func (s *NotificationService) TestTeamNotification(ctx context.Context, teamID, channelID string) error {
+func (s *NotificationService) TestTeamNotification(ctx context.Context, workspaceID, channelID string) error {
 	if s.dispatcher == nil {
 		return errors.New("dispatcher unavailable")
 	}
@@ -77,11 +77,11 @@ func (s *NotificationService) TestTeamNotification(ctx context.Context, teamID, 
 		dashboardURL = "http://localhost:3000"
 	}
 	return s.dispatcher.Send(&models.NotificationEvent{
-		TeamID:    teamID,
-		EventType: "test_channel_" + channelID,
-		Title:     "Test Notification from Vessl",
-		Message:   "If you see this, your team integration is working correctly!",
-		Level:     "info",
-		URL:       dashboardURL + "/settings/notifications",
+		WorkspaceID: workspaceID,
+		EventType:   "test_channel_" + channelID,
+		Title:       "Test Notification from Vessl",
+		Message:     "If you see this, your team integration is working correctly!",
+		Level:       "info",
+		URL:         dashboardURL + "/settings/notifications",
 	})
 }

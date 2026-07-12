@@ -153,12 +153,12 @@ func (h *WorkspaceHandler) Delete(c echo.Context) error {
 // @Tags Workspaces
 // @Accept json
 // @Produce json
-// @Param teamId path string true "teamId"
-// @Router /teams/{teamId}/trusted-domains [get]
+// @Param workspaceId path string true "workspaceId"
+// @Router /workspaces/{workspaceId}/trusted-domains [get]
 func (h *WorkspaceHandler) ListTrustedDomains(c echo.Context) error {
-	workspaceID := c.Param("teamId")
+	workspaceID := c.Param("workspaceId")
 	if workspaceID == "" {
-		return utils.Error(c, http.StatusBadRequest, "missing teamId parameter")
+		return utils.Error(c, http.StatusBadRequest, "missing workspaceId parameter")
 	}
 	domains, err := h.workspaceService.ListTrustedDomains(c.Request().Context(), workspaceID)
 	if err != nil {
@@ -172,13 +172,13 @@ func (h *WorkspaceHandler) ListTrustedDomains(c echo.Context) error {
 // @Tags Workspaces
 // @Accept json
 // @Produce json
-// @Param teamId path string true "teamId"
+// @Param workspaceId path string true "workspaceId"
 // @Param request body handlers.CreateTrustedDomainRequest true "Payload"
-// @Router /teams/{teamId}/trusted-domains [post]
+// @Router /workspaces/{workspaceId}/trusted-domains [post]
 func (h *WorkspaceHandler) CreateTrustedDomain(c echo.Context) error {
-	workspaceID := c.Param("teamId")
+	workspaceID := c.Param("workspaceId")
 	if workspaceID == "" {
-		return utils.Error(c, http.StatusBadRequest, "missing teamId parameter")
+		return utils.Error(c, http.StatusBadRequest, "missing workspaceId parameter")
 	}
 	var payload CreateTrustedDomainRequest
 	if err := c.Bind(&payload); err != nil {
@@ -213,12 +213,12 @@ func (h *WorkspaceHandler) DeleteTrustedDomain(c echo.Context) error {
 // @Tags Workspaces
 // @Accept json
 // @Produce json
-// @Param teamId path string true "teamId"
-// @Router /teams/{teamId}/ssh-keys [get]
+// @Param workspaceId path string true "workspaceId"
+// @Router /workspaces/{workspaceId}/ssh-keys [get]
 func (h *WorkspaceHandler) ListSSHKeys(c echo.Context) error {
-	workspaceID := c.Param("teamId")
+	workspaceID := c.Param("workspaceId")
 	if workspaceID == "" {
-		return utils.Error(c, http.StatusBadRequest, "missing teamId parameter")
+		return utils.Error(c, http.StatusBadRequest, "missing workspaceId parameter")
 	}
 	keys, err := h.workspaceService.ListSSHKeys(c.Request().Context(), workspaceID)
 	if err != nil {
@@ -232,13 +232,13 @@ func (h *WorkspaceHandler) ListSSHKeys(c echo.Context) error {
 // @Tags Workspaces
 // @Accept json
 // @Produce json
-// @Param teamId path string true "teamId"
+// @Param workspaceId path string true "workspaceId"
 // @Param request body handlers.CreateSSHKeyRequest true "Payload"
-// @Router /teams/{teamId}/ssh-keys [post]
+// @Router /workspaces/{workspaceId}/ssh-keys [post]
 func (h *WorkspaceHandler) CreateSSHKey(c echo.Context) error {
-	workspaceID := c.Param("teamId")
+	workspaceID := c.Param("workspaceId")
 	if workspaceID == "" {
-		return utils.Error(c, http.StatusBadRequest, "missing teamId parameter")
+		return utils.Error(c, http.StatusBadRequest, "missing workspaceId parameter")
 	}
 	var payload CreateSSHKeyRequest
 	if err := c.Bind(&payload); err != nil {
@@ -273,12 +273,12 @@ func (h *WorkspaceHandler) DeleteSSHKey(c echo.Context) error {
 // @Tags Workspaces
 // @Accept json
 // @Produce json
-// @Param teamId path string true "teamId"
-// @Router /teams/{teamId}/audit-logs [get]
+// @Param workspaceId path string true "workspaceId"
+// @Router /workspaces/{workspaceId}/audit-logs [get]
 func (h *WorkspaceHandler) ListAuditLogs(c echo.Context) error {
-	workspaceID := c.Param("teamId")
+	workspaceID := c.Param("workspaceId")
 	if workspaceID == "" {
-		return utils.Error(c, http.StatusBadRequest, "missing teamId parameter")
+		return utils.Error(c, http.StatusBadRequest, "missing workspaceId parameter")
 	}
 
 	page, _ := strconv.Atoi(c.QueryParam("page"))

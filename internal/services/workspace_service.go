@@ -68,7 +68,7 @@ func (s *WorkspaceService) DeleteWorkspace(ctx context.Context, id, ownerID stri
 
 func (s *WorkspaceService) AddTrustedDomain(ctx context.Context, workspaceID, domain string) (*models.TrustedDomain, error) {
 	if workspaceID == "" || domain == "" {
-		return nil, errors.New("teamId and domain required")
+		return nil, errors.New("workspaceId and domain required")
 	}
 	td := &models.TrustedDomain{
 		ID:          uuid.New().String(),
@@ -84,7 +84,7 @@ func (s *WorkspaceService) AddTrustedDomain(ctx context.Context, workspaceID, do
 
 func (s *WorkspaceService) ListTrustedDomains(ctx context.Context, workspaceID string) ([]*models.TrustedDomain, error) {
 	if workspaceID == "" {
-		return nil, errors.New("teamId required")
+		return nil, errors.New("workspaceId required")
 	}
 	return s.repo.ListTrustedDomains(ctx, workspaceID)
 }
@@ -98,7 +98,7 @@ func (s *WorkspaceService) DeleteTrustedDomain(ctx context.Context, id string) e
 
 func (s *WorkspaceService) AddSSHKey(ctx context.Context, workspaceID, name, pubKey string) (*models.SSHKey, error) {
 	if workspaceID == "" || name == "" || pubKey == "" {
-		return nil, errors.New("teamId, name, and publicKey required")
+		return nil, errors.New("workspaceId, name, and publicKey required")
 	}
 	key := &models.SSHKey{
 		ID:          uuid.New().String(),
@@ -115,7 +115,7 @@ func (s *WorkspaceService) AddSSHKey(ctx context.Context, workspaceID, name, pub
 
 func (s *WorkspaceService) ListSSHKeys(ctx context.Context, workspaceID string) ([]*models.SSHKey, error) {
 	if workspaceID == "" {
-		return nil, errors.New("teamId required")
+		return nil, errors.New("workspaceId required")
 	}
 	return s.repo.ListSSHKeys(ctx, workspaceID)
 }

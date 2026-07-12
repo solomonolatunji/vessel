@@ -11,9 +11,9 @@ import (
 )
 
 type NotificationRepository interface {
-	ListChannelsByTeam(ctx context.Context, teamID string) ([]models.TeamNotificationChannel, error)
-	GetChannel(ctx context.Context, id string) (*models.TeamNotificationChannel, error)
-	SaveChannel(ctx context.Context, c *models.TeamNotificationChannel) error
+	ListChannelsByTeam(ctx context.Context, workspaceID string) ([]models.WorkspaceNotificationChannel, error)
+	GetChannel(ctx context.Context, id string) (*models.WorkspaceNotificationChannel, error)
+	SaveChannel(ctx context.Context, c *models.WorkspaceNotificationChannel) error
 	DeleteChannel(ctx context.Context, id string) error
 }
 
@@ -25,19 +25,19 @@ func NewNotificationSQLiteRepository(db *sql.DB) *NotificationSQLiteRepository {
 	return &NotificationSQLiteRepository{db: db}
 }
 
-func (r *NotificationSQLiteRepository) ListChannelsByTeam(ctx context.Context, teamID string) ([]models.TeamNotificationChannel, error) {
+func (r *NotificationSQLiteRepository) ListChannelsByTeam(ctx context.Context, workspaceID string) ([]models.WorkspaceNotificationChannel, error) {
 	query := `SELECT id, team_id, provider, config, events, is_enabled, created_at, updated_at FROM team_notification_channels WHERE team_id = ? ORDER BY created_at DESC`
-	rows, err := r.db.QueryContext(ctx, query, teamID)
+	rows, err := r.db.QueryContext(ctx, query, workspaceID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list channels: %w", err)
 	}
 	defer rows.Close()
 
-	var channels []models.TeamNotificationChannel
+	var channels []models.WorkspaceNotificationChannel
 	for rows.Next() {
-		var c models.TeamNotificationChannel
+		var c models.WorkspaceNotificationChannel
 		var configStr, eventsStr string
-		if err := rows.Scan(&c.ID, &c.TeamID, &c.Provider, &configStr, &eventsStr, &c.IsEnabled, &c.CreatedAt, &c.UpdatedAt); err != nil {
+		if err := rows.Scan(&c.ID, &c.WorkspaceID, &c.Provider, &configStr, &eventsStr, &c.IsEnabled, &c.CreatedAt, &c.UpdatedAt); err != nil {
 			return nil, fmt.Errorf("failed to scan channel: %w", err)
 		}
 		c.Config = []byte(configStr)
@@ -47,12 +47,12 @@ func (r *NotificationSQLiteRepository) ListChannelsByTeam(ctx context.Context, t
 	return channels, nil
 }
 
-func (r *NotificationSQLiteRepository) GetChannel(ctx context.Context, id string) (*models.TeamNotificationChannel, error) {
+func (r *NotificationSQLiteRepository) GetChannel(ctx context.Context, id string) (*models.WorkspaceNotificationChannel, error) {
 	query := `SELECT id, team_id, provider, config, events, is_enabled, created_at, updated_at FROM team_notification_channels WHERE id = ?`
 	row := r.db.QueryRowContext(ctx, query, id)
-	var c models.TeamNotificationChannel
+	var c models.WorkspaceNotificationChannel
 	var configStr, eventsStr string
-	if err := row.Scan(&c.ID, &c.TeamID, &c.Provider, &configStr, &eventsStr, &c.IsEnabled, &c.CreatedAt, &c.UpdatedAt); err != nil {
+	if err := row.Scan(&c.ID, &c.WorkspaceID, &c.Provider, &configStr, &eventsStr, &c.IsEnabled, &c.CreatedAt, &c.UpdatedAt); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, utils.NewNotFoundError("Channel", id)
 		}
@@ -63,7 +63,7 @@ func (r *NotificationSQLiteRepository) GetChannel(ctx context.Context, id string
 	return &c, nil
 }
 
-func (r *NotificationSQLiteRepository) SaveChannel(ctx context.Context, c *models.TeamNotificationChannel) error {
+func (r *NotificationSQLiteRepository) SaveChannel(ctx context.Context, c *models.WorkspaceNotificationChannel) error {
 	now := time.Now().UTC()
 	if c.CreatedAt.IsZero() {
 		c.CreatedAt = now
@@ -81,7 +81,7 @@ func (r *NotificationSQLiteRepository) SaveChannel(ctx context.Context, c *model
 		updated_at = excluded.updated_at`
 
 	_, err := r.db.ExecContext(ctx, query,
-		c.ID, c.TeamID, c.Provider, string(c.Config), string(c.Events), c.IsEnabled, c.CreatedAt, c.UpdatedAt,
+		c.ID, c.WorkspaceID, c.Provider, string(c.Config), string(c.Events), c.IsEnabled, c.CreatedAt, c.UpdatedAt,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to save channel: %w", err)

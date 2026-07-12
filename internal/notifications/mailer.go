@@ -20,9 +20,9 @@ func NewMailerService(settingsService *services.EmailSettingsService) *MailerSer
 	}
 }
 
-func (s *MailerService) SendTeamEmail(ctx context.Context, teamID, templateName string, toAddress string, subject string, data any) error {
+func (s *MailerService) SendTeamEmail(ctx context.Context, workspaceID, templateName string, toAddress string, subject string, data any) error {
 
-	settings, err := s.settingsService.GetTeamEmailSettings(ctx, teamID)
+	settings, err := s.settingsService.GetWorkspaceEmailSettings(ctx, workspaceID)
 	if err != nil {
 		return fmt.Errorf("fetching team email settings: %w", err)
 	}
@@ -44,7 +44,7 @@ func (s *MailerService) SendTeamEmail(ctx context.Context, teamID, templateName 
 	}
 
 	if host == "" || from == "" {
-		return fmt.Errorf("SMTP configuration missing for team %s and global env", teamID)
+		return fmt.Errorf("SMTP configuration missing for team %s and global env", workspaceID)
 	}
 
 	// Render template

@@ -38,7 +38,7 @@ definitions:
     properties:
       code:
         type: string
-      teamId:
+      workspaceId:
         type: string
     type: object
   handlers.GithubWebhookPayload:
@@ -73,7 +73,7 @@ definitions:
         type: string
       provider:
         type: string
-      teamId:
+      workspaceId:
         type: string
     type: object
   handlers.UpdateProfileRequest:
@@ -197,7 +197,7 @@ definitions:
         type: string
       repositoryUrl:
         type: string
-      teamId:
+      workspaceId:
         type: string
     type: object
   models.CreateTokenRequest:
@@ -479,50 +479,6 @@ definitions:
       volumePath:
         type: string
     type: object
-  models.TeamAISettings:
-    properties:
-      apiKey:
-        type: string
-      createdAt:
-        type: string
-      id:
-        type: string
-      provider:
-        type: string
-      teamId:
-        type: string
-      updatedAt:
-        type: string
-    type: object
-  models.TeamEmailSettings:
-    properties:
-      createdAt:
-        type: string
-      id:
-        type: string
-      resendApiKey:
-        type: string
-      smtpFromAddress:
-        type: string
-      smtpFromName:
-        type: string
-      smtpHost:
-        type: string
-      smtpPassword:
-        type: string
-      smtpPort:
-        type: integer
-      smtpUser:
-        type: string
-      teamId:
-        type: string
-      updatedAt:
-        type: string
-      useResend:
-        type: boolean
-    type: object
-  models.TeamNotificationChannel:
-    type: object
   models.Variable:
     properties:
       createdAt:
@@ -579,6 +535,50 @@ definitions:
         type: string
       updatedAt:
         type: string
+    type: object
+  models.WorkspaceAISettings:
+    properties:
+      apiKey:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+      provider:
+        type: string
+      updatedAt:
+        type: string
+      workspaceId:
+        type: string
+    type: object
+  models.WorkspaceEmailSettings:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      resendApiKey:
+        type: string
+      smtpFromAddress:
+        type: string
+      smtpFromName:
+        type: string
+      smtpHost:
+        type: string
+      smtpPassword:
+        type: string
+      smtpPort:
+        type: integer
+      smtpUser:
+        type: string
+      updatedAt:
+        type: string
+      useResend:
+        type: boolean
+      workspaceId:
+        type: string
+    type: object
+  models.WorkspaceNotificationChannel:
     type: object
 host: localhost:8080
 info:
@@ -1562,7 +1562,7 @@ paths:
       responses: {}
       summary: ListMembers endpoint
       tags:
-      - Teams
+      - Workspaces
     post:
       consumes:
       - application/json
@@ -1620,7 +1620,7 @@ paths:
       responses: {}
       summary: Remove Project Member
       tags:
-      - Teams
+      - Workspaces
       - Projects
   /projects/{projectId}/tokens:
     get:
@@ -2049,7 +2049,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.TeamNotificationChannel'
+          $ref: '#/definitions/models.WorkspaceNotificationChannel'
       produces:
       - application/json
       responses: {}
@@ -2076,7 +2076,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: GetTeamNotificationChannel endpoint
+      description: GetWorkspaceNotificationChannel endpoint
       parameters:
       - description: id
         in: path
@@ -2086,7 +2086,7 @@ paths:
       produces:
       - application/json
       responses: {}
-      summary: GetTeamNotificationChannel endpoint
+      summary: GetWorkspaceNotificationChannel endpoint
       tags:
       - Settings
   /settings/notifications/test:
@@ -2215,179 +2215,6 @@ paths:
       summary: StopStorage endpoint
       tags:
       - Storage
-  /teams/{teamId}/ai_settings:
-    get:
-      consumes:
-      - application/json
-      description: Get endpoint
-      parameters:
-      - description: teamId
-        in: path
-        name: teamId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: Get endpoint
-      tags:
-      - Teams
-    put:
-      consumes:
-      - application/json
-      description: Save endpoint
-      parameters:
-      - description: teamId
-        in: path
-        name: teamId
-        required: true
-        type: string
-      - description: Payload
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/models.TeamAISettings'
-      produces:
-      - application/json
-      responses: {}
-      summary: Save endpoint
-      tags:
-      - Teams
-  /teams/{teamId}/audit-logs:
-    get:
-      consumes:
-      - application/json
-      description: ListAuditLogs endpoint
-      parameters:
-      - description: teamId
-        in: path
-        name: teamId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: ListAuditLogs endpoint
-      tags:
-      - Workspaces
-  /teams/{teamId}/email_settings:
-    get:
-      consumes:
-      - application/json
-      description: Get Team Email Settings
-      parameters:
-      - description: Team ID
-        in: path
-        name: teamId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: Get Team Email Settings
-      tags:
-      - Settings
-    put:
-      consumes:
-      - application/json
-      description: Save Team Email Settings
-      parameters:
-      - description: Team ID
-        in: path
-        name: teamId
-        required: true
-        type: string
-      - description: Payload
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/models.TeamEmailSettings'
-      produces:
-      - application/json
-      responses: {}
-      summary: Save Team Email Settings
-      tags:
-      - Settings
-  /teams/{teamId}/ssh-keys:
-    get:
-      consumes:
-      - application/json
-      description: ListSSHKeys endpoint
-      parameters:
-      - description: teamId
-        in: path
-        name: teamId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: ListSSHKeys endpoint
-      tags:
-      - Workspaces
-    post:
-      consumes:
-      - application/json
-      description: CreateSSHKey endpoint
-      parameters:
-      - description: teamId
-        in: path
-        name: teamId
-        required: true
-        type: string
-      - description: Payload
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.CreateSSHKeyRequest'
-      produces:
-      - application/json
-      responses: {}
-      summary: CreateSSHKey endpoint
-      tags:
-      - Workspaces
-  /teams/{teamId}/trusted-domains:
-    get:
-      consumes:
-      - application/json
-      description: ListTrustedDomains endpoint
-      parameters:
-      - description: teamId
-        in: path
-        name: teamId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: ListTrustedDomains endpoint
-      tags:
-      - Workspaces
-    post:
-      consumes:
-      - application/json
-      description: CreateTrustedDomain endpoint
-      parameters:
-      - description: teamId
-        in: path
-        name: teamId
-        required: true
-        type: string
-      - description: Payload
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.CreateTrustedDomainRequest'
-      produces:
-      - application/json
-      responses: {}
-      summary: CreateTrustedDomain endpoint
-      tags:
-      - Workspaces
   /users:
     get:
       consumes:
@@ -2564,6 +2391,179 @@ paths:
       - application/json
       responses: {}
       summary: Update endpoint
+      tags:
+      - Workspaces
+  /workspaces/{workspaceId}/ai_settings:
+    get:
+      consumes:
+      - application/json
+      description: Get endpoint
+      parameters:
+      - description: workspaceId
+        in: path
+        name: workspaceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Get endpoint
+      tags:
+      - Workspaces
+    put:
+      consumes:
+      - application/json
+      description: Save endpoint
+      parameters:
+      - description: workspaceId
+        in: path
+        name: workspaceId
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.WorkspaceAISettings'
+      produces:
+      - application/json
+      responses: {}
+      summary: Save endpoint
+      tags:
+      - Workspaces
+  /workspaces/{workspaceId}/audit-logs:
+    get:
+      consumes:
+      - application/json
+      description: ListAuditLogs endpoint
+      parameters:
+      - description: workspaceId
+        in: path
+        name: workspaceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: ListAuditLogs endpoint
+      tags:
+      - Workspaces
+  /workspaces/{workspaceId}/email_settings:
+    get:
+      consumes:
+      - application/json
+      description: Get Team Email Settings
+      parameters:
+      - description: Team ID
+        in: path
+        name: workspaceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Get Team Email Settings
+      tags:
+      - Settings
+    put:
+      consumes:
+      - application/json
+      description: Save Team Email Settings
+      parameters:
+      - description: Team ID
+        in: path
+        name: workspaceId
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.WorkspaceEmailSettings'
+      produces:
+      - application/json
+      responses: {}
+      summary: Save Team Email Settings
+      tags:
+      - Settings
+  /workspaces/{workspaceId}/ssh-keys:
+    get:
+      consumes:
+      - application/json
+      description: ListSSHKeys endpoint
+      parameters:
+      - description: workspaceId
+        in: path
+        name: workspaceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: ListSSHKeys endpoint
+      tags:
+      - Workspaces
+    post:
+      consumes:
+      - application/json
+      description: CreateSSHKey endpoint
+      parameters:
+      - description: workspaceId
+        in: path
+        name: workspaceId
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateSSHKeyRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: CreateSSHKey endpoint
+      tags:
+      - Workspaces
+  /workspaces/{workspaceId}/trusted-domains:
+    get:
+      consumes:
+      - application/json
+      description: ListTrustedDomains endpoint
+      parameters:
+      - description: workspaceId
+        in: path
+        name: workspaceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: ListTrustedDomains endpoint
+      tags:
+      - Workspaces
+    post:
+      consumes:
+      - application/json
+      description: CreateTrustedDomain endpoint
+      parameters:
+      - description: workspaceId
+        in: path
+        name: workspaceId
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateTrustedDomainRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: CreateTrustedDomain endpoint
       tags:
       - Workspaces
   /ws/services/{id}/terminal:

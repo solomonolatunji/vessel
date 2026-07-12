@@ -20,9 +20,9 @@ func NewNotificationHandler(ns *services.NotificationService) *NotificationHandl
 }
 
 type TestNotificationRequest struct {
-	ChannelID string `json:"channelId"`
-	TeamID    string `json:"teamId"`
-	Provider  string `json:"provider"`
+	ChannelID   string `json:"channelId"`
+	WorkspaceID string `json:"workspaceId"`
+	Provider    string `json:"provider"`
 }
 
 // @Summary ListChannels endpoint
@@ -35,11 +35,11 @@ func (h *NotificationHandler) ListChannels(c echo.Context) error {
 	if c.Request().Method != http.MethodGet {
 		return utils.Error(c, http.StatusMethodNotAllowed, "Method not allowed")
 	}
-	teamID := c.QueryParam("teamId")
-	if teamID == "" {
-		teamID = "default"
+	workspaceID := c.QueryParam("workspaceId")
+	if workspaceID == "" {
+		workspaceID = "default"
 	}
-	channels, err := h.notificationService.ListChannels(c.Request().Context(), teamID)
+	channels, err := h.notificationService.ListChannels(c.Request().Context(), workspaceID)
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
@@ -51,18 +51,18 @@ func (h *NotificationHandler) ListChannels(c echo.Context) error {
 // @Tags Settings
 // @Accept json
 // @Produce json
-// @Param request body models.TeamNotificationChannel true "Payload"
+// @Param request body models.WorkspaceNotificationChannel true "Payload"
 // @Router /settings/notifications [put]
 func (h *NotificationHandler) SaveChannel(c echo.Context) error {
 	if c.Request().Method != http.MethodPut && c.Request().Method != http.MethodPost {
 		return utils.Error(c, http.StatusMethodNotAllowed, "Method not allowed")
 	}
-	var channel models.TeamNotificationChannel
+	var channel models.WorkspaceNotificationChannel
 	if err := c.Bind(&channel); err != nil {
 		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
-	if channel.TeamID == "" {
-		channel.TeamID = "default"
+	if channel.WorkspaceID == "" {
+		channel.WorkspaceID = "default"
 	}
 	if err := h.notificationService.SaveChannel(c.Request().Context(), &channel); err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
@@ -118,7 +118,7 @@ func (h *NotificationHandler) TestNotification(c echo.Context) error {
 		})
 	}
 
-	err := h.notificationService.TestTeamNotification(c.Request().Context(), req.TeamID, req.ChannelID)
+	err := h.notificationService.TestTeamNotification(c.Request().Context(), req.WorkspaceID, req.ChannelID)
 	if err != nil {
 		return utils.Error(c, http.StatusBadRequest, err.Error())
 	}

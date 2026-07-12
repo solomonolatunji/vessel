@@ -49,7 +49,6 @@ func (r *CanvasSQLiteRepository) GetEnvironmentCanvas(_ context.Context, environ
 type projectRow struct {
 	ID          string
 	WorkspaceID string
-	TeamID      string
 	Name        string
 	Description string
 	CreatedAt   time.Time
@@ -57,7 +56,7 @@ type projectRow struct {
 }
 
 func (r *CanvasSQLiteRepository) listAllProjects() ([]projectRow, error) {
-	rows, err := r.db.Query(`SELECT id, COALESCE(workspace_id, ''), COALESCE(team_id,''), name, COALESCE(description,''), created_at, updated_at FROM projects ORDER BY created_at DESC`)
+	rows, err := r.db.Query(`SELECT id, COALESCE(workspace_id, ''), name, COALESCE(description,''), created_at, updated_at FROM projects ORDER BY created_at DESC`)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +64,7 @@ func (r *CanvasSQLiteRepository) listAllProjects() ([]projectRow, error) {
 	var projects []projectRow
 	for rows.Next() {
 		var p projectRow
-		if err := rows.Scan(&p.ID, &p.WorkspaceID, &p.TeamID, &p.Name, &p.Description, &p.CreatedAt, &p.UpdatedAt); err != nil {
+		if err := rows.Scan(&p.ID, &p.WorkspaceID, &p.Name, &p.Description, &p.CreatedAt, &p.UpdatedAt); err != nil {
 			return nil, err
 		}
 		projects = append(projects, p)
@@ -74,9 +73,9 @@ func (r *CanvasSQLiteRepository) listAllProjects() ([]projectRow, error) {
 }
 
 func (r *CanvasSQLiteRepository) getProject(id string) (*projectRow, error) {
-	row := r.db.QueryRow(`SELECT id, COALESCE(workspace_id, ''), COALESCE(team_id,''), name, COALESCE(description,''), created_at, updated_at FROM projects WHERE id = ?`, id)
+	row := r.db.QueryRow(`SELECT id, COALESCE(workspace_id, ''), name, COALESCE(description,''), created_at, updated_at FROM projects WHERE id = ?`, id)
 	var p projectRow
-	err := row.Scan(&p.ID, &p.WorkspaceID, &p.TeamID, &p.Name, &p.Description, &p.CreatedAt, &p.UpdatedAt)
+	err := row.Scan(&p.ID, &p.WorkspaceID, &p.Name, &p.Description, &p.CreatedAt, &p.UpdatedAt)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, utils.NewNotFoundError("CanvasEnvironment", id)
 	}

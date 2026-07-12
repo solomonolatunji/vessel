@@ -7,17 +7,17 @@ import (
 )
 
 type EmailSettingsService struct {
-	repo repositories.TeamEmailSettingsRepository
+	repo repositories.WorkspaceEmailSettingsRepository
 }
 
-func NewEmailSettingsService(repo repositories.TeamEmailSettingsRepository) *EmailSettingsService {
+func NewEmailSettingsService(repo repositories.WorkspaceEmailSettingsRepository) *EmailSettingsService {
 	return &EmailSettingsService{repo: repo}
 }
 
-func (s *EmailSettingsService) GetTeamEmailSettings(ctx context.Context, teamID string) (*models.TeamEmailSettings, error) {
-	return s.repo.GetByTeamID(ctx, teamID)
+func (s *EmailSettingsService) GetWorkspaceEmailSettings(ctx context.Context, workspaceID string) (*models.WorkspaceEmailSettings, error) {
+	return s.repo.GetByWorkspaceID(ctx, workspaceID)
 }
 
-func (s *EmailSettingsService) SaveTeamEmailSettings(ctx context.Context, settings *models.TeamEmailSettings) error {
+func (s *EmailSettingsService) SaveWorkspaceEmailSettings(ctx context.Context, settings *models.WorkspaceEmailSettings) error {
 	return s.repo.Save(ctx, settings)
 }

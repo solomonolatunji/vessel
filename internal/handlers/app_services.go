@@ -30,7 +30,7 @@ func (h *AppHandler) verifyProjectOwnership(c echo.Context, projectID string) er
 	if err != nil {
 		return utils.Error(c, http.StatusNotFound, "project not found")
 	}
-	if p.TeamID != user.UserID {
+	if p.WorkspaceID != user.UserID {
 		return utils.Error(c, http.StatusForbidden, "access denied")
 	}
 	return nil
@@ -85,7 +85,7 @@ func (h *AppHandler) ListByEnvironment(c echo.Context) error {
 		var filtered []*models.AppService
 		for _, app := range apps {
 			p, err := h.projectService.GetProject(c.Request().Context(), app.ProjectID)
-			if err == nil && p.TeamID == user.UserID {
+			if err == nil && p.WorkspaceID == user.UserID {
 				filtered = append(filtered, app)
 			}
 		}

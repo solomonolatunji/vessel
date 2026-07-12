@@ -10,18 +10,18 @@ import (
 	"vessl.dev/vessl/internal/models"
 )
 
-type TeamEmailSettingsRepository interface {
-	GetByTeamID(ctx context.Context, teamID string) (*models.TeamEmailSettings, error)
-	Save(ctx context.Context, settings *models.TeamEmailSettings) error
+type WorkspaceEmailSettingsRepository interface {
+	GetByWorkspaceID(ctx context.Context, workspaceID string) (*models.WorkspaceEmailSettings, error)
+	Save(ctx context.Context, settings *models.WorkspaceEmailSettings) error
 }
 
-type TeamEmailSettingsSQLiteRepository struct {
+type WorkspaceEmailSettingsSQLiteRepository struct {
 	db    *sql.DB
 	vault Vault
 }
 
-func NewTeamEmailSettingsSQLiteRepository(db *sql.DB, v Vault) *TeamEmailSettingsSQLiteRepository {
-	return &TeamEmailSettingsSQLiteRepository{
+func NewWorkspaceEmailSettingsSQLiteRepository(db *sql.DB, v Vault) *WorkspaceEmailSettingsSQLiteRepository {
+	return &WorkspaceEmailSettingsSQLiteRepository{
 		db:    db,
 		vault: v,
 	}
@@ -29,11 +29,11 @@ func NewTeamEmailSettingsSQLiteRepository(db *sql.DB, v Vault) *TeamEmailSetting
 
 const teamEmailSettingsColumns = `id, team_id, smtp_host, smtp_port, smtp_user, encrypted_smtp_password, smtp_from_name, smtp_from_address, encrypted_resend_api_key, use_resend, created_at, updated_at`
 
-func scanTeamEmailSettings(scanner interface{ Scan(dest ...any) error }, s *models.TeamEmailSettings, v Vault) error {
+func scanWorkspaceEmailSettings(scanner interface{ Scan(dest ...any) error }, s *models.WorkspaceEmailSettings, v Vault) error {
 	var encryptedSMTPPassword, encryptedResendAPIKey string
 	var createdAt, updatedAt string
 	err := scanner.Scan(
-		&s.ID, &s.TeamID, &s.SMTPHost, &s.SMTPPort, &s.SMTPUser, &encryptedSMTPPassword, &s.SMTPFromName, &s.SMTPFromAddress, &encryptedResendAPIKey, &s.UseResend, &createdAt, &updatedAt,
+		&s.ID, &s.WorkspaceID, &s.SMTPHost, &s.SMTPPort, &s.SMTPUser, &encryptedSMTPPassword, &s.SMTPFromName, &s.SMTPFromAddress, &encryptedResendAPIKey, &s.UseResend, &createdAt, &updatedAt,
 	)
 	if err != nil {
 		return err
@@ -57,12 +57,12 @@ func scanTeamEmailSettings(scanner interface{ Scan(dest ...any) error }, s *mode
 	return nil
 }
 
-func (r *TeamEmailSettingsSQLiteRepository) GetByTeamID(ctx context.Context, teamID string) (*models.TeamEmailSettings, error) {
+func (r *WorkspaceEmailSettingsSQLiteRepository) GetByWorkspaceID(ctx context.Context, workspaceID string) (*models.WorkspaceEmailSettings, error) {
 	query := fmt.Sprintf(`SELECT %s FROM team_email_settings WHERE team_id = ? LIMIT 1`, teamEmailSettingsColumns)
-	row := r.db.QueryRowContext(ctx, query, teamID)
+	row := r.db.QueryRowContext(ctx, query, workspaceID)
 
-	var s models.TeamEmailSettings
-	err := scanTeamEmailSettings(row, &s, r.vault)
+	var s models.WorkspaceEmailSettings
+	err := scanWorkspaceEmailSettings(row, &s, r.vault)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	}
@@ -73,7 +73,7 @@ func (r *TeamEmailSettingsSQLiteRepository) GetByTeamID(ctx context.Context, tea
 	return &s, nil
 }
 
-func (r *TeamEmailSettingsSQLiteRepository) Save(ctx context.Context, s *models.TeamEmailSettings) error {
+func (r *WorkspaceEmailSettingsSQLiteRepository) Save(ctx context.Context, s *models.WorkspaceEmailSettings) error {
 	now := time.Now().UTC().Format(time.RFC3339)
 
 	var encryptedSMTPPassword, encryptedResendAPIKey string
@@ -108,7 +108,7 @@ func (r *TeamEmailSettingsSQLiteRepository) Save(ctx context.Context, s *models.
 	`, teamEmailSettingsColumns)
 
 	_, err = r.db.ExecContext(ctx, query,
-		s.ID, s.TeamID, s.SMTPHost, s.SMTPPort, s.SMTPUser, encryptedSMTPPassword, s.SMTPFromName, s.SMTPFromAddress, encryptedResendAPIKey, s.UseResend, now, now,
+		s.ID, s.WorkspaceID, s.SMTPHost, s.SMTPPort, s.SMTPUser, encryptedSMTPPassword, s.SMTPFromName, s.SMTPFromAddress, encryptedResendAPIKey, s.UseResend, now, now,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to save team email settings: %w", err)

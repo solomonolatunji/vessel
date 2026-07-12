@@ -164,7 +164,7 @@ func (h *ProjectSettingsHandler) DeleteToken(c echo.Context) error {
 
 // @Summary ListMembers endpoint
 // @Description ListMembers endpoint
-// @Tags Teams
+// @Tags Workspaces
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
@@ -208,7 +208,7 @@ func (h *ProjectSettingsHandler) AddMember(c echo.Context) error {
 
 // @Summary RemoveMember endpoint
 // @Description RemoveMember endpoint
-// @Tags Teams
+// @Tags Workspaces
 // @Accept json
 // @Produce json
 // @Param id path string true "id"

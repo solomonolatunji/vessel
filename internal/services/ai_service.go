@@ -11,25 +11,25 @@ import (
 )
 
 type AISettingsService struct {
-	repo repositories.TeamAISettingsRepository
+	repo repositories.WorkspaceAISettingsRepository
 }
 
-func NewAISettingsService(repo repositories.TeamAISettingsRepository) *AISettingsService {
+func NewAISettingsService(repo repositories.WorkspaceAISettingsRepository) *AISettingsService {
 	return &AISettingsService{repo: repo}
 }
 
-func (s *AISettingsService) Get(ctx context.Context, teamID string) (*models.TeamAISettings, error) {
-	if teamID == "" {
+func (s *AISettingsService) Get(ctx context.Context, workspaceID string) (*models.WorkspaceAISettings, error) {
+	if workspaceID == "" {
 		return nil, errors.New("team ID is required")
 	}
-	return s.repo.Get(ctx, teamID)
+	return s.repo.Get(ctx, workspaceID)
 }
 
-func (s *AISettingsService) Save(ctx context.Context, settings *models.TeamAISettings) error {
+func (s *AISettingsService) Save(ctx context.Context, settings *models.WorkspaceAISettings) error {
 	if settings == nil {
 		return errors.New("settings are required")
 	}
-	if settings.TeamID == "" {
+	if settings.WorkspaceID == "" {
 		return errors.New("team ID is required")
 	}
 	if settings.ID == "" {

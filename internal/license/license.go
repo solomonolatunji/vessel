@@ -11,10 +11,10 @@ import (
 )
 
 type Claims struct {
-	TeamID    string `json:"team_id"`
-	Plan      string `json:"plan"` // e.g. "enterprise"
-	MaxSeats  int    `json:"max_seats"`
-	ExpiresAt int64  `json:"exp"`
+	WorkspaceID string `json:"team_id"`
+	Plan        string `json:"plan"` // e.g. "enterprise"
+	MaxSeats    int    `json:"max_seats"`
+	ExpiresAt   int64  `json:"exp"`
 	jwt.RegisteredClaims
 }
 
@@ -23,7 +23,7 @@ var (
 	ErrExpiredLicense = errors.New("expired license key")
 )
 
-func GenerateLicense(privateKeyBase64, teamID, plan string, maxSeats int, expiry time.Time) (string, error) {
+func GenerateLicense(privateKeyBase64, workspaceID, plan string, maxSeats int, expiry time.Time) (string, error) {
 	keyBytes, err := base64.StdEncoding.DecodeString(privateKeyBase64)
 	if err != nil {
 		return "", fmt.Errorf("invalid private key encoding: %w", err)
@@ -36,9 +36,9 @@ func GenerateLicense(privateKeyBase64, teamID, plan string, maxSeats int, expiry
 	privKey := ed25519.PrivateKey(keyBytes)
 
 	claims := Claims{
-		TeamID:   teamID,
-		Plan:     plan,
-		MaxSeats: maxSeats,
+		WorkspaceID: workspaceID,
+		Plan:        plan,
+		MaxSeats:    maxSeats,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expiry),
 			Issuer:    "vessl-cloud",

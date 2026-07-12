@@ -30,7 +30,7 @@ func (h *DatabaseHandler) verifyProjectOwnership(c echo.Context, projectID strin
 	if err != nil {
 		return utils.Error(c, http.StatusNotFound, "project not found")
 	}
-	if p.TeamID != user.UserID {
+	if p.WorkspaceID != user.UserID {
 		return utils.Error(c, http.StatusForbidden, "access denied")
 	}
 	return nil
@@ -55,7 +55,7 @@ func (h *DatabaseHandler) ListDatabases(c echo.Context) error {
 		var filtered []*models.Database
 		for _, db := range databases {
 			p, err := h.projectService.GetProject(c.Request().Context(), db.ProjectID)
-			if err == nil && p.TeamID == user.UserID {
+			if err == nil && p.WorkspaceID == user.UserID {
 				filtered = append(filtered, db)
 			}
 		}

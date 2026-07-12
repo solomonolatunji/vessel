@@ -11,29 +11,29 @@ import (
 	"vessl.dev/vessl/internal/utils"
 )
 
-type TeamAISettingsRepository interface {
-	Get(ctx context.Context, teamID string) (*models.TeamAISettings, error)
-	Save(ctx context.Context, settings *models.TeamAISettings) error
+type WorkspaceAISettingsRepository interface {
+	Get(ctx context.Context, workspaceID string) (*models.WorkspaceAISettings, error)
+	Save(ctx context.Context, settings *models.WorkspaceAISettings) error
 }
 
-type TeamAISettingsSQLiteRepository struct {
+type WorkspaceAISettingsSQLiteRepository struct {
 	db    *sql.DB
 	vault Vault
 }
 
-func NewTeamAISettingsSQLiteRepository(db *sql.DB, vault Vault) *TeamAISettingsSQLiteRepository {
-	return &TeamAISettingsSQLiteRepository{db: db, vault: vault}
+func NewWorkspaceAISettingsSQLiteRepository(db *sql.DB, vault Vault) *WorkspaceAISettingsSQLiteRepository {
+	return &WorkspaceAISettingsSQLiteRepository{db: db, vault: vault}
 }
 
-func (r *TeamAISettingsSQLiteRepository) Get(ctx context.Context, teamID string) (*models.TeamAISettings, error) {
+func (r *WorkspaceAISettingsSQLiteRepository) Get(ctx context.Context, workspaceID string) (*models.WorkspaceAISettings, error) {
 	query := `SELECT id, team_id, provider, encrypted_api_key, created_at, updated_at FROM team_ai_settings WHERE team_id = ?`
-	row := r.db.QueryRowContext(ctx, query, teamID)
+	row := r.db.QueryRowContext(ctx, query, workspaceID)
 
-	var s models.TeamAISettings
+	var s models.WorkspaceAISettings
 	var encryptedKey string
-	if err := row.Scan(&s.ID, &s.TeamID, &s.Provider, &encryptedKey, &s.CreatedAt, &s.UpdatedAt); err != nil {
+	if err := row.Scan(&s.ID, &s.WorkspaceID, &s.Provider, &encryptedKey, &s.CreatedAt, &s.UpdatedAt); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, utils.NewNotFoundError("TeamAISettings", teamID)
+			return nil, utils.NewNotFoundError("WorkspaceAISettings", workspaceID)
 		}
 		return nil, fmt.Errorf("failed to get team AI settings: %w", err)
 	}
@@ -47,7 +47,7 @@ func (r *TeamAISettingsSQLiteRepository) Get(ctx context.Context, teamID string)
 	return &s, nil
 }
 
-func (r *TeamAISettingsSQLiteRepository) Save(ctx context.Context, settings *models.TeamAISettings) error {
+func (r *WorkspaceAISettingsSQLiteRepository) Save(ctx context.Context, settings *models.WorkspaceAISettings) error {
 	query := `
 		INSERT INTO team_ai_settings (id, team_id, provider, encrypted_api_key, created_at, updated_at)
 		VALUES (?, ?, ?, ?, ?, ?)
@@ -66,7 +66,7 @@ func (r *TeamAISettingsSQLiteRepository) Save(ctx context.Context, settings *mod
 	}
 	settings.UpdatedAt = time.Now()
 
-	if _, err := r.db.ExecContext(ctx, query, settings.ID, settings.TeamID, settings.Provider, encryptedKey, settings.CreatedAt, settings.UpdatedAt); err != nil {
+	if _, err := r.db.ExecContext(ctx, query, settings.ID, settings.WorkspaceID, settings.Provider, encryptedKey, settings.CreatedAt, settings.UpdatedAt); err != nil {
 		return fmt.Errorf("failed to save team AI settings: %w", err)
 	}
 	return nil

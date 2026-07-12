@@ -21,18 +21,18 @@ func NewAISettingsHandler(s *services.AISettingsService) *AISettingsHandler {
 
 // @Summary Get endpoint
 // @Description Get endpoint
-// @Tags Teams
+// @Tags Workspaces
 // @Accept json
 // @Produce json
-// @Param teamId path string true "teamId"
-// @Router /teams/{teamId}/ai_settings [get]
+// @Param workspaceId path string true "workspaceId"
+// @Router /workspaces/{workspaceId}/ai_settings [get]
 func (h *AISettingsHandler) Get(c echo.Context) error {
-	teamID := c.Param("teamId")
-	if teamID == "" {
+	workspaceID := c.Param("workspaceId")
+	if workspaceID == "" {
 		return utils.Error(c, http.StatusBadRequest, "team ID is required")
 	}
 
-	settings, err := h.aiService.Get(c.Request().Context(), teamID)
+	settings, err := h.aiService.Get(c.Request().Context(), workspaceID)
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
@@ -44,23 +44,23 @@ func (h *AISettingsHandler) Get(c echo.Context) error {
 
 // @Summary Save endpoint
 // @Description Save endpoint
-// @Tags Teams
+// @Tags Workspaces
 // @Accept json
 // @Produce json
-// @Param teamId path string true "teamId"
-// @Param request body models.TeamAISettings true "Payload"
-// @Router /teams/{teamId}/ai_settings [put]
+// @Param workspaceId path string true "workspaceId"
+// @Param request body models.WorkspaceAISettings true "Payload"
+// @Router /workspaces/{workspaceId}/ai_settings [put]
 func (h *AISettingsHandler) Save(c echo.Context) error {
-	teamID := c.Param("teamId")
-	if teamID == "" {
+	workspaceID := c.Param("workspaceId")
+	if workspaceID == "" {
 		return utils.Error(c, http.StatusBadRequest, "team ID is required")
 	}
 
-	var settings models.TeamAISettings
+	var settings models.WorkspaceAISettings
 	if err := c.Bind(&settings); err != nil {
 		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
-	settings.TeamID = teamID
+	settings.WorkspaceID = workspaceID
 
 	if err := h.aiService.Save(c.Request().Context(), &settings); err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())

@@ -5,7 +5,6 @@ import "time"
 type ProjectConfig struct {
 	ID          string    `json:"id"`
 	WorkspaceID string    `json:"workspaceId,omitempty"`
-	TeamID      string    `json:"teamId,omitempty"`
 	Name        string    `json:"name"`
 	Description string    `json:"description,omitempty"`
 	CreatedAt   time.Time `json:"createdAt"`
@@ -44,7 +43,6 @@ type EnvironmentConfig struct {
 type CanvasSummary struct {
 	ID                 string             `json:"id"`
 	WorkspaceID        string             `json:"workspaceId,omitempty"`
-	TeamID             string             `json:"teamId,omitempty"`
 	Name               string             `json:"name"`
 	Description        string             `json:"description,omitempty"`
 	CreatedAt          time.Time          `json:"createdAt"`
@@ -68,7 +66,7 @@ type EnvironmentCanvas struct {
 
 type CreateProjectRequest struct {
 	ID                 string `json:"id"`
-	TeamID             string `json:"teamId,omitempty"`
+	WorkspaceID        string `json:"workspaceId,omitempty"`
 	Name               string `json:"name"`
 	Description        string `json:"description,omitempty"`
 	RepositoryURL      string `json:"repositoryUrl,omitempty"`

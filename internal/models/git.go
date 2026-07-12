@@ -30,7 +30,7 @@ type GitConnectRequest struct {
 
 type GithubApp struct {
 	ID             string    `json:"id"`
-	TeamID         string    `json:"teamId"`
+	WorkspaceID    string    `json:"workspaceId"`
 	Name           string    `json:"name"`
 	AppID          string    `json:"appId"`
 	InstallationID string    `json:"installationId"`
@@ -45,7 +45,7 @@ type GithubApp struct {
 
 type GitlabApp struct {
 	ID            string    `json:"id"`
-	TeamID        string    `json:"teamId"`
+	WorkspaceID   string    `json:"workspaceId"`
 	Name          string    `json:"name"`
 	AppID         string    `json:"appId"`
 	AppSecret     string    `json:"appSecret"`
@@ -58,7 +58,7 @@ type GitlabApp struct {
 
 type BitbucketApp struct {
 	ID            string    `json:"id"`
-	TeamID        string    `json:"teamId"`
+	WorkspaceID   string    `json:"workspaceId"`
 	Name          string    `json:"name"`
 	Workspace     string    `json:"workspace"`
 	ClientID      string    `json:"clientId"`

@@ -11,7 +11,7 @@ import (
 )
 
 type ProjectRepository interface {
-	List(ctx context.Context, teamID string, limit, offset int) ([]models.ProjectConfig, int, error)
+	List(ctx context.Context, workspaceID string, limit, offset int) ([]models.ProjectConfig, int, error)
 	Get(ctx context.Context, id string) (*models.ProjectConfig, error)
 	Create(ctx context.Context, p *models.ProjectConfig) error
 	Delete(ctx context.Context, id string) error
@@ -31,21 +31,21 @@ func NewProjectSQLiteRepository(db *sql.DB, envRepo EnvironmentRepository) *Proj
 	return &ProjectSQLiteRepository{db: db, environments: envRepo}
 }
 
-func (r *ProjectSQLiteRepository) List(_ context.Context, teamID string, limit, offset int) ([]models.ProjectConfig, int, error) {
+func (r *ProjectSQLiteRepository) List(_ context.Context, workspaceID string, limit, offset int) ([]models.ProjectConfig, int, error) {
 	var total int
 	var err error
 	var rows *sql.Rows
 
-	if teamID != "" {
-		if err = r.db.QueryRow(`SELECT COUNT(*) FROM projects WHERE team_id = ?`, teamID).Scan(&total); err != nil {
+	if workspaceID != "" {
+		if err = r.db.QueryRow(`SELECT COUNT(*) FROM projects WHERE team_id = ?`, workspaceID).Scan(&total); err != nil {
 			return nil, 0, err
 		}
-		rows, err = r.db.Query(`SELECT id, COALESCE(workspace_id, ''), COALESCE(team_id,''), name, COALESCE(description,''), created_at, updated_at FROM projects WHERE team_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?`, teamID, limit, offset)
+		rows, err = r.db.Query(`SELECT id, COALESCE(workspace_id, ''), name, COALESCE(description,''), created_at, updated_at FROM projects WHERE team_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?`, workspaceID, limit, offset)
 	} else {
 		if err = r.db.QueryRow(`SELECT COUNT(*) FROM projects`).Scan(&total); err != nil {
 			return nil, 0, err
 		}
-		rows, err = r.db.Query(`SELECT id, COALESCE(workspace_id, ''), COALESCE(team_id,''), name, COALESCE(description,''), created_at, updated_at FROM projects ORDER BY created_at DESC LIMIT ? OFFSET ?`, limit, offset)
+		rows, err = r.db.Query(`SELECT id, COALESCE(workspace_id, ''), name, COALESCE(description,''), created_at, updated_at FROM projects ORDER BY created_at DESC LIMIT ? OFFSET ?`, limit, offset)
 	}
 
 	if err != nil {
@@ -55,7 +55,7 @@ func (r *ProjectSQLiteRepository) List(_ context.Context, teamID string, limit, 
 	var projects []models.ProjectConfig
 	for rows.Next() {
 		var p models.ProjectConfig
-		if err := rows.Scan(&p.ID, &p.WorkspaceID, &p.TeamID, &p.Name, &p.Description, &p.CreatedAt, &p.UpdatedAt); err != nil {
+		if err := rows.Scan(&p.ID, &p.WorkspaceID, &p.WorkspaceID, &p.Name, &p.Description, &p.CreatedAt, &p.UpdatedAt); err != nil {
 			return nil, 0, err
 		}
 		projects = append(projects, p)
@@ -64,9 +64,9 @@ func (r *ProjectSQLiteRepository) List(_ context.Context, teamID string, limit, 
 }
 
 func (r *ProjectSQLiteRepository) Get(_ context.Context, id string) (*models.ProjectConfig, error) {
-	row := r.db.QueryRow(`SELECT id, COALESCE(workspace_id, ''), COALESCE(team_id,''), name, COALESCE(description,''), created_at, updated_at FROM projects WHERE id = ?`, id)
+	row := r.db.QueryRow(`SELECT id, COALESCE(workspace_id, ''), name, COALESCE(description,''), created_at, updated_at FROM projects WHERE id = ?`, id)
 	var p models.ProjectConfig
-	err := row.Scan(&p.ID, &p.WorkspaceID, &p.TeamID, &p.Name, &p.Description, &p.CreatedAt, &p.UpdatedAt)
+	err := row.Scan(&p.ID, &p.WorkspaceID, &p.WorkspaceID, &p.Name, &p.Description, &p.CreatedAt, &p.UpdatedAt)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -85,7 +85,7 @@ func (r *ProjectSQLiteRepository) Create(ctx context.Context, p *models.ProjectC
 	p.UpdatedAt = now
 	_, err := r.db.Exec(
 		`INSERT INTO projects (id, workspace_id, team_id, name, description, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-		p.ID, p.WorkspaceID, p.TeamID, p.Name, p.Description, p.CreatedAt, p.UpdatedAt,
+		p.ID, p.WorkspaceID, p.WorkspaceID, p.Name, p.Description, p.CreatedAt, p.UpdatedAt,
 	)
 	if err != nil {
 		return err

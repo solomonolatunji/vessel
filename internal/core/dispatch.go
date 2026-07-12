@@ -16,12 +16,12 @@ type DispatcherService struct {
 	settingsRepo repositories.SettingsRepository
 	userRepo     repositories.UserRepository
 	mailer       interface {
-		SendTeamEmail(ctx context.Context, teamID, templateName string, toAddress string, subject string, data any) error
+		SendTeamEmail(ctx context.Context, workspaceID, templateName string, toAddress string, subject string, data any) error
 	}
 }
 
 type Mailer interface {
-	SendTeamEmail(ctx context.Context, teamID, templateName string, toAddress string, subject string, data any) error
+	SendTeamEmail(ctx context.Context, workspaceID, templateName string, toAddress string, subject string, data any) error
 }
 
 func NewDispatcherService(notifRepo repositories.NotificationRepository, settingsRepo repositories.SettingsRepository, userRepo repositories.UserRepository, mailer Mailer) *DispatcherService {
@@ -37,17 +37,17 @@ func (d *DispatcherService) Dispatch(event *models.NotificationEvent) {
 }
 
 func (d *DispatcherService) Send(event *models.NotificationEvent) error {
-	if event.TeamID == "" {
-		return fmt.Errorf("TeamID is required for dispatch")
+	if event.WorkspaceID == "" {
+		return fmt.Errorf("WorkspaceID is required for dispatch")
 	}
 
-	if event.TeamID == "global_test" {
+	if event.WorkspaceID == "global_test" {
 		return d.sendGlobalTest(event)
 	}
 
-	channels, err := d.notifRepo.ListChannelsByTeam(context.Background(), event.TeamID)
+	channels, err := d.notifRepo.ListChannelsByTeam(context.Background(), event.WorkspaceID)
 	if err != nil {
-		return fmt.Errorf("failed to list channels for team %s: %w", event.TeamID, err)
+		return fmt.Errorf("failed to list channels for team %s: %w", event.WorkspaceID, err)
 	}
 
 	for _, c := range channels {
@@ -121,7 +121,7 @@ func (d *DispatcherService) Send(event *models.NotificationEvent) error {
 						name = u.Name
 					}
 				}
-				_ = d.mailer.SendTeamEmail(context.Background(), event.TeamID, "notification", cfg.ToEmail, event.Title, map[string]string{
+				_ = d.mailer.SendTeamEmail(context.Background(), event.WorkspaceID, "notification", cfg.ToEmail, event.Title, map[string]string{
 					"Message": event.Message,
 					"URL":     event.URL,
 					"Name":    name,

@@ -32,28 +32,28 @@ func (s *SettingsService) UpdateSettings(ctx context.Context, cfg *models.Server
 	return s.settingsRepo.UpdateServerSettings(ctx, cfg)
 }
 
-func (s *SettingsService) ListTeamNotificationChannels(ctx context.Context, teamID string) ([]models.TeamNotificationChannel, error) {
-	if teamID == "" {
+func (s *SettingsService) ListWorkspaceNotificationChannels(ctx context.Context, workspaceID string) ([]models.WorkspaceNotificationChannel, error) {
+	if workspaceID == "" {
 		return nil, errors.New("team id is required")
 	}
-	return s.notificationRepo.ListChannelsByTeam(ctx, teamID)
+	return s.notificationRepo.ListChannelsByTeam(ctx, workspaceID)
 }
 
-func (s *SettingsService) SaveTeamNotificationChannel(ctx context.Context, c *models.TeamNotificationChannel) error {
-	if c == nil || c.TeamID == "" {
+func (s *SettingsService) SaveWorkspaceNotificationChannel(ctx context.Context, c *models.WorkspaceNotificationChannel) error {
+	if c == nil || c.WorkspaceID == "" {
 		return errors.New("valid team notification channel is required")
 	}
 	return s.notificationRepo.SaveChannel(ctx, c)
 }
 
-func (s *SettingsService) GetTeamNotificationChannel(ctx context.Context, id string) (*models.TeamNotificationChannel, error) {
+func (s *SettingsService) GetWorkspaceNotificationChannel(ctx context.Context, id string) (*models.WorkspaceNotificationChannel, error) {
 	if id == "" {
 		return nil, errors.New("channel id is required")
 	}
 	return s.notificationRepo.GetChannel(ctx, id)
 }
 
-func (s *SettingsService) DeleteTeamNotificationChannel(ctx context.Context, id string) error {
+func (s *SettingsService) DeleteWorkspaceNotificationChannel(ctx context.Context, id string) error {
 	if id == "" {
 		return errors.New("channel id is required")
 	}

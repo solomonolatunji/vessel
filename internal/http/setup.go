@@ -51,7 +51,7 @@ func NewServer(db *sql.DB, v *vault.Vault, deployer *engine.Deployer, traefikMan
 	notificationSQLiteRepository := repositories.NewNotificationSQLiteRepository(db)
 	projectSettingsSQLiteRepository := repositories.NewProjectSettingsSQLiteRepository(db)
 	userSQLiteRepository := repositories.NewUserSQLiteRepository(db)
-	teamEmailSettingsSQLiteRepository := repositories.NewTeamEmailSettingsSQLiteRepository(db, v)
+	teamEmailSettingsSQLiteRepository := repositories.NewWorkspaceEmailSettingsSQLiteRepository(db, v)
 	canvasSQLiteRepository := repositories.NewCanvasSQLiteRepository(db, environmentSQLiteRepository)
 	deploymentSQLiteRepository := repositories.NewDeploymentSQLiteRepository(db)
 	workspaceSQLiteRepository := repositories.NewWorkspaceSQLiteRepository(db)
@@ -60,7 +60,7 @@ func NewServer(db *sql.DB, v *vault.Vault, deployer *engine.Deployer, traefikMan
 	prPreviewRepository := repositories.NewPRPreviewRepository(db)
 	domainSQLiteRepository := repositories.NewDomainSQLiteRepository(db)
 	gitAppSQLiteRepository := repositories.NewGitAppSQLiteRepository(db, v)
-	teamAISettingsSQLiteRepository := repositories.NewTeamAISettingsSQLiteRepository(db, v)
+	teamAISettingsSQLiteRepository := repositories.NewWorkspaceAISettingsSQLiteRepository(db, v)
 	vercelRepository := repositories.NewVercelRepository(db, v)
 
 	httpEngineAdapter := newEngineAdapter(settingsSQLiteRepository, appServiceSQLiteRepository, envSQLiteRepository, databaseSQLiteRepository, storageSQLiteRepository, projectSQLiteRepository, jobSQLiteRepository, backupSQLiteRepository, s3DestinationSQLiteRepository, serviceVarSQLiteRepository, serverlessRepository)

@@ -29,14 +29,13 @@ func NewProjectService(pr repositories.ProjectRepository, er repositories.Enviro
 	}
 }
 
-func (s *ProjectService) CreateProject(ctx context.Context, name, workspaceID, teamID, description string) (*models.ProjectConfig, error) {
+func (s *ProjectService) CreateProject(ctx context.Context, name, workspaceID, description string) (*models.ProjectConfig, error) {
 	if name == "" {
 		return nil, errors.New("project name is required")
 	}
 	p := &models.ProjectConfig{
 		ID:          uuid.New().String(),
 		WorkspaceID: workspaceID,
-		TeamID:      teamID,
 		Name:        name,
 		Description: description,
 		CreatedAt:   time.Now(),
@@ -58,7 +57,7 @@ func (s *ProjectService) CreateProjectFromRequest(ctx context.Context, req *mode
 	}
 	p := &models.ProjectConfig{
 		ID:          id,
-		TeamID:      req.TeamID,
+		WorkspaceID: req.WorkspaceID,
 		Name:        req.Name,
 		Description: req.Description,
 		CreatedAt:   time.Now(),
@@ -109,8 +108,8 @@ func (s *ProjectService) GetProject(ctx context.Context, id string) (*models.Pro
 	return s.projectRepo.Get(ctx, id)
 }
 
-func (s *ProjectService) ListProjects(ctx context.Context, teamID string, limit, offset int) ([]models.ProjectConfig, int, error) {
-	return s.projectRepo.List(ctx, teamID, limit, offset)
+func (s *ProjectService) ListProjects(ctx context.Context, workspaceID string, limit, offset int) ([]models.ProjectConfig, int, error) {
+	return s.projectRepo.List(ctx, workspaceID, limit, offset)
 }
 
 func (s *ProjectService) DeleteProject(ctx context.Context, id string) error {
