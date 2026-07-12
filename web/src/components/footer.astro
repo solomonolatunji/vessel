@@ -1,0 +1,37 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+
+<footer class="mt-24 border-t border-(--color-border)">
+  <div class="max-w-7xl mx-auto px-4 py-12 flex flex-col sm:flex-row items-center justify-between gap-6">
+    <div class="flex items-center gap-2">
+      <span class="size-6 rounded-md bg-(--color-primary) flex items-center justify-center text-white text-xs font-black">V</span>
+      <span class="text-sm text-(--color-muted-foreground)">© 2026 Vessl. Open-source &amp; free forever.</span>
+    </div>
+    <div class="flex flex-wrap justify-center items-center gap-2 text-sm text-(--color-muted-foreground)">
+      <a href="/philosophy" class="px-3 py-2 rounded-md hover:text-foreground hover:bg-surface transition-colors">Philosophy</a>
+      <a href="/pricing" class="px-3 py-2 rounded-md hover:text-foreground hover:bg-surface transition-colors">Pricing</a>
+      <a href="/changelog" class="px-3 py-2 rounded-md hover:text-foreground hover:bg-surface transition-colors">Changelog</a>
+      <a href="https://docs.vessl.dev" target="_blank" class="px-3 py-2 rounded-md hover:text-foreground hover:bg-surface transition-colors">Docs</a>
+
+      <!-- Icon-only social links -->
+      <div class="flex items-center gap-1 ml-2 pl-2 border-l border-border">
+        <!-- GitHub -->
+        <a href="https://github.com/techxteam/vessl" target="_blank" aria-label="GitHub"
+          class="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-surface transition-colors">
+          <Icon name="simple-icons:github" class="size-4" />
+        </a>
+        <!-- X (Twitter) -->
+        <a href="https://x.com/vessldotdev" target="_blank" aria-label="X / Twitter"
+          class="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-surface transition-colors">
+          <Icon name="simple-icons:x" class="size-4" />
+        </a>
+        <!-- Discord -->
+        <a href="https://discord.gg/vessl" target="_blank" aria-label="Discord"
+          class="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-surface transition-colors">
+          <Icon name="simple-icons:discord" class="size-4" />
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>

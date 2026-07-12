@@ -1,5 +1,5 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from '../layouts/layout.astro';
 import { Icon } from 'astro-icon/components';
 ---
 
@@ -11,15 +11,15 @@ import { Icon } from 'astro-icon/components';
 
     <!-- Hero -->
     <div class="pt-16 md:pt-24 pb-6">
-      <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-[var(--color-foreground)] whitespace-nowrap">
-        Infrastructure that belongs to you<span class="text-[var(--color-primary)]">.</span>
+      <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-foreground whitespace-nowrap">
+        Infrastructure that belongs to you<span class="text-primary">.</span>
       </h1>
-      <p class="mt-5 text-[var(--color-muted-foreground)] text-base leading-relaxed max-w-2xl mx-auto">
+      <p class="mt-5 text-muted-foreground text-base leading-relaxed max-w-2xl mx-auto">
         We built Vessl because we kept seeing the same pattern: a tool starts free, gains traction,
         then slowly walls off its best features behind enterprise plans.
         The moment a self-hosting tool needs a licence key to use SSL, something has gone wrong.
       </p>
-      <p class="mt-4 text-[var(--color-muted-foreground)] text-base leading-relaxed max-w-2xl mx-auto">
+      <p class="mt-4 text-muted-foreground text-base leading-relaxed max-w-2xl mx-auto">
         Vessl is MIT-licensed. Not "source-available". Not "fair-code". MIT.
         You can read it, fork it, patch it, and run it commercially without asking us.
         That constraint is intentional — it means we can't quietly change our minds later.
@@ -28,10 +28,10 @@ import { Icon } from 'astro-icon/components';
 
     <!-- Commitments -->
     <div class="pt-14">
-      <h2 class="text-2xl font-bold text-[var(--color-foreground)] mb-2">
-        What we commit to<span class="text-[var(--color-primary)]">.</span>
+      <h2 class="text-2xl font-bold text-foreground mb-2">
+        What we commit to<span class="text-primary">.</span>
       </h2>
-      <p class="text-sm text-[var(--color-muted-foreground)] mb-8">Not just promises — these are structural constraints.</p>
+      <p class="text-sm text-muted-foreground mb-8">Not just promises — these are structural constraints.</p>
 
       <ul class="space-y-7 text-left">
         {[
@@ -53,10 +53,10 @@ import { Icon } from 'astro-icon/components';
           },
         ].map(p => (
           <li class="flex gap-4">
-            <Icon name="lucide:check-circle" class="size-5 text-[var(--color-primary)] shrink-0 mt-1" />
+            <Icon name="lucide:check-circle" class="size-5 text-primary shrink-0 mt-1" />
             <div>
-              <strong class="text-[var(--color-foreground)] font-semibold">{p.title}</strong>
-              <p class="mt-1 text-sm text-[var(--color-muted-foreground)] leading-relaxed">{p.body}</p>
+              <strong class="text-foreground font-semibold">{p.title}</strong>
+              <p class="mt-1 text-sm text-muted-foreground leading-relaxed">{p.body}</p>
             </div>
           </li>
         ))}
@@ -65,19 +65,19 @@ import { Icon } from 'astro-icon/components';
 
     <!-- How we sustain -->
     <div class="pt-16">
-      <h2 class="text-2xl font-bold text-[var(--color-foreground)] mb-2">
-        How we keep the lights on<span class="text-[var(--color-primary)]">.</span>
+      <h2 class="text-2xl font-bold text-foreground mb-2">
+        How we keep the lights on<span class="text-primary">.</span>
       </h2>
-      <p class="text-sm text-[var(--color-muted-foreground)] mb-6">Free software still has servers to pay for.</p>
+      <p class="text-sm text-muted-foreground mb-6">Free software still has servers to pay for.</p>
 
-      <div class="text-[var(--color-muted-foreground)] text-sm leading-relaxed space-y-4 text-left">
+      <div class="text-muted-foreground text-sm leading-relaxed space-y-4 text-left">
         <p>
-          <strong class="text-[var(--color-foreground)]">Vessl Cloud.</strong> The daemon is free.
+          <strong class="text-foreground">Vessl Cloud.</strong> The daemon is free.
           The fleet control plane — Yamux tunnel handshake, usage metering, billing alerts, team management — is what we charge for.
           You get everything the daemon offers; the Cloud plan is for teams who want centralized visibility across many servers.
         </p>
         <p>
-          <strong class="text-[var(--color-foreground)]">GitHub Sponsors.</strong> If Vessl saves you money on Heroku or Railway,
+          <strong class="text-foreground">GitHub Sponsors.</strong> If Vessl saves you money on Heroku or Railway,
           consider sponsoring. Individual contributions fund the engineering time that keeps the daemon healthy.
         </p>
         <p>
@@ -91,23 +91,23 @@ import { Icon } from 'astro-icon/components';
     <!-- Support buttons -->
     <div class="pt-10 pb-4 flex flex-col sm:flex-row gap-4 justify-center">
       <a href="https://github.com/sponsors/techxteam" target="_blank"
-        class="flex items-center justify-center gap-3 px-5 py-3.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-border)] text-[var(--color-foreground)] font-semibold text-sm transition-colors">
+        class="flex items-center justify-center gap-3 px-5 py-3.5 rounded-lg border border-border bg-surface hover:bg-border text-foreground font-semibold text-sm transition-colors">
         <Icon name="simple-icons:github" class="size-6 shrink-0" />
         <span>GitHub Sponsors</span>
       </a>
 
-      <a href="https://app.vessl.dev" class="flex items-center justify-center gap-3 px-5 py-3.5 rounded-lg border border-[var(--color-primary)]/30 bg-[var(--color-primary)]/10 hover:bg-[var(--color-primary)]/20 text-[var(--color-foreground)] font-semibold text-sm transition-colors">
-        <Icon name="lucide:cloud" class="size-6 text-[var(--color-primary)] shrink-0" />
+      <a href="https://app.vessl.dev" class="flex items-center justify-center gap-3 px-5 py-3.5 rounded-lg border border-primary/30 bg-primary/10 hover:bg-primary/20 text-foreground font-semibold text-sm transition-colors">
+        <Icon name="lucide:cloud" class="size-6 text-primary shrink-0" />
         <span>Try Vessl Cloud</span>
       </a>
     </div>
 
     <!-- Transparency stats -->
     <div class="pt-16 pb-4">
-      <h2 class="text-2xl font-bold text-[var(--color-foreground)] mb-2">
-        Where we stand today<span class="text-[var(--color-primary)]">.</span>
+      <h2 class="text-2xl font-bold text-foreground mb-2">
+        Where we stand today<span class="text-primary">.</span>
       </h2>
-      <p class="text-sm text-[var(--color-muted-foreground)] mb-8">We publish these numbers because transparency is part of the deal.</p>
+      <p class="text-sm text-muted-foreground mb-8">We publish these numbers because transparency is part of the deal.</p>
 
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
@@ -116,16 +116,16 @@ import { Icon } from 'astro-icon/components';
           { label: 'Active Servers', value: '1,200+',  href: 'https://app.vessl.dev' },
         ].map(stat => (
           <a href={stat.href} target="_blank"
-            class="bg-[var(--color-surface)] rounded-xl p-6 border border-[var(--color-border)] hover:border-[var(--color-primary)]/40 transition-colors group text-center">
-            <div class="text-3xl font-extrabold text-[var(--color-foreground)] group-hover:text-[var(--color-primary)] transition-colors">{stat.value}</div>
-            <div class="text-sm text-[var(--color-muted-foreground)] mt-1">{stat.label}</div>
+            class="bg-surface rounded-xl p-6 border border-border hover:border-primary/40 transition-colors group text-center">
+            <div class="text-3xl font-extrabold text-foreground group-hover:text-primary transition-colors">{stat.value}</div>
+            <div class="text-sm text-muted-foreground mt-1">{stat.label}</div>
           </a>
         ))}
       </div>
     </div>
 
     <!-- Closing -->
-    <div class="pt-10 pb-20 text-sm text-[var(--color-muted-foreground)] leading-relaxed space-y-4">
+    <div class="pt-10 pb-20 text-sm text-muted-foreground leading-relaxed space-y-4">
       <p>
         This philosophy is not separate from the engineering.
         The reason the daemon is small (&lt;30MB) is that we refuse to bundle bloat to justify a premium tier.

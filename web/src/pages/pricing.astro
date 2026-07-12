@@ -1,5 +1,5 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from '../layouts/layout.astro';
 import { Icon } from 'astro-icon/components';
 
 const tableRows = [
@@ -59,10 +59,10 @@ const faqs = [
   <div class="max-w-5xl mx-auto px-6">
 
     <div class="text-center pt-16 md:pt-24 pb-12">
-      <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-[var(--color-foreground)]">
-        Simple pricing<span class="text-[var(--color-primary)]">.</span>
+      <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-foreground">
+        Simple pricing<span class="text-primary">.</span>
       </h1>
-      <p class="mt-3 text-[var(--color-muted-foreground)] text-base max-w-lg mx-auto">
+      <p class="mt-3 text-muted-foreground text-base max-w-lg mx-auto">
         The daemon is MIT-licensed and free forever.
         Pay only when you want the fleet control plane and metering on top.
       </p>
@@ -72,16 +72,16 @@ const faqs = [
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
       <!-- Self-hosted -->
-      <div class="bg-[var(--color-surface)] p-7 rounded-xl border border-[var(--color-border)] flex flex-col">
+      <div class="bg-surface p-7 rounded-xl border border-border flex flex-col">
         <div class="mb-6">
           <div class="flex items-center gap-2 mb-4">
-            <Icon name="lucide:server" class="size-5 text-[var(--color-primary)]" />
-            <h2 class="text-xl font-bold text-[var(--color-foreground)]">Self-hosted</h2>
+            <Icon name="lucide:server" class="size-5 text-primary" />
+            <h2 class="text-xl font-bold text-foreground">Self-hosted</h2>
           </div>
-          <p class="text-3xl font-extrabold text-[var(--color-foreground)]">Free
-            <span class="text-sm font-normal text-[var(--color-muted-foreground)] ml-1">forever</span>
+          <p class="text-3xl font-extrabold text-foreground">Free
+            <span class="text-sm font-normal text-muted-foreground ml-1">forever</span>
           </p>
-          <p class="text-sm text-[var(--color-muted-foreground)] mt-3 leading-relaxed">
+          <p class="text-sm text-muted-foreground mt-3 leading-relaxed">
             One curl command. The daemon bootstraps Traefik, sets up your network, and is ready to deploy in seconds.
             All features included, no expiry.
           </p>
@@ -97,42 +97,42 @@ const faqs = [
             'Cron jobs + env secrets',
             'AI settings per team',
           ].map(f => (
-            <li class="flex items-start gap-3 text-[var(--color-foreground)]">
-              <Icon name="lucide:check" class="size-4 text-[var(--color-primary)] shrink-0 mt-0.5" />
+            <li class="flex items-start gap-3 text-foreground">
+              <Icon name="lucide:check" class="size-4 text-primary shrink-0 mt-0.5" />
               {f}
             </li>
           ))}
         </ul>
 
-        <a href="https://docs.vessl.dev/self-host" target="_blank" class="mt-8 flex items-center justify-center gap-2 py-3.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] hover:bg-[var(--color-border)] text-[var(--color-foreground)] font-semibold text-sm transition-colors">
-          <Icon name="lucide:book" class="size-4 text-[var(--color-primary)]" />
+        <a href="https://docs.vessl.dev/self-host" target="_blank" class="mt-8 flex items-center justify-center gap-2 py-3.5 rounded-lg border border-border bg-background hover:bg-border text-foreground font-semibold text-sm transition-colors">
+          <Icon name="lucide:book" class="size-4 text-primary" />
           Read the Docs
         </a>
       </div>
 
       <!-- Cloud -->
-      <div class="bg-[var(--color-surface)] p-7 rounded-xl border border-[var(--color-primary)]/30 flex flex-col relative overflow-hidden">
+      <div class="bg-surface p-7 rounded-xl border border-primary/30 flex flex-col relative overflow-hidden">
         <!-- Subtle glow -->
         <div class="pointer-events-none absolute inset-0 [background:radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(124,58,237,0.07),transparent)]" aria-hidden="true"></div>
 
         <div class="relative mb-6">
           <div class="flex items-center justify-between gap-3 flex-wrap mb-4">
             <div class="flex items-center gap-2">
-              <Icon name="lucide:cloud" class="size-5 text-[var(--color-primary)]" />
-              <h2 class="text-xl font-bold text-[var(--color-foreground)]">Cloud</h2>
+              <Icon name="lucide:cloud" class="size-5 text-primary" />
+              <h2 class="text-xl font-bold text-foreground">Cloud</h2>
             </div>
-            <div class="inline-flex gap-1 p-1 bg-[var(--color-background)] rounded text-xs">
-              <span class="px-3 py-1 bg-[var(--color-primary)] text-white rounded font-semibold">Monthly</span>
-              <span class="px-3 py-1 text-[var(--color-muted-foreground)] font-semibold">
-                Annually <span class="text-[var(--color-primary)]">−20%</span>
+            <div class="inline-flex gap-1 p-1 bg-background rounded text-xs">
+              <span class="px-3 py-1 bg-primary text-white rounded font-semibold">Monthly</span>
+              <span class="px-3 py-1 text-muted-foreground font-semibold">
+                Annually <span class="text-primary">−20%</span>
               </span>
             </div>
           </div>
-          <p class="text-3xl font-extrabold text-[var(--color-foreground)]">$5
-            <span class="text-sm font-normal text-[var(--color-muted-foreground)] ml-1">/month · 2 servers included</span>
+          <p class="text-3xl font-extrabold text-foreground">$5
+            <span class="text-sm font-normal text-muted-foreground ml-1">/month · 2 servers included</span>
           </p>
-          <p class="text-sm text-[var(--color-primary)] font-semibold mt-1">+ $3 /month per extra server</p>
-          <p class="text-sm text-[var(--color-muted-foreground)] mt-3 leading-relaxed">
+          <p class="text-sm text-primary font-semibold mt-1">+ $3 /month per extra server</p>
+          <p class="text-sm text-muted-foreground mt-3 leading-relaxed">
             All the self-hosted goodness, plus a managed fleet dashboard.
             Connect servers via Yamux tunnel — no ports to open, no VPN.
           </p>
@@ -148,19 +148,19 @@ const faqs = [
             'Team billing + per-server limits',
             '14-day free trial · no card required',
           ].map(f => (
-            <li class="flex items-start gap-3 text-[var(--color-foreground)]">
-              <Icon name="lucide:check" class="size-4 text-[var(--color-primary)] shrink-0 mt-0.5" />
+            <li class="flex items-start gap-3 text-foreground">
+              <Icon name="lucide:check" class="size-4 text-primary shrink-0 mt-0.5" />
               {f}
             </li>
           ))}
         </ul>
 
-        <div class="flex items-start gap-2 mt-4 p-3 rounded-lg bg-[var(--color-background)] border border-[var(--color-border)] text-xs text-[var(--color-muted-foreground)] relative">
-          <Icon name="lucide:info" class="size-3.5 text-[var(--color-primary)] shrink-0 mt-0.5" />
+        <div class="flex items-start gap-2 mt-4 p-3 rounded-lg bg-background border border-border text-xs text-muted-foreground relative">
+          <Icon name="lucide:info" class="size-3.5 text-primary shrink-0 mt-0.5" />
           Your apps run on <em>your</em> servers. Vessl Cloud only manages the control plane.
         </div>
 
-        <a href="https://app.vessl.dev/register" class="mt-6 flex items-center justify-center gap-2 py-3.5 rounded-lg bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white font-semibold text-sm transition-colors relative">
+        <a href="https://app.vessl.dev/register" class="mt-6 flex items-center justify-center gap-2 py-3.5 rounded-lg bg-primary hover:bg-primary-hover text-white font-semibold text-sm transition-colors relative">
           Start 14-day trial
           <Icon name="lucide:arrow-right" class="size-4" />
         </a>
@@ -168,29 +168,29 @@ const faqs = [
     </div>
 
     <!-- Comparison table -->
-    <div class="mt-16 overflow-x-auto rounded-xl border border-[var(--color-border)]">
+    <div class="mt-16 overflow-x-auto rounded-xl border border-border">
       <table class="w-full text-left text-sm">
         <thead>
-          <tr class="bg-[var(--color-surface)] border-b border-[var(--color-border)]">
-            <th class="px-5 py-4 font-semibold text-[var(--color-foreground)]">Feature</th>
-            <th class="px-5 py-4 font-semibold text-[var(--color-foreground)] min-w-[150px]">Self-hosted</th>
-            <th class="px-5 py-4 font-semibold text-[var(--color-foreground)] min-w-[100px]">Cloud</th>
+          <tr class="bg-surface border-b border-border">
+            <th class="px-5 py-4 font-semibold text-foreground">Feature</th>
+            <th class="px-5 py-4 font-semibold text-foreground min-w-37.5">Self-hosted</th>
+            <th class="px-5 py-4 font-semibold text-foreground min-w-25">Cloud</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-[var(--color-border)]">
+        <tbody class="divide-y divide-border">
           {tableRows.map(row => (
-            <tr class="hover:bg-[var(--color-surface)]/60 transition-colors">
-              <td class="px-5 py-3.5 text-[var(--color-foreground)]">{row.feature}</td>
+            <tr class="hover:bg-surface/60 transition-colors">
+              <td class="px-5 py-3.5 text-foreground">{row.feature}</td>
               <td class="px-5 py-3.5">
                 {row.sh === true
-                  ? <Icon name="lucide:check" class="size-4 text-[var(--color-primary)]" />
-                  : <span class="text-[var(--color-muted-foreground)] text-xs">{row.sh}</span>
+                  ? <Icon name="lucide:check" class="size-4 text-primary" />
+                  : <span class="text-muted-foreground text-xs">{row.sh}</span>
                 }
               </td>
               <td class="px-5 py-3.5">
                 {row.cloud === true
-                  ? <Icon name="lucide:check" class="size-4 text-[var(--color-primary)]" />
-                  : <span class="text-[var(--color-muted-foreground)] text-xs">{row.cloud}</span>
+                  ? <Icon name="lucide:check" class="size-4 text-primary" />
+                  : <span class="text-muted-foreground text-xs">{row.cloud}</span>
                 }
               </td>
             </tr>
@@ -201,15 +201,15 @@ const faqs = [
 
     <!-- FAQ -->
     <div class="mt-16 max-w-3xl mx-auto pb-16">
-      <h2 class="text-2xl font-bold text-[var(--color-foreground)] mb-6">Common questions</h2>
-      <div class="divide-y divide-[var(--color-border)] border-y border-[var(--color-border)]">
+      <h2 class="text-2xl font-bold text-foreground mb-6">Common questions</h2>
+      <div class="divide-y divide-border border-y border-border">
         {faqs.map(faq => (
           <details class="py-4 group cursor-pointer">
-            <summary class="w-full text-left text-sm font-semibold text-[var(--color-foreground)] flex justify-between items-center list-none gap-4">
+            <summary class="w-full text-left text-sm font-semibold text-foreground flex justify-between items-center list-none gap-4">
               {faq.q}
-              <Icon name="lucide:chevron-down" class="size-4 text-[var(--color-muted-foreground)] group-open:rotate-180 transition-transform duration-200 shrink-0" />
+              <Icon name="lucide:chevron-down" class="size-4 text-muted-foreground group-open:rotate-180 transition-transform duration-200 shrink-0" />
             </summary>
-            <p class="mt-3 text-sm text-[var(--color-muted-foreground)] leading-relaxed pr-8">{faq.a}</p>
+            <p class="mt-3 text-sm text-muted-foreground leading-relaxed pr-8">{faq.a}</p>
           </details>
         ))}
       </div>
