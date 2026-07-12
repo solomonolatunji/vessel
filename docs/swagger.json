@@ -1,3053 +1,2181 @@
 {
-    "swagger": "2.0",
-    "info": {
-        "description": "Vessl API Documentation",
-        "title": "Vessl API",
-        "contact": {},
-        "version": "1.0"
+  "swagger": "2.0",
+  "info": {
+    "description": "Vessl API Documentation",
+    "title": "Vessl API",
+    "contact": {},
+    "version": "1.0"
+  },
+  "host": "localhost:8080",
+  "basePath": "/api",
+  "paths": {
+    "/api/apps/{id}": {
+      "delete": {
+        "description": "Delete App Service",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["AppServices"],
+        "summary": "Delete App Service",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "App ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
     },
-    "host": "localhost:8080",
-    "basePath": "/api",
-    "paths": {
-        "/api/apps/{id}": {
-            "delete": {
-                "description": "Delete App Service",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "AppServices"
-                ],
-                "summary": "Delete App Service",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "App ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/auth/2fa/disable": {
-            "post": {
-                "description": "Disable2FA endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Disable2FA endpoint",
-                "responses": {}
-            }
-        },
-        "/api/auth/2fa/setup": {
-            "post": {
-                "description": "Setup2FA endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Setup2FA endpoint",
-                "responses": {}
-            }
-        },
-        "/api/auth/2fa/verify": {
-            "post": {
-                "description": "Verify2FA endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Verify2FA endpoint",
-                "responses": {}
-            }
-        },
-        "/api/auth/logout": {
-            "post": {
-                "description": "Logout endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Logout endpoint",
-                "responses": {}
-            }
-        },
-        "/api/auth/oauth/{provider}": {
-            "get": {
-                "description": "OAuthRedirect endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "OAuthRedirect endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "provider",
-                        "name": "provider",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/auth/oauth/{provider}/callback": {
-            "get": {
-                "description": "OAuthCallback endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "OAuthCallback endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "provider",
-                        "name": "provider",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/auth/signin": {
-            "post": {
-                "description": "Login endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Login endpoint",
-                "responses": {}
-            }
-        },
-        "/api/auth/signup": {
-            "post": {
-                "description": "Register endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Register endpoint",
-                "responses": {}
-            }
-        },
-        "/api/backups": {
-            "get": {
-                "description": "List endpoint\nList Backups",
-                "consumes": [
-                    "application/json",
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json",
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces",
-                    "Backups"
-                ],
-                "summary": "List Backups",
-                "responses": {}
-            },
-            "post": {
-                "description": "Create endpoint\nCreate Backup",
-                "consumes": [
-                    "application/json",
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json",
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces",
-                    "Backups"
-                ],
-                "summary": "Create Backup",
-                "responses": {}
-            }
-        },
-        "/api/backups/{id}": {
-            "get": {
-                "description": "Get endpoint\nGet Backup",
-                "consumes": [
-                    "application/json",
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json",
-                    "application/json"
-                ],
-                "tags": [
-                    "Teams",
-                    "Backups"
-                ],
-                "summary": "Get Backup",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Backup ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "delete": {
-                "description": "Delete endpoint\nDelete Backup",
-                "consumes": [
-                    "application/json",
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json",
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces",
-                    "Backups"
-                ],
-                "summary": "Delete Backup",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Backup ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/backups/{id}/records": {
-            "get": {
-                "description": "ListRecords endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Backups"
-                ],
-                "summary": "ListRecords endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/backups/{id}/trigger": {
-            "post": {
-                "description": "Trigger endpoint\nTrigger Deployment",
-                "consumes": [
-                    "application/json",
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json",
-                    "application/json"
-                ],
-                "tags": [
-                    "Backups",
-                    "Deployments"
-                ],
-                "summary": "Trigger Deployment",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/canvas/projects": {
-            "get": {
-                "description": "ListCanvasSummaries endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Canvas"
-                ],
-                "summary": "ListCanvasSummaries endpoint",
-                "responses": {}
-            }
-        },
-        "/api/databases": {
-            "get": {
-                "description": "ListDatabases endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Databases"
-                ],
-                "summary": "ListDatabases endpoint",
-                "responses": {}
-            },
-            "post": {
-                "description": "CreateDatabase endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Databases"
-                ],
-                "summary": "CreateDatabase endpoint",
-                "responses": {}
-            }
-        },
-        "/api/databases/{id}": {
-            "get": {
-                "description": "GetDatabase endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Databases"
-                ],
-                "summary": "GetDatabase endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "delete": {
-                "description": "DeleteDatabase endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Databases"
-                ],
-                "summary": "DeleteDatabase endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/databases/{id}/query": {
-            "post": {
-                "description": "QueryDatabase endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Databases"
-                ],
-                "summary": "QueryDatabase endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/databases/{id}/start": {
-            "post": {
-                "description": "StartDatabase endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Databases"
-                ],
-                "summary": "StartDatabase endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/databases/{id}/stop": {
-            "post": {
-                "description": "StopDatabase endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Databases"
-                ],
-                "summary": "StopDatabase endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/deployments/{id}/diagnostics": {
-            "post": {
-                "description": "Analyze endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Deployments"
-                ],
-                "summary": "Analyze endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/deployments/{id}/logs": {
-            "get": {
-                "description": "GetLogs endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Deployments"
-                ],
-                "summary": "GetLogs endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/deployments/{id}/rollback": {
-            "post": {
-                "description": "Rollback endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Deployments"
-                ],
-                "summary": "Rollback endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/domains/{id}": {
-            "delete": {
-                "description": "Delete endpoint\nDelete Domain",
-                "consumes": [
-                    "application/json",
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json",
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces",
-                    "Domains"
-                ],
-                "summary": "Delete Domain",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Domain ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/environments/{id}": {
-            "delete": {
-                "description": "Delete endpoint\nDelete Environment",
-                "consumes": [
-                    "application/json",
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json",
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces",
-                    "Environments"
-                ],
-                "summary": "Delete Environment",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Environment ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/environments/{id}/apps": {
-            "get": {
-                "description": "ListByEnvironment endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Environments"
-                ],
-                "summary": "ListByEnvironment endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/environments/{id}/canvas": {
-            "get": {
-                "description": "GetEnvironmentCanvas endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Environments"
-                ],
-                "summary": "GetEnvironmentCanvas endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/git/connect": {
-            "post": {
-                "description": "Connect endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Git"
-                ],
-                "summary": "Connect endpoint",
-                "responses": {}
-            }
-        },
-        "/api/git/connect/{provider}": {
-            "delete": {
-                "description": "Disconnect endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Git"
-                ],
-                "summary": "Disconnect endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "provider",
-                        "name": "provider",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/git/repos": {
-            "get": {
-                "description": "ListRepos endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Git"
-                ],
-                "summary": "ListRepos endpoint",
-                "responses": {}
-            }
-        },
-        "/api/git/status": {
-            "get": {
-                "description": "Status endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Git"
-                ],
-                "summary": "Status endpoint",
-                "responses": {}
-            }
-        },
-        "/api/jobs": {
-            "get": {
-                "description": "ListProjectJobs endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Jobs"
-                ],
-                "summary": "ListProjectJobs endpoint",
-                "responses": {}
-            }
-        },
-        "/api/jobs/{id}": {
-            "get": {
-                "description": "Get endpoint\nGet Job",
-                "consumes": [
-                    "application/json",
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json",
-                    "application/json"
-                ],
-                "tags": [
-                    "Teams",
-                    "Jobs"
-                ],
-                "summary": "Get Job",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Job ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "delete": {
-                "description": "Delete endpoint\nDelete Job",
-                "consumes": [
-                    "application/json",
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json",
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces",
-                    "Jobs"
-                ],
-                "summary": "Delete Job",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Job ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/jobs/{id}/trigger": {
-            "post": {
-                "description": "Run endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Jobs"
-                ],
-                "summary": "Run endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/oauth/vercel/callback": {
-            "get": {
-                "description": "Callback endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Oauth"
-                ],
-                "summary": "Callback endpoint",
-                "responses": {}
-            }
-        },
-        "/api/profile": {
-            "get": {
-                "description": "GetProfile endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Profile"
-                ],
-                "summary": "GetProfile endpoint",
-                "responses": {}
-            },
-            "put": {
-                "description": "UpdateProfile endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Profile"
-                ],
-                "summary": "UpdateProfile endpoint",
-                "responses": {}
-            }
-        },
-        "/api/profile/tokens": {
-            "get": {
-                "description": "ListPATs endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Profile"
-                ],
-                "summary": "ListPATs endpoint",
-                "responses": {}
-            },
-            "post": {
-                "description": "CreatePAT endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Profile"
-                ],
-                "summary": "CreatePAT endpoint",
-                "responses": {}
-            }
-        },
-        "/api/profile/tokens/{id}": {
-            "delete": {
-                "description": "DeletePAT endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Profile"
-                ],
-                "summary": "DeletePAT endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/projects": {
-            "post": {
-                "description": "CreateProject endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "CreateProject endpoint",
-                "responses": {}
-            }
-        },
-        "/api/projects/{id}": {
-            "get": {
-                "description": "GetProject endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "GetProject endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "delete": {
-                "description": "DeleteProject endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "DeleteProject endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/projects/{id}/apps": {
-            "get": {
-                "description": "ListByProject endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "ListByProject endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/projects/{id}/deploy": {
-            "post": {
-                "description": "DeployProject endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "DeployProject endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/projects/{id}/env": {
-            "get": {
-                "description": "GetVars endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "GetVars endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "put": {
-                "description": "SetVars endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "SetVars endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/projects/{id}/summary": {
-            "get": {
-                "description": "GetCanvasSummary endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "GetCanvasSummary endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/projects/{projectId}/members": {
-            "post": {
-                "description": "AddMember endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "AddMember endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "projectId",
-                        "name": "projectId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/projects/{projectId}/members/{id}": {
-            "delete": {
-                "description": "RemoveMember endpoint\nRemove Project Member",
-                "consumes": [
-                    "application/json",
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json",
-                    "application/json"
-                ],
-                "tags": [
-                    "Teams",
-                    "ProjectSettings"
-                ],
-                "summary": "Remove Project Member",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Project ID",
-                        "name": "projectId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/projects/{projectId}/tokens": {
-            "get": {
-                "description": "ListTokens endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "ListTokens endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "projectId",
-                        "name": "projectId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "post": {
-                "description": "CreateToken endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "CreateToken endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "projectId",
-                        "name": "projectId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/projects/{projectId}/tokens/{id}": {
-            "delete": {
-                "description": "DeleteToken endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "DeleteToken endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "projectId",
-                        "name": "projectId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/projects/{projectId}/webhooks": {
-            "get": {
-                "description": "ListWebhooks endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "ListWebhooks endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "projectId",
-                        "name": "projectId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "post": {
-                "description": "CreateWebhook endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "CreateWebhook endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "projectId",
-                        "name": "projectId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/projects/{projectId}/webhooks/{id}": {
-            "delete": {
-                "description": "DeleteWebhook endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "DeleteWebhook endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "projectId",
-                        "name": "projectId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/s3-destinations": {
-            "get": {
-                "description": "ListS3Destinations endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "S3-destinations"
-                ],
-                "summary": "ListS3Destinations endpoint",
-                "responses": {}
-            },
-            "post": {
-                "description": "CreateS3Destination endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "S3-destinations"
-                ],
-                "summary": "CreateS3Destination endpoint",
-                "responses": {}
-            }
-        },
-        "/api/s3-destinations/{id}": {
-            "delete": {
-                "description": "DeleteS3Destination endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "S3-destinations"
-                ],
-                "summary": "DeleteS3Destination endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/services/{serviceId}/deploy": {
-            "post": {
-                "description": "Trigger endpoint\nTrigger Deployment",
-                "consumes": [
-                    "application/json",
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json",
-                    "application/json"
-                ],
-                "tags": [
-                    "Backups",
-                    "Deployments"
-                ],
-                "summary": "Trigger Deployment",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Service ID",
-                        "name": "serviceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/services/{serviceId}/deployments": {
-            "get": {
-                "description": "ListServiceDeployments endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Services"
-                ],
-                "summary": "ListServiceDeployments endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "serviceId",
-                        "name": "serviceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/services/{serviceId}/metrics": {
-            "get": {
-                "description": "GetMetrics endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Services"
-                ],
-                "summary": "GetMetrics endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "serviceId",
-                        "name": "serviceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/services/{serviceId}/serverless/code": {
-            "get": {
-                "description": "GetCode endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Services"
-                ],
-                "summary": "GetCode endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "serviceId",
-                        "name": "serviceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "post": {
-                "description": "SaveCode endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Services"
-                ],
-                "summary": "SaveCode endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "serviceId",
-                        "name": "serviceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/services/{serviceId}/variables": {
-            "get": {
-                "description": "List endpoint\nList Service Variables",
-                "consumes": [
-                    "application/json",
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json",
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces",
-                    "ServiceVariables"
-                ],
-                "summary": "List Service Variables",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Service ID",
-                        "name": "serviceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "post": {
-                "description": "Create endpoint\nCreate Service Variable",
-                "consumes": [
-                    "application/json",
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json",
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces",
-                    "ServiceVariables"
-                ],
-                "summary": "Create Service Variable",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Service ID",
-                        "name": "serviceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/services/{serviceId}/variables/{id}": {
-            "put": {
-                "description": "Update endpoint\nUpdate Service Variable",
-                "consumes": [
-                    "application/json",
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json",
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces",
-                    "ServiceVariables"
-                ],
-                "summary": "Update Service Variable",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Service ID",
-                        "name": "serviceId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Variable ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "delete": {
-                "description": "Delete endpoint\nDelete Service Variable",
-                "consumes": [
-                    "application/json",
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json",
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces",
-                    "ServiceVariables"
-                ],
-                "summary": "Delete Service Variable",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Service ID",
-                        "name": "serviceId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Variable ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/settings": {
-            "get": {
-                "description": "GetSettings endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "GetSettings endpoint",
-                "responses": {}
-            },
-            "put": {
-                "description": "UpdateSettings endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "UpdateSettings endpoint",
-                "responses": {}
-            }
-        },
-        "/api/settings/git_apps/bitbucket": {
-            "get": {
-                "description": "ListBitbucketApps endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "ListBitbucketApps endpoint",
-                "responses": {}
-            },
-            "put": {
-                "description": "SaveBitbucketApp endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "SaveBitbucketApp endpoint",
-                "responses": {}
-            }
-        },
-        "/api/settings/git_apps/bitbucket/{id}": {
-            "get": {
-                "description": "GetBitbucketApp endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "GetBitbucketApp endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "delete": {
-                "description": "DeleteBitbucketApp endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "DeleteBitbucketApp endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/settings/git_apps/github": {
-            "get": {
-                "description": "ListGithubApps endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "ListGithubApps endpoint",
-                "responses": {}
-            },
-            "put": {
-                "description": "SaveGithubApp endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "SaveGithubApp endpoint",
-                "responses": {}
-            }
-        },
-        "/api/settings/git_apps/github/manifest-callback": {
-            "post": {
-                "description": "ExchangeGithubManifestCode endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "ExchangeGithubManifestCode endpoint",
-                "responses": {}
-            }
-        },
-        "/api/settings/git_apps/github/{id}": {
-            "get": {
-                "description": "GetGithubApp endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "GetGithubApp endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "delete": {
-                "description": "DeleteGithubApp endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "DeleteGithubApp endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/settings/git_apps/gitlab": {
-            "get": {
-                "description": "ListGitlabApps endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "ListGitlabApps endpoint",
-                "responses": {}
-            },
-            "put": {
-                "description": "SaveGitlabApp endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "SaveGitlabApp endpoint",
-                "responses": {}
-            }
-        },
-        "/api/settings/git_apps/gitlab/{id}": {
-            "get": {
-                "description": "GetGitlabApp endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "GetGitlabApp endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "delete": {
-                "description": "DeleteGitlabApp endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "DeleteGitlabApp endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/settings/license": {
-            "post": {
-                "description": "Activates offline license key\nActivate License",
-                "consumes": [
-                    "application/json",
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json",
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings",
-                    "Settings"
-                ],
-                "summary": "Activate License",
-                "responses": {}
-            }
-        },
-        "/api/settings/notifications": {
-            "get": {
-                "description": "ListChannels endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "ListChannels endpoint",
-                "responses": {}
-            },
-            "put": {
-                "description": "SaveChannel endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "SaveChannel endpoint",
-                "responses": {}
-            }
-        },
-        "/api/settings/notifications/test": {
-            "post": {
-                "description": "TestNotification endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "TestNotification endpoint",
-                "responses": {}
-            }
-        },
-        "/api/settings/notifications/{id}": {
-            "get": {
-                "description": "GetTeamNotificationChannel endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "GetTeamNotificationChannel endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "delete": {
-                "description": "DeleteChannel endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "DeleteChannel endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/settings/oauth/providers": {
-            "get": {
-                "description": "ListProviders endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "ListProviders endpoint",
-                "responses": {}
-            },
-            "put": {
-                "description": "SaveProvider endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "SaveProvider endpoint",
-                "responses": {}
-            }
-        },
-        "/api/settings/updates/check": {
-            "post": {
-                "description": "CheckUpdate endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "CheckUpdate endpoint",
-                "responses": {}
-            }
-        },
-        "/api/settings/updates/deploy": {
-            "post": {
-                "description": "DeployUpdate endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "DeployUpdate endpoint",
-                "responses": {}
-            }
-        },
-        "/api/settings/updates/status": {
-            "get": {
-                "description": "GetUpdateStatus endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "GetUpdateStatus endpoint",
-                "responses": {}
-            }
-        },
-        "/api/ssh-keys/{id}": {
-            "delete": {
-                "description": "DeleteSSHKey endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Ssh-keys"
-                ],
-                "summary": "DeleteSSHKey endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/storage": {
-            "get": {
-                "description": "ListStorage endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Storage"
-                ],
-                "summary": "ListStorage endpoint",
-                "responses": {}
-            },
-            "post": {
-                "description": "CreateStorage endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Storage"
-                ],
-                "summary": "CreateStorage endpoint",
-                "responses": {}
-            }
-        },
-        "/api/storage/{id}": {
-            "get": {
-                "description": "GetStorage endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Storage"
-                ],
-                "summary": "GetStorage endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "delete": {
-                "description": "DeleteStorage endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Storage"
-                ],
-                "summary": "DeleteStorage endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/storage/{id}/start": {
-            "post": {
-                "description": "StartStorage endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Storage"
-                ],
-                "summary": "StartStorage endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/storage/{id}/stop": {
-            "post": {
-                "description": "StopStorage endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Storage"
-                ],
-                "summary": "StopStorage endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/team-invites/{token}": {
-            "get": {
-                "description": "GetInvite endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Team-invites"
-                ],
-                "summary": "GetInvite endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "token",
-                        "name": "token",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/team-invites/{token}/accept": {
-            "post": {
-                "description": "AcceptInvite endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Team-invites"
-                ],
-                "summary": "AcceptInvite endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "token",
-                        "name": "token",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/teams": {
-            "get": {
-                "description": "List endpoint\nList Teams",
-                "consumes": [
-                    "application/json",
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json",
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces",
-                    "Teams"
-                ],
-                "summary": "List Teams",
-                "responses": {}
-            },
-            "post": {
-                "description": "Create endpoint\nCreate Team",
-                "consumes": [
-                    "application/json",
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json",
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces",
-                    "Teams"
-                ],
-                "summary": "Create Team",
-                "responses": {}
-            }
-        },
-        "/api/teams/{id}": {
-            "get": {
-                "description": "Get endpoint\nGet Team",
-                "consumes": [
-                    "application/json",
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json",
-                    "application/json"
-                ],
-                "tags": [
-                    "Teams",
-                    "Teams"
-                ],
-                "summary": "Get Team",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Team ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "delete": {
-                "description": "Delete endpoint\nDelete Team",
-                "consumes": [
-                    "application/json",
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json",
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces",
-                    "Teams"
-                ],
-                "summary": "Delete Team",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Team ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/teams/{id}/invite": {
-            "post": {
-                "description": "InviteMember endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Teams"
-                ],
-                "summary": "InviteMember endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/teams/{id}/members": {
-            "get": {
-                "description": "ListMembers endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Teams"
-                ],
-                "summary": "ListMembers endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/teams/{id}/members/{userId}": {
-            "delete": {
-                "description": "RemoveMember endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Teams"
-                ],
-                "summary": "RemoveMember endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "userId",
-                        "name": "userId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/teams/{teamId}/ai_settings": {
-            "get": {
-                "description": "Get endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Teams"
-                ],
-                "summary": "Get endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "teamId",
-                        "name": "teamId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "put": {
-                "description": "Save endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Teams"
-                ],
-                "summary": "Save endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "teamId",
-                        "name": "teamId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/teams/{teamId}/audit-logs": {
-            "get": {
-                "description": "ListAuditLogs endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Teams"
-                ],
-                "summary": "ListAuditLogs endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "teamId",
-                        "name": "teamId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/teams/{teamId}/email_settings": {
-            "get": {
-                "description": "Get Team Email Settings",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "EmailSettings"
-                ],
-                "summary": "Get Team Email Settings",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Team ID",
-                        "name": "teamId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "post": {
-                "description": "Save Team Email Settings",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "EmailSettings"
-                ],
-                "summary": "Save Team Email Settings",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Team ID",
-                        "name": "teamId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/teams/{teamId}/ssh-keys": {
-            "get": {
-                "description": "ListSSHKeys endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Teams"
-                ],
-                "summary": "ListSSHKeys endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "teamId",
-                        "name": "teamId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "post": {
-                "description": "CreateSSHKey endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Teams"
-                ],
-                "summary": "CreateSSHKey endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "teamId",
-                        "name": "teamId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/teams/{teamId}/trusted-domains": {
-            "get": {
-                "description": "ListTrustedDomains endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Teams"
-                ],
-                "summary": "ListTrustedDomains endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "teamId",
-                        "name": "teamId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "post": {
-                "description": "CreateTrustedDomain endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Teams"
-                ],
-                "summary": "CreateTrustedDomain endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "teamId",
-                        "name": "teamId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/trusted-domains/{id}": {
-            "delete": {
-                "description": "DeleteTrustedDomain endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Trusted-domains"
-                ],
-                "summary": "DeleteTrustedDomain endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/vercel/projects": {
-            "get": {
-                "description": "ListProjects endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Vercel"
-                ],
-                "summary": "ListProjects endpoint",
-                "responses": {}
-            }
-        },
-        "/api/vercel/projects/{id}/env": {
-            "get": {
-                "description": "GetProjectEnv endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Vercel"
-                ],
-                "summary": "GetProjectEnv endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/webhooks/git/services/{serviceId}": {
-            "post": {
-                "description": "HandleServiceWebhook endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Webhooks"
-                ],
-                "summary": "HandleServiceWebhook endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "serviceId",
-                        "name": "serviceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/webhooks/git/{projectId}": {
-            "post": {
-                "description": "HandleProjectWebhook endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Webhooks"
-                ],
-                "summary": "HandleProjectWebhook endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "projectId",
-                        "name": "projectId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/webhooks/github/services/{serviceId}": {
-            "post": {
-                "description": "HandleGitHubWebhook endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Webhooks"
-                ],
-                "summary": "HandleGitHubWebhook endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "serviceId",
-                        "name": "serviceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/workspaces": {
-            "get": {
-                "description": "List endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces"
-                ],
-                "summary": "List endpoint",
-                "responses": {}
-            },
-            "post": {
-                "description": "Create endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces"
-                ],
-                "summary": "Create endpoint",
-                "responses": {}
-            }
-        },
-        "/api/workspaces/{id}": {
-            "put": {
-                "description": "Update endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces"
-                ],
-                "summary": "Update endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "delete": {
-                "description": "Delete endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces"
-                ],
-                "summary": "Delete endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/ws/services/{id}/terminal": {
-            "get": {
-                "description": "HandleWebSocket endpoint\nHandle Terminal WebSocket",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Ws",
-                    "Terminal"
-                ],
-                "summary": "Handle Terminal WebSocket",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/ws/terminal/{id}": {
-            "get": {
-                "description": "HandleWebSocket endpoint\nHandle Terminal WebSocket",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Ws",
-                    "Terminal"
-                ],
-                "summary": "Handle Terminal WebSocket",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        }
+    "/api/auth/2fa/disable": {
+      "post": {
+        "description": "Disable2FA endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Auth"],
+        "summary": "Disable2FA endpoint",
+        "responses": {}
+      }
     },
-    "securityDefinitions": {
-        "BearerAuth": {
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header"
-        }
+    "/api/auth/2fa/setup": {
+      "post": {
+        "description": "Setup2FA endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Auth"],
+        "summary": "Setup2FA endpoint",
+        "responses": {}
+      }
+    },
+    "/api/auth/2fa/verify": {
+      "post": {
+        "description": "Verify2FA endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Auth"],
+        "summary": "Verify2FA endpoint",
+        "responses": {}
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "description": "Logout endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Auth"],
+        "summary": "Logout endpoint",
+        "responses": {}
+      }
+    },
+    "/api/auth/oauth/{provider}": {
+      "get": {
+        "description": "OAuthRedirect endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Auth"],
+        "summary": "OAuthRedirect endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "provider",
+            "name": "provider",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/auth/oauth/{provider}/callback": {
+      "get": {
+        "description": "OAuthCallback endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Auth"],
+        "summary": "OAuthCallback endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "provider",
+            "name": "provider",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/auth/signin": {
+      "post": {
+        "description": "Login endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Auth"],
+        "summary": "Login endpoint",
+        "responses": {}
+      }
+    },
+    "/api/auth/signup": {
+      "post": {
+        "description": "Register endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Auth"],
+        "summary": "Register endpoint",
+        "responses": {}
+      }
+    },
+    "/api/backups": {
+      "get": {
+        "description": "List endpoint\nList Backups",
+        "consumes": ["application/json", "application/json"],
+        "produces": ["application/json", "application/json"],
+        "tags": ["Workspaces", "Backups"],
+        "summary": "List Backups",
+        "responses": {}
+      },
+      "post": {
+        "description": "Create endpoint\nCreate Backup",
+        "consumes": ["application/json", "application/json"],
+        "produces": ["application/json", "application/json"],
+        "tags": ["Workspaces", "Backups"],
+        "summary": "Create Backup",
+        "responses": {}
+      }
+    },
+    "/api/backups/{id}": {
+      "get": {
+        "description": "Get endpoint\nGet Backup",
+        "consumes": ["application/json", "application/json"],
+        "produces": ["application/json", "application/json"],
+        "tags": ["Teams", "Backups"],
+        "summary": "Get Backup",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Backup ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "delete": {
+        "description": "Delete endpoint\nDelete Backup",
+        "consumes": ["application/json", "application/json"],
+        "produces": ["application/json", "application/json"],
+        "tags": ["Workspaces", "Backups"],
+        "summary": "Delete Backup",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "Backup ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/backups/{id}/records": {
+      "get": {
+        "description": "ListRecords endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Backups"],
+        "summary": "ListRecords endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/backups/{id}/trigger": {
+      "post": {
+        "description": "Trigger endpoint\nTrigger Deployment",
+        "consumes": ["application/json", "application/json"],
+        "produces": ["application/json", "application/json"],
+        "tags": ["Backups", "Deployments"],
+        "summary": "Trigger Deployment",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/canvas/projects": {
+      "get": {
+        "description": "ListCanvasSummaries endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Canvas"],
+        "summary": "ListCanvasSummaries endpoint",
+        "responses": {}
+      }
+    },
+    "/api/databases": {
+      "get": {
+        "description": "ListDatabases endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Databases"],
+        "summary": "ListDatabases endpoint",
+        "responses": {}
+      },
+      "post": {
+        "description": "CreateDatabase endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Databases"],
+        "summary": "CreateDatabase endpoint",
+        "responses": {}
+      }
+    },
+    "/api/databases/{id}": {
+      "get": {
+        "description": "GetDatabase endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Databases"],
+        "summary": "GetDatabase endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "delete": {
+        "description": "DeleteDatabase endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Databases"],
+        "summary": "DeleteDatabase endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/databases/{id}/query": {
+      "post": {
+        "description": "QueryDatabase endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Databases"],
+        "summary": "QueryDatabase endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/databases/{id}/start": {
+      "post": {
+        "description": "StartDatabase endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Databases"],
+        "summary": "StartDatabase endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/databases/{id}/stop": {
+      "post": {
+        "description": "StopDatabase endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Databases"],
+        "summary": "StopDatabase endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/deployments/{id}/diagnostics": {
+      "post": {
+        "description": "Analyze endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Deployments"],
+        "summary": "Analyze endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/deployments/{id}/logs": {
+      "get": {
+        "description": "GetLogs endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Deployments"],
+        "summary": "GetLogs endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/deployments/{id}/rollback": {
+      "post": {
+        "description": "Rollback endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Deployments"],
+        "summary": "Rollback endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/domains/{id}": {
+      "delete": {
+        "description": "Delete endpoint\nDelete Domain",
+        "consumes": ["application/json", "application/json"],
+        "produces": ["application/json", "application/json"],
+        "tags": ["Workspaces", "Domains"],
+        "summary": "Delete Domain",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "Domain ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/environments/{id}": {
+      "delete": {
+        "description": "Delete endpoint\nDelete Environment",
+        "consumes": ["application/json", "application/json"],
+        "produces": ["application/json", "application/json"],
+        "tags": ["Workspaces", "Environments"],
+        "summary": "Delete Environment",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "Environment ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/environments/{id}/apps": {
+      "get": {
+        "description": "ListByEnvironment endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Environments"],
+        "summary": "ListByEnvironment endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/environments/{id}/canvas": {
+      "get": {
+        "description": "GetEnvironmentCanvas endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Environments"],
+        "summary": "GetEnvironmentCanvas endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/git/connect": {
+      "post": {
+        "description": "Connect endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Git"],
+        "summary": "Connect endpoint",
+        "responses": {}
+      }
+    },
+    "/api/git/connect/{provider}": {
+      "delete": {
+        "description": "Disconnect endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Git"],
+        "summary": "Disconnect endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "provider",
+            "name": "provider",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/git/repos": {
+      "get": {
+        "description": "ListRepos endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Git"],
+        "summary": "ListRepos endpoint",
+        "responses": {}
+      }
+    },
+    "/api/git/status": {
+      "get": {
+        "description": "Status endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Git"],
+        "summary": "Status endpoint",
+        "responses": {}
+      }
+    },
+    "/api/jobs": {
+      "get": {
+        "description": "ListProjectJobs endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Jobs"],
+        "summary": "ListProjectJobs endpoint",
+        "responses": {}
+      }
+    },
+    "/api/jobs/{id}": {
+      "get": {
+        "description": "Get endpoint\nGet Job",
+        "consumes": ["application/json", "application/json"],
+        "produces": ["application/json", "application/json"],
+        "tags": ["Teams", "Jobs"],
+        "summary": "Get Job",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Job ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "delete": {
+        "description": "Delete endpoint\nDelete Job",
+        "consumes": ["application/json", "application/json"],
+        "produces": ["application/json", "application/json"],
+        "tags": ["Workspaces", "Jobs"],
+        "summary": "Delete Job",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "Job ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/jobs/{id}/trigger": {
+      "post": {
+        "description": "Run endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Jobs"],
+        "summary": "Run endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/oauth/vercel/callback": {
+      "get": {
+        "description": "Callback endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Oauth"],
+        "summary": "Callback endpoint",
+        "responses": {}
+      }
+    },
+    "/api/profile": {
+      "get": {
+        "description": "GetProfile endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Profile"],
+        "summary": "GetProfile endpoint",
+        "responses": {}
+      },
+      "put": {
+        "description": "UpdateProfile endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Profile"],
+        "summary": "UpdateProfile endpoint",
+        "responses": {}
+      }
+    },
+    "/api/profile/tokens": {
+      "get": {
+        "description": "ListPATs endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Profile"],
+        "summary": "ListPATs endpoint",
+        "responses": {}
+      },
+      "post": {
+        "description": "CreatePAT endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Profile"],
+        "summary": "CreatePAT endpoint",
+        "responses": {}
+      }
+    },
+    "/api/profile/tokens/{id}": {
+      "delete": {
+        "description": "DeletePAT endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Profile"],
+        "summary": "DeletePAT endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/projects": {
+      "post": {
+        "description": "CreateProject endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Projects"],
+        "summary": "CreateProject endpoint",
+        "responses": {}
+      }
+    },
+    "/api/projects/{id}": {
+      "get": {
+        "description": "GetProject endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Projects"],
+        "summary": "GetProject endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "delete": {
+        "description": "DeleteProject endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Projects"],
+        "summary": "DeleteProject endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/projects/{id}/apps": {
+      "get": {
+        "description": "ListByProject endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Projects"],
+        "summary": "ListByProject endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/projects/{id}/deploy": {
+      "post": {
+        "description": "DeployProject endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Projects"],
+        "summary": "DeployProject endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/projects/{id}/env": {
+      "get": {
+        "description": "GetVars endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Projects"],
+        "summary": "GetVars endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "put": {
+        "description": "SetVars endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Projects"],
+        "summary": "SetVars endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/projects/{id}/summary": {
+      "get": {
+        "description": "GetCanvasSummary endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Projects"],
+        "summary": "GetCanvasSummary endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/projects/{projectId}/members": {
+      "post": {
+        "description": "AddMember endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Projects"],
+        "summary": "AddMember endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "projectId",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/projects/{projectId}/members/{id}": {
+      "delete": {
+        "description": "RemoveMember endpoint\nRemove Project Member",
+        "consumes": ["application/json", "application/json"],
+        "produces": ["application/json", "application/json"],
+        "tags": ["Teams", "ProjectSettings"],
+        "summary": "Remove Project Member",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "Project ID",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "User ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/projects/{projectId}/tokens": {
+      "get": {
+        "description": "ListTokens endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Projects"],
+        "summary": "ListTokens endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "projectId",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "post": {
+        "description": "CreateToken endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Projects"],
+        "summary": "CreateToken endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "projectId",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/projects/{projectId}/tokens/{id}": {
+      "delete": {
+        "description": "DeleteToken endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Projects"],
+        "summary": "DeleteToken endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "projectId",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/projects/{projectId}/webhooks": {
+      "get": {
+        "description": "ListWebhooks endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Projects"],
+        "summary": "ListWebhooks endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "projectId",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "post": {
+        "description": "CreateWebhook endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Projects"],
+        "summary": "CreateWebhook endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "projectId",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/projects/{projectId}/webhooks/{id}": {
+      "delete": {
+        "description": "DeleteWebhook endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Projects"],
+        "summary": "DeleteWebhook endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "projectId",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/s3-destinations": {
+      "get": {
+        "description": "ListS3Destinations endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["S3-destinations"],
+        "summary": "ListS3Destinations endpoint",
+        "responses": {}
+      },
+      "post": {
+        "description": "CreateS3Destination endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["S3-destinations"],
+        "summary": "CreateS3Destination endpoint",
+        "responses": {}
+      }
+    },
+    "/api/s3-destinations/{id}": {
+      "delete": {
+        "description": "DeleteS3Destination endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["S3-destinations"],
+        "summary": "DeleteS3Destination endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/services/{serviceId}/deploy": {
+      "post": {
+        "description": "Trigger endpoint\nTrigger Deployment",
+        "consumes": ["application/json", "application/json"],
+        "produces": ["application/json", "application/json"],
+        "tags": ["Backups", "Deployments"],
+        "summary": "Trigger Deployment",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Service ID",
+            "name": "serviceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/services/{serviceId}/deployments": {
+      "get": {
+        "description": "ListServiceDeployments endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Services"],
+        "summary": "ListServiceDeployments endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "serviceId",
+            "name": "serviceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/services/{serviceId}/metrics": {
+      "get": {
+        "description": "GetMetrics endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Services"],
+        "summary": "GetMetrics endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "serviceId",
+            "name": "serviceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/services/{serviceId}/serverless/code": {
+      "get": {
+        "description": "GetCode endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Services"],
+        "summary": "GetCode endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "serviceId",
+            "name": "serviceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "post": {
+        "description": "SaveCode endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Services"],
+        "summary": "SaveCode endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "serviceId",
+            "name": "serviceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/services/{serviceId}/variables": {
+      "get": {
+        "description": "List endpoint\nList Service Variables",
+        "consumes": ["application/json", "application/json"],
+        "produces": ["application/json", "application/json"],
+        "tags": ["Workspaces", "ServiceVariables"],
+        "summary": "List Service Variables",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Service ID",
+            "name": "serviceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "post": {
+        "description": "Create endpoint\nCreate Service Variable",
+        "consumes": ["application/json", "application/json"],
+        "produces": ["application/json", "application/json"],
+        "tags": ["Workspaces", "ServiceVariables"],
+        "summary": "Create Service Variable",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Service ID",
+            "name": "serviceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/services/{serviceId}/variables/{id}": {
+      "put": {
+        "description": "Update endpoint\nUpdate Service Variable",
+        "consumes": ["application/json", "application/json"],
+        "produces": ["application/json", "application/json"],
+        "tags": ["Workspaces", "ServiceVariables"],
+        "summary": "Update Service Variable",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "Service ID",
+            "name": "serviceId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "Variable ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "delete": {
+        "description": "Delete endpoint\nDelete Service Variable",
+        "consumes": ["application/json", "application/json"],
+        "produces": ["application/json", "application/json"],
+        "tags": ["Workspaces", "ServiceVariables"],
+        "summary": "Delete Service Variable",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "Service ID",
+            "name": "serviceId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "Variable ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/settings": {
+      "get": {
+        "description": "GetSettings endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "GetSettings endpoint",
+        "responses": {}
+      },
+      "put": {
+        "description": "UpdateSettings endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "UpdateSettings endpoint",
+        "responses": {}
+      }
+    },
+    "/api/settings/git_apps/bitbucket": {
+      "get": {
+        "description": "ListBitbucketApps endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "ListBitbucketApps endpoint",
+        "responses": {}
+      },
+      "put": {
+        "description": "SaveBitbucketApp endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "SaveBitbucketApp endpoint",
+        "responses": {}
+      }
+    },
+    "/api/settings/git_apps/bitbucket/{id}": {
+      "get": {
+        "description": "GetBitbucketApp endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "GetBitbucketApp endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "delete": {
+        "description": "DeleteBitbucketApp endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "DeleteBitbucketApp endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/settings/git_apps/github": {
+      "get": {
+        "description": "ListGithubApps endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "ListGithubApps endpoint",
+        "responses": {}
+      },
+      "put": {
+        "description": "SaveGithubApp endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "SaveGithubApp endpoint",
+        "responses": {}
+      }
+    },
+    "/api/settings/git_apps/github/manifest-callback": {
+      "post": {
+        "description": "ExchangeGithubManifestCode endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "ExchangeGithubManifestCode endpoint",
+        "responses": {}
+      }
+    },
+    "/api/settings/git_apps/github/{id}": {
+      "get": {
+        "description": "GetGithubApp endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "GetGithubApp endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "delete": {
+        "description": "DeleteGithubApp endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "DeleteGithubApp endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/settings/git_apps/gitlab": {
+      "get": {
+        "description": "ListGitlabApps endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "ListGitlabApps endpoint",
+        "responses": {}
+      },
+      "put": {
+        "description": "SaveGitlabApp endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "SaveGitlabApp endpoint",
+        "responses": {}
+      }
+    },
+    "/api/settings/git_apps/gitlab/{id}": {
+      "get": {
+        "description": "GetGitlabApp endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "GetGitlabApp endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "delete": {
+        "description": "DeleteGitlabApp endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "DeleteGitlabApp endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/settings/license": {
+      "post": {
+        "description": "Activates offline license key\nActivate License",
+        "consumes": ["application/json", "application/json"],
+        "produces": ["application/json", "application/json"],
+        "tags": ["Settings", "Settings"],
+        "summary": "Activate License",
+        "responses": {}
+      }
+    },
+    "/api/settings/notifications": {
+      "get": {
+        "description": "ListChannels endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "ListChannels endpoint",
+        "responses": {}
+      },
+      "put": {
+        "description": "SaveChannel endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "SaveChannel endpoint",
+        "responses": {}
+      }
+    },
+    "/api/settings/notifications/test": {
+      "post": {
+        "description": "TestNotification endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "TestNotification endpoint",
+        "responses": {}
+      }
+    },
+    "/api/settings/notifications/{id}": {
+      "get": {
+        "description": "GetTeamNotificationChannel endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "GetTeamNotificationChannel endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "delete": {
+        "description": "DeleteChannel endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "DeleteChannel endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/settings/oauth/providers": {
+      "get": {
+        "description": "ListProviders endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "ListProviders endpoint",
+        "responses": {}
+      },
+      "put": {
+        "description": "SaveProvider endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "SaveProvider endpoint",
+        "responses": {}
+      }
+    },
+    "/api/settings/updates/check": {
+      "post": {
+        "description": "CheckUpdate endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "CheckUpdate endpoint",
+        "responses": {}
+      }
+    },
+    "/api/settings/updates/deploy": {
+      "post": {
+        "description": "DeployUpdate endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "DeployUpdate endpoint",
+        "responses": {}
+      }
+    },
+    "/api/settings/updates/status": {
+      "get": {
+        "description": "GetUpdateStatus endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Settings"],
+        "summary": "GetUpdateStatus endpoint",
+        "responses": {}
+      }
+    },
+    "/api/ssh-keys/{id}": {
+      "delete": {
+        "description": "DeleteSSHKey endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Ssh-keys"],
+        "summary": "DeleteSSHKey endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/storage": {
+      "get": {
+        "description": "ListStorage endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Storage"],
+        "summary": "ListStorage endpoint",
+        "responses": {}
+      },
+      "post": {
+        "description": "CreateStorage endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Storage"],
+        "summary": "CreateStorage endpoint",
+        "responses": {}
+      }
+    },
+    "/api/storage/{id}": {
+      "get": {
+        "description": "GetStorage endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Storage"],
+        "summary": "GetStorage endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "delete": {
+        "description": "DeleteStorage endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Storage"],
+        "summary": "DeleteStorage endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/storage/{id}/start": {
+      "post": {
+        "description": "StartStorage endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Storage"],
+        "summary": "StartStorage endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/storage/{id}/stop": {
+      "post": {
+        "description": "StopStorage endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Storage"],
+        "summary": "StopStorage endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/team-invites/{token}": {
+      "get": {
+        "description": "GetInvite endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Team-invites"],
+        "summary": "GetInvite endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "token",
+            "name": "token",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/team-invites/{token}/accept": {
+      "post": {
+        "description": "AcceptInvite endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Team-invites"],
+        "summary": "AcceptInvite endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "token",
+            "name": "token",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/teams": {
+      "get": {
+        "description": "List endpoint\nList Teams",
+        "consumes": ["application/json", "application/json"],
+        "produces": ["application/json", "application/json"],
+        "tags": ["Workspaces", "Teams"],
+        "summary": "List Teams",
+        "responses": {}
+      },
+      "post": {
+        "description": "Create endpoint\nCreate Team",
+        "consumes": ["application/json", "application/json"],
+        "produces": ["application/json", "application/json"],
+        "tags": ["Workspaces", "Teams"],
+        "summary": "Create Team",
+        "responses": {}
+      }
+    },
+    "/api/teams/{id}": {
+      "get": {
+        "description": "Get endpoint\nGet Team",
+        "consumes": ["application/json", "application/json"],
+        "produces": ["application/json", "application/json"],
+        "tags": ["Teams", "Teams"],
+        "summary": "Get Team",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Team ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "delete": {
+        "description": "Delete endpoint\nDelete Team",
+        "consumes": ["application/json", "application/json"],
+        "produces": ["application/json", "application/json"],
+        "tags": ["Workspaces", "Teams"],
+        "summary": "Delete Team",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "Team ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/teams/{id}/invite": {
+      "post": {
+        "description": "InviteMember endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Teams"],
+        "summary": "InviteMember endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/teams/{id}/members": {
+      "get": {
+        "description": "ListMembers endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Teams"],
+        "summary": "ListMembers endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/teams/{id}/members/{userId}": {
+      "delete": {
+        "description": "RemoveMember endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Teams"],
+        "summary": "RemoveMember endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "userId",
+            "name": "userId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/teams/{teamId}/ai_settings": {
+      "get": {
+        "description": "Get endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Teams"],
+        "summary": "Get endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "teamId",
+            "name": "teamId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "put": {
+        "description": "Save endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Teams"],
+        "summary": "Save endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "teamId",
+            "name": "teamId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/teams/{teamId}/audit-logs": {
+      "get": {
+        "description": "ListAuditLogs endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Teams"],
+        "summary": "ListAuditLogs endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "teamId",
+            "name": "teamId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/teams/{teamId}/email_settings": {
+      "get": {
+        "description": "Get Team Email Settings",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["EmailSettings"],
+        "summary": "Get Team Email Settings",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Team ID",
+            "name": "teamId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "post": {
+        "description": "Save Team Email Settings",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["EmailSettings"],
+        "summary": "Save Team Email Settings",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Team ID",
+            "name": "teamId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/teams/{teamId}/ssh-keys": {
+      "get": {
+        "description": "ListSSHKeys endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Teams"],
+        "summary": "ListSSHKeys endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "teamId",
+            "name": "teamId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "post": {
+        "description": "CreateSSHKey endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Teams"],
+        "summary": "CreateSSHKey endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "teamId",
+            "name": "teamId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/teams/{teamId}/trusted-domains": {
+      "get": {
+        "description": "ListTrustedDomains endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Teams"],
+        "summary": "ListTrustedDomains endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "teamId",
+            "name": "teamId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "post": {
+        "description": "CreateTrustedDomain endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Teams"],
+        "summary": "CreateTrustedDomain endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "teamId",
+            "name": "teamId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/trusted-domains/{id}": {
+      "delete": {
+        "description": "DeleteTrustedDomain endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Trusted-domains"],
+        "summary": "DeleteTrustedDomain endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/vercel/projects": {
+      "get": {
+        "description": "ListProjects endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Vercel"],
+        "summary": "ListProjects endpoint",
+        "responses": {}
+      }
+    },
+    "/api/vercel/projects/{id}/env": {
+      "get": {
+        "description": "GetProjectEnv endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Vercel"],
+        "summary": "GetProjectEnv endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/webhooks/git/services/{serviceId}": {
+      "post": {
+        "description": "HandleServiceWebhook endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Webhooks"],
+        "summary": "HandleServiceWebhook endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "serviceId",
+            "name": "serviceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/webhooks/git/{projectId}": {
+      "post": {
+        "description": "HandleProjectWebhook endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Webhooks"],
+        "summary": "HandleProjectWebhook endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "projectId",
+            "name": "projectId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/webhooks/github/services/{serviceId}": {
+      "post": {
+        "description": "HandleGitHubWebhook endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Webhooks"],
+        "summary": "HandleGitHubWebhook endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "serviceId",
+            "name": "serviceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/workspaces": {
+      "get": {
+        "description": "List endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Workspaces"],
+        "summary": "List endpoint",
+        "responses": {}
+      },
+      "post": {
+        "description": "Create endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Workspaces"],
+        "summary": "Create endpoint",
+        "responses": {}
+      }
+    },
+    "/api/workspaces/{id}": {
+      "put": {
+        "description": "Update endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Workspaces"],
+        "summary": "Update endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "delete": {
+        "description": "Delete endpoint",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Workspaces"],
+        "summary": "Delete endpoint",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/ws/services/{id}/terminal": {
+      "get": {
+        "description": "HandleWebSocket endpoint\nHandle Terminal WebSocket",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Ws", "Terminal"],
+        "summary": "Handle Terminal WebSocket",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/api/ws/terminal/{id}": {
+      "get": {
+        "description": "HandleWebSocket endpoint\nHandle Terminal WebSocket",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Ws", "Terminal"],
+        "summary": "Handle Terminal WebSocket",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "id",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
     }
+  },
+  "securityDefinitions": {
+    "BearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  }
 }

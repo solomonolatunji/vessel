@@ -2,6 +2,12 @@
 
 After a deep secondary analysis of the existing Go handlers and API routes, this plan has been expanded to cover the complete feature surface area of Vessl. It goes beyond a simple PaaS and includes Enterprise features, Super Admin capabilities, and AI integrations.
 
+## Tech Stack & Conventions
+
+- **Framework:** React 19 + TanStack Router
+- **Styling:** Tailwind CSS v4, Radix UI Primitives
+- **Icons:** **Hugeicons (`@hugeicons/react`)** - _(Do not use Lucide)_
+
 ## 1. Core Layout & Navigation Architecture
 
 The layout utilizes a contextual **Sidebar** and a global **Topbar**.
@@ -151,7 +157,7 @@ src/
 
 ---
 
-## 4. Implementation Phases
+- **State:** TanStack Store (for lightweight global state if needed).
 
 ### Phase 1: Foundation & Auth
 
