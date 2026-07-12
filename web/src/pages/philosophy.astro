@@ -1,182 +1,143 @@
 ---
 import Layout from '../layouts/Layout.astro';
-
-const principles = [
-  {
-    title: 'Free and Open Source.',
-    desc: 'Every project we build is 100% open source. You can view the code, modify it, learn from it, and use it however you want.',
-  },
-  {
-    title: 'No Features Behind Paywalls.',
-    desc: "Every feature we develop goes into the open-source version. There's no 'enterprise edition' with the good stuff locked away. What you see is what you get — everything.",
-  },
-  {
-    title: 'MIT Licensed.',
-    desc: 'We use the MIT license, which gives you the freedom to use our software for any purpose, including commercial use.',
-  },
-  {
-    title: 'Forever Free.',
-    desc: "This isn't a temporary strategy or a growth hack. This is how we believe software should be made. These principles will never change.",
-  },
-];
 ---
 
 <Layout
   title="Our Philosophy — Vessl"
-  description="Our approach to open-source software: free, accessible, and community-supported. Learn about our philosophy and how we sustain development."
+  description="Why we built Vessl as MIT-licensed infrastructure software, and how we plan to keep it that way forever."
 >
-  <main class="max-w-5xl mx-auto px-4">
+  <main class="max-w-3xl mx-auto px-6">
 
     <!-- Hero -->
-    <div class="text-center pt-12 md:pt-24">
-      <h1 class="text-3xl font-bold tracking-tight text-[var(--color-foreground)] md:text-6xl px-4">
-        Our Open Source Philosophy<span class="text-[var(--color-primary)]">.</span>
+    <div class="pt-16 md:pt-24 pb-6">
+      <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-[var(--color-foreground)]">
+        Infrastructure belongs<br/>to the people who run it<span class="text-[var(--color-primary)]">.</span>
       </h1>
-      <h2 class="text-base pb-10 pt-2 text-[var(--color-muted-foreground)] px-4">
-        Software should be free and accessible to everyone.
+      <p class="mt-5 text-[var(--color-muted-foreground)] text-base leading-relaxed">
+        We built Vessl because we kept seeing the same pattern: a tool starts free, gains traction,
+        then slowly walls off its best features behind enterprise plans.
+        The moment a self-hosting tool needs a licence key to use SSL, something has gone wrong.
+      </p>
+      <p class="mt-4 text-[var(--color-muted-foreground)] text-base leading-relaxed">
+        Vessl is MIT-licensed. Not "source-available". Not "fair-code". MIT.
+        You can read it, fork it, patch it, and run it commercially without asking us.
+        That constraint is intentional — it means we can't quietly change our minds later.
+      </p>
+    </div>
+
+    <!-- Commitments -->
+    <div class="pt-14">
+      <h2 class="text-2xl font-bold text-[var(--color-foreground)] mb-2">
+        What we commit to<span class="text-[var(--color-primary)]">.</span>
       </h2>
+      <p class="text-sm text-[var(--color-muted-foreground)] mb-8">Not just promises — these are structural constraints.</p>
 
-      <div class="pt-4 max-w-2xl mx-auto px-4 text-left text-[var(--color-muted-foreground)] leading-relaxed">
-        <p>
-          We believe that great software should be available to everyone, regardless of their budget.
-          That's why all of our projects are completely free and open source, with no features locked behind paywalls.
-        </p>
-        <br />
-        <p>
-          This isn't just a business decision — it's a core belief. We've seen too many promising
-          open-source projects slowly close their doors, adding "enterprise" features and artificial
-          limitations. We chose a different path.
-        </p>
-      </div>
-    </div>
-
-    <!-- What This Means -->
-    <div class="text-center pt-16 px-4">
-      <h3 class="text-xl font-bold tracking-tight text-[var(--color-foreground)] md:text-3xl">
-        What This Means<span class="text-[var(--color-primary)]">.</span>
-      </h3>
-      <h4 class="text-base pb-10 pt-2 text-[var(--color-muted-foreground)]">
-        Our commitments to the community.
-      </h4>
-    </div>
-
-    <div class="max-w-2xl mx-auto px-4">
-      <ul class="space-y-6 text-[var(--color-muted-foreground)] text-left">
-        {principles.map(p => (
+      <ul class="space-y-7">
+        {[
+          {
+            title: 'Every feature ships in the open-source daemon.',
+            body: "Traefik routing, S3 backups, canvas view, AI settings, cron jobs — all of it is in the public repo. We don't maintain a secret pro tier that does more. If we build it, you get it.",
+          },
+          {
+            title: 'MIT license, no exceptions.',
+            body: "We chose MIT deliberately. Apache 2.0 has patent clauses that make commercial redistribution complicated. MIT is the plainest, broadest grant we can give. If you want to wrap Vessl in a product and sell it, you can. We'd appreciate a mention, not a cheque.",
+          },
+          {
+            title: 'No paywalled stability.',
+            body: "We don't release a buggy community edition while shipping a polished enterprise build. The daemon you download is the only daemon we maintain. Bug fixes go in; everyone gets them.",
+          },
+          {
+            title: 'These rules are public and permanent.',
+            body: "This page is version-controlled. If our philosophy ever changes, the git history will show it. We don't expect it to — but the audit trail is there if you want it.",
+          },
+        ].map(p => (
           <li class="flex gap-4">
-            <svg class="size-6 text-[var(--color-primary)] shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-              <polyline points="22 4 12 14.01 9 11.01"/>
+            <svg class="size-5 text-[var(--color-primary)] shrink-0 mt-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
             </svg>
-            <span>
-              <strong class="font-semibold text-[var(--color-primary)]">{p.title}</strong>{' '}
-              {p.desc}
-            </span>
+            <div>
+              <strong class="text-[var(--color-foreground)] font-semibold">{p.title}</strong>
+              <p class="mt-1 text-sm text-[var(--color-muted-foreground)] leading-relaxed">{p.body}</p>
+            </div>
           </li>
         ))}
       </ul>
     </div>
 
-    <!-- How We Sustain -->
-    <div class="text-center pt-16 px-4">
-      <h3 class="text-xl font-bold tracking-tight text-[var(--color-foreground)] md:text-3xl">
-        How We Sustain Development<span class="text-[var(--color-primary)]">.</span>
-      </h3>
-      <h4 class="text-base pb-10 pt-2 text-[var(--color-muted-foreground)]">
-        Because we still need to pay the bills.
-      </h4>
-    </div>
+    <!-- How we sustain -->
+    <div class="pt-16">
+      <h2 class="text-2xl font-bold text-[var(--color-foreground)] mb-2">
+        How we keep the lights on<span class="text-[var(--color-primary)]">.</span>
+      </h2>
+      <p class="text-sm text-[var(--color-muted-foreground)] mb-6">Free software still has servers to pay for.</p>
 
-    <div class="pt-4 max-w-2xl mx-auto px-4 text-left text-[var(--color-muted-foreground)] leading-relaxed">
-      <p>Making software free doesn't mean development is free. We sustain our work through two main channels:</p>
-      <br />
-      <p>
-        <strong class="text-[var(--color-primary)]">GitHub Sponsors & Open Collective.</strong>{' '}
-        If you find Vessl valuable, you can support us directly. Every contribution helps us dedicate
-        more time to development and support.
-      </p>
-      <br />
-      <p>
-        <strong class="text-[var(--color-primary)]">Vessl Cloud.</strong>{' '}
-        For those who prefer not to self-host, we offer a managed cloud version. You get the same
-        features — we handle the infrastructure — and the revenue funds continued development.
-      </p>
-      <br />
-      <p>
-        This model lets us focus on building great software for real users, not on pleasing investors
-        or hitting arbitrary growth metrics.
-      </p>
+      <div class="text-[var(--color-muted-foreground)] text-sm leading-relaxed space-y-4">
+        <p>
+          <strong class="text-[var(--color-foreground)]">Vessl Cloud.</strong> The daemon is free.
+          The fleet control plane — Yamux tunnel handshake, usage metering, billing alerts, team management — is what we charge for.
+          You get everything the daemon offers; the Cloud plan is for teams who want centralized visibility across many servers.
+        </p>
+        <p>
+          <strong class="text-[var(--color-foreground)]">GitHub Sponsors.</strong> If Vessl saves you money on Heroku or Railway,
+          consider sponsoring. Individual contributions fund the engineering time that keeps the daemon healthy.
+        </p>
+        <p>
+          We don't take VC money. External funding always comes with growth pressure,
+          and growth pressure eventually cracks open-source commitments.
+          We'd rather grow slower and stay independent.
+        </p>
+      </div>
     </div>
 
     <!-- Support buttons -->
-    <div class="pt-10 pb-4 flex flex-col sm:flex-row items-center justify-center gap-4 px-4">
-      <a
-        href="https://github.com/sponsors/techxteam"
-        target="_blank"
-        class="flex items-center gap-3 px-6 py-3.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[#1e1e28] text-[var(--color-foreground)] font-semibold text-sm transition-colors w-56 justify-center"
-      >
-        <svg class="size-7" fill="currentColor" viewBox="0 0 128 128">
+    <div class="pt-10 pb-4 flex flex-col sm:flex-row gap-4">
+      <a href="https://github.com/sponsors/techxteam" target="_blank"
+        class="flex items-center gap-3 px-5 py-3.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-border)] text-[var(--color-foreground)] font-semibold text-sm transition-colors">
+        <svg class="size-6 shrink-0" fill="currentColor" viewBox="0 0 128 128">
           <path fill-rule="evenodd" clip-rule="evenodd" d="M64 5.103c-33.347 0-60.388 27.035-60.388 60.388 0 26.682 17.303 49.317 41.297 57.303 3.017.56 4.125-1.31 4.125-2.905 0-1.44-.056-6.197-.082-11.243-16.8 3.653-20.345-7.125-20.345-7.125-2.747-6.98-6.705-8.836-6.705-8.836-5.48-3.748.413-3.67.413-3.67 6.063.425 9.257 6.223 9.257 6.223 5.386 9.23 14.127 6.562 17.573 5.02.542-3.903 2.107-6.568 3.834-8.076-13.413-1.525-27.514-6.704-27.514-29.843 0-6.593 2.36-11.98 6.223-16.21-.628-1.52-2.695-7.662.584-15.98 0 0 5.07-1.623 16.61 6.19C53.7 35 58.867 34.327 64 34.304c5.13.023 10.3.694 15.127 2.033 11.526-7.813 16.59-6.19 16.59-6.19 3.287 8.317 1.22 14.46.593 15.98 3.872 4.23 6.215 9.617 6.215 16.21 0 23.194-14.127 28.3-27.574 29.796 2.167 1.874 4.097 5.55 4.097 11.183 0 8.08-.07 14.583-.07 16.572 0 1.607 1.088 3.49 4.148 2.897 23.98-7.994 41.263-30.622 41.263-57.294C124.388 32.14 97.35 5.104 64 5.104z"/>
         </svg>
-        <div class="flex flex-col text-left leading-tight">
-          <span>GitHub Sponsors</span>
-          <span class="text-xs text-[var(--color-muted-foreground)]">Support Us</span>
-        </div>
+        <span>GitHub Sponsors</span>
       </a>
 
-      <a
-        href="https://app.vessl.dev"
-        class="flex items-center gap-3 px-6 py-3.5 rounded-lg border border-[var(--color-primary)]/40 bg-[var(--color-primary)]/10 hover:bg-[var(--color-primary)]/20 text-[var(--color-foreground)] font-semibold text-sm transition-colors w-56 justify-center"
-      >
-        <svg class="size-7 text-[var(--color-primary)]" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-          <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
-        </svg>
-        <div class="flex flex-col text-left leading-tight">
-          <span>Vessl Cloud</span>
-          <span class="text-xs text-[var(--color-muted-foreground)]">Support Us</span>
-        </div>
+      <a href="https://app.vessl.dev" class="flex items-center gap-3 px-5 py-3.5 rounded-lg border border-[var(--color-primary)]/30 bg-[var(--color-primary)]/10 hover:bg-[var(--color-primary)]/20 text-[var(--color-foreground)] font-semibold text-sm transition-colors">
+        <svg class="size-6 text-[var(--color-primary)] shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+        <span>Try Vessl Cloud</span>
       </a>
     </div>
 
     <!-- Transparency stats -->
-    <div class="text-center pt-14 px-4">
-      <h3 class="text-xl font-bold tracking-tight text-[var(--color-foreground)] md:text-3xl">
-        Where We Are Today<span class="text-[var(--color-primary)]">.</span>
-      </h3>
-      <h4 class="text-base pb-10 pt-2 text-[var(--color-muted-foreground)]">
-        Transparency in numbers.
-      </h4>
-    </div>
+    <div class="pt-16 pb-4">
+      <h2 class="text-2xl font-bold text-[var(--color-foreground)] mb-2">
+        Where we stand today<span class="text-[var(--color-primary)]">.</span>
+      </h2>
+      <p class="text-sm text-[var(--color-muted-foreground)] mb-8">We publish these numbers because transparency is part of the deal.</p>
 
-    <div class="max-w-4xl mx-auto px-4 mb-8">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { label: 'Cloud MRR', value: '$4,200+', href: 'https://app.vessl.dev' },
-          { label: 'GitHub Stars', value: '1,800+', href: 'https://github.com/techxteam/vessl' },
-          { label: 'Cloud Servers', value: '1,200+', href: 'https://app.vessl.dev' },
+          { label: 'Cloud MRR',     value: '$4,200+',  href: 'https://app.vessl.dev' },
+          { label: 'GitHub Stars',  value: '1,800+',   href: 'https://github.com/techxteam/vessl' },
+          { label: 'Active Servers', value: '1,200+',  href: 'https://app.vessl.dev' },
         ].map(stat => (
-          <a href={stat.href} target="_blank" class="bg-[var(--color-surface)] rounded-xl p-6 border border-[var(--color-border)] hover:border-[var(--color-primary)]/40 transition-colors">
-            <div class="text-3xl md:text-4xl font-bold text-[var(--color-foreground)]">{stat.value}</div>
-            <div class="text-[var(--color-muted-foreground)] mt-2 text-sm">{stat.label}</div>
+          <a href={stat.href} target="_blank"
+            class="bg-[var(--color-surface)] rounded-xl p-6 border border-[var(--color-border)] hover:border-[var(--color-primary)]/40 transition-colors group">
+            <div class="text-3xl font-extrabold text-[var(--color-foreground)] group-hover:text-[var(--color-primary)] transition-colors">{stat.value}</div>
+            <div class="text-sm text-[var(--color-muted-foreground)] mt-1">{stat.label}</div>
           </a>
         ))}
       </div>
+    </div>
 
-      <div class="pt-8 text-left text-[var(--color-muted-foreground)] leading-relaxed text-sm">
-        <p>
-          This revenue allows us to work on these projects full-time, hire help, and keep improving the software for everyone.
-        </p>
-        <br />
-        <p>
-          This philosophy guides everything we do at Vessl. Whether it's the daemon, the cloud, or any other tool we build,
-          the principles remain the same: free, open, and built for the community.
-        </p>
-        <br />
-        <p>
-          Thank you to everyone who supports this vision — through donations, by using our hosted services, or simply
-          by using and sharing Vessl. You make this possible.
-        </p>
-      </div>
+    <!-- Closing -->
+    <div class="pt-10 pb-20 text-sm text-[var(--color-muted-foreground)] leading-relaxed space-y-4">
+      <p>
+        This philosophy is not separate from the engineering.
+        The reason the daemon is small (&lt;30MB) is that we refuse to bundle bloat to justify a premium tier.
+        The reason every feature is in the open-source build is that we don't want two codebases to maintain.
+        The choices that make Vessl good to use are the same choices that make it genuinely open.
+      </p>
+      <p>
+        Thank you for using it — and for holding us to this.
+      </p>
     </div>
 
   </main>
