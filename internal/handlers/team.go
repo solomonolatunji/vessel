@@ -5,6 +5,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"vessl.dev/vessl/internal/utils"
+
 	"vessl.dev/vessl/internal/services"
 )
 
@@ -34,13 +36,13 @@ type InviteTeamMemberRequest struct {
 func (h *TeamHandler) List(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+		return utils.Error(c, http.StatusUnauthorized, "unauthorized")
 	}
 	teams, err := h.teamService.ListTeamsByUser(c.Request().Context(), userID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, teams)
+	return utils.Success(c, "Operation successful", teams)
 }
 
 // @Summary Create Team
@@ -53,17 +55,17 @@ func (h *TeamHandler) List(c echo.Context) error {
 func (h *TeamHandler) Create(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+		return utils.Error(c, http.StatusUnauthorized, "unauthorized")
 	}
 	var req CreateTeamRequest
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "valid team name required"})
+		return utils.Error(c, http.StatusBadRequest, "valid team name required")
 	}
 	team, err := h.teamService.CreateTeam(c.Request().Context(), req.Name, userID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusCreated, team)
+	return utils.Created(c, "Created successfully", team)
 }
 
 // @Summary Get Team
@@ -76,13 +78,13 @@ func (h *TeamHandler) Create(c echo.Context) error {
 func (h *TeamHandler) Get(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing team id"})
+		return utils.Error(c, http.StatusBadRequest, "missing team id")
 	}
 	team, err := h.teamService.GetTeam(c.Request().Context(), id)
 	if err != nil || team == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "team not found"})
+		return utils.Error(c, http.StatusNotFound, "team not found")
 	}
-	return c.JSON(http.StatusOK, team)
+	return utils.Success(c, "Operation successful", team)
 }
 
 // @Summary Delete Team
@@ -95,14 +97,14 @@ func (h *TeamHandler) Get(c echo.Context) error {
 func (h *TeamHandler) Delete(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+		return utils.Error(c, http.StatusUnauthorized, "unauthorized")
 	}
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing team id"})
+		return utils.Error(c, http.StatusBadRequest, "missing team id")
 	}
 	if err := h.teamService.DeleteTeam(c.Request().Context(), id, userID); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return c.NoContent(http.StatusNoContent)
 }
@@ -117,13 +119,13 @@ func (h *TeamHandler) Delete(c echo.Context) error {
 func (h *TeamHandler) ListMembers(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing team id"})
+		return utils.Error(c, http.StatusBadRequest, "missing team id")
 	}
 	members, err := h.teamService.ListMembers(c.Request().Context(), id)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, members)
+	return utils.Success(c, "Operation successful", members)
 }
 
 // @Summary InviteMember endpoint
@@ -137,17 +139,17 @@ func (h *TeamHandler) ListMembers(c echo.Context) error {
 func (h *TeamHandler) InviteMember(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing team id"})
+		return utils.Error(c, http.StatusBadRequest, "missing team id")
 	}
 	var req InviteTeamMemberRequest
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "valid email required"})
+		return utils.Error(c, http.StatusBadRequest, "valid email required")
 	}
 	inv, err := h.teamService.InviteMember(c.Request().Context(), id, req.Email, req.Role)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusCreated, inv)
+	return utils.Created(c, "Created successfully", inv)
 }
 
 // @Summary RemoveMember endpoint
@@ -162,10 +164,10 @@ func (h *TeamHandler) RemoveMember(c echo.Context) error {
 	id := c.Param("id")
 	targetUserID := c.Param("userId")
 	if id == "" || targetUserID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing team id or userId"})
+		return utils.Error(c, http.StatusBadRequest, "missing team id or userId")
 	}
 	if err := h.teamService.RemoveMember(c.Request().Context(), id, targetUserID); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return c.NoContent(http.StatusNoContent)
 }
@@ -180,13 +182,13 @@ func (h *TeamHandler) RemoveMember(c echo.Context) error {
 func (h *TeamHandler) GetInvite(c echo.Context) error {
 	token := c.Param("token")
 	if token == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing invite token"})
+		return utils.Error(c, http.StatusBadRequest, "missing invite token")
 	}
 	inv, err := h.teamService.GetInvite(c.Request().Context(), token)
 	if err != nil || inv == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "invite not found or expired"})
+		return utils.Error(c, http.StatusNotFound, "invite not found or expired")
 	}
-	return c.JSON(http.StatusOK, inv)
+	return utils.Success(c, "Operation successful", inv)
 }
 
 // @Summary AcceptInvite endpoint
@@ -199,14 +201,14 @@ func (h *TeamHandler) GetInvite(c echo.Context) error {
 func (h *TeamHandler) AcceptInvite(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+		return utils.Error(c, http.StatusUnauthorized, "unauthorized")
 	}
 	token := c.Param("token")
 	if token == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing invite token"})
+		return utils.Error(c, http.StatusBadRequest, "missing invite token")
 	}
 	if err := h.teamService.AcceptInvite(c.Request().Context(), token, userID); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, map[string]string{"status": "accepted"})
+	return utils.Success(c, "Operation successful", map[string]string{"status": "accepted"})
 }

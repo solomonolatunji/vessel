@@ -6,7 +6,9 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+
 	"vessl.dev/vessl/internal/services"
+	"vessl.dev/vessl/internal/utils"
 )
 
 type ServerlessHandler struct {
@@ -32,17 +34,17 @@ type SaveCodeRequest struct {
 func (h *ServerlessHandler) SaveCode(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	if serviceID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "service ID is required"})
+		return utils.Error(c, http.StatusBadRequest, "service ID is required")
 	}
 
 	var req SaveCodeRequest
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid request format"})
+		return utils.Error(c, http.StatusBadRequest, "invalid request format")
 	}
 
 	code, err := h.serverlessService.SaveCode(c.Request().Context(), serviceID, req.Runtime, req.CodeContent)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
@@ -61,15 +63,15 @@ func (h *ServerlessHandler) SaveCode(c echo.Context) error {
 func (h *ServerlessHandler) GetCode(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	if serviceID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "service ID is required"})
+		return utils.Error(c, http.StatusBadRequest, "service ID is required")
 	}
 
 	code, err := h.serverlessService.GetCode(c.Request().Context(), serviceID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return c.JSON(http.StatusNotFound, map[string]string{"error": "code not found"})
+			return utils.Error(c, http.StatusNotFound, "code not found")
 		}
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{

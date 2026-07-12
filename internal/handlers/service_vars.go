@@ -5,6 +5,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"vessl.dev/vessl/internal/utils"
+
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/services"
 )
@@ -28,9 +30,9 @@ func (h *ServiceVarHandler) List(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	list, err := h.appService.ListVariablesByService(c.Request().Context(), serviceID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, list)
+	return utils.Success(c, "Operation successful", list)
 }
 
 // @Summary Create Service Variable
@@ -45,20 +47,20 @@ func (h *ServiceVarHandler) Create(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	var req models.Variable
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	svc, err := h.appService.GetAppService(c.Request().Context(), serviceID)
 	if err != nil || svc == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "service not found"})
+		return utils.Error(c, http.StatusNotFound, "service not found")
 	}
 	req.ServiceID = serviceID
 	req.ProjectID = svc.ProjectID
 	req.EnvironmentID = svc.EnvironmentID
 	created, err := h.appService.CreateVariable(c.Request().Context(), &req)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusCreated, created)
+	return utils.Created(c, "Created successfully", created)
 }
 
 // @Summary Update Service Variable
@@ -75,14 +77,14 @@ func (h *ServiceVarHandler) Update(c echo.Context) error {
 	id := c.Param("id")
 	var req models.Variable
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	req.ID = id
 	req.ServiceID = serviceID
 	if err := h.appService.UpdateVariable(c.Request().Context(), &req); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, req)
+	return utils.Success(c, "Operation successful", req)
 }
 
 // @Summary Delete Service Variable
@@ -96,7 +98,7 @@ func (h *ServiceVarHandler) Update(c echo.Context) error {
 func (h *ServiceVarHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	if err := h.appService.DeleteVariable(c.Request().Context(), id); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return c.NoContent(http.StatusNoContent)
 }

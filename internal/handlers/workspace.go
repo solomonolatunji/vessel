@@ -5,6 +5,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"vessl.dev/vessl/internal/utils"
+
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/services"
 )
@@ -38,13 +40,13 @@ type CreateSSHKeyRequest struct {
 func (h *WorkspaceHandler) List(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+		return utils.Error(c, http.StatusUnauthorized, "unauthorized")
 	}
 	wsList, err := h.workspaceService.ListWorkspaces(c.Request().Context(), userID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, wsList)
+	return utils.Success(c, "Operation successful", wsList)
 }
 
 // @Summary Create endpoint
@@ -57,17 +59,17 @@ func (h *WorkspaceHandler) List(c echo.Context) error {
 func (h *WorkspaceHandler) Create(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+		return utils.Error(c, http.StatusUnauthorized, "unauthorized")
 	}
 	var payload CreateWorkspaceRequest
 	if err := c.Bind(&payload); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	ws, err := h.workspaceService.CreateWorkspace(c.Request().Context(), payload.Name, userID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusCreated, ws)
+	return utils.Created(c, "Created successfully", ws)
 }
 
 // @Summary Get endpoint
@@ -80,13 +82,13 @@ func (h *WorkspaceHandler) Create(c echo.Context) error {
 func (h *WorkspaceHandler) Get(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing id parameter")
 	}
 	ws, err := h.workspaceService.GetWorkspace(c.Request().Context(), id)
 	if err != nil || ws == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "workspace not found"})
+		return utils.Error(c, http.StatusNotFound, "workspace not found")
 	}
-	return c.JSON(http.StatusOK, ws)
+	return utils.Success(c, "Operation successful", ws)
 }
 
 // @Summary Update endpoint
@@ -100,17 +102,17 @@ func (h *WorkspaceHandler) Get(c echo.Context) error {
 func (h *WorkspaceHandler) Update(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing id parameter")
 	}
 	var ws models.Workspace
 	if err := c.Bind(&ws); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	ws.ID = id
 	if err := h.workspaceService.UpdateWorkspace(c.Request().Context(), &ws); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, ws)
+	return utils.Success(c, "Operation successful", ws)
 }
 
 // @Summary Delete endpoint
@@ -124,10 +126,10 @@ func (h *WorkspaceHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	userID := ExtractUserID(c)
 	if id == "" || userID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing parameters or unauthorized"})
+		return utils.Error(c, http.StatusBadRequest, "missing parameters or unauthorized")
 	}
 	if err := h.workspaceService.DeleteWorkspace(c.Request().Context(), id, userID); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return c.NoContent(http.StatusNoContent)
 }
@@ -142,13 +144,13 @@ func (h *WorkspaceHandler) Delete(c echo.Context) error {
 func (h *WorkspaceHandler) ListTrustedDomains(c echo.Context) error {
 	teamID := c.Param("teamId")
 	if teamID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing teamId parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing teamId parameter")
 	}
 	domains, err := h.workspaceService.ListTrustedDomains(c.Request().Context(), teamID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, domains)
+	return utils.Success(c, "Operation successful", domains)
 }
 
 // @Summary CreateTrustedDomain endpoint
@@ -162,17 +164,17 @@ func (h *WorkspaceHandler) ListTrustedDomains(c echo.Context) error {
 func (h *WorkspaceHandler) CreateTrustedDomain(c echo.Context) error {
 	teamID := c.Param("teamId")
 	if teamID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing teamId parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing teamId parameter")
 	}
 	var payload CreateTrustedDomainRequest
 	if err := c.Bind(&payload); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	td, err := h.workspaceService.AddTrustedDomain(c.Request().Context(), teamID, payload.Domain)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusCreated, td)
+	return utils.Created(c, "Created successfully", td)
 }
 
 // @Summary DeleteTrustedDomain endpoint
@@ -184,10 +186,10 @@ func (h *WorkspaceHandler) CreateTrustedDomain(c echo.Context) error {
 func (h *WorkspaceHandler) DeleteTrustedDomain(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing id parameter")
 	}
 	if err := h.workspaceService.DeleteTrustedDomain(c.Request().Context(), id); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return c.NoContent(http.StatusNoContent)
 }
@@ -202,13 +204,13 @@ func (h *WorkspaceHandler) DeleteTrustedDomain(c echo.Context) error {
 func (h *WorkspaceHandler) ListSSHKeys(c echo.Context) error {
 	teamID := c.Param("teamId")
 	if teamID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing teamId parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing teamId parameter")
 	}
 	keys, err := h.workspaceService.ListSSHKeys(c.Request().Context(), teamID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, keys)
+	return utils.Success(c, "Operation successful", keys)
 }
 
 // @Summary CreateSSHKey endpoint
@@ -222,17 +224,17 @@ func (h *WorkspaceHandler) ListSSHKeys(c echo.Context) error {
 func (h *WorkspaceHandler) CreateSSHKey(c echo.Context) error {
 	teamID := c.Param("teamId")
 	if teamID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing teamId parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing teamId parameter")
 	}
 	var payload CreateSSHKeyRequest
 	if err := c.Bind(&payload); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	key, err := h.workspaceService.AddSSHKey(c.Request().Context(), teamID, payload.Name, payload.PublicKey)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusCreated, key)
+	return utils.Created(c, "Created successfully", key)
 }
 
 // @Summary DeleteSSHKey endpoint
@@ -244,10 +246,10 @@ func (h *WorkspaceHandler) CreateSSHKey(c echo.Context) error {
 func (h *WorkspaceHandler) DeleteSSHKey(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing id parameter")
 	}
 	if err := h.workspaceService.DeleteSSHKey(c.Request().Context(), id); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return c.NoContent(http.StatusNoContent)
 }
@@ -262,11 +264,11 @@ func (h *WorkspaceHandler) DeleteSSHKey(c echo.Context) error {
 func (h *WorkspaceHandler) ListAuditLogs(c echo.Context) error {
 	teamID := c.Param("teamId")
 	if teamID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing teamId parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing teamId parameter")
 	}
 	logs, err := h.workspaceService.ListAuditLogs(c.Request().Context(), teamID, 100)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, logs)
+	return utils.Success(c, "Operation successful", logs)
 }

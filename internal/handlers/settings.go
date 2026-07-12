@@ -7,6 +7,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"vessl.dev/vessl/internal/utils"
+
 	"vessl.dev/vessl/internal/license"
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/services"
@@ -32,9 +34,9 @@ type ActivateLicenseRequest struct {
 func (h *SettingsHandler) GetSettings(c echo.Context) error {
 	s, err := h.settingsService.GetSettings(c.Request().Context())
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, s)
+	return utils.Success(c, "Operation successful", s)
 }
 
 // @Summary UpdateSettings endpoint
@@ -47,12 +49,12 @@ func (h *SettingsHandler) GetSettings(c echo.Context) error {
 func (h *SettingsHandler) UpdateSettings(c echo.Context) error {
 	var payload models.ServerSettings
 	if err := c.Bind(&payload); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	if err := h.settingsService.UpdateSettings(c.Request().Context(), &payload); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, payload)
+	return utils.Success(c, "Operation successful", payload)
 }
 
 func (h *SettingsHandler) ListTeamNotificationChannels(c echo.Context) error {
@@ -62,23 +64,23 @@ func (h *SettingsHandler) ListTeamNotificationChannels(c echo.Context) error {
 	}
 	channels, err := h.settingsService.ListTeamNotificationChannels(c.Request().Context(), teamID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, channels)
+	return utils.Success(c, "Operation successful", channels)
 }
 
 func (h *SettingsHandler) SaveTeamNotificationChannel(c echo.Context) error {
 	var payload models.TeamNotificationChannel
 	if err := c.Bind(&payload); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	if payload.TeamID == "" {
 		payload.TeamID = "default"
 	}
 	if err := h.settingsService.SaveTeamNotificationChannel(c.Request().Context(), &payload); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, payload)
+	return utils.Success(c, "Operation successful", payload)
 }
 
 // @Summary GetTeamNotificationChannel endpoint
@@ -92,17 +94,17 @@ func (h *SettingsHandler) GetTeamNotificationChannel(c echo.Context) error {
 	id := c.Param("id")
 	channel, err := h.settingsService.GetTeamNotificationChannel(c.Request().Context(), id)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, channel)
+	return utils.Success(c, "Operation successful", channel)
 }
 
 func (h *SettingsHandler) DeleteTeamNotificationChannel(c echo.Context) error {
 	id := c.Param("id")
 	if err := h.settingsService.DeleteTeamNotificationChannel(c.Request().Context(), id); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
+	return utils.Success(c, "Operation successful", map[string]string{"status": "deleted"})
 }
 
 // @Summary Activate License endpoint
@@ -120,22 +122,22 @@ func (h *SettingsHandler) DeleteTeamNotificationChannel(c echo.Context) error {
 func (h *SettingsHandler) ActivateLicense(c echo.Context) error {
 	var payload ActivateLicenseRequest
 	if err := c.Bind(&payload); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 
 	pubKey := os.Getenv("LICENSE_PUBLIC_KEY")
 	if pubKey == "" {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "license public key not configured on this instance"})
+		return utils.Error(c, http.StatusInternalServerError, "license public key not configured on this instance")
 	}
 
 	claims, err := license.VerifyLicense(pubKey, payload.LicenseKey)
 	if err != nil {
-		return c.JSON(http.StatusForbidden, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusForbidden, err.Error())
 	}
 
 	s, err := h.settingsService.GetSettings(c.Request().Context())
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to load settings"})
+		return utils.Error(c, http.StatusInternalServerError, "failed to load settings")
 	}
 
 	s.LicenseKey = payload.LicenseKey
@@ -143,7 +145,7 @@ func (h *SettingsHandler) ActivateLicense(c echo.Context) error {
 	s.MaxSeats = claims.MaxSeats
 
 	if err := h.settingsService.UpdateSettings(c.Request().Context(), s); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to save license to settings"})
+		return utils.Error(c, http.StatusInternalServerError, "failed to save license to settings")
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{

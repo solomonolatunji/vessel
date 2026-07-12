@@ -5,6 +5,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"vessl.dev/vessl/internal/utils"
+
 	"vessl.dev/vessl/internal/http/middleware"
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/services"
@@ -27,7 +29,7 @@ func NewProjectHandler(s *services.ProjectService) *ProjectHandler {
 func (h *ProjectHandler) ListProjects(c echo.Context) error {
 	projects, err := h.projectService.ListProjects(c.Request().Context())
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	user := middleware.GetUserClaimsFromContext(c.Request().Context())
 	if user != nil && user.Role != "admin" {
@@ -37,9 +39,9 @@ func (h *ProjectHandler) ListProjects(c echo.Context) error {
 				filtered = append(filtered, p)
 			}
 		}
-		return c.JSON(http.StatusOK, filtered)
+		return utils.Success(c, "Operation successful", filtered)
 	}
-	return c.JSON(http.StatusOK, projects)
+	return utils.Success(c, "Operation successful", projects)
 }
 
 // @Summary CreateProject endpoint
@@ -52,7 +54,7 @@ func (h *ProjectHandler) ListProjects(c echo.Context) error {
 func (h *ProjectHandler) CreateProject(c echo.Context) error {
 	var req models.CreateProjectRequest
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	user := middleware.GetUserClaimsFromContext(c.Request().Context())
 	if user != nil {
@@ -60,9 +62,9 @@ func (h *ProjectHandler) CreateProject(c echo.Context) error {
 	}
 	p, err := h.projectService.CreateProjectFromRequest(c.Request().Context(), &req)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusCreated, p)
+	return utils.Created(c, "Created successfully", p)
 }
 
 // @Summary GetProject endpoint
@@ -75,17 +77,17 @@ func (h *ProjectHandler) CreateProject(c echo.Context) error {
 func (h *ProjectHandler) GetProject(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing project id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing project id parameter")
 	}
 	p, err := h.projectService.GetProject(c.Request().Context(), id)
 	if err != nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "project not found"})
+		return utils.Error(c, http.StatusNotFound, "project not found")
 	}
 	user := middleware.GetUserClaimsFromContext(c.Request().Context())
 	if user != nil && user.Role != "admin" && p.TeamID != user.UserID {
-		return c.JSON(http.StatusForbidden, map[string]string{"error": "access denied"})
+		return utils.Error(c, http.StatusForbidden, "access denied")
 	}
-	return c.JSON(http.StatusOK, p)
+	return utils.Success(c, "Operation successful", p)
 }
 
 // @Summary DeleteProject endpoint
@@ -98,18 +100,18 @@ func (h *ProjectHandler) GetProject(c echo.Context) error {
 func (h *ProjectHandler) DeleteProject(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing project id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing project id parameter")
 	}
 	p, err := h.projectService.GetProject(c.Request().Context(), id)
 	if err != nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "project not found"})
+		return utils.Error(c, http.StatusNotFound, "project not found")
 	}
 	user := middleware.GetUserClaimsFromContext(c.Request().Context())
 	if user != nil && user.Role != "admin" && p.TeamID != user.UserID {
-		return c.JSON(http.StatusForbidden, map[string]string{"error": "access denied"})
+		return utils.Error(c, http.StatusForbidden, "access denied")
 	}
 	if err := h.projectService.DeleteProject(c.Request().Context(), id); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
+	return utils.Success(c, "Operation successful", map[string]string{"status": "deleted"})
 }

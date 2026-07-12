@@ -20,7 +20,13 @@ apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 });
 
 apiClient.interceptors.response.use(
-  (response: AxiosResponse) => response,
+  (response: AxiosResponse) => {
+    // Automatically unwrap the BaseResponse<T> wrapper from the backend
+    if (response.data && response.data.status === 'success' && 'data' in response.data) {
+      response.data = response.data.data;
+    }
+    return response;
+  },
   (error: AxiosError) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('vessl_token');

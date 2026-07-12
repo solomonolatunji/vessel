@@ -5,6 +5,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"vessl.dev/vessl/internal/utils"
+
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/services"
 )
@@ -27,13 +29,13 @@ func NewProjectSettingsHandler(s *services.ProjectSettingsService) *ProjectSetti
 func (h *ProjectSettingsHandler) ListWebhooks(c echo.Context) error {
 	projectID := c.Param("projectId")
 	if projectID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing projectId"})
+		return utils.Error(c, http.StatusBadRequest, "missing projectId")
 	}
 	list, err := h.settingsService.ListWebhooks(c.Request().Context(), projectID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, list)
+	return utils.Success(c, "Operation successful", list)
 }
 
 // @Summary CreateWebhook endpoint
@@ -47,18 +49,18 @@ func (h *ProjectSettingsHandler) ListWebhooks(c echo.Context) error {
 func (h *ProjectSettingsHandler) CreateWebhook(c echo.Context) error {
 	projectID := c.Param("projectId")
 	if projectID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing projectId"})
+		return utils.Error(c, http.StatusBadRequest, "missing projectId")
 	}
 	var req models.Webhook
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	req.ProjectID = projectID
 	created, err := h.settingsService.CreateWebhook(c.Request().Context(), &req)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusCreated, created)
+	return utils.Created(c, "Created successfully", created)
 }
 
 // @Summary DeleteWebhook endpoint
@@ -73,10 +75,10 @@ func (h *ProjectSettingsHandler) DeleteWebhook(c echo.Context) error {
 	projectID := c.Param("projectId")
 	id := c.Param("id")
 	if projectID == "" || id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing projectId or id"})
+		return utils.Error(c, http.StatusBadRequest, "missing projectId or id")
 	}
 	if err := h.settingsService.DeleteWebhook(c.Request().Context(), id, projectID); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return c.NoContent(http.StatusNoContent)
 }
@@ -91,13 +93,13 @@ func (h *ProjectSettingsHandler) DeleteWebhook(c echo.Context) error {
 func (h *ProjectSettingsHandler) ListTokens(c echo.Context) error {
 	projectID := c.Param("projectId")
 	if projectID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing projectId"})
+		return utils.Error(c, http.StatusBadRequest, "missing projectId")
 	}
 	list, err := h.settingsService.ListTokens(c.Request().Context(), projectID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, list)
+	return utils.Success(c, "Operation successful", list)
 }
 
 // @Summary CreateToken endpoint
@@ -111,11 +113,11 @@ func (h *ProjectSettingsHandler) ListTokens(c echo.Context) error {
 func (h *ProjectSettingsHandler) CreateToken(c echo.Context) error {
 	projectID := c.Param("projectId")
 	if projectID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing projectId"})
+		return utils.Error(c, http.StatusBadRequest, "missing projectId")
 	}
 	var req models.CreateTokenRequest
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	t := &models.ProjectToken{
 		ProjectID:     projectID,
@@ -127,7 +129,7 @@ func (h *ProjectSettingsHandler) CreateToken(c echo.Context) error {
 	}
 	token, raw, err := h.settingsService.CreateToken(c.Request().Context(), t)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return c.JSON(http.StatusCreated, map[string]any{
 		"id":          token.ID,
@@ -152,10 +154,10 @@ func (h *ProjectSettingsHandler) DeleteToken(c echo.Context) error {
 	projectID := c.Param("projectId")
 	id := c.Param("id")
 	if projectID == "" || id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing projectId or id"})
+		return utils.Error(c, http.StatusBadRequest, "missing projectId or id")
 	}
 	if err := h.settingsService.DeleteToken(c.Request().Context(), id, projectID); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return c.NoContent(http.StatusNoContent)
 }
@@ -170,13 +172,13 @@ func (h *ProjectSettingsHandler) DeleteToken(c echo.Context) error {
 func (h *ProjectSettingsHandler) ListMembers(c echo.Context) error {
 	projectID := c.Param("projectId")
 	if projectID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing projectId"})
+		return utils.Error(c, http.StatusBadRequest, "missing projectId")
 	}
 	list, err := h.settingsService.ListMembers(c.Request().Context(), projectID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, list)
+	return utils.Success(c, "Operation successful", list)
 }
 
 // @Summary AddMember endpoint
@@ -190,18 +192,18 @@ func (h *ProjectSettingsHandler) ListMembers(c echo.Context) error {
 func (h *ProjectSettingsHandler) AddMember(c echo.Context) error {
 	projectID := c.Param("projectId")
 	if projectID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing projectId"})
+		return utils.Error(c, http.StatusBadRequest, "missing projectId")
 	}
 	var req models.ProjectMember
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	req.ProjectID = projectID
 	added, err := h.settingsService.AddMember(c.Request().Context(), &req)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusCreated, added)
+	return utils.Created(c, "Created successfully", added)
 }
 
 // @Summary RemoveMember endpoint
@@ -223,10 +225,10 @@ func (h *ProjectSettingsHandler) RemoveMember(c echo.Context) error {
 	projectID := c.Param("projectId")
 	id := c.Param("id")
 	if projectID == "" || id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing projectId or id"})
+		return utils.Error(c, http.StatusBadRequest, "missing projectId or id")
 	}
 	if err := h.settingsService.RemoveMember(c.Request().Context(), id, projectID); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return c.NoContent(http.StatusNoContent)
 }

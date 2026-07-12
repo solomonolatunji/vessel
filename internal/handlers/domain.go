@@ -5,6 +5,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"vessl.dev/vessl/internal/utils"
+
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/services"
 )
@@ -27,13 +29,13 @@ func NewDomainHandler(s *services.EnvironmentService) *DomainHandler {
 func (h *DomainHandler) ListByProject(c echo.Context) error {
 	projectID := c.Param("id")
 	if projectID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing project id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing project id parameter")
 	}
 	domains, err := h.envService.ListDomainsByProject(c.Request().Context(), projectID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, domains)
+	return utils.Success(c, "Operation successful", domains)
 }
 
 // @Summary Create domain
@@ -47,21 +49,21 @@ func (h *DomainHandler) ListByProject(c echo.Context) error {
 func (h *DomainHandler) Create(c echo.Context) error {
 	projectID := c.Param("id")
 	if projectID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing project id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing project id parameter")
 	}
 	var d models.DomainConfig
 	if err := c.Bind(&d); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	d.ProjectID = projectID
 	if d.DomainName == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "domainName is required"})
+		return utils.Error(c, http.StatusBadRequest, "domainName is required")
 	}
 	created, err := h.envService.CreateDomain(c.Request().Context(), &d)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusCreated, created)
+	return utils.Created(c, "Created successfully", created)
 }
 
 // @Summary Delete Domain
@@ -74,10 +76,10 @@ func (h *DomainHandler) Create(c echo.Context) error {
 func (h *DomainHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing id parameter")
 	}
 	if err := h.envService.DeleteDomain(c.Request().Context(), id); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return c.NoContent(http.StatusNoContent)
 }

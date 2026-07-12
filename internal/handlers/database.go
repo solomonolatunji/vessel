@@ -5,6 +5,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"vessl.dev/vessl/internal/utils"
+
 	"vessl.dev/vessl/internal/http/middleware"
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/services"
@@ -26,10 +28,10 @@ func (h *DatabaseHandler) verifyProjectOwnership(c echo.Context, projectID strin
 	}
 	p, err := h.projectService.GetProject(c.Request().Context(), projectID)
 	if err != nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "project not found"})
+		return utils.Error(c, http.StatusNotFound, "project not found")
 	}
 	if p.TeamID != user.UserID {
-		return c.JSON(http.StatusForbidden, map[string]string{"error": "access denied"})
+		return utils.Error(c, http.StatusForbidden, "access denied")
 	}
 	return nil
 }
@@ -43,7 +45,7 @@ func (h *DatabaseHandler) verifyProjectOwnership(c echo.Context, projectID strin
 func (h *DatabaseHandler) ListDatabases(c echo.Context) error {
 	databases, err := h.databaseService.ListDatabases(c.Request().Context())
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	if databases == nil {
 		databases = []*models.Database{}
@@ -57,9 +59,9 @@ func (h *DatabaseHandler) ListDatabases(c echo.Context) error {
 				filtered = append(filtered, db)
 			}
 		}
-		return c.JSON(http.StatusOK, filtered)
+		return utils.Success(c, "Operation successful", filtered)
 	}
-	return c.JSON(http.StatusOK, databases)
+	return utils.Success(c, "Operation successful", databases)
 }
 
 // @Summary CreateDatabase endpoint
@@ -72,16 +74,16 @@ func (h *DatabaseHandler) ListDatabases(c echo.Context) error {
 func (h *DatabaseHandler) CreateDatabase(c echo.Context) error {
 	var req models.CreateDatabaseRequest
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	if err := h.verifyProjectOwnership(c, req.ProjectID); err != nil {
 		return err
 	}
 	db, err := h.databaseService.CreateDatabaseFromRequest(c.Request().Context(), &req)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusCreated, db)
+	return utils.Created(c, "Created successfully", db)
 }
 
 // @Summary GetDatabase endpoint
@@ -94,16 +96,16 @@ func (h *DatabaseHandler) CreateDatabase(c echo.Context) error {
 func (h *DatabaseHandler) GetDatabase(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing database id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing database id parameter")
 	}
 	db, err := h.databaseService.GetDatabase(c.Request().Context(), id)
 	if err != nil || db == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "database not found"})
+		return utils.Error(c, http.StatusNotFound, "database not found")
 	}
 	if err := h.verifyProjectOwnership(c, db.ProjectID); err != nil {
 		return err
 	}
-	return c.JSON(http.StatusOK, db)
+	return utils.Success(c, "Operation successful", db)
 }
 
 // @Summary DeleteDatabase endpoint
@@ -116,19 +118,19 @@ func (h *DatabaseHandler) GetDatabase(c echo.Context) error {
 func (h *DatabaseHandler) DeleteDatabase(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing database id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing database id parameter")
 	}
 	db, err := h.databaseService.GetDatabase(c.Request().Context(), id)
 	if err != nil || db == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "database not found"})
+		return utils.Error(c, http.StatusNotFound, "database not found")
 	}
 	if err := h.verifyProjectOwnership(c, db.ProjectID); err != nil {
 		return err
 	}
 	if err := h.databaseService.DeleteDatabase(c.Request().Context(), id); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
+	return utils.Success(c, "Operation successful", map[string]string{"status": "deleted"})
 }
 
 // @Summary StartDatabase endpoint
@@ -141,20 +143,20 @@ func (h *DatabaseHandler) DeleteDatabase(c echo.Context) error {
 func (h *DatabaseHandler) StartDatabase(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing database id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing database id parameter")
 	}
 	db, err := h.databaseService.GetDatabase(c.Request().Context(), id)
 	if err != nil || db == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "database not found"})
+		return utils.Error(c, http.StatusNotFound, "database not found")
 	}
 	if err := h.verifyProjectOwnership(c, db.ProjectID); err != nil {
 		return err
 	}
 	dbStarted, err := h.databaseService.StartDatabase(c.Request().Context(), id)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, dbStarted)
+	return utils.Success(c, "Operation successful", dbStarted)
 }
 
 // @Summary StopDatabase endpoint
@@ -167,19 +169,19 @@ func (h *DatabaseHandler) StartDatabase(c echo.Context) error {
 func (h *DatabaseHandler) StopDatabase(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing database id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing database id parameter")
 	}
 	db, err := h.databaseService.GetDatabase(c.Request().Context(), id)
 	if err != nil || db == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "database not found"})
+		return utils.Error(c, http.StatusNotFound, "database not found")
 	}
 	if err := h.verifyProjectOwnership(c, db.ProjectID); err != nil {
 		return err
 	}
 	if err := h.databaseService.StopDatabase(c.Request().Context(), id); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, map[string]string{"status": "stopped"})
+	return utils.Success(c, "Operation successful", map[string]string{"status": "stopped"})
 }
 
 // @Summary QueryDatabase endpoint
@@ -193,22 +195,22 @@ func (h *DatabaseHandler) StopDatabase(c echo.Context) error {
 func (h *DatabaseHandler) QueryDatabase(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing database id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing database id parameter")
 	}
 	db, err := h.databaseService.GetDatabase(c.Request().Context(), id)
 	if err != nil || db == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "database not found"})
+		return utils.Error(c, http.StatusNotFound, "database not found")
 	}
 	if err := h.verifyProjectOwnership(c, db.ProjectID); err != nil {
 		return err
 	}
 	var req models.DatabaseQueryRequest
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	res, err := h.databaseService.QueryDatabase(c.Request().Context(), id, req.Query)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, res)
+	return utils.Success(c, "Operation successful", res)
 }

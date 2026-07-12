@@ -7,6 +7,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"vessl.dev/vessl/internal/utils"
+
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/services"
 )
@@ -33,13 +35,13 @@ func NewDeploymentHandler(ds *services.DeploymentService, as *services.AppServic
 func (h *DeploymentHandler) ListServiceDeployments(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	if serviceID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing serviceId parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing serviceId parameter")
 	}
 	deps, err := h.deploymentService.ListByService(c.Request().Context(), serviceID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, deps)
+	return utils.Success(c, "Operation successful", deps)
 }
 
 // @Summary Trigger Deployment
@@ -52,11 +54,11 @@ func (h *DeploymentHandler) ListServiceDeployments(c echo.Context) error {
 func (h *DeploymentHandler) Trigger(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	if serviceID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing serviceId parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing serviceId parameter")
 	}
 	svc, err := h.appService.GetAppService(c.Request().Context(), serviceID)
 	if err != nil || svc == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "service not found"})
+		return utils.Error(c, http.StatusNotFound, "service not found")
 	}
 	dep := &models.Deployment{
 		ServiceID:     serviceID,
@@ -69,7 +71,7 @@ func (h *DeploymentHandler) Trigger(c echo.Context) error {
 	}
 	created, err := h.deploymentService.CreateDeployment(c.Request().Context(), dep)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return c.JSON(http.StatusAccepted, created)
 }
@@ -84,11 +86,11 @@ func (h *DeploymentHandler) Trigger(c echo.Context) error {
 func (h *DeploymentHandler) Rollback(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing id parameter")
 	}
 	targetDep, err := h.deploymentService.GetDeployment(c.Request().Context(), id)
 	if err != nil || targetDep == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "deployment not found"})
+		return utils.Error(c, http.StatusNotFound, "deployment not found")
 	}
 	newDep := &models.Deployment{
 		ServiceID:     targetDep.ServiceID,
@@ -103,7 +105,7 @@ func (h *DeploymentHandler) Rollback(c echo.Context) error {
 	}
 	created, err := h.deploymentService.CreateDeployment(c.Request().Context(), newDep)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return c.JSON(http.StatusAccepted, created)
 }
@@ -118,11 +120,11 @@ func (h *DeploymentHandler) Rollback(c echo.Context) error {
 func (h *DeploymentHandler) GetLogs(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing id parameter")
 	}
 	dep, err := h.deploymentService.GetDeployment(c.Request().Context(), id)
 	if err != nil || dep == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "deployment not found"})
+		return utils.Error(c, http.StatusNotFound, "deployment not found")
 	}
 	return c.JSON(http.StatusOK, map[string]string{
 		"id":        dep.ID,
@@ -147,7 +149,7 @@ func (h *DeploymentHandler) GetMetrics(c echo.Context) error {
 		{"timestamp": now.Add(-1 * time.Minute).Format(time.RFC3339), "cpuPercent": 3.4, "memoryMB": 68.1, "networkRx": 45.2, "networkTx": 22.0},
 		{"timestamp": now.Format(time.RFC3339), "cpuPercent": 1.5, "memoryMB": 66.8, "networkRx": 18.0, "networkTx": 11.5},
 	}
-	return c.JSON(http.StatusOK, metrics)
+	return utils.Success(c, "Operation successful", metrics)
 }
 
 type DeployRequest struct {
@@ -164,13 +166,13 @@ type DeployRequest struct {
 func (h *DeploymentHandler) DeployProject(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing project id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing project id parameter")
 	}
 
 	sourceDir := fmt.Sprintf("data/builds/%s", id)
 	containerID, err := h.deploymentService.DeployProject(c.Request().Context(), id, sourceDir, nil)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return c.JSON(http.StatusOK, map[string]string{
 		"status":       "deployed",

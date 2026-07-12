@@ -5,6 +5,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"vessl.dev/vessl/internal/utils"
+
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/services"
 )
@@ -31,7 +33,7 @@ type TestNotificationRequest struct {
 // @Router /settings/notifications [get]
 func (h *NotificationHandler) ListChannels(c echo.Context) error {
 	if c.Request().Method != http.MethodGet {
-		return c.JSON(http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
+		return utils.Error(c, http.StatusMethodNotAllowed, "Method not allowed")
 	}
 	teamID := c.QueryParam("teamId")
 	if teamID == "" {
@@ -39,9 +41,9 @@ func (h *NotificationHandler) ListChannels(c echo.Context) error {
 	}
 	channels, err := h.notificationService.ListChannels(c.Request().Context(), teamID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, channels)
+	return utils.Success(c, "Operation successful", channels)
 }
 
 // @Summary SaveChannel endpoint
@@ -53,19 +55,19 @@ func (h *NotificationHandler) ListChannels(c echo.Context) error {
 // @Router /settings/notifications [put]
 func (h *NotificationHandler) SaveChannel(c echo.Context) error {
 	if c.Request().Method != http.MethodPut && c.Request().Method != http.MethodPost {
-		return c.JSON(http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
+		return utils.Error(c, http.StatusMethodNotAllowed, "Method not allowed")
 	}
 	var channel models.TeamNotificationChannel
 	if err := c.Bind(&channel); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	if channel.TeamID == "" {
 		channel.TeamID = "default"
 	}
 	if err := h.notificationService.SaveChannel(c.Request().Context(), &channel); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, channel)
+	return utils.Success(c, "Operation successful", channel)
 }
 
 // @Summary DeleteChannel endpoint
@@ -77,16 +79,16 @@ func (h *NotificationHandler) SaveChannel(c echo.Context) error {
 // @Router /settings/notifications/{id} [delete]
 func (h *NotificationHandler) DeleteChannel(c echo.Context) error {
 	if c.Request().Method != http.MethodDelete {
-		return c.JSON(http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
+		return utils.Error(c, http.StatusMethodNotAllowed, "Method not allowed")
 	}
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Missing channel id"})
+		return utils.Error(c, http.StatusBadRequest, "Missing channel id")
 	}
 	if err := h.notificationService.DeleteChannel(c.Request().Context(), id); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
+	return utils.Success(c, "Operation successful", map[string]string{"status": "deleted"})
 }
 
 // @Summary TestNotification endpoint
@@ -98,17 +100,17 @@ func (h *NotificationHandler) DeleteChannel(c echo.Context) error {
 // @Router /settings/notifications/test [post]
 func (h *NotificationHandler) TestNotification(c echo.Context) error {
 	if c.Request().Method != http.MethodPost {
-		return c.JSON(http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
+		return utils.Error(c, http.StatusMethodNotAllowed, "Method not allowed")
 	}
 	var req TestNotificationRequest
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 
 	if req.Provider != "" {
 		err := h.notificationService.TestGlobalNotification(c.Request().Context(), req.Provider)
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+			return utils.Error(c, http.StatusBadRequest, err.Error())
 		}
 		return c.JSON(http.StatusOK, map[string]string{
 			"status":  "ok",
@@ -118,7 +120,7 @@ func (h *NotificationHandler) TestNotification(c echo.Context) error {
 
 	err := h.notificationService.TestTeamNotification(c.Request().Context(), req.TeamID, req.ChannelID)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusBadRequest, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{

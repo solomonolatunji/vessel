@@ -11,6 +11,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 
+	"vessl.dev/vessl/internal/utils"
+
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/services"
 )
@@ -60,11 +62,11 @@ type GithubWebhookPayload struct {
 func (h *WebhookHandler) HandleProjectWebhook(c echo.Context) error {
 	projectID := c.Param("projectId")
 	if projectID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing projectId parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing projectId parameter")
 	}
 	project, err := h.projectService.GetProject(c.Request().Context(), projectID)
 	if err != nil || project == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "project not found"})
+		return utils.Error(c, http.StatusNotFound, "project not found")
 	}
 	go func() {
 		ctx := context.Background()
@@ -87,11 +89,11 @@ func (h *WebhookHandler) HandleProjectWebhook(c echo.Context) error {
 func (h *WebhookHandler) HandleServiceWebhook(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	if serviceID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing serviceId parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing serviceId parameter")
 	}
 	appSvc, err := h.appService.GetAppService(c.Request().Context(), serviceID)
 	if err != nil || appSvc == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "service not found"})
+		return utils.Error(c, http.StatusNotFound, "service not found")
 	}
 	go func() {
 		ctx := context.Background()
@@ -135,15 +137,15 @@ func (h *WebhookHandler) HandleServiceWebhook(c echo.Context) error {
 func (h *WebhookHandler) HandleGitHubWebhook(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	if serviceID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing serviceId parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing serviceId parameter")
 	}
 	event := c.Request().Header.Get("X-GitHub-Event")
 	if event == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing X-GitHub-Event header"})
+		return utils.Error(c, http.StatusBadRequest, "missing X-GitHub-Event header")
 	}
 	var payload GithubWebhookPayload
 	if err := c.Bind(&payload); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	if event == "pull_request" {
 		if payload.Action == "opened" || payload.Action == "synchronize" {
@@ -160,5 +162,5 @@ func (h *WebhookHandler) HandleGitHubWebhook(c echo.Context) error {
 			return c.JSON(http.StatusAccepted, map[string]string{"message": "Destroying PR preview"})
 		}
 	}
-	return c.JSON(http.StatusOK, map[string]string{"message": "Event ignored"})
+	return utils.Success(c, "Operation successful", map[string]string{"message": "Event ignored"})
 }

@@ -5,6 +5,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"vessl.dev/vessl/internal/utils"
+
 	"vessl.dev/vessl/internal/services"
 )
 
@@ -25,17 +27,17 @@ func NewVercelHandler(vs *services.VercelService) *VercelHandler {
 func (h *VercelHandler) Callback(c echo.Context) error {
 	code := c.QueryParam("code")
 	if code == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "authorization code required"})
+		return utils.Error(c, http.StatusBadRequest, "authorization code required")
 	}
 
 	user := GetUserClaimsFromContext(c.Request().Context())
 	if user == nil {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+		return utils.Error(c, http.StatusUnauthorized, "unauthorized")
 	}
 
 	account, err := h.vercelService.HandleCallback(c.Request().Context(), user.UserID, code)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
@@ -53,7 +55,7 @@ func (h *VercelHandler) Callback(c echo.Context) error {
 func (h *VercelHandler) ListProjects(c echo.Context) error {
 	user := GetUserClaimsFromContext(c.Request().Context())
 	if user == nil {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+		return utils.Error(c, http.StatusUnauthorized, "unauthorized")
 	}
 
 	teamID := c.QueryParam("teamId")
@@ -64,7 +66,7 @@ func (h *VercelHandler) ListProjects(c echo.Context) error {
 
 	projects, err := h.vercelService.ListProjects(c.Request().Context(), user.UserID, tID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
@@ -82,12 +84,12 @@ func (h *VercelHandler) ListProjects(c echo.Context) error {
 func (h *VercelHandler) GetProjectEnv(c echo.Context) error {
 	user := GetUserClaimsFromContext(c.Request().Context())
 	if user == nil {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+		return utils.Error(c, http.StatusUnauthorized, "unauthorized")
 	}
 
 	projectID := c.Param("id")
 	if projectID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "project ID required"})
+		return utils.Error(c, http.StatusBadRequest, "project ID required")
 	}
 
 	teamID := c.QueryParam("teamId")
@@ -98,7 +100,7 @@ func (h *VercelHandler) GetProjectEnv(c echo.Context) error {
 
 	envs, err := h.vercelService.GetProjectEnvVars(c.Request().Context(), user.UserID, tID, projectID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{

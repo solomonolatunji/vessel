@@ -5,6 +5,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"vessl.dev/vessl/internal/utils"
+
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/services"
 )
@@ -27,17 +29,17 @@ func NewAISettingsHandler(s *services.AISettingsService) *AISettingsHandler {
 func (h *AISettingsHandler) Get(c echo.Context) error {
 	teamID := c.Param("teamId")
 	if teamID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "team ID is required"})
+		return utils.Error(c, http.StatusBadRequest, "team ID is required")
 	}
 
 	settings, err := h.aiService.Get(c.Request().Context(), teamID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	if settings == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "Settings not found"})
+		return utils.Error(c, http.StatusNotFound, "Settings not found")
 	}
-	return c.JSON(http.StatusOK, settings)
+	return utils.Success(c, "Operation successful", settings)
 }
 
 // @Summary Save endpoint
@@ -51,18 +53,18 @@ func (h *AISettingsHandler) Get(c echo.Context) error {
 func (h *AISettingsHandler) Save(c echo.Context) error {
 	teamID := c.Param("teamId")
 	if teamID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "team ID is required"})
+		return utils.Error(c, http.StatusBadRequest, "team ID is required")
 	}
 
 	var settings models.TeamAISettings
 	if err := c.Bind(&settings); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	settings.TeamID = teamID
 
 	if err := h.aiService.Save(c.Request().Context(), &settings); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 
-	return c.JSON(http.StatusOK, settings)
+	return utils.Success(c, "Operation successful", settings)
 }

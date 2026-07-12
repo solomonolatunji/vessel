@@ -2,9 +2,11 @@ package handlers
 
 import (
 	"github.com/labstack/echo/v4"
+
 	"net/http"
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/services"
+	"vessl.dev/vessl/internal/utils"
 )
 
 type EmailSettingsHandler struct {
@@ -26,15 +28,15 @@ func (h *EmailSettingsHandler) GetTeamEmailSettings(c echo.Context) error {
 	teamID := c.Param("teamId")
 	settings, err := h.svc.GetTeamEmailSettings(c.Request().Context(), teamID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	if settings == nil {
-		return c.JSON(http.StatusOK, map[string]interface{}{"configured": false})
+		return utils.Success(c, "Operation successful", map[string]interface{}{"configured": false})
 	}
 
 	settings.SMTPPassword = ""
 	settings.ResendAPIKey = ""
-	return c.JSON(http.StatusOK, settings)
+	return utils.Success(c, "Operation successful", settings)
 }
 
 // @Summary Save Team Email Settings
@@ -49,13 +51,13 @@ func (h *EmailSettingsHandler) SaveTeamEmailSettings(c echo.Context) error {
 	teamID := c.Param("teamId")
 	var req models.TeamEmailSettings
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid request body"})
+		return utils.Error(c, http.StatusBadRequest, "invalid request body")
 	}
 
 	req.TeamID = teamID
 	if err := h.svc.SaveTeamEmailSettings(c.Request().Context(), &req); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 
-	return c.JSON(http.StatusOK, map[string]string{"status": "ok"})
+	return utils.Success(c, "Operation successful", map[string]string{"status": "ok"})
 }

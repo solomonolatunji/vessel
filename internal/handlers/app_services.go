@@ -5,6 +5,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"vessl.dev/vessl/internal/utils"
+
 	"vessl.dev/vessl/internal/http/middleware"
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/services"
@@ -26,10 +28,10 @@ func (h *AppHandler) verifyProjectOwnership(c echo.Context, projectID string) er
 	}
 	p, err := h.projectService.GetProject(c.Request().Context(), projectID)
 	if err != nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "project not found"})
+		return utils.Error(c, http.StatusNotFound, "project not found")
 	}
 	if p.TeamID != user.UserID {
-		return c.JSON(http.StatusForbidden, map[string]string{"error": "access denied"})
+		return utils.Error(c, http.StatusForbidden, "access denied")
 	}
 	return nil
 }
@@ -46,10 +48,10 @@ func (h *AppHandler) Create(c echo.Context) error {
 	envID := c.Param("id")
 	var req models.AppService
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	if req.Name == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "app service name is required"})
+		return utils.Error(c, http.StatusBadRequest, "app service name is required")
 	}
 	if err := h.verifyProjectOwnership(c, req.ProjectID); err != nil {
 		return err
@@ -60,9 +62,9 @@ func (h *AppHandler) Create(c echo.Context) error {
 	}
 	created, err := h.appService.CreateAppService(c.Request().Context(), &req)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusCreated, created)
+	return utils.Created(c, "Created successfully", created)
 }
 
 // @Summary ListByEnvironment endpoint
@@ -76,7 +78,7 @@ func (h *AppHandler) ListByEnvironment(c echo.Context) error {
 	envID := c.Param("id")
 	apps, err := h.appService.ListByEnvironment(c.Request().Context(), envID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	user := middleware.GetUserClaimsFromContext(c.Request().Context())
 	if user != nil && user.Role != "admin" {
@@ -87,9 +89,9 @@ func (h *AppHandler) ListByEnvironment(c echo.Context) error {
 				filtered = append(filtered, app)
 			}
 		}
-		return c.JSON(http.StatusOK, filtered)
+		return utils.Success(c, "Operation successful", filtered)
 	}
-	return c.JSON(http.StatusOK, apps)
+	return utils.Success(c, "Operation successful", apps)
 }
 
 // @Summary ListByProject endpoint
@@ -106,9 +108,9 @@ func (h *AppHandler) ListByProject(c echo.Context) error {
 	}
 	apps, err := h.appService.ListByProject(c.Request().Context(), projectID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, apps)
+	return utils.Success(c, "Operation successful", apps)
 }
 
 // @Summary Get App Service
@@ -122,12 +124,12 @@ func (h *AppHandler) Get(c echo.Context) error {
 	id := c.Param("id")
 	svc, err := h.appService.GetAppService(c.Request().Context(), id)
 	if err != nil || svc == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "app service not found"})
+		return utils.Error(c, http.StatusNotFound, "app service not found")
 	}
 	if err := h.verifyProjectOwnership(c, svc.ProjectID); err != nil {
 		return err
 	}
-	return c.JSON(http.StatusOK, svc)
+	return utils.Success(c, "Operation successful", svc)
 }
 
 // @Summary Update App Service
@@ -142,14 +144,14 @@ func (h *AppHandler) Update(c echo.Context) error {
 	id := c.Param("id")
 	existing, err := h.appService.GetAppService(c.Request().Context(), id)
 	if err != nil || existing == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "app service not found"})
+		return utils.Error(c, http.StatusNotFound, "app service not found")
 	}
 	if err := h.verifyProjectOwnership(c, existing.ProjectID); err != nil {
 		return err
 	}
 	var req models.AppService
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	existing.Name = req.Name
 	existing.RepositoryURL = req.RepositoryURL
@@ -165,9 +167,9 @@ func (h *AppHandler) Update(c echo.Context) error {
 	existing.ContainerID = req.ContainerID
 	existing.Status = req.Status
 	if err := h.appService.UpdateAppService(c.Request().Context(), existing); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, existing)
+	return utils.Success(c, "Operation successful", existing)
 }
 
 // @Summary Delete App Service
@@ -181,13 +183,13 @@ func (h *AppHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	existing, err := h.appService.GetAppService(c.Request().Context(), id)
 	if err != nil || existing == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "app service not found"})
+		return utils.Error(c, http.StatusNotFound, "app service not found")
 	}
 	if err := h.verifyProjectOwnership(c, existing.ProjectID); err != nil {
 		return err
 	}
 	if err := h.appService.DeleteAppService(c.Request().Context(), id); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return c.NoContent(http.StatusNoContent)
 }

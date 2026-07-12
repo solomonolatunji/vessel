@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"vessl.dev/vessl/internal/services"
+	"vessl.dev/vessl/internal/utils"
 )
 
 type AuthHandler struct {
@@ -37,14 +38,14 @@ type RegisterRequest struct {
 func (h *AuthHandler) Register(c echo.Context) error {
 	var payload RegisterRequest
 	if err := c.Bind(&payload); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	u, token, err := h.authService.Register(c.Request().Context(), payload.Name, payload.Email, payload.Password)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusBadRequest, err.Error())
 	}
 	SetAuthCookie(c, token)
-	return c.JSON(http.StatusOK, map[string]any{
+	return utils.Success(c, "Registration successful", map[string]any{
 		"token": token,
 		"user":  u,
 	})
@@ -60,14 +61,14 @@ func (h *AuthHandler) Register(c echo.Context) error {
 func (h *AuthHandler) Login(c echo.Context) error {
 	var payload AuthRequest
 	if err := c.Bind(&payload); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	u, token, err := h.authService.Login(c.Request().Context(), payload.Email, payload.Password)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusUnauthorized, err.Error())
 	}
 	SetAuthCookie(c, token)
-	return c.JSON(http.StatusOK, map[string]any{
+	return utils.Success(c, "Login successful", map[string]any{
 		"token": token,
 		"user":  u,
 	})
@@ -81,5 +82,5 @@ func (h *AuthHandler) Login(c echo.Context) error {
 // @Router /auth/logout [post]
 func (h *AuthHandler) Logout(c echo.Context) error {
 	ClearAuthCookie(c)
-	return c.JSON(http.StatusOK, map[string]string{"status": "logged out"})
+	return utils.Success(c, "Logged out successfully", nil)
 }

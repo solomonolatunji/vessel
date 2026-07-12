@@ -8,6 +8,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"vessl.dev/vessl/internal/utils"
+
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/services"
 )
@@ -33,9 +35,9 @@ type Verify2FARequest struct {
 func (h *OAuthHandler) ListProviders(c echo.Context) error {
 	providers, err := h.oauthService.ListProviders(c.Request().Context())
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, providers)
+	return utils.Success(c, "Operation successful", providers)
 }
 
 // @Summary SaveProvider endpoint
@@ -48,12 +50,12 @@ func (h *OAuthHandler) ListProviders(c echo.Context) error {
 func (h *OAuthHandler) SaveProvider(c echo.Context) error {
 	var p models.OAuthProviderConfig
 	if err := c.Bind(&p); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	if err := h.oauthService.SaveProvider(c.Request().Context(), &p); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, p)
+	return utils.Success(c, "Operation successful", p)
 }
 
 // @Summary OAuthRedirect endpoint
@@ -70,16 +72,16 @@ func (h *OAuthHandler) OAuthRedirect(c echo.Context) error {
 	}
 	p, err := h.oauthService.GetProvider(c.Request().Context(), providerName)
 	if err != nil || p == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "oauth provider not found or not enabled: " + providerName})
+		return utils.Error(c, http.StatusNotFound, "oauth provider not found or not enabled: "+providerName)
 	}
 	stateBytes := make([]byte, 16)
 	if _, err := rand.Read(stateBytes); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to generate secure state token"})
+		return utils.Error(c, http.StatusInternalServerError, "failed to generate secure state token")
 	}
 	state := hex.EncodeToString(stateBytes)
 	authURL, err := services.GetAuthorizationURL(p, state)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusBadRequest, err.Error())
 	}
 	return c.Redirect(http.StatusTemporaryRedirect, authURL)
 }
@@ -96,11 +98,11 @@ func (h *OAuthHandler) OAuthCallback(c echo.Context) error {
 	providerName = strings.TrimSuffix(providerName, "/callback")
 	code := c.QueryParam("code")
 	if code == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing authorization code parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing authorization code parameter")
 	}
 	token, _, err := h.oauthService.HandleCallback(c.Request().Context(), providerName, code)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusUnauthorized, err.Error())
 	}
 	SetAuthCookie(c, token)
 	return c.Redirect(http.StatusTemporaryRedirect, "/")
@@ -115,13 +117,13 @@ func (h *OAuthHandler) OAuthCallback(c echo.Context) error {
 func (h *OAuthHandler) Setup2FA(c echo.Context) error {
 	claims := ExtractClaims(c)
 	if claims == nil || claims.UserID == "" {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "unauthorized access"})
+		return utils.Error(c, http.StatusUnauthorized, "unauthorized access")
 	}
 	res, err := h.oauthService.Setup2FA(c.Request().Context(), claims.UserID, claims.Email)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, res)
+	return utils.Success(c, "Operation successful", res)
 }
 
 // @Summary Verify2FA endpoint
@@ -134,16 +136,16 @@ func (h *OAuthHandler) Setup2FA(c echo.Context) error {
 func (h *OAuthHandler) Verify2FA(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "unauthorized access"})
+		return utils.Error(c, http.StatusUnauthorized, "unauthorized access")
 	}
 	var payload Verify2FARequest
 	if err := c.Bind(&payload); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing 6-digit passcode"})
+		return utils.Error(c, http.StatusBadRequest, "missing 6-digit passcode")
 	}
 	if err := h.oauthService.Verify2FA(c.Request().Context(), userID, payload.Passcode); err != nil {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusUnauthorized, err.Error())
 	}
-	return c.JSON(http.StatusOK, map[string]string{"status": "totp_enabled"})
+	return utils.Success(c, "Operation successful", map[string]string{"status": "totp_enabled"})
 }
 
 // @Summary Disable2FA endpoint
@@ -155,10 +157,10 @@ func (h *OAuthHandler) Verify2FA(c echo.Context) error {
 func (h *OAuthHandler) Disable2FA(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "unauthorized access"})
+		return utils.Error(c, http.StatusUnauthorized, "unauthorized access")
 	}
 	if err := h.oauthService.Disable2FA(c.Request().Context(), userID); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, map[string]string{"status": "totp_disabled"})
+	return utils.Success(c, "Operation successful", map[string]string{"status": "totp_disabled"})
 }

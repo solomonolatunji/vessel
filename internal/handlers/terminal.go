@@ -58,15 +58,15 @@ func (h *TerminalHandler) HandleWebSocket(c echo.Context) error {
 	if h.tokenService != nil {
 		tokenStr := middleware.ExtractTokenFromRequest(c)
 		if tokenStr == "" {
-			return c.JSON(http.StatusUnauthorized, map[string]string{"error": "missing authentication token for terminal access"})
+			return utils.Error(c, http.StatusUnauthorized, "missing authentication token for terminal access")
 		}
 		if _, err := h.tokenService.ValidateToken(tokenStr); err != nil {
-			return c.JSON(http.StatusUnauthorized, map[string]string{"error": "invalid authentication token for terminal access"})
+			return utils.Error(c, http.StatusUnauthorized, "invalid authentication token for terminal access")
 		}
 	}
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing id parameter")
 	}
 	containerName := h.normalizeName(id)
 	if h.appService != nil {
@@ -86,15 +86,15 @@ func (h *TerminalHandler) HandleWebSocket(c echo.Context) error {
 		AttachStderr: true,
 	}
 	if h.dockerClient == nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "docker client unavailable"})
+		return utils.Error(c, http.StatusInternalServerError, "docker client unavailable")
 	}
 	resp, err := h.dockerClient.ContainerExecCreate(context.Background(), containerName, execConfig)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to create exec instance: " + err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, "failed to create exec instance: "+err.Error())
 	}
 	hijackedResp, err := h.dockerClient.ContainerExecAttach(context.Background(), resp.ID, types.ExecStartCheck{Tty: true})
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to attach to exec instance: " + err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, "failed to attach to exec instance: "+err.Error())
 	}
 	defer hijackedResp.Close()
 	ws, err := terminalUpgrader.Upgrade(c.Response().Writer, c.Request(), nil)

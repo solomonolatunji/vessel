@@ -5,6 +5,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"vessl.dev/vessl/internal/utils"
+
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/services"
 )
@@ -26,13 +28,13 @@ func NewBackupHandler(s *services.BackupService) *BackupHandler {
 func (h *BackupHandler) List(c echo.Context) error {
 	projectID := c.QueryParam("projectId")
 	if projectID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing projectId query parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing projectId query parameter")
 	}
 	list, err := h.backupService.ListConfigsByProject(c.Request().Context(), projectID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, list)
+	return utils.Success(c, "Operation successful", list)
 }
 
 // @Summary Create Backup
@@ -45,12 +47,12 @@ func (h *BackupHandler) List(c echo.Context) error {
 func (h *BackupHandler) Create(c echo.Context) error {
 	var cfg models.BackupConfig
 	if err := c.Bind(&cfg); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	if err := h.backupService.CreateConfig(c.Request().Context(), &cfg); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusCreated, cfg)
+	return utils.Created(c, "Created successfully", cfg)
 }
 
 // @Summary Get Backup
@@ -63,13 +65,13 @@ func (h *BackupHandler) Create(c echo.Context) error {
 func (h *BackupHandler) Get(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing id parameter")
 	}
 	cfg, err := h.backupService.GetConfig(c.Request().Context(), id)
 	if err != nil || cfg == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "backup config not found"})
+		return utils.Error(c, http.StatusNotFound, "backup config not found")
 	}
-	return c.JSON(http.StatusOK, cfg)
+	return utils.Success(c, "Operation successful", cfg)
 }
 
 // @Summary Delete Backup
@@ -83,10 +85,10 @@ func (h *BackupHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	projectID := c.QueryParam("projectId")
 	if id == "" || projectID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing id or projectId"})
+		return utils.Error(c, http.StatusBadRequest, "missing id or projectId")
 	}
 	if err := h.backupService.DeleteConfig(c.Request().Context(), id, projectID); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return c.NoContent(http.StatusNoContent)
 }
@@ -101,13 +103,13 @@ func (h *BackupHandler) Delete(c echo.Context) error {
 func (h *BackupHandler) Trigger(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing id parameter")
 	}
 	rec, err := h.backupService.TriggerBackup(c.Request().Context(), id)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, rec)
+	return utils.Success(c, "Operation successful", rec)
 }
 
 // @Summary ListRecords endpoint
@@ -119,13 +121,13 @@ func (h *BackupHandler) Trigger(c echo.Context) error {
 func (h *BackupHandler) ListRecords(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing id parameter")
 	}
 	recs, err := h.backupService.ListRecordsByConfig(c.Request().Context(), id)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, recs)
+	return utils.Success(c, "Operation successful", recs)
 }
 
 // @Summary ListS3Destinations endpoint
@@ -137,13 +139,13 @@ func (h *BackupHandler) ListRecords(c echo.Context) error {
 func (h *BackupHandler) ListS3Destinations(c echo.Context) error {
 	projectID := c.QueryParam("projectId")
 	if projectID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing projectId query parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing projectId query parameter")
 	}
 	list, err := h.backupService.ListS3Destinations(c.Request().Context(), projectID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, list)
+	return utils.Success(c, "Operation successful", list)
 }
 
 // @Summary CreateS3Destination endpoint
@@ -155,12 +157,12 @@ func (h *BackupHandler) ListS3Destinations(c echo.Context) error {
 func (h *BackupHandler) CreateS3Destination(c echo.Context) error {
 	var dest models.S3Destination
 	if err := c.Bind(&dest); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	if err := h.backupService.CreateS3Destination(c.Request().Context(), &dest); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusCreated, dest)
+	return utils.Created(c, "Created successfully", dest)
 }
 
 // @Summary DeleteS3Destination endpoint
@@ -174,10 +176,10 @@ func (h *BackupHandler) DeleteS3Destination(c echo.Context) error {
 	id := c.Param("id")
 	projectID := c.QueryParam("projectId")
 	if id == "" || projectID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing id or projectId"})
+		return utils.Error(c, http.StatusBadRequest, "missing id or projectId")
 	}
 	if err := h.backupService.DeleteS3Destination(c.Request().Context(), id, projectID); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return c.NoContent(http.StatusNoContent)
 }

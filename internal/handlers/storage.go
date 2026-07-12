@@ -5,6 +5,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"vessl.dev/vessl/internal/utils"
+
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/services"
 )
@@ -25,12 +27,12 @@ func NewStorageHandler(s *services.StorageService) *StorageHandler {
 func (h *StorageHandler) ListStorage(c echo.Context) error {
 	storages, err := h.storageService.ListStorage(c.Request().Context())
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	if storages == nil {
 		storages = []*models.Storage{}
 	}
-	return c.JSON(http.StatusOK, storages)
+	return utils.Success(c, "Operation successful", storages)
 }
 
 // @Summary CreateStorage endpoint
@@ -43,13 +45,13 @@ func (h *StorageHandler) ListStorage(c echo.Context) error {
 func (h *StorageHandler) CreateStorage(c echo.Context) error {
 	var st models.Storage
 	if err := c.Bind(&st); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	created, err := h.storageService.CreateStorageWithDefaults(c.Request().Context(), &st)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusCreated, created)
+	return utils.Created(c, "Created successfully", created)
 }
 
 // @Summary GetStorage endpoint
@@ -62,13 +64,13 @@ func (h *StorageHandler) CreateStorage(c echo.Context) error {
 func (h *StorageHandler) GetStorage(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing storage id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing storage id parameter")
 	}
 	st, err := h.storageService.GetStorage(c.Request().Context(), id)
 	if err != nil || st == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "storage record not found"})
+		return utils.Error(c, http.StatusNotFound, "storage record not found")
 	}
-	return c.JSON(http.StatusOK, st)
+	return utils.Success(c, "Operation successful", st)
 }
 
 // @Summary DeleteStorage endpoint
@@ -80,12 +82,12 @@ func (h *StorageHandler) GetStorage(c echo.Context) error {
 func (h *StorageHandler) DeleteStorage(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing storage id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing storage id parameter")
 	}
 	if err := h.storageService.DeleteStorage(c.Request().Context(), id); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
+	return utils.Success(c, "Operation successful", map[string]string{"status": "deleted"})
 }
 
 // @Summary StartStorage endpoint
@@ -98,13 +100,13 @@ func (h *StorageHandler) DeleteStorage(c echo.Context) error {
 func (h *StorageHandler) StartStorage(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing storage id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing storage id parameter")
 	}
 	st, err := h.storageService.StartStorage(c.Request().Context(), id)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, st)
+	return utils.Success(c, "Operation successful", st)
 }
 
 // @Summary StopStorage endpoint
@@ -117,10 +119,10 @@ func (h *StorageHandler) StartStorage(c echo.Context) error {
 func (h *StorageHandler) StopStorage(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing storage id parameter"})
+		return utils.Error(c, http.StatusBadRequest, "missing storage id parameter")
 	}
 	if err := h.storageService.StopStorage(c.Request().Context(), id); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, map[string]string{"status": "stopped"})
+	return utils.Success(c, "Operation successful", map[string]string{"status": "stopped"})
 }

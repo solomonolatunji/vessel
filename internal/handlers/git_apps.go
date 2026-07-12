@@ -6,6 +6,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"vessl.dev/vessl/internal/utils"
+
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/services"
 )
@@ -36,12 +38,12 @@ func listAppsHandler[T any](list listFunc[T]) echo.HandlerFunc {
 		}
 		apps, err := list(c.Request().Context(), teamID)
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			return utils.Error(c, http.StatusInternalServerError, err.Error())
 		}
 		if apps == nil {
 			apps = []T{}
 		}
-		return c.JSON(http.StatusOK, apps)
+		return utils.Success(c, "Operation successful", apps)
 	}
 }
 
@@ -50,12 +52,12 @@ func getAppHandler[T any](get getFunc[T]) echo.HandlerFunc {
 		id := c.Param("id")
 		app, err := get(c.Request().Context(), id)
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			return utils.Error(c, http.StatusInternalServerError, err.Error())
 		}
 		if app == nil {
-			return c.JSON(http.StatusNotFound, map[string]string{"error": "App not found"})
+			return utils.Error(c, http.StatusNotFound, "App not found")
 		}
-		return c.JSON(http.StatusOK, app)
+		return utils.Success(c, "Operation successful", app)
 	}
 }
 
@@ -63,13 +65,13 @@ func saveAppHandler[T any](save saveFunc[T], setTeamID func(*T, string)) echo.Ha
 	return func(c echo.Context) error {
 		var app T
 		if err := c.Bind(&app); err != nil {
-			return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+			return utils.Error(c, http.StatusBadRequest, "invalid payload")
 		}
 		setTeamID(&app, "default")
 		if err := save(c.Request().Context(), &app); err != nil {
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			return utils.Error(c, http.StatusInternalServerError, err.Error())
 		}
-		return c.JSON(http.StatusOK, app)
+		return utils.Success(c, "Operation successful", app)
 	}
 }
 
@@ -77,9 +79,9 @@ func deleteAppHandler(del deleteFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id := c.Param("id")
 		if err := del(c.Request().Context(), id); err != nil {
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			return utils.Error(c, http.StatusInternalServerError, err.Error())
 		}
-		return c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
+		return utils.Success(c, "Operation successful", map[string]string{"status": "deleted"})
 	}
 }
 
@@ -94,19 +96,19 @@ func (h *GitAppsHandler) ExchangeGithubManifestCode(c echo.Context) error {
 	var payload GitAppsManifestRequest
 
 	if err := c.Bind(&payload); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 
 	if payload.Code == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "code is required"})
+		return utils.Error(c, http.StatusBadRequest, "code is required")
 	}
 
 	app, err := h.gitAppsService.ExchangeGithubManifestCode(c.Request().Context(), payload.Code, payload.TeamID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 
-	return c.JSON(http.StatusOK, app)
+	return utils.Success(c, "Operation successful", app)
 }
 
 // @Summary ListGithubApps endpoint

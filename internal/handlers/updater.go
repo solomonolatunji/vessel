@@ -5,6 +5,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"vessl.dev/vessl/internal/utils"
+
 	"vessl.dev/vessl/internal/services"
 )
 
@@ -23,10 +25,10 @@ func NewUpdaterHandler(s *services.UpdaterService) *UpdaterHandler {
 // @Produce json
 func (h *UpdaterHandler) GetUpdateStatus(c echo.Context) error {
 	if h.updaterService == nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "updater service not initialized"})
+		return utils.Error(c, http.StatusInternalServerError, "updater service not initialized")
 	}
 	status := h.updaterService.GetStatus()
-	return c.JSON(http.StatusOK, status)
+	return utils.Success(c, "Operation successful", status)
 }
 
 // @Summary CheckUpdate endpoint
@@ -36,13 +38,13 @@ func (h *UpdaterHandler) GetUpdateStatus(c echo.Context) error {
 // @Produce json
 func (h *UpdaterHandler) CheckUpdate(c echo.Context) error {
 	if h.updaterService == nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "updater service not initialized"})
+		return utils.Error(c, http.StatusInternalServerError, "updater service not initialized")
 	}
 	if _, err := h.updaterService.CheckForUpdates(c.Request().Context()); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	status := h.updaterService.GetStatus()
-	return c.JSON(http.StatusOK, status)
+	return utils.Success(c, "Operation successful", status)
 }
 
 // @Summary DeployUpdate endpoint
@@ -53,10 +55,10 @@ func (h *UpdaterHandler) CheckUpdate(c echo.Context) error {
 // @Router /settings/updates/deploy [post]
 func (h *UpdaterHandler) DeployUpdate(c echo.Context) error {
 	if h.updaterService == nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "updater service not initialized"})
+		return utils.Error(c, http.StatusInternalServerError, "updater service not initialized")
 	}
 	if err := h.updaterService.DeployUpdate(c.Request().Context()); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return c.JSON(http.StatusAccepted, map[string]string{
 		"message": "update deployment triggered",

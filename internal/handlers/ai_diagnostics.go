@@ -7,7 +7,9 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+
 	"github.com/sashabaranov/go-openai"
+	"vessl.dev/vessl/internal/utils"
 
 	"vessl.dev/vessl/internal/services"
 )
@@ -49,31 +51,31 @@ func NewAIDiagnosticsHandler(ai *services.AISettingsService, ds *services.Deploy
 func (h *AIDiagnosticsHandler) Analyze(c echo.Context) error {
 	deploymentID := c.Param("id")
 	if deploymentID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "deployment ID required"})
+		return utils.Error(c, http.StatusBadRequest, "deployment ID required")
 	}
 
 	dep, err := h.deploymentService.GetDeployment(c.Request().Context(), deploymentID)
 	if err != nil || dep == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "deployment not found"})
+		return utils.Error(c, http.StatusNotFound, "deployment not found")
 	}
 
 	project, err := h.projectService.GetProject(c.Request().Context(), dep.ProjectID)
 	if err != nil || project == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "project not found"})
+		return utils.Error(c, http.StatusNotFound, "project not found")
 	}
 
 	settings, err := h.aiService.Get(c.Request().Context(), project.TeamID)
 	if err != nil || settings == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "AI settings not configured for this team"})
+		return utils.Error(c, http.StatusNotFound, "AI settings not configured for this team")
 	}
 
 	if settings.APIKey == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "AI API Key is empty"})
+		return utils.Error(c, http.StatusBadRequest, "AI API Key is empty")
 	}
 
 	client, model, err := h.buildAIClientAndModel(settings.Provider, settings.APIKey)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return utils.Error(c, http.StatusBadRequest, err.Error())
 	}
 
 	c.Response().Header().Set("Content-Type", "text/plain; charset=utf-8")
