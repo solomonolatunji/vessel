@@ -1,13 +1,19 @@
 package core
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net"
 	"net/http"
+	"strings"
 	"time"
+
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/client"
 
 	"github.com/gorilla/websocket"
 	"github.com/hashicorp/yamux"
@@ -37,6 +43,10 @@ func Run(ctx context.Context, serverURL, token string) error {
 	}
 	defer session.Close()
 	log.Println(" Secure tunnel established. Listening for controller commands...")
+
+	// Start telemetry background task
+	go startTelemetryLoop(ctx, serverURL, token)
+
 	for {
 		select {
 		case <-ctx.Done():
@@ -133,4 +143,60 @@ func (c *websocketConn) SetReadDeadline(t time.Time) error {
 
 func (c *websocketConn) SetWriteDeadline(t time.Time) error {
 	return c.conn.SetWriteDeadline(t)
+}
+
+func startTelemetryLoop(ctx context.Context, serverURL, token string) {
+	apiURL := strings.Replace(serverURL, "wss://", "https://", 1)
+	apiURL = strings.Replace(apiURL, "ws://", "http://", 1)
+	apiURL = strings.Replace(apiURL, "/agent/connect", "/billing/usage/report", 1)
+
+	ticker := time.NewTicker(1 * time.Hour)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion("1.41"))
+			if err != nil {
+				log.Printf(" Telemetry: failed to connect to docker: %v", err)
+				continue
+			}
+
+			containers, err := cli.ContainerList(ctx, container.ListOptions{})
+			if err != nil {
+				log.Printf(" Telemetry: failed to list containers: %v", err)
+				cli.Close()
+				continue
+			}
+
+			vesslContainers := 0
+			for _, c := range containers {
+				if _, ok := c.Labels["vessl"]; ok {
+					vesslContainers++
+				}
+			}
+			cli.Close()
+
+			payload := map[string]interface{}{
+				"deployments":     0,
+				"container_hours": vesslContainers, // 1 hour elapsed * N containers
+				"bandwidth_gb":    0,
+			}
+			body, _ := json.Marshal(payload)
+
+			req, err := http.NewRequestWithContext(ctx, "POST", apiURL, bytes.NewReader(body))
+			if err == nil {
+				req.Header.Set("Authorization", "Bearer "+token)
+				req.Header.Set("Content-Type", "application/json")
+				resp, err := http.DefaultClient.Do(req)
+				if err != nil {
+					log.Printf(" Telemetry: failed to report usage: %v", err)
+				} else {
+					resp.Body.Close()
+				}
+			}
+		}
+	}
 }
