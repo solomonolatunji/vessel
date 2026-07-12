@@ -17,7 +17,6 @@ func NewServiceVarHandler(s *services.AppService) *ServiceVarHandler {
 	return &ServiceVarHandler{appService: s}
 }
 
-
 // @Summary List Service Variables
 // @Description List Service Variables
 // @Tags AppServices
@@ -33,7 +32,6 @@ func (h *ServiceVarHandler) List(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, list)
 }
-
 
 // @Summary Create Service Variable
 // @Description Create Service Variable
@@ -63,7 +61,6 @@ func (h *ServiceVarHandler) Create(c echo.Context) error {
 	return c.JSON(http.StatusCreated, created)
 }
 
-
 // @Summary Update Service Variable
 // @Description Update Service Variable
 // @Tags AppServices
@@ -87,7 +84,6 @@ func (h *ServiceVarHandler) Update(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, req)
 }
-
 
 // @Summary Delete Service Variable
 // @Description Delete Service Variable
