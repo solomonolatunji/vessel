@@ -121,7 +121,11 @@ func initServices(repos *appRepositories, dockerClient *client.Client, deployer 
 	storageDeployer := engine.NewStorageDeployer(dockerClient, ea)
 	svcLinker := services.NewServiceLinker(repos.database, repos.storage)
 
-	dispatcherSvc := core.NewDispatcherService(repos.notification, repos.settings)
+	settingsSvc := services.NewSettingsService(repos.settings, repos.notification)
+	teamEmailSettingsSvc := services.NewEmailSettingsService(repos.emailSettings)
+	mailerSvc := services.NewMailerService(teamEmailSettingsSvc)
+
+	dispatcherSvc := core.NewDispatcherService(repos.notification, repos.settings, mailerSvc)
 	deploymentListeners := core.NewDeploymentListeners(dispatcherSvc)
 	deploymentListeners.Register()
 
@@ -132,7 +136,7 @@ func initServices(repos *appRepositories, dockerClient *client.Client, deployer 
 	gitService := services.NewGitService(repos.git)
 
 	return &appServices{
-		settings:      services.NewSettingsService(repos.settings, repos.notification),
+		settings:      settingsSvc,
 		user:          services.NewUserService(repos.user),
 		token:         tokenService,
 		auth:          services.NewAuthService(repos.user, repos.settings, tokenService),

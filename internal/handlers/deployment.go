@@ -150,6 +150,10 @@ func (h *DeploymentHandler) GetMetrics(c echo.Context) error {
 	return c.JSON(http.StatusOK, metrics)
 }
 
+type DeployRequest struct {
+	DryRun bool `json:"dry_run"`
+}
+
 // @Summary DeployProject endpoint
 // @Description DeployProject endpoint
 // @Tags Projects
@@ -162,6 +166,7 @@ func (h *DeploymentHandler) DeployProject(c echo.Context) error {
 	if id == "" {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing project id parameter"})
 	}
+
 	sourceDir := fmt.Sprintf("data/builds/%s", id)
 	containerID, err := h.deploymentService.DeployProject(c.Request().Context(), id, sourceDir, nil)
 	if err != nil {

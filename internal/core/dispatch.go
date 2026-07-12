@@ -1,24 +1,28 @@
 package core
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"log"
-	"net/http"
 
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/repositories"
+	"vessl.dev/vessl/internal/services/notifications"
 )
 
 type DispatcherService struct {
 	notifRepo    repositories.NotificationRepository
 	settingsRepo repositories.SettingsRepository
+	mailer       interface {
+		SendTeamEmail(ctx context.Context, teamID, templateName string, toAddress string, subject string, data any) error
+	}
 }
 
-func NewDispatcherService(notifRepo repositories.NotificationRepository, settingsRepo repositories.SettingsRepository) *DispatcherService {
-	return &DispatcherService{notifRepo: notifRepo, settingsRepo: settingsRepo}
+func NewDispatcherService(notifRepo repositories.NotificationRepository, settingsRepo repositories.SettingsRepository, mailer interface {
+	SendTeamEmail(ctx context.Context, teamID, templateName string, toAddress string, subject string, data any) error
+}) *DispatcherService {
+	return &DispatcherService{notifRepo: notifRepo, settingsRepo: settingsRepo, mailer: mailer}
 }
 
 func (d *DispatcherService) Dispatch(event *models.NotificationEvent) {
@@ -70,28 +74,51 @@ func (d *DispatcherService) Send(event *models.NotificationEvent) error {
 				WebhookURL string `json:"webhookUrl"`
 			}
 			if json.Unmarshal(c.Config, &cfg) == nil && cfg.WebhookURL != "" {
-				_ = d.sendWebhook(cfg.WebhookURL, event)
+				_ = notifications.SendSlackNotification(cfg.WebhookURL, event)
 			}
 		case "discord":
 			var cfg struct {
 				WebhookURL string `json:"webhookUrl"`
 			}
 			if json.Unmarshal(c.Config, &cfg) == nil && cfg.WebhookURL != "" {
-				_ = d.sendWebhook(cfg.WebhookURL, event)
+				_ = notifications.SendDiscordNotification(cfg.WebhookURL, event)
+			}
+		case "telegram":
+			var cfg struct {
+				BotToken string `json:"botToken"`
+				ChatID   string `json:"chatId"`
+			}
+			if json.Unmarshal(c.Config, &cfg) == nil && cfg.BotToken != "" && cfg.ChatID != "" {
+				_ = notifications.SendTelegramNotification(cfg.BotToken, cfg.ChatID, event)
+			}
+		case "pushover":
+			var cfg struct {
+				AppToken string `json:"appToken"`
+				UserKey  string `json:"userKey"`
+			}
+			if json.Unmarshal(c.Config, &cfg) == nil && cfg.AppToken != "" && cfg.UserKey != "" {
+				_ = notifications.SendPushoverNotification(cfg.AppToken, cfg.UserKey, event)
+			}
+		case "generic":
+			var cfg struct {
+				WebhookURL string `json:"webhookUrl"`
+			}
+			if json.Unmarshal(c.Config, &cfg) == nil && cfg.WebhookURL != "" {
+				_ = notifications.SendGenericWebhook(cfg.WebhookURL, event)
 			}
 		case "smtp":
+			var cfg struct {
+				ToEmail string `json:"toEmail"`
+			}
+			if json.Unmarshal(c.Config, &cfg) == nil && cfg.ToEmail != "" && d.mailer != nil {
+				_ = d.mailer.SendTeamEmail(context.Background(), event.TeamID, "notification", cfg.ToEmail, event.Title, map[string]string{
+					"Message": event.Message,
+					"URL":     event.URL,
+				})
+			}
 		}
 	}
 	return nil
-}
-
-func (d *DispatcherService) sendWebhook(webhookURL string, event *models.NotificationEvent) error {
-	payload := map[string]string{
-		"content": fmt.Sprintf("**%s**\n%s\n%s", event.Title, event.Message, event.URL),
-	}
-	body, _ := json.Marshal(payload)
-	_, err := http.Post(webhookURL, "application/json", bytes.NewBuffer(body))
-	return err
 }
 
 func (d *DispatcherService) sendGlobalTest(event *models.NotificationEvent) error {
@@ -106,26 +133,23 @@ func (d *DispatcherService) sendGlobalTest(event *models.NotificationEvent) erro
 	switch provider {
 	case "discord":
 		if settings.DiscordEnabled && settings.DiscordWebhookURL != "" {
-			return d.sendWebhook(settings.DiscordWebhookURL, event)
+			return notifications.SendDiscordNotification(settings.DiscordWebhookURL, event)
 		}
 	case "slack":
 		if settings.SlackEnabled && settings.SlackWebhookURL != "" {
-			return d.sendWebhook(settings.SlackWebhookURL, event)
+			return notifications.SendSlackNotification(settings.SlackWebhookURL, event)
 		}
 	case "telegram":
 		if settings.TelegramEnabled && settings.TelegramBotToken != "" && settings.TelegramChatID != "" {
-			url := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", settings.TelegramBotToken)
-			payload := map[string]string{
-				"chat_id": settings.TelegramChatID,
-				"text":    fmt.Sprintf("**%s**\n%s\n%s", event.Title, event.Message, event.URL),
-			}
-			body, _ := json.Marshal(payload)
-			_, err := http.Post(url, "application/json", bytes.NewBuffer(body))
-			return err
+			return notifications.SendTelegramNotification(settings.TelegramBotToken, settings.TelegramChatID, event)
 		}
 	case "generic":
 		if settings.GenericWebhookEnabled && settings.GenericWebhookURL != "" {
-			return d.sendWebhook(settings.GenericWebhookURL, event)
+			return notifications.SendGenericWebhook(settings.GenericWebhookURL, event)
+		}
+	case "pushover":
+		if settings.PushoverEnabled && settings.PushoverAPIToken != "" && settings.PushoverUserKey != "" {
+			return notifications.SendPushoverNotification(settings.PushoverAPIToken, settings.PushoverUserKey, event)
 		}
 	}
 
