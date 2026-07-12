@@ -107,8 +107,13 @@ func (r *RailpackBuilder) synthesizeDockerfile(stack string, opts BuildOptions) 
 		return `FROM node:22-alpine
 WORKDIR /app
 COPY package*.json ./
-RUN npm install --production
+# Install all dependencies (including devDependencies) so build scripts work
+RUN npm install
 COPY . .
+# Execute build script if defined in package.json
+RUN npm run build --if-present
+# Prune devDependencies after build
+RUN npm prune --production
 EXPOSE 3000
 CMD ["npm", "start"]
 `, nil
@@ -118,7 +123,8 @@ WORKDIR /app
 COPY go.mod go.sum* ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -o /app/server .
+# Find the directory containing main.go and build it
+RUN MAIN_PKG=$(find . -name main.go | head -n 1 | xargs dirname); if [ -z "$MAIN_PKG" ]; then MAIN_PKG="."; fi; CGO_ENABLED=0 GOOS=linux go build -o /app/server $MAIN_PKG
 FROM alpine:latest
 WORKDIR /app
 COPY --from=builder /app/server /app/server
@@ -132,7 +138,8 @@ COPY requirements.txt* pyproject.toml* ./
 RUN if [ -f requirements.txt ]; then pip install --no-cache-dir -r requirements.txt; fi
 COPY . .
 EXPOSE 3000
-CMD ["python3", "-m", "http.server", "3000"]
+# Smarter python entrypoint detection
+CMD ["sh", "-c", "if [ -f main.py ]; then python main.py; elif [ -f app.py ]; then python app.py; else python3 -m http.server 3000; fi"]
 `, nil
 	case strings.HasPrefix(stack, "Rust"):
 		return `FROM rust:1.83-alpine AS builder

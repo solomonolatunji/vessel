@@ -23,7 +23,7 @@ func NewContainerManager(dockerClient *client.Client, st ContainerManagerStore) 
 	return &ContainerManager{dockerClient: dockerClient, store: st}
 }
 
-func (c *ContainerManager) CreateAndStart(ctx context.Context, name, imageTag, serviceID, domain string, internalPort int, envs []string, memoryLimitMB int, cpuRequest float64) (string, error) {
+func (c *ContainerManager) CreateAndStart(ctx context.Context, name, imageTag, serviceID, domain string, internalPort int, envs []string, memoryLimitMB int, cpuRequest float64, healthCheckPath string) (string, error) {
 	containerPort, err := nat.NewPort("tcp", fmt.Sprintf("%d", internalPort))
 	if err != nil {
 		return "", fmt.Errorf("invalid port definition: %w", err)
@@ -34,6 +34,11 @@ func (c *ContainerManager) CreateAndStart(ctx context.Context, name, imageTag, s
 			"traefik.enable": "true",
 			fmt.Sprintf("traefik.http.routers.%s.rule", serviceID):                      fmt.Sprintf("Host(`%s`)", domain),
 			fmt.Sprintf("traefik.http.services.%s.loadbalancer.server.port", serviceID): fmt.Sprintf("%d", internalPort),
+		}
+		if healthCheckPath != "" {
+			labels[fmt.Sprintf("traefik.http.services.%s.loadbalancer.healthcheck.path", serviceID)] = healthCheckPath
+			labels[fmt.Sprintf("traefik.http.services.%s.loadbalancer.healthcheck.interval", serviceID)] = "5s"
+			labels[fmt.Sprintf("traefik.http.services.%s.loadbalancer.healthcheck.timeout", serviceID)] = "2s"
 		}
 	}
 

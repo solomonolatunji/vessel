@@ -201,6 +201,7 @@ func (d *Deployer) startContainer(ctx context.Context, app *models.AppService, c
 		envSlice,
 		memMB,
 		cpuReq,
+		app.HealthCheckPath,
 	)
 	if err != nil {
 		return fmt.Errorf("container rollout failed: %w", err)
