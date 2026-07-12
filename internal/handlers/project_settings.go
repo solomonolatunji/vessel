@@ -166,7 +166,7 @@ func (h *ProjectSettingsHandler) DeleteToken(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/teams/{id}/members [get]
+// @Router /api/projects/{projectId}/members [get]
 func (h *ProjectSettingsHandler) ListMembers(c echo.Context) error {
 	projectID := c.Param("projectId")
 	if projectID == "" {
@@ -211,7 +211,6 @@ func (h *ProjectSettingsHandler) AddMember(c echo.Context) error {
 // @Produce json
 // @Param id path string true "id"
 // @Param userId path string true "userId"
-// @Router /api/teams/{id}/members/{userId} [delete]
 // @Summary Remove Project Member
 // @Description Remove Project Member
 // @Tags ProjectSettings

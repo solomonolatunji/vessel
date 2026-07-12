@@ -17,6 +17,12 @@ func NewNotificationHandler(ns *services.NotificationService) *NotificationHandl
 	return &NotificationHandler{notificationService: ns}
 }
 
+type TestNotificationRequest struct {
+	ChannelID string `json:"channelId"`
+	TeamID    string `json:"teamId"`
+	Provider  string `json:"provider"`
+}
+
 // @Summary ListChannels endpoint
 // @Description ListChannels endpoint
 // @Tags Settings
@@ -88,16 +94,13 @@ func (h *NotificationHandler) DeleteChannel(c echo.Context) error {
 // @Tags Settings
 // @Accept json
 // @Produce json
+// @Param request body handlers.TestNotificationRequest true "Payload"
 // @Router /api/settings/notifications/test [post]
 func (h *NotificationHandler) TestNotification(c echo.Context) error {
 	if c.Request().Method != http.MethodPost {
 		return c.JSON(http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
 	}
-	var req struct {
-		ChannelID string `json:"channelId"`
-		TeamID    string `json:"teamId"`
-		Provider  string `json:"provider"`
-	}
+	var req TestNotificationRequest
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
 	}

@@ -16,12 +16,20 @@ func NewTeamHandler(s *services.TeamService) *TeamHandler {
 	return &TeamHandler{teamService: s}
 }
 
+type CreateTeamRequest struct {
+	Name string `json:"name"`
+}
+
+type InviteTeamMemberRequest struct {
+	Email string `json:"email"`
+	Role  string `json:"role"`
+}
+
 // @Summary List endpoint
 // @Description List endpoint
 // @Tags Workspaces
 // @Accept json
 // @Produce json
-// @Router /api/workspaces [get]
 // @Summary List Teams
 // @Description List Teams
 // @Tags Teams
@@ -45,21 +53,19 @@ func (h *TeamHandler) List(c echo.Context) error {
 // @Tags Workspaces
 // @Accept json
 // @Produce json
-// @Router /api/workspaces [post]
 // @Summary Create Team
 // @Description Create Team
 // @Tags Teams
 // @Accept json
 // @Produce json
+// @Param request body handlers.CreateTeamRequest true "Payload"
 // @Router /api/teams [post]
 func (h *TeamHandler) Create(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
 	}
-	var req struct {
-		Name string `json:"name"`
-	}
+	var req CreateTeamRequest
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "valid team name required"})
 	}
@@ -76,7 +82,6 @@ func (h *TeamHandler) Create(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param teamId path string true "teamId"
-// @Router /api/teams/{teamId}/ai_settings [get]
 // @Summary Get Team
 // @Description Get Team
 // @Tags Teams
@@ -102,7 +107,6 @@ func (h *TeamHandler) Get(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/workspaces/{id} [delete]
 // @Summary Delete Team
 // @Description Delete Team
 // @Tags Teams
@@ -150,16 +154,14 @@ func (h *TeamHandler) ListMembers(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
+// @Param request body handlers.InviteTeamMemberRequest true "Payload"
 // @Router /api/teams/{id}/invite [post]
 func (h *TeamHandler) InviteMember(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing team id"})
 	}
-	var req struct {
-		Email string `json:"email"`
-		Role  string `json:"role"`
-	}
+	var req InviteTeamMemberRequest
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "valid email required"})
 	}

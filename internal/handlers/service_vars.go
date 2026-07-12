@@ -22,7 +22,6 @@ func NewServiceVarHandler(s *services.AppService) *ServiceVarHandler {
 // @Tags Workspaces
 // @Accept json
 // @Produce json
-// @Router /api/workspaces [get]
 // @Summary List Service Variables
 // @Description List Service Variables
 // @Tags ServiceVariables
@@ -45,7 +44,6 @@ func (h *ServiceVarHandler) List(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param request body models.Variable true "Payload"
-// @Router /api/workspaces [post]
 // @Summary Create Service Variable
 // @Description Create Service Variable
 // @Tags ServiceVariables
@@ -81,7 +79,6 @@ func (h *ServiceVarHandler) Create(c echo.Context) error {
 // @Produce json
 // @Param id path string true "id"
 // @Param request body models.Variable true "Payload"
-// @Router /api/workspaces/{id} [put]
 // @Summary Update Service Variable
 // @Description Update Service Variable
 // @Tags ServiceVariables
@@ -112,7 +109,6 @@ func (h *ServiceVarHandler) Update(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/workspaces/{id} [delete]
 // @Summary Delete Service Variable
 // @Description Delete Service Variable
 // @Tags ServiceVariables

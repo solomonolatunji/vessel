@@ -44,7 +44,7 @@ func (h *EmailSettingsHandler) GetTeamEmailSettings(c echo.Context) error {
 // @Produce json
 // @Param teamId path string true "Team ID"
 // @Param request body models.TeamEmailSettings true "Payload"
-// @Router /api/teams/{teamId}/email_settings [post]
+// @Router /api/teams/{teamId}/email_settings [put]
 func (h *EmailSettingsHandler) SaveTeamEmailSettings(c echo.Context) error {
 	teamID := c.Param("teamId")
 	var req models.TeamEmailSettings

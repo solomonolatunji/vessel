@@ -23,6 +23,11 @@ type listFunc[T any] func(ctx context.Context, teamID string) ([]T, error)
 type saveFunc[T any] func(ctx context.Context, app *T) error
 type deleteFunc func(ctx context.Context, id string) error
 
+type GitAppsManifestRequest struct {
+	Code   string `json:"code"`
+	TeamID string `json:"teamId"`
+}
+
 func listAppsHandler[T any](list listFunc[T]) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		teamID := c.QueryParam("teamId")
@@ -83,12 +88,10 @@ func deleteAppHandler(del deleteFunc) echo.HandlerFunc {
 // @Tags Settings
 // @Accept json
 // @Produce json
+// @Param request body handlers.GitAppsManifestRequest true "Payload"
 // @Router /api/settings/git_apps/github/manifest-callback [post]
 func (h *GitAppsHandler) ExchangeGithubManifestCode(c echo.Context) error {
-	var payload struct {
-		Code   string `json:"code"`
-		TeamID string `json:"teamId"`
-	}
+	var payload GitAppsManifestRequest
 
 	if err := c.Bind(&payload); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
@@ -111,7 +114,6 @@ func (h *GitAppsHandler) ExchangeGithubManifestCode(c echo.Context) error {
 // @Tags Settings
 // @Accept json
 // @Produce json
-// @Router /api/settings/git_apps/github [get]
 func (h *GitAppsHandler) ListGithubApps(c echo.Context) error {
 	return listAppsHandler(h.gitAppsService.ListGithubApps)(c)
 }
@@ -122,7 +124,6 @@ func (h *GitAppsHandler) ListGithubApps(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/settings/git_apps/github/{id} [get]
 func (h *GitAppsHandler) GetGithubApp(c echo.Context) error {
 	return getAppHandler(h.gitAppsService.GetGithubApp)(c)
 }
@@ -132,7 +133,6 @@ func (h *GitAppsHandler) GetGithubApp(c echo.Context) error {
 // @Tags Settings
 // @Accept json
 // @Produce json
-// @Router /api/settings/git_apps/github [put]
 func (h *GitAppsHandler) SaveGithubApp(c echo.Context) error {
 	return saveAppHandler(h.gitAppsService.SaveGithubApp, func(a *models.GithubApp, t string) {
 		if a.TeamID == "" {
@@ -147,7 +147,6 @@ func (h *GitAppsHandler) SaveGithubApp(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/settings/git_apps/github/{id} [delete]
 func (h *GitAppsHandler) DeleteGithubApp(c echo.Context) error {
 	return deleteAppHandler(h.gitAppsService.DeleteGithubApp)(c)
 }
@@ -157,7 +156,6 @@ func (h *GitAppsHandler) DeleteGithubApp(c echo.Context) error {
 // @Tags Settings
 // @Accept json
 // @Produce json
-// @Router /api/settings/git_apps/gitlab [get]
 func (h *GitAppsHandler) ListGitlabApps(c echo.Context) error {
 	return listAppsHandler(h.gitAppsService.ListGitlabApps)(c)
 }
@@ -168,7 +166,6 @@ func (h *GitAppsHandler) ListGitlabApps(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/settings/git_apps/gitlab/{id} [get]
 func (h *GitAppsHandler) GetGitlabApp(c echo.Context) error {
 	return getAppHandler(h.gitAppsService.GetGitlabApp)(c)
 }
@@ -178,7 +175,6 @@ func (h *GitAppsHandler) GetGitlabApp(c echo.Context) error {
 // @Tags Settings
 // @Accept json
 // @Produce json
-// @Router /api/settings/git_apps/gitlab [put]
 func (h *GitAppsHandler) SaveGitlabApp(c echo.Context) error {
 	return saveAppHandler(h.gitAppsService.SaveGitlabApp, func(a *models.GitlabApp, t string) {
 		if a.TeamID == "" {
@@ -193,7 +189,6 @@ func (h *GitAppsHandler) SaveGitlabApp(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/settings/git_apps/gitlab/{id} [delete]
 func (h *GitAppsHandler) DeleteGitlabApp(c echo.Context) error {
 	return deleteAppHandler(h.gitAppsService.DeleteGitlabApp)(c)
 }
@@ -203,7 +198,6 @@ func (h *GitAppsHandler) DeleteGitlabApp(c echo.Context) error {
 // @Tags Settings
 // @Accept json
 // @Produce json
-// @Router /api/settings/git_apps/bitbucket [get]
 func (h *GitAppsHandler) ListBitbucketApps(c echo.Context) error {
 	return listAppsHandler(h.gitAppsService.ListBitbucketApps)(c)
 }
@@ -214,7 +208,6 @@ func (h *GitAppsHandler) ListBitbucketApps(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/settings/git_apps/bitbucket/{id} [get]
 func (h *GitAppsHandler) GetBitbucketApp(c echo.Context) error {
 	return getAppHandler(h.gitAppsService.GetBitbucketApp)(c)
 }
@@ -224,7 +217,6 @@ func (h *GitAppsHandler) GetBitbucketApp(c echo.Context) error {
 // @Tags Settings
 // @Accept json
 // @Produce json
-// @Router /api/settings/git_apps/bitbucket [put]
 func (h *GitAppsHandler) SaveBitbucketApp(c echo.Context) error {
 	return saveAppHandler(h.gitAppsService.SaveBitbucketApp, func(a *models.BitbucketApp, t string) {
 		if a.TeamID == "" {

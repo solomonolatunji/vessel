@@ -39,6 +39,17 @@ func NewWebhookHandler(
 	}
 }
 
+type GithubWebhookPayload struct {
+	Action      string `json:"action"`
+	Number      int    `json:"number"`
+	PullRequest struct {
+		Head struct {
+			Ref string `json:"ref"`
+			Sha string `json:"sha"`
+		} `json:"head"`
+	} `json:"pull_request"`
+}
+
 // @Summary HandleProjectWebhook endpoint
 // @Description HandleProjectWebhook endpoint
 // @Tags Webhooks
@@ -119,6 +130,7 @@ func (h *WebhookHandler) HandleServiceWebhook(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param serviceId path string true "serviceId"
+// @Param request body handlers.GithubWebhookPayload true "Payload"
 // @Router /api/webhooks/github/services/{serviceId} [post]
 func (h *WebhookHandler) HandleGitHubWebhook(c echo.Context) error {
 	serviceID := c.Param("serviceId")
@@ -129,16 +141,7 @@ func (h *WebhookHandler) HandleGitHubWebhook(c echo.Context) error {
 	if event == "" {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing X-GitHub-Event header"})
 	}
-	var payload struct {
-		Action      string `json:"action"`
-		Number      int    `json:"number"`
-		PullRequest struct {
-			Head struct {
-				Ref string `json:"ref"`
-				Sha string `json:"sha"`
-			} `json:"head"`
-		} `json:"pull_request"`
-	}
+	var payload GithubWebhookPayload
 	if err := c.Bind(&payload); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
 	}

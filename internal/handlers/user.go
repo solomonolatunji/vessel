@@ -18,6 +18,15 @@ func NewUserHandler(s *services.UserService) *UserHandler {
 	return &UserHandler{userService: s}
 }
 
+type UpdateProfileRequest struct {
+	Email string `json:"email"`
+	Role  string `json:"role"`
+}
+
+type CreatePATRequest struct {
+	Name string `json:"name"`
+}
+
 func (h *UserHandler) ListUsers(c echo.Context) error {
 	users, err := h.userService.ListUsers(c.Request().Context())
 	if err != nil {
@@ -56,6 +65,7 @@ func (h *UserHandler) GetProfile(c echo.Context) error {
 // @Tags Profile
 // @Accept json
 // @Produce json
+// @Param request body handlers.UpdateProfileRequest true "Payload"
 // @Router /api/profile [put]
 func (h *UserHandler) UpdateProfile(c echo.Context) error {
 	userID := ExtractUserID(c)
@@ -66,10 +76,7 @@ func (h *UserHandler) UpdateProfile(c echo.Context) error {
 	if err != nil || u == nil {
 		return c.JSON(http.StatusNotFound, map[string]string{"error": "user profile not found"})
 	}
-	var payload struct {
-		Email string `json:"email"`
-		Role  string `json:"role"`
-	}
+	var payload UpdateProfileRequest
 	if err := c.Bind(&payload); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
 	}
@@ -92,15 +99,14 @@ func (h *UserHandler) UpdateProfile(c echo.Context) error {
 // @Tags Profile
 // @Accept json
 // @Produce json
+// @Param request body handlers.CreatePATRequest true "Payload"
 // @Router /api/profile/tokens [post]
 func (h *UserHandler) CreatePAT(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "unauthorized access"})
 	}
-	var payload struct {
-		Name string `json:"name"`
-	}
+	var payload CreatePATRequest
 	if err := c.Bind(&payload); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "token name is required"})
 	}

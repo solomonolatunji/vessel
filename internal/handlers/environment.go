@@ -23,7 +23,7 @@ func NewEnvironmentHandler(s *services.EnvironmentService) *EnvironmentHandler {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/projects/{id}/apps [get]
+// @Router /api/projects/{id}/environments [get]
 func (h *EnvironmentHandler) ListByProject(c echo.Context) error {
 	projectID := c.Param("id")
 	if projectID == "" {
@@ -42,7 +42,7 @@ func (h *EnvironmentHandler) ListByProject(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param request body models.EnvironmentConfig true "Payload"
-// @Router /api/workspaces [post]
+// @Router /api/projects/{id}/environments [post]
 func (h *EnvironmentHandler) Create(c echo.Context) error {
 	projectID := c.Param("id")
 	if projectID == "" {
@@ -69,7 +69,6 @@ func (h *EnvironmentHandler) Create(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/workspaces/{id} [delete]
 // @Summary Delete Environment
 // @Description Delete Environment
 // @Tags Environments

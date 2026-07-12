@@ -17,12 +17,24 @@ func NewWorkspaceHandler(s *services.WorkspaceService) *WorkspaceHandler {
 	return &WorkspaceHandler{workspaceService: s}
 }
 
+type CreateWorkspaceRequest struct {
+	Name string `json:"name"`
+}
+
+type CreateTrustedDomainRequest struct {
+	Domain string `json:"domain"`
+}
+
+type CreateSSHKeyRequest struct {
+	Name      string `json:"name"`
+	PublicKey string `json:"publicKey"`
+}
+
 // @Summary List endpoint
 // @Description List endpoint
 // @Tags Workspaces
 // @Accept json
 // @Produce json
-// @Router /api/workspaces [get]
 func (h *WorkspaceHandler) List(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -40,15 +52,14 @@ func (h *WorkspaceHandler) List(c echo.Context) error {
 // @Tags Workspaces
 // @Accept json
 // @Produce json
+// @Param request body handlers.CreateWorkspaceRequest true "Payload"
 // @Router /api/workspaces [post]
 func (h *WorkspaceHandler) Create(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
 	}
-	var payload struct {
-		Name string `json:"name"`
-	}
+	var payload CreateWorkspaceRequest
 	if err := c.Bind(&payload); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
 	}
@@ -65,7 +76,7 @@ func (h *WorkspaceHandler) Create(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param teamId path string true "teamId"
-// @Router /api/teams/{teamId}/ai_settings [get]
+// @Router /api/workspaces/{id} [get]
 func (h *WorkspaceHandler) Get(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -146,15 +157,14 @@ func (h *WorkspaceHandler) ListTrustedDomains(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param teamId path string true "teamId"
+// @Param request body handlers.CreateTrustedDomainRequest true "Payload"
 // @Router /api/teams/{teamId}/trusted-domains [post]
 func (h *WorkspaceHandler) CreateTrustedDomain(c echo.Context) error {
 	teamID := c.Param("teamId")
 	if teamID == "" {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing teamId parameter"})
 	}
-	var payload struct {
-		Domain string `json:"domain"`
-	}
+	var payload CreateTrustedDomainRequest
 	if err := c.Bind(&payload); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
 	}
@@ -171,7 +181,6 @@ func (h *WorkspaceHandler) CreateTrustedDomain(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/trusted-domains/{id} [delete]
 func (h *WorkspaceHandler) DeleteTrustedDomain(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -208,16 +217,14 @@ func (h *WorkspaceHandler) ListSSHKeys(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param teamId path string true "teamId"
+// @Param request body handlers.CreateSSHKeyRequest true "Payload"
 // @Router /api/teams/{teamId}/ssh-keys [post]
 func (h *WorkspaceHandler) CreateSSHKey(c echo.Context) error {
 	teamID := c.Param("teamId")
 	if teamID == "" {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing teamId parameter"})
 	}
-	var payload struct {
-		Name      string `json:"name"`
-		PublicKey string `json:"publicKey"`
-	}
+	var payload CreateSSHKeyRequest
 	if err := c.Bind(&payload); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
 	}
@@ -234,7 +241,6 @@ func (h *WorkspaceHandler) CreateSSHKey(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/ssh-keys/{id} [delete]
 func (h *WorkspaceHandler) DeleteSSHKey(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {

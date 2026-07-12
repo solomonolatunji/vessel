@@ -48,7 +48,6 @@ func (h *DeploymentHandler) ListServiceDeployments(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/backups/{id}/trigger [post]
 // @Summary Trigger Deployment
 // @Description Trigger Deployment
 // @Tags Deployments

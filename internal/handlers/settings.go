@@ -20,12 +20,15 @@ func NewSettingsHandler(s *services.SettingsService) *SettingsHandler {
 	return &SettingsHandler{settingsService: s}
 }
 
+type ActivateLicenseRequest struct {
+	LicenseKey string `json:"license_key"`
+}
+
 // @Summary GetSettings endpoint
 // @Description GetSettings endpoint
 // @Tags Settings
 // @Accept json
 // @Produce json
-// @Router /api/settings [get]
 func (h *SettingsHandler) GetSettings(c echo.Context) error {
 	s, err := h.settingsService.GetSettings(c.Request().Context())
 	if err != nil {
@@ -107,17 +110,15 @@ func (h *SettingsHandler) DeleteTeamNotificationChannel(c echo.Context) error {
 // @Tags Settings
 // @Accept json
 // @Produce json
-// @Router /api/settings/license [post]
 // @Summary Activate License
 // @Description Activate License
 // @Tags Settings
 // @Accept json
 // @Produce json
+// @Param request body handlers.ActivateLicenseRequest true "Payload"
 // @Router /api/settings/license [post]
 func (h *SettingsHandler) ActivateLicense(c echo.Context) error {
-	var payload struct {
-		LicenseKey string `json:"license_key"`
-	}
+	var payload ActivateLicenseRequest
 	if err := c.Bind(&payload); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid payload"})
 	}

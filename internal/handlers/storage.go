@@ -22,7 +22,6 @@ func NewStorageHandler(s *services.StorageService) *StorageHandler {
 // @Tags Storage
 // @Accept json
 // @Produce json
-// @Router /api/storage [get]
 func (h *StorageHandler) ListStorage(c echo.Context) error {
 	storages, err := h.storageService.ListStorage(c.Request().Context())
 	if err != nil {
@@ -78,7 +77,6 @@ func (h *StorageHandler) GetStorage(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/storage/{id} [delete]
 func (h *StorageHandler) DeleteStorage(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {

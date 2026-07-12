@@ -21,7 +21,6 @@ func NewUpdaterHandler(s *services.UpdaterService) *UpdaterHandler {
 // @Tags Settings
 // @Accept json
 // @Produce json
-// @Router /api/settings/updates/status [get]
 func (h *UpdaterHandler) GetUpdateStatus(c echo.Context) error {
 	if h.updaterService == nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "updater service not initialized"})
@@ -35,7 +34,6 @@ func (h *UpdaterHandler) GetUpdateStatus(c echo.Context) error {
 // @Tags Settings
 // @Accept json
 // @Produce json
-// @Router /api/settings/updates/check [post]
 func (h *UpdaterHandler) CheckUpdate(c echo.Context) error {
 	if h.updaterService == nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "updater service not initialized"})

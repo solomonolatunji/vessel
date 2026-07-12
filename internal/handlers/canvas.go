@@ -21,7 +21,6 @@ func NewCanvasHandler(s *services.CanvasService) *CanvasHandler {
 // @Tags Canvas
 // @Accept json
 // @Produce json
-// @Router /api/canvas/projects [get]
 func (h *CanvasHandler) ListCanvasSummaries(c echo.Context) error {
 	summaries, err := h.canvasService.ListSummaries(c.Request().Context())
 	if err != nil {

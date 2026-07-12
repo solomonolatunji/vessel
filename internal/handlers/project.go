@@ -23,7 +23,7 @@ func NewProjectHandler(s *services.ProjectService) *ProjectHandler {
 // @Tags Vercel
 // @Accept json
 // @Produce json
-// @Router /api/vercel/projects [get]
+// @Router /api/projects [get]
 func (h *ProjectHandler) ListProjects(c echo.Context) error {
 	projects, err := h.projectService.ListProjects(c.Request().Context())
 	if err != nil {

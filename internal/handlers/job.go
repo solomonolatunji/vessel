@@ -41,7 +41,7 @@ func (h *JobHandler) ListProjectJobs(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param request body models.Job true "Payload"
-// @Router /api/workspaces [post]
+// @Router /api/jobs [post]
 func (h *JobHandler) Create(c echo.Context) error {
 	var j models.Job
 	if err := c.Bind(&j); err != nil {
@@ -60,7 +60,6 @@ func (h *JobHandler) Create(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param teamId path string true "teamId"
-// @Router /api/teams/{teamId}/ai_settings [get]
 // @Summary Get Job
 // @Description Get Job
 // @Tags Jobs
@@ -86,14 +85,12 @@ func (h *JobHandler) Get(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/workspaces/{id} [delete]
 // @Summary Delete Job
 // @Description Delete Job
 // @Tags Jobs
 // @Accept json
 // @Produce json
 // @Param id path string true "Job ID"
-// @Router /api/jobs/{id} [delete]
 func (h *JobHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {

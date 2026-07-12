@@ -1,13 +1,97 @@
 basePath: /api
 definitions:
-  handlers.AuthRequest:
+  internal_handlers.ActivateLicenseRequest:
+    properties:
+      license_key:
+        type: string
+    type: object
+  internal_handlers.AuthRequest:
     properties:
       email:
         type: string
       password:
         type: string
     type: object
-  models.AppService:
+  internal_handlers.CreatePATRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  internal_handlers.CreateSSHKeyRequest:
+    properties:
+      name:
+        type: string
+      publicKey:
+        type: string
+    type: object
+  internal_handlers.CreateTeamRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  internal_handlers.CreateTrustedDomainRequest:
+    properties:
+      domain:
+        type: string
+    type: object
+  internal_handlers.CreateWorkspaceRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  internal_handlers.GitAppsManifestRequest:
+    properties:
+      code:
+        type: string
+      teamId:
+        type: string
+    type: object
+  internal_handlers.GithubWebhookPayload:
+    properties:
+      action:
+        type: string
+      number:
+        type: integer
+      pull_request:
+        properties:
+          head:
+            properties:
+              ref:
+                type: string
+              sha:
+                type: string
+            type: object
+        type: object
+    type: object
+  internal_handlers.InviteTeamMemberRequest:
+    properties:
+      email:
+        type: string
+      role:
+        type: string
+    type: object
+  internal_handlers.TestNotificationRequest:
+    properties:
+      channelId:
+        type: string
+      provider:
+        type: string
+      teamId:
+        type: string
+    type: object
+  internal_handlers.UpdateProfileRequest:
+    properties:
+      email:
+        type: string
+      role:
+        type: string
+    type: object
+  internal_handlers.Verify2FARequest:
+    properties:
+      passcode:
+        type: string
+    type: object
+  vessl_dev_vessl_internal_models.AppService:
     properties:
       branch:
         type: string
@@ -46,7 +130,7 @@ definitions:
       updatedAt:
         type: string
     type: object
-  models.BackupConfig:
+  vessl_dev_vessl_internal_models.BackupConfig:
     properties:
       createdAt:
         type: string
@@ -71,7 +155,7 @@ definitions:
       updatedAt:
         type: string
     type: object
-  models.CreateDatabaseRequest:
+  vessl_dev_vessl_internal_models.CreateDatabaseRequest:
     properties:
       customArgs:
         type: string
@@ -96,7 +180,7 @@ definitions:
       volumePath:
         type: string
     type: object
-  models.CreateProjectRequest:
+  vessl_dev_vessl_internal_models.CreateProjectRequest:
     properties:
       branch:
         type: string
@@ -119,7 +203,7 @@ definitions:
       teamId:
         type: string
     type: object
-  models.CreateTokenRequest:
+  vessl_dev_vessl_internal_models.CreateTokenRequest:
     properties:
       environmentId:
         type: string
@@ -136,12 +220,12 @@ definitions:
           type: string
         type: array
     type: object
-  models.DatabaseQueryRequest:
+  vessl_dev_vessl_internal_models.DatabaseQueryRequest:
     properties:
       query:
         type: string
     type: object
-  models.DomainConfig:
+  vessl_dev_vessl_internal_models.DomainConfig:
     properties:
       createdAt:
         type: string
@@ -160,7 +244,7 @@ definitions:
       updatedAt:
         type: string
     type: object
-  models.EnvironmentConfig:
+  vessl_dev_vessl_internal_models.EnvironmentConfig:
     properties:
       createdAt:
         type: string
@@ -175,7 +259,7 @@ definitions:
       updatedAt:
         type: string
     type: object
-  models.GitConnectRequest:
+  vessl_dev_vessl_internal_models.GitConnectRequest:
     properties:
       accessToken:
         type: string
@@ -184,7 +268,7 @@ definitions:
       provider:
         type: string
     type: object
-  models.Job:
+  vessl_dev_vessl_internal_models.Job:
     properties:
       command:
         type: string
@@ -207,7 +291,7 @@ definitions:
       updatedAt:
         type: string
     type: object
-  models.OAuthProviderConfig:
+  vessl_dev_vessl_internal_models.OAuthProviderConfig:
     properties:
       baseUrl:
         type: string
@@ -230,7 +314,7 @@ definitions:
       updatedAt:
         type: string
     type: object
-  models.ProjectMember:
+  vessl_dev_vessl_internal_models.ProjectMember:
     properties:
       acceptedAt:
         type: string
@@ -249,7 +333,7 @@ definitions:
       userId:
         type: string
     type: object
-  models.S3Destination:
+  vessl_dev_vessl_internal_models.S3Destination:
     properties:
       accessKeyId:
         type: string
@@ -270,7 +354,7 @@ definitions:
       secretAccessKey:
         type: string
     type: object
-  models.ServerSettings:
+  vessl_dev_vessl_internal_models.ServerSettings:
     properties:
       autoUpdateEnabled:
         type: boolean
@@ -361,7 +445,7 @@ definitions:
       updatedAt:
         type: string
     type: object
-  models.Storage:
+  vessl_dev_vessl_internal_models.Storage:
     properties:
       accessKey:
         type: string
@@ -398,7 +482,7 @@ definitions:
       volumePath:
         type: string
     type: object
-  models.TeamAISettings:
+  vessl_dev_vessl_internal_models.TeamAISettings:
     properties:
       apiKey:
         type: string
@@ -413,7 +497,7 @@ definitions:
       updatedAt:
         type: string
     type: object
-  models.TeamEmailSettings:
+  vessl_dev_vessl_internal_models.TeamEmailSettings:
     properties:
       createdAt:
         type: string
@@ -440,9 +524,33 @@ definitions:
       useResend:
         type: boolean
     type: object
-  models.TeamNotificationChannel:
+  vessl_dev_vessl_internal_models.TeamNotificationChannel:
+    properties:
+      config:
+        description: Generic JSON config tailored to the provider
+        items:
+          type: integer
+        type: array
+      createdAt:
+        type: string
+      events:
+        description: Array of strings e.g. ["deploy.success", "deploy.failure"]
+        items:
+          type: integer
+        type: array
+      id:
+        type: string
+      isEnabled:
+        type: boolean
+      provider:
+        description: e.g., "discord", "slack", "smtp"
+        type: string
+      teamId:
+        type: string
+      updatedAt:
+        type: string
     type: object
-  models.Variable:
+  vessl_dev_vessl_internal_models.Variable:
     properties:
       createdAt:
         type: string
@@ -463,7 +571,7 @@ definitions:
       value:
         type: string
     type: object
-  models.Webhook:
+  vessl_dev_vessl_internal_models.Webhook:
     properties:
       createdAt:
         type: string
@@ -482,7 +590,7 @@ definitions:
       url:
         type: string
     type: object
-  models.Workspace:
+  vessl_dev_vessl_internal_models.Workspace:
     properties:
       avatarUrl:
         type: string
@@ -550,6 +658,13 @@ paths:
       consumes:
       - application/json
       description: Verify2FA endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handlers.Verify2FARequest'
       produces:
       - application/json
       responses: {}
@@ -612,7 +727,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handlers.AuthRequest'
+          $ref: '#/definitions/internal_handlers.AuthRequest'
       produces:
       - application/json
       responses: {}
@@ -630,7 +745,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handlers.AuthRequest'
+          $ref: '#/definitions/internal_handlers.AuthRequest'
       produces:
       - application/json
       responses: {}
@@ -666,13 +781,13 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.BackupConfig'
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.BackupConfig'
       - description: Payload
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.BackupConfig'
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.BackupConfig'
       produces:
       - application/json
       - application/json
@@ -716,6 +831,11 @@ paths:
         Get endpoint
         Get Backup
       parameters:
+      - description: teamId
+        in: path
+        name: teamId
+        required: true
+        type: string
       - description: Backup ID
         in: path
         name: id
@@ -729,31 +849,11 @@ paths:
       tags:
       - Teams
       - Backups
-  /api/backups/{id}/records:
-    get:
-      consumes:
-      - application/json
-      description: ListRecords endpoint
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: ListRecords endpoint
-      tags:
-      - Backups
   /api/backups/{id}/trigger:
     post:
       consumes:
       - application/json
-      - application/json
-      description: |-
-        Trigger endpoint
-        Trigger Deployment
+      description: Trigger endpoint
       parameters:
       - description: id
         in: path
@@ -762,23 +862,10 @@ paths:
         type: string
       produces:
       - application/json
-      - application/json
       responses: {}
-      summary: Trigger Deployment
+      summary: Trigger endpoint
       tags:
       - Backups
-      - Deployments
-  /api/canvas/projects:
-    get:
-      consumes:
-      - application/json
-      description: ListCanvasSummaries endpoint
-      produces:
-      - application/json
-      responses: {}
-      summary: ListCanvasSummaries endpoint
-      tags:
-      - Canvas
   /api/databases:
     get:
       consumes:
@@ -800,7 +887,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.CreateDatabaseRequest'
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.CreateDatabaseRequest'
       produces:
       - application/json
       responses: {}
@@ -856,7 +943,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.DatabaseQueryRequest'
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.DatabaseQueryRequest'
       produces:
       - application/json
       responses: {}
@@ -952,16 +1039,8 @@ paths:
     delete:
       consumes:
       - application/json
-      - application/json
-      description: |-
-        Delete endpoint
-        Delete Domain
+      description: Delete Domain
       parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
       - description: Domain ID
         in: path
         name: id
@@ -969,11 +1048,9 @@ paths:
         type: string
       produces:
       - application/json
-      - application/json
       responses: {}
       summary: Delete Domain
       tags:
-      - Workspaces
       - Domains
   /api/environments/{id}:
     delete:
@@ -1019,6 +1096,28 @@ paths:
       summary: ListByEnvironment endpoint
       tags:
       - Environments
+    post:
+      consumes:
+      - application/json
+      description: Create endpoint
+      parameters:
+      - description: Environment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.AppService'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create endpoint
+      tags:
+      - Workspaces
   /api/environments/{id}/canvas:
     get:
       consumes:
@@ -1047,7 +1146,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.GitConnectRequest'
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.GitConnectRequest'
       produces:
       - application/json
       responses: {}
@@ -1104,33 +1203,24 @@ paths:
       summary: ListProjectJobs endpoint
       tags:
       - Jobs
-  /api/jobs/{id}:
-    delete:
+    post:
       consumes:
       - application/json
-      - application/json
-      description: |-
-        Delete endpoint
-        Delete Job
+      description: Create endpoint
       parameters:
-      - description: id
-        in: path
-        name: id
+      - description: Payload
+        in: body
+        name: request
         required: true
-        type: string
-      - description: Job ID
-        in: path
-        name: id
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.Job'
       produces:
       - application/json
-      - application/json
       responses: {}
-      summary: Delete Job
+      summary: Create endpoint
       tags:
       - Workspaces
-      - Jobs
+  /api/jobs/{id}:
     get:
       consumes:
       - application/json
@@ -1139,6 +1229,11 @@ paths:
         Get endpoint
         Get Job
       parameters:
+      - description: teamId
+        in: path
+        name: teamId
+        required: true
+        type: string
       - description: Job ID
         in: path
         name: id
@@ -1195,6 +1290,13 @@ paths:
       consumes:
       - application/json
       description: UpdateProfile endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handlers.UpdateProfileRequest'
       produces:
       - application/json
       responses: {}
@@ -1216,6 +1318,13 @@ paths:
       consumes:
       - application/json
       description: CreatePAT endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handlers.CreatePATRequest'
       produces:
       - application/json
       responses: {}
@@ -1240,6 +1349,16 @@ paths:
       tags:
       - Profile
   /api/projects:
+    get:
+      consumes:
+      - application/json
+      description: ListProjects endpoint
+      produces:
+      - application/json
+      responses: {}
+      summary: ListProjects endpoint
+      tags:
+      - Vercel
     post:
       consumes:
       - application/json
@@ -1250,7 +1369,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.CreateProjectRequest'
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.CreateProjectRequest'
       produces:
       - application/json
       responses: {}
@@ -1324,6 +1443,45 @@ paths:
       summary: DeployProject endpoint
       tags:
       - Projects
+  /api/projects/{id}/domains:
+    get:
+      consumes:
+      - application/json
+      description: List domains by project
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: List domains by project
+      tags:
+      - Domains
+    post:
+      consumes:
+      - application/json
+      description: Create domain
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.DomainConfig'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create domain
+      tags:
+      - Domains
   /api/projects/{id}/env:
     get:
       consumes:
@@ -1357,6 +1515,40 @@ paths:
       summary: SetVars endpoint
       tags:
       - Projects
+  /api/projects/{id}/environments:
+    get:
+      consumes:
+      - application/json
+      description: ListByProject endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: ListByProject endpoint
+      tags:
+      - Projects
+    post:
+      consumes:
+      - application/json
+      description: Create endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.EnvironmentConfig'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create endpoint
+      tags:
+      - Workspaces
   /api/projects/{id}/summary:
     get:
       consumes:
@@ -1375,6 +1567,22 @@ paths:
       tags:
       - Projects
   /api/projects/{projectId}/members:
+    get:
+      consumes:
+      - application/json
+      description: ListMembers endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: ListMembers endpoint
+      tags:
+      - Teams
     post:
       consumes:
       - application/json
@@ -1390,7 +1598,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.ProjectMember'
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.ProjectMember'
       produces:
       - application/json
       responses: {}
@@ -1409,6 +1617,11 @@ paths:
       - description: id
         in: path
         name: id
+        required: true
+        type: string
+      - description: userId
+        in: path
+        name: userId
         required: true
         type: string
       - description: Project ID
@@ -1461,7 +1674,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.CreateTokenRequest'
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.CreateTokenRequest'
       produces:
       - application/json
       responses: {}
@@ -1522,7 +1735,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.Webhook'
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.Webhook'
       produces:
       - application/json
       responses: {}
@@ -1562,23 +1775,6 @@ paths:
       summary: ListS3Destinations endpoint
       tags:
       - S3-destinations
-    post:
-      consumes:
-      - application/json
-      description: CreateS3Destination endpoint
-      parameters:
-      - description: Payload
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/models.S3Destination'
-      produces:
-      - application/json
-      responses: {}
-      summary: CreateS3Destination endpoint
-      tags:
-      - S3-destinations
   /api/s3-destinations/{id}:
     delete:
       consumes:
@@ -1605,6 +1801,11 @@ paths:
         Trigger endpoint
         Trigger Deployment
       parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
       - description: Service ID
         in: path
         name: serviceId
@@ -1720,7 +1921,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.Variable'
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.Variable'
       - description: Service ID
         in: path
         name: serviceId
@@ -1731,7 +1932,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.Variable'
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.Variable'
       produces:
       - application/json
       - application/json
@@ -1790,7 +1991,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.Variable'
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.Variable'
       - description: Service ID
         in: path
         name: serviceId
@@ -1806,7 +2007,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.Variable'
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.Variable'
       produces:
       - application/json
       - application/json
@@ -1816,16 +2017,6 @@ paths:
       - Workspaces
       - ServiceVariables
   /api/settings:
-    get:
-      consumes:
-      - application/json
-      description: GetSettings endpoint
-      produces:
-      - application/json
-      responses: {}
-      summary: GetSettings endpoint
-      tags:
-      - Settings
     put:
       consumes:
       - application/json
@@ -1836,32 +2027,11 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.ServerSettings'
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.ServerSettings'
       produces:
       - application/json
       responses: {}
       summary: UpdateSettings endpoint
-      tags:
-      - Settings
-  /api/settings/git_apps/bitbucket:
-    get:
-      consumes:
-      - application/json
-      description: ListBitbucketApps endpoint
-      produces:
-      - application/json
-      responses: {}
-      summary: ListBitbucketApps endpoint
-      tags:
-      - Settings
-    put:
-      consumes:
-      - application/json
-      description: SaveBitbucketApp endpoint
-      produces:
-      - application/json
-      responses: {}
-      summary: SaveBitbucketApp endpoint
       tags:
       - Settings
   /api/settings/git_apps/bitbucket/{id}:
@@ -1881,139 +2051,22 @@ paths:
       summary: DeleteBitbucketApp endpoint
       tags:
       - Settings
-    get:
-      consumes:
-      - application/json
-      description: GetBitbucketApp endpoint
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: GetBitbucketApp endpoint
-      tags:
-      - Settings
-  /api/settings/git_apps/github:
-    get:
-      consumes:
-      - application/json
-      description: ListGithubApps endpoint
-      produces:
-      - application/json
-      responses: {}
-      summary: ListGithubApps endpoint
-      tags:
-      - Settings
-    put:
-      consumes:
-      - application/json
-      description: SaveGithubApp endpoint
-      produces:
-      - application/json
-      responses: {}
-      summary: SaveGithubApp endpoint
-      tags:
-      - Settings
-  /api/settings/git_apps/github/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: DeleteGithubApp endpoint
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: DeleteGithubApp endpoint
-      tags:
-      - Settings
-    get:
-      consumes:
-      - application/json
-      description: GetGithubApp endpoint
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: GetGithubApp endpoint
-      tags:
-      - Settings
   /api/settings/git_apps/github/manifest-callback:
     post:
       consumes:
       - application/json
       description: ExchangeGithubManifestCode endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handlers.GitAppsManifestRequest'
       produces:
       - application/json
       responses: {}
       summary: ExchangeGithubManifestCode endpoint
-      tags:
-      - Settings
-  /api/settings/git_apps/gitlab:
-    get:
-      consumes:
-      - application/json
-      description: ListGitlabApps endpoint
-      produces:
-      - application/json
-      responses: {}
-      summary: ListGitlabApps endpoint
-      tags:
-      - Settings
-    put:
-      consumes:
-      - application/json
-      description: SaveGitlabApp endpoint
-      produces:
-      - application/json
-      responses: {}
-      summary: SaveGitlabApp endpoint
-      tags:
-      - Settings
-  /api/settings/git_apps/gitlab/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: DeleteGitlabApp endpoint
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: DeleteGitlabApp endpoint
-      tags:
-      - Settings
-    get:
-      consumes:
-      - application/json
-      description: GetGitlabApp endpoint
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: GetGitlabApp endpoint
       tags:
       - Settings
   /api/settings/license:
@@ -2024,6 +2077,13 @@ paths:
       description: |-
         Activates offline license key
         Activate License
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handlers.ActivateLicenseRequest'
       produces:
       - application/json
       - application/json
@@ -2053,7 +2113,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.TeamNotificationChannel'
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.TeamNotificationChannel'
       produces:
       - application/json
       responses: {}
@@ -2098,6 +2158,13 @@ paths:
       consumes:
       - application/json
       description: TestNotification endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handlers.TestNotificationRequest'
       produces:
       - application/json
       responses: {}
@@ -2125,22 +2192,11 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.OAuthProviderConfig'
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.OAuthProviderConfig'
       produces:
       - application/json
       responses: {}
       summary: SaveProvider endpoint
-      tags:
-      - Settings
-  /api/settings/updates/check:
-    post:
-      consumes:
-      - application/json
-      description: CheckUpdate endpoint
-      produces:
-      - application/json
-      responses: {}
-      summary: CheckUpdate endpoint
       tags:
       - Settings
   /api/settings/updates/deploy:
@@ -2154,45 +2210,7 @@ paths:
       summary: DeployUpdate endpoint
       tags:
       - Settings
-  /api/settings/updates/status:
-    get:
-      consumes:
-      - application/json
-      description: GetUpdateStatus endpoint
-      produces:
-      - application/json
-      responses: {}
-      summary: GetUpdateStatus endpoint
-      tags:
-      - Settings
-  /api/ssh-keys/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: DeleteSSHKey endpoint
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: DeleteSSHKey endpoint
-      tags:
-      - Ssh-keys
   /api/storage:
-    get:
-      consumes:
-      - application/json
-      description: ListStorage endpoint
-      produces:
-      - application/json
-      responses: {}
-      summary: ListStorage endpoint
-      tags:
-      - Storage
     post:
       consumes:
       - application/json
@@ -2203,7 +2221,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.Storage'
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.Storage'
       produces:
       - application/json
       responses: {}
@@ -2211,22 +2229,6 @@ paths:
       tags:
       - Storage
   /api/storage/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: DeleteStorage endpoint
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: DeleteStorage endpoint
-      tags:
-      - Storage
     get:
       consumes:
       - application/json
@@ -2334,6 +2336,13 @@ paths:
       description: |-
         Create endpoint
         Create Team
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handlers.CreateTeamRequest'
       produces:
       - application/json
       - application/json
@@ -2377,6 +2386,11 @@ paths:
         Get endpoint
         Get Team
       parameters:
+      - description: teamId
+        in: path
+        name: teamId
+        required: true
+        type: string
       - description: Team ID
         in: path
         name: id
@@ -2401,6 +2415,12 @@ paths:
         name: id
         required: true
         type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handlers.InviteTeamMemberRequest'
       produces:
       - application/json
       responses: {}
@@ -2478,7 +2498,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.TeamAISettings'
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.TeamAISettings'
       produces:
       - application/json
       responses: {}
@@ -2519,7 +2539,7 @@ paths:
       summary: Get Team Email Settings
       tags:
       - EmailSettings
-    post:
+    put:
       consumes:
       - application/json
       description: Save Team Email Settings
@@ -2534,7 +2554,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.TeamEmailSettings'
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.TeamEmailSettings'
       produces:
       - application/json
       responses: {}
@@ -2568,6 +2588,12 @@ paths:
         name: teamId
         required: true
         type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handlers.CreateSSHKeyRequest'
       produces:
       - application/json
       responses: {}
@@ -2601,29 +2627,18 @@ paths:
         name: teamId
         required: true
         type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handlers.CreateTrustedDomainRequest'
       produces:
       - application/json
       responses: {}
       summary: CreateTrustedDomain endpoint
       tags:
       - Teams
-  /api/trusted-domains/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: DeleteTrustedDomain endpoint
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: DeleteTrustedDomain endpoint
-      tags:
-      - Trusted-domains
   /api/vercel/projects:
     get:
       consumes:
@@ -2697,6 +2712,12 @@ paths:
         name: serviceId
         required: true
         type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handlers.GithubWebhookPayload'
       produces:
       - application/json
       responses: {}
@@ -2704,20 +2725,17 @@ paths:
       tags:
       - Webhooks
   /api/workspaces:
-    get:
-      consumes:
-      - application/json
-      description: List endpoint
-      produces:
-      - application/json
-      responses: {}
-      summary: List endpoint
-      tags:
-      - Workspaces
     post:
       consumes:
       - application/json
       description: Create endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handlers.CreateWorkspaceRequest'
       produces:
       - application/json
       responses: {}
@@ -2741,6 +2759,22 @@ paths:
       summary: Delete endpoint
       tags:
       - Workspaces
+    get:
+      consumes:
+      - application/json
+      description: Get endpoint
+      parameters:
+      - description: teamId
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Get endpoint
+      tags:
+      - Teams
     put:
       consumes:
       - application/json
@@ -2756,7 +2790,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.Workspace'
+          $ref: '#/definitions/vessl_dev_vessl_internal_models.Workspace'
       produces:
       - application/json
       responses: {}
@@ -2764,26 +2798,6 @@ paths:
       tags:
       - Workspaces
   /api/ws/services/{id}/terminal:
-    get:
-      consumes:
-      - application/json
-      description: |-
-        HandleWebSocket endpoint
-        Handle Terminal WebSocket
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: Handle Terminal WebSocket
-      tags:
-      - Ws
-      - Terminal
-  /api/ws/terminal/{id}:
     get:
       consumes:
       - application/json

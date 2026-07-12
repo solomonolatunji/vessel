@@ -20,6 +20,10 @@ func NewOAuthHandler(s *services.OAuthService) *OAuthHandler {
 	return &OAuthHandler{oauthService: s}
 }
 
+type Verify2FARequest struct {
+	Passcode string `json:"passcode"`
+}
+
 // @Summary ListProviders endpoint
 // @Description ListProviders endpoint
 // @Tags Settings
@@ -125,15 +129,14 @@ func (h *OAuthHandler) Setup2FA(c echo.Context) error {
 // @Tags Auth
 // @Accept json
 // @Produce json
+// @Param request body handlers.Verify2FARequest true "Payload"
 // @Router /api/auth/2fa/verify [post]
 func (h *OAuthHandler) Verify2FA(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "unauthorized access"})
 	}
-	var payload struct {
-		Passcode string `json:"passcode"`
-	}
+	var payload Verify2FARequest
 	if err := c.Bind(&payload); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing 6-digit passcode"})
 	}

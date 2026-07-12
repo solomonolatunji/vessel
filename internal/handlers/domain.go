@@ -17,13 +17,13 @@ func NewDomainHandler(s *services.EnvironmentService) *DomainHandler {
 	return &DomainHandler{envService: s}
 }
 
-// @Summary ListByProject endpoint
-// @Description ListByProject endpoint
-// @Tags Projects
+// @Summary List domains by project
+// @Description List domains by project
+// @Tags Domains
 // @Accept json
 // @Produce json
-// @Param id path string true "id"
-// @Router /api/projects/{id}/apps [get]
+// @Param id path string true "Project ID"
+// @Router /api/projects/{id}/domains [get]
 func (h *DomainHandler) ListByProject(c echo.Context) error {
 	projectID := c.Param("id")
 	if projectID == "" {
@@ -36,13 +36,14 @@ func (h *DomainHandler) ListByProject(c echo.Context) error {
 	return c.JSON(http.StatusOK, domains)
 }
 
-// @Summary Create endpoint
-// @Description Create endpoint
-// @Tags Workspaces
+// @Summary Create domain
+// @Description Create domain
+// @Tags Domains
 // @Accept json
 // @Produce json
+// @Param id path string true "Project ID"
 // @Param request body models.DomainConfig true "Payload"
-// @Router /api/workspaces [post]
+// @Router /api/projects/{id}/domains [post]
 func (h *DomainHandler) Create(c echo.Context) error {
 	projectID := c.Param("id")
 	if projectID == "" {
@@ -63,13 +64,6 @@ func (h *DomainHandler) Create(c echo.Context) error {
 	return c.JSON(http.StatusCreated, created)
 }
 
-// @Summary Delete endpoint
-// @Description Delete endpoint
-// @Tags Workspaces
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Router /api/workspaces/{id} [delete]
 // @Summary Delete Domain
 // @Description Delete Domain
 // @Tags Domains

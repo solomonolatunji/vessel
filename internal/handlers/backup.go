@@ -22,7 +22,6 @@ func NewBackupHandler(s *services.BackupService) *BackupHandler {
 // @Tags Workspaces
 // @Accept json
 // @Produce json
-// @Router /api/workspaces [get]
 // @Summary List Backups
 // @Description List Backups
 // @Tags Backups
@@ -47,7 +46,6 @@ func (h *BackupHandler) List(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param request body models.BackupConfig true "Payload"
-// @Router /api/workspaces [post]
 // @Summary Create Backup
 // @Description Create Backup
 // @Tags Backups
@@ -72,7 +70,6 @@ func (h *BackupHandler) Create(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param teamId path string true "teamId"
-// @Router /api/teams/{teamId}/ai_settings [get]
 // @Summary Get Backup
 // @Description Get Backup
 // @Tags Backups
@@ -98,7 +95,6 @@ func (h *BackupHandler) Get(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/workspaces/{id} [delete]
 // @Summary Delete Backup
 // @Description Delete Backup
 // @Tags Backups
@@ -143,7 +139,6 @@ func (h *BackupHandler) Trigger(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Router /api/backups/{id}/records [get]
 func (h *BackupHandler) ListRecords(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -180,7 +175,6 @@ func (h *BackupHandler) ListS3Destinations(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param request body models.S3Destination true "Payload"
-// @Router /api/s3-destinations [post]
 func (h *BackupHandler) CreateS3Destination(c echo.Context) error {
 	var dest models.S3Destination
 	if err := c.Bind(&dest); err != nil {

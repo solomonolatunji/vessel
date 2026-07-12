@@ -85,6 +85,17 @@ const docTemplate = `{
                     "Auth"
                 ],
                 "summary": "Verify2FA endpoint",
+                "parameters": [
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.Verify2FARequest"
+                        }
+                    }
+                ],
                 "responses": {}
             }
         },
@@ -174,7 +185,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.AuthRequest"
+                            "$ref": "#/definitions/internal_handlers.AuthRequest"
                         }
                     }
                 ],
@@ -201,7 +212,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.AuthRequest"
+                            "$ref": "#/definitions/internal_handlers.AuthRequest"
                         }
                     }
                 ],
@@ -248,7 +259,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.BackupConfig"
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.BackupConfig"
                         }
                     },
                     {
@@ -257,7 +268,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.BackupConfig"
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.BackupConfig"
                         }
                     }
                 ],
@@ -281,6 +292,13 @@ const docTemplate = `{
                 ],
                 "summary": "Get Backup",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "teamId",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Backup ID",
@@ -325,9 +343,9 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/backups/{id}/records": {
-            "get": {
-                "description": "ListRecords endpoint",
+        "/api/backups/{id}/trigger": {
+            "post": {
+                "description": "Trigger endpoint",
                 "consumes": [
                     "application/json"
                 ],
@@ -337,7 +355,7 @@ const docTemplate = `{
                 "tags": [
                     "Backups"
                 ],
-                "summary": "ListRecords endpoint",
+                "summary": "Trigger endpoint",
                 "parameters": [
                     {
                         "type": "string",
@@ -347,50 +365,6 @@ const docTemplate = `{
                         "required": true
                     }
                 ],
-                "responses": {}
-            }
-        },
-        "/api/backups/{id}/trigger": {
-            "post": {
-                "description": "Trigger endpoint\nTrigger Deployment",
-                "consumes": [
-                    "application/json",
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json",
-                    "application/json"
-                ],
-                "tags": [
-                    "Backups",
-                    "Deployments"
-                ],
-                "summary": "Trigger Deployment",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/canvas/projects": {
-            "get": {
-                "description": "ListCanvasSummaries endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Canvas"
-                ],
-                "summary": "ListCanvasSummaries endpoint",
                 "responses": {}
             }
         },
@@ -428,7 +402,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateDatabaseRequest"
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.CreateDatabaseRequest"
                         }
                     }
                 ],
@@ -510,7 +484,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.DatabaseQueryRequest"
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.DatabaseQueryRequest"
                         }
                     }
                 ],
@@ -644,28 +618,18 @@ const docTemplate = `{
         },
         "/api/domains/{id}": {
             "delete": {
-                "description": "Delete endpoint\nDelete Domain",
+                "description": "Delete Domain",
                 "consumes": [
-                    "application/json",
                     "application/json"
                 ],
                 "produces": [
-                    "application/json",
                     "application/json"
                 ],
                 "tags": [
-                    "Workspaces",
                     "Domains"
                 ],
                 "summary": "Delete Domain",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
                     {
                         "type": "string",
                         "description": "Domain ID",
@@ -735,6 +699,38 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {}
+            },
+            "post": {
+                "description": "Create endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "summary": "Create endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Environment ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.AppService"
+                        }
+                    }
+                ],
+                "responses": {}
             }
         },
         "/api/environments/{id}/canvas": {
@@ -782,7 +778,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.GitConnectRequest"
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.GitConnectRequest"
                         }
                     }
                 ],
@@ -860,6 +856,31 @@ const docTemplate = `{
                 ],
                 "summary": "ListProjectJobs endpoint",
                 "responses": {}
+            },
+            "post": {
+                "description": "Create endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "summary": "Create endpoint",
+                "parameters": [
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.Job"
+                        }
+                    }
+                ],
+                "responses": {}
             }
         },
         "/api/jobs/{id}": {
@@ -881,34 +902,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Job ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "delete": {
-                "description": "Delete endpoint\nDelete Job",
-                "consumes": [
-                    "application/json",
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json",
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces",
-                    "Jobs"
-                ],
-                "summary": "Delete Job",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
+                        "description": "teamId",
+                        "name": "teamId",
                         "in": "path",
                         "required": true
                     },
@@ -991,6 +986,17 @@ const docTemplate = `{
                     "Profile"
                 ],
                 "summary": "UpdateProfile endpoint",
+                "parameters": [
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.UpdateProfileRequest"
+                        }
+                    }
+                ],
                 "responses": {}
             }
         },
@@ -1021,6 +1027,17 @@ const docTemplate = `{
                     "Profile"
                 ],
                 "summary": "CreatePAT endpoint",
+                "parameters": [
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.CreatePATRequest"
+                        }
+                    }
+                ],
                 "responses": {}
             }
         },
@@ -1050,6 +1067,20 @@ const docTemplate = `{
             }
         },
         "/api/projects": {
+            "get": {
+                "description": "ListProjects endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Vercel"
+                ],
+                "summary": "ListProjects endpoint",
+                "responses": {}
+            },
             "post": {
                 "description": "CreateProject endpoint",
                 "consumes": [
@@ -1069,7 +1100,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateProjectRequest"
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.CreateProjectRequest"
                         }
                     }
                 ],
@@ -1174,6 +1205,63 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/projects/{id}/domains": {
+            "get": {
+                "description": "List domains by project",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Domains"
+                ],
+                "summary": "List domains by project",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Project ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "post": {
+                "description": "Create domain",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Domains"
+                ],
+                "summary": "Create domain",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Project ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.DomainConfig"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/projects/{id}/env": {
             "get": {
                 "description": "GetVars endpoint",
@@ -1222,6 +1310,56 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/projects/{id}/environments": {
+            "get": {
+                "description": "ListByProject endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "ListByProject endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "post": {
+                "description": "Create endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "summary": "Create endpoint",
+                "parameters": [
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.EnvironmentConfig"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/projects/{id}/summary": {
             "get": {
                 "description": "GetCanvasSummary endpoint",
@@ -1248,6 +1386,29 @@ const docTemplate = `{
             }
         },
         "/api/projects/{projectId}/members": {
+            "get": {
+                "description": "ListMembers endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Teams"
+                ],
+                "summary": "ListMembers endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
             "post": {
                 "description": "AddMember endpoint",
                 "consumes": [
@@ -1274,7 +1435,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.ProjectMember"
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.ProjectMember"
                         }
                     }
                 ],
@@ -1302,6 +1463,13 @@ const docTemplate = `{
                         "type": "string",
                         "description": "id",
                         "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "userId",
+                        "name": "userId",
                         "in": "path",
                         "required": true
                     },
@@ -1373,7 +1541,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateTokenRequest"
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.CreateTokenRequest"
                         }
                     }
                 ],
@@ -1462,7 +1630,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Webhook"
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.Webhook"
                         }
                     }
                 ],
@@ -1515,31 +1683,6 @@ const docTemplate = `{
                 ],
                 "summary": "ListS3Destinations endpoint",
                 "responses": {}
-            },
-            "post": {
-                "description": "CreateS3Destination endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "S3-destinations"
-                ],
-                "summary": "CreateS3Destination endpoint",
-                "parameters": [
-                    {
-                        "description": "Payload",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.S3Destination"
-                        }
-                    }
-                ],
-                "responses": {}
             }
         },
         "/api/s3-destinations/{id}": {
@@ -1584,6 +1727,13 @@ const docTemplate = `{
                 ],
                 "summary": "Trigger Deployment",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Service ID",
@@ -1742,7 +1892,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Variable"
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.Variable"
                         }
                     },
                     {
@@ -1758,7 +1908,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Variable"
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.Variable"
                         }
                     }
                 ],
@@ -1795,7 +1945,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Variable"
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.Variable"
                         }
                     },
                     {
@@ -1818,7 +1968,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Variable"
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.Variable"
                         }
                     }
                 ],
@@ -1866,20 +2016,6 @@ const docTemplate = `{
             }
         },
         "/api/settings": {
-            "get": {
-                "description": "GetSettings endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "GetSettings endpoint",
-                "responses": {}
-            },
             "put": {
                 "description": "UpdateSettings endpoint",
                 "consumes": [
@@ -1899,67 +2035,14 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.ServerSettings"
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.ServerSettings"
                         }
                     }
                 ],
                 "responses": {}
             }
         },
-        "/api/settings/git_apps/bitbucket": {
-            "get": {
-                "description": "ListBitbucketApps endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "ListBitbucketApps endpoint",
-                "responses": {}
-            },
-            "put": {
-                "description": "SaveBitbucketApp endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "SaveBitbucketApp endpoint",
-                "responses": {}
-            }
-        },
         "/api/settings/git_apps/bitbucket/{id}": {
-            "get": {
-                "description": "GetBitbucketApp endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "GetBitbucketApp endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
             "delete": {
                 "description": "DeleteBitbucketApp endpoint",
                 "consumes": [
@@ -1984,36 +2067,6 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/settings/git_apps/github": {
-            "get": {
-                "description": "ListGithubApps endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "ListGithubApps endpoint",
-                "responses": {}
-            },
-            "put": {
-                "description": "SaveGithubApp endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "SaveGithubApp endpoint",
-                "responses": {}
-            }
-        },
         "/api/settings/git_apps/github/manifest-callback": {
             "post": {
                 "description": "ExchangeGithubManifestCode endpoint",
@@ -2027,130 +2080,15 @@ const docTemplate = `{
                     "Settings"
                 ],
                 "summary": "ExchangeGithubManifestCode endpoint",
-                "responses": {}
-            }
-        },
-        "/api/settings/git_apps/github/{id}": {
-            "get": {
-                "description": "GetGithubApp endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "GetGithubApp endpoint",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "delete": {
-                "description": "DeleteGithubApp endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "DeleteGithubApp endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/settings/git_apps/gitlab": {
-            "get": {
-                "description": "ListGitlabApps endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "ListGitlabApps endpoint",
-                "responses": {}
-            },
-            "put": {
-                "description": "SaveGitlabApp endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "SaveGitlabApp endpoint",
-                "responses": {}
-            }
-        },
-        "/api/settings/git_apps/gitlab/{id}": {
-            "get": {
-                "description": "GetGitlabApp endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "GetGitlabApp endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "delete": {
-                "description": "DeleteGitlabApp endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "DeleteGitlabApp endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.GitAppsManifestRequest"
+                        }
                     }
                 ],
                 "responses": {}
@@ -2172,6 +2110,17 @@ const docTemplate = `{
                     "Settings"
                 ],
                 "summary": "Activate License",
+                "parameters": [
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.ActivateLicenseRequest"
+                        }
+                    }
+                ],
                 "responses": {}
             }
         },
@@ -2209,7 +2158,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.TeamNotificationChannel"
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.TeamNotificationChannel"
                         }
                     }
                 ],
@@ -2229,6 +2178,17 @@ const docTemplate = `{
                     "Settings"
                 ],
                 "summary": "TestNotification endpoint",
+                "parameters": [
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.TestNotificationRequest"
+                        }
+                    }
+                ],
                 "responses": {}
             }
         },
@@ -2314,26 +2274,10 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.OAuthProviderConfig"
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.OAuthProviderConfig"
                         }
                     }
                 ],
-                "responses": {}
-            }
-        },
-        "/api/settings/updates/check": {
-            "post": {
-                "description": "CheckUpdate endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "CheckUpdate endpoint",
                 "responses": {}
             }
         },
@@ -2353,62 +2297,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/settings/updates/status": {
-            "get": {
-                "description": "GetUpdateStatus endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "GetUpdateStatus endpoint",
-                "responses": {}
-            }
-        },
-        "/api/ssh-keys/{id}": {
-            "delete": {
-                "description": "DeleteSSHKey endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Ssh-keys"
-                ],
-                "summary": "DeleteSSHKey endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
         "/api/storage": {
-            "get": {
-                "description": "ListStorage endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Storage"
-                ],
-                "summary": "ListStorage endpoint",
-                "responses": {}
-            },
             "post": {
                 "description": "CreateStorage endpoint",
                 "consumes": [
@@ -2428,7 +2317,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Storage"
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.Storage"
                         }
                     }
                 ],
@@ -2448,29 +2337,6 @@ const docTemplate = `{
                     "Storage"
                 ],
                 "summary": "GetStorage endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "delete": {
-                "description": "DeleteStorage endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Storage"
-                ],
-                "summary": "DeleteStorage endpoint",
                 "parameters": [
                     {
                         "type": "string",
@@ -2616,6 +2482,17 @@ const docTemplate = `{
                     "Teams"
                 ],
                 "summary": "Create Team",
+                "parameters": [
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.CreateTeamRequest"
+                        }
+                    }
+                ],
                 "responses": {}
             }
         },
@@ -2636,6 +2513,13 @@ const docTemplate = `{
                 ],
                 "summary": "Get Team",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "teamId",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Team ID",
@@ -2700,6 +2584,15 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.InviteTeamMemberRequest"
+                        }
                     }
                 ],
                 "responses": {}
@@ -2812,7 +2705,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.TeamAISettings"
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.TeamAISettings"
                         }
                     }
                 ],
@@ -2868,7 +2761,7 @@ const docTemplate = `{
                 ],
                 "responses": {}
             },
-            "post": {
+            "put": {
                 "description": "Save Team Email Settings",
                 "consumes": [
                     "application/json"
@@ -2894,7 +2787,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.TeamEmailSettings"
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.TeamEmailSettings"
                         }
                     }
                 ],
@@ -2944,6 +2837,15 @@ const docTemplate = `{
                         "name": "teamId",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.CreateSSHKeyRequest"
+                        }
                     }
                 ],
                 "responses": {}
@@ -2992,31 +2894,15 @@ const docTemplate = `{
                         "name": "teamId",
                         "in": "path",
                         "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/trusted-domains/{id}": {
-            "delete": {
-                "description": "DeleteTrustedDomain endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Trusted-domains"
-                ],
-                "summary": "DeleteTrustedDomain endpoint",
-                "parameters": [
+                    },
                     {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.CreateTrustedDomainRequest"
+                        }
                     }
                 ],
                 "responses": {}
@@ -3133,26 +3019,21 @@ const docTemplate = `{
                         "name": "serviceId",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.GithubWebhookPayload"
+                        }
                     }
                 ],
                 "responses": {}
             }
         },
         "/api/workspaces": {
-            "get": {
-                "description": "List endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workspaces"
-                ],
-                "summary": "List endpoint",
-                "responses": {}
-            },
             "post": {
                 "description": "Create endpoint",
                 "consumes": [
@@ -3165,10 +3046,44 @@ const docTemplate = `{
                     "Workspaces"
                 ],
                 "summary": "Create endpoint",
+                "parameters": [
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.CreateWorkspaceRequest"
+                        }
+                    }
+                ],
                 "responses": {}
             }
         },
         "/api/workspaces/{id}": {
+            "get": {
+                "description": "Get endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Teams"
+                ],
+                "summary": "Get endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "teamId",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
             "put": {
                 "description": "Update endpoint",
                 "consumes": [
@@ -3195,7 +3110,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Workspace"
+                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.Workspace"
                         }
                     }
                 ],
@@ -3250,36 +3165,18 @@ const docTemplate = `{
                 ],
                 "responses": {}
             }
-        },
-        "/api/ws/terminal/{id}": {
-            "get": {
-                "description": "HandleWebSocket endpoint\nHandle Terminal WebSocket",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Ws",
-                    "Terminal"
-                ],
-                "summary": "Handle Terminal WebSocket",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
         }
     },
     "definitions": {
-        "handlers.AuthRequest": {
+        "internal_handlers.ActivateLicenseRequest": {
+            "type": "object",
+            "properties": {
+                "license_key": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_handlers.AuthRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -3290,7 +3187,132 @@ const docTemplate = `{
                 }
             }
         },
-        "models.AppService": {
+        "internal_handlers.CreatePATRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_handlers.CreateSSHKeyRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "publicKey": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_handlers.CreateTeamRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_handlers.CreateTrustedDomainRequest": {
+            "type": "object",
+            "properties": {
+                "domain": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_handlers.CreateWorkspaceRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_handlers.GitAppsManifestRequest": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "teamId": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_handlers.GithubWebhookPayload": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "integer"
+                },
+                "pull_request": {
+                    "type": "object",
+                    "properties": {
+                        "head": {
+                            "type": "object",
+                            "properties": {
+                                "ref": {
+                                    "type": "string"
+                                },
+                                "sha": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "internal_handlers.InviteTeamMemberRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_handlers.TestNotificationRequest": {
+            "type": "object",
+            "properties": {
+                "channelId": {
+                    "type": "string"
+                },
+                "provider": {
+                    "type": "string"
+                },
+                "teamId": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_handlers.UpdateProfileRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_handlers.Verify2FARequest": {
+            "type": "object",
+            "properties": {
+                "passcode": {
+                    "type": "string"
+                }
+            }
+        },
+        "vessl_dev_vessl_internal_models.AppService": {
             "type": "object",
             "properties": {
                 "branch": {
@@ -3349,7 +3371,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.BackupConfig": {
+        "vessl_dev_vessl_internal_models.BackupConfig": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -3387,7 +3409,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.CreateDatabaseRequest": {
+        "vessl_dev_vessl_internal_models.CreateDatabaseRequest": {
             "type": "object",
             "properties": {
                 "customArgs": {
@@ -3425,7 +3447,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.CreateProjectRequest": {
+        "vessl_dev_vessl_internal_models.CreateProjectRequest": {
             "type": "object",
             "properties": {
                 "branch": {
@@ -3460,7 +3482,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.CreateTokenRequest": {
+        "vessl_dev_vessl_internal_models.CreateTokenRequest": {
             "type": "object",
             "properties": {
                 "environmentId": {
@@ -3486,7 +3508,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.DatabaseQueryRequest": {
+        "vessl_dev_vessl_internal_models.DatabaseQueryRequest": {
             "type": "object",
             "properties": {
                 "query": {
@@ -3494,7 +3516,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.DomainConfig": {
+        "vessl_dev_vessl_internal_models.DomainConfig": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -3523,7 +3545,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.EnvironmentConfig": {
+        "vessl_dev_vessl_internal_models.EnvironmentConfig": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -3546,7 +3568,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.GitConnectRequest": {
+        "vessl_dev_vessl_internal_models.GitConnectRequest": {
             "type": "object",
             "properties": {
                 "accessToken": {
@@ -3560,7 +3582,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Job": {
+        "vessl_dev_vessl_internal_models.Job": {
             "type": "object",
             "properties": {
                 "command": {
@@ -3595,7 +3617,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.OAuthProviderConfig": {
+        "vessl_dev_vessl_internal_models.OAuthProviderConfig": {
             "type": "object",
             "properties": {
                 "baseUrl": {
@@ -3630,7 +3652,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.ProjectMember": {
+        "vessl_dev_vessl_internal_models.ProjectMember": {
             "type": "object",
             "properties": {
                 "acceptedAt": {
@@ -3659,7 +3681,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.S3Destination": {
+        "vessl_dev_vessl_internal_models.S3Destination": {
             "type": "object",
             "properties": {
                 "accessKeyId": {
@@ -3691,7 +3713,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.ServerSettings": {
+        "vessl_dev_vessl_internal_models.ServerSettings": {
             "type": "object",
             "properties": {
                 "autoUpdateEnabled": {
@@ -3828,7 +3850,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Storage": {
+        "vessl_dev_vessl_internal_models.Storage": {
             "type": "object",
             "properties": {
                 "accessKey": {
@@ -3884,7 +3906,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.TeamAISettings": {
+        "vessl_dev_vessl_internal_models.TeamAISettings": {
             "type": "object",
             "properties": {
                 "apiKey": {
@@ -3907,7 +3929,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.TeamEmailSettings": {
+        "vessl_dev_vessl_internal_models.TeamEmailSettings": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -3948,10 +3970,45 @@ const docTemplate = `{
                 }
             }
         },
-        "models.TeamNotificationChannel": {
-            "type": "object"
+        "vessl_dev_vessl_internal_models.TeamNotificationChannel": {
+            "type": "object",
+            "properties": {
+                "config": {
+                    "description": "Generic JSON config tailored to the provider",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "events": {
+                    "description": "Array of strings e.g. [\"deploy.success\", \"deploy.failure\"]",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "isEnabled": {
+                    "type": "boolean"
+                },
+                "provider": {
+                    "description": "e.g., \"discord\", \"slack\", \"smtp\"",
+                    "type": "string"
+                },
+                "teamId": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
         },
-        "models.Variable": {
+        "vessl_dev_vessl_internal_models.Variable": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -3983,7 +4040,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Webhook": {
+        "vessl_dev_vessl_internal_models.Webhook": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -4012,7 +4069,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Workspace": {
+        "vessl_dev_vessl_internal_models.Workspace": {
             "type": "object",
             "properties": {
                 "avatarUrl": {
