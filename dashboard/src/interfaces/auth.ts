@@ -8,3 +8,8 @@ export interface AuthResponse {
 export interface ApiErrorResponse {
   error: string;
 }
+
+export interface AuthCredentials {
+  email: string;
+  password?: string;
+}
