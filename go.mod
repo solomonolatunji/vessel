@@ -3,7 +3,7 @@ module vessl.dev/vessl
 go 1.25.11
 
 require (
-	github.com/docker/docker v25.0.6+incompatible
+	github.com/docker/docker v25.0.13+incompatible
 	github.com/docker/go-connections v0.5.0
 	github.com/go-sql-driver/mysql v1.10.0
 	github.com/golang-jwt/jwt/v5 v5.3.1
