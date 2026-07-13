@@ -45,3 +45,9 @@ export const useGetMetrics = (serviceId: string) => {
     queryFn: () => deploymentsService.getMetrics(serviceId),
   });
 };
+
+export const useDiagnostics = () => {
+  return useMutation({
+    mutationFn: (deploymentId: string) => deploymentsService.diagnostics(deploymentId),
+  });
+};

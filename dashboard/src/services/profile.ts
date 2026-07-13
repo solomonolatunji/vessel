@@ -14,7 +14,8 @@ type CreatePATRequest = { name: string; scopes: string[]; expiresAt?: string };
 export const profileService = {
   getProfile: async (): Promise<GetProfileResponse> => {
     try {
-      return await apiClient.get<GetProfileResponse>('/profile');
+      const response = await apiClient.get<GetProfileResponse>('/profile');
+      return response;
     } catch (error) {
       throw handleApiError(error);
     }
@@ -22,7 +23,7 @@ export const profileService = {
 
   updateProfile: async (payload: UpdateProfileRequest): Promise<void> => {
     try {
-      await apiClient.put('/api/v1/profile', payload);
+      await apiClient.put('/profile', payload);
     } catch (error) {
       throw handleApiError(error);
     }
@@ -30,7 +31,7 @@ export const profileService = {
 
   changePassword: async (payload: ChangePasswordRequest): Promise<void> => {
     try {
-      await apiClient.put('/api/v1/profile/password', payload);
+      await apiClient.put('/profile/password', payload);
     } catch (error) {
       throw handleApiError(error);
     }

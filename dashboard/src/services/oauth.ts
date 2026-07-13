@@ -10,9 +10,7 @@ import { handleApiError } from '#/lib/error';
 export const oauthService = {
   listProviders: async (): Promise<ListOAuthProvidersResponse> => {
     try {
-      const response = await apiClient.get<ListOAuthProvidersResponse>(
-        '/api/v1/settings/oauth/providers'
-      );
+      const response = await apiClient.get<ListOAuthProvidersResponse>('/settings/oauth/providers');
       return response;
     } catch (error) {
       throw handleApiError(error);
@@ -22,7 +20,7 @@ export const oauthService = {
   getEnabledProviders: async (): Promise<ListEnabledProvidersResponse> => {
     try {
       const response = await apiClient.get<ListEnabledProvidersResponse>(
-        '/api/v1/auth/oauth/providers/enabled'
+        '/auth/oauth/providers/enabled'
       );
       return response;
     } catch (error) {
@@ -33,7 +31,7 @@ export const oauthService = {
   saveProvider: async (payload: SaveOAuthProviderRequest): Promise<SaveOAuthProviderResponse> => {
     try {
       const response = await apiClient.put<SaveOAuthProviderResponse>(
-        '/api/v1/settings/oauth/providers',
+        '/settings/oauth/providers',
         payload
       );
       return response;
@@ -43,6 +41,6 @@ export const oauthService = {
   },
 
   triggerOAuthLogin: (provider: string) => {
-    window.location.href = `/api/v1/auth/oauth/${provider}`;
+    window.location.href = `/api/auth/oauth/${provider}`;
   },
 };
