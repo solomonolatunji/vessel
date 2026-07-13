@@ -16,10 +16,19 @@ const getInitialAuth = (): AuthState => {
 
   const storedToken = localStorage.getItem('vessl_auth_token');
   const storedUser = localStorage.getItem('vessl_auth_user');
+  let parsedUser = null;
+  if (storedUser) {
+    try {
+      parsedUser = JSON.parse(storedUser);
+    } catch (e) {
+      console.error('Failed to parse stored user:', e);
+      localStorage.removeItem('vessl_auth_user');
+    }
+  }
 
   return {
     token: storedToken,
-    user: storedUser ? JSON.parse(storedUser) : null,
+    user: parsedUser,
     isAuthenticated: !!storedToken,
   };
 };

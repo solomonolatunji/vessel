@@ -12,7 +12,11 @@ import { handleApiError } from '#/lib/error';
 export const authService = {
   login: async (credentials: AuthCredentials): Promise<AuthResponse> => {
     try {
-      return await apiClient.post<AuthResponse>('/auth/signin', credentials);
+      const response = await apiClient.post<BaseResponse<AuthResponse>>(
+        '/auth/signin',
+        credentials
+      );
+      return response.data;
     } catch (error) {
       throw handleApiError(error);
     }
@@ -20,7 +24,8 @@ export const authService = {
 
   register: async (details: RegisterCredentials): Promise<AuthResponse> => {
     try {
-      return await apiClient.post<AuthResponse>('/auth/signup', details);
+      const response = await apiClient.post<BaseResponse<AuthResponse>>('/auth/signup', details);
+      return response.data;
     } catch (error) {
       throw handleApiError(error);
     }
