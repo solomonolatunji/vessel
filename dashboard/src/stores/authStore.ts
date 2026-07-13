@@ -7,7 +7,13 @@ interface AuthState {
   isAuthenticated: boolean;
 }
 
+const isBrowser = typeof window !== 'undefined';
+
 const getInitialAuth = (): AuthState => {
+  if (!isBrowser) {
+    return { token: null, user: null, isAuthenticated: false };
+  }
+
   const storedToken = localStorage.getItem('vessl_auth_token');
   const storedUser = localStorage.getItem('vessl_auth_user');
 
@@ -20,20 +26,22 @@ const getInitialAuth = (): AuthState => {
 
 export const authStore = new Store<AuthState>(getInitialAuth());
 
-authStore.subscribe(() => {
-  const state = authStore.state;
-  if (state.token) {
-    localStorage.setItem('vessl_auth_token', state.token);
-  } else {
-    localStorage.removeItem('vessl_auth_token');
-  }
+if (isBrowser) {
+  authStore.subscribe(() => {
+    const state = authStore.state;
+    if (state.token) {
+      localStorage.setItem('vessl_auth_token', state.token);
+    } else {
+      localStorage.removeItem('vessl_auth_token');
+    }
 
-  if (state.user) {
-    localStorage.setItem('vessl_auth_user', JSON.stringify(state.user));
-  } else {
-    localStorage.removeItem('vessl_auth_user');
-  }
-});
+    if (state.user) {
+      localStorage.setItem('vessl_auth_user', JSON.stringify(state.user));
+    } else {
+      localStorage.removeItem('vessl_auth_user');
+    }
+  });
+}
 
 export const authActions = {
   setAuth: (token: string, user: User) => {

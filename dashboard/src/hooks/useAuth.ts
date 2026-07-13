@@ -1,42 +1,56 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from '@tanstack/react-router';
+import { toast } from 'sonner';
 import { authService } from '#/services/auth';
 import { authActions } from '#/stores/authStore';
 
 export const useLogin = () => {
   const queryClient = useQueryClient();
+  const router = useRouter();
   return useMutation({
     mutationFn: (payload: { credentials: Parameters<typeof authService.login>[0] }) =>
       authService.login(payload.credentials),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       if (data?.token && data?.user) {
         authActions.setAuth(data.token, data.user);
       }
-      queryClient.invalidateQueries({ queryKey: ['auth'] });
+      await queryClient.invalidateQueries({ queryKey: ['auth'] });
+      await router.invalidate();
+
+      toast.success('Logged in successfully');
+      router.navigate({ to: '/' });
     },
   });
 };
 
 export const useRegister = () => {
   const queryClient = useQueryClient();
+  const router = useRouter();
   return useMutation({
     mutationFn: (payload: { details: Parameters<typeof authService.register>[0] }) =>
       authService.register(payload.details),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       if (data?.token && data?.user) {
         authActions.setAuth(data.token, data.user);
       }
-      queryClient.invalidateQueries({ queryKey: ['auth'] });
+      await queryClient.invalidateQueries({ queryKey: ['auth'] });
+      await router.invalidate();
+
+      toast.success('Account created successfully');
+      router.navigate({ to: '/' });
     },
   });
 };
 
 export const useLogout = () => {
   const queryClient = useQueryClient();
+  const router = useRouter();
   return useMutation({
     mutationFn: () => authService.logout(),
-    onSuccess: () => {
+    onSuccess: async () => {
       authActions.logout();
       queryClient.clear();
+      await router.invalidate();
     },
   });
 };
