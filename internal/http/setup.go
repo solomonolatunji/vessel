@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"log"
+	"net/http"
+	"time"
 
 	"github.com/docker/docker/client"
 	"github.com/labstack/echo/v4"
@@ -32,7 +34,20 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 		},
 	}))
 	e.Use(echomiddleware.Recover())
-	e.Use(echomiddleware.CORS())
+	e.Use(echomiddleware.CORSWithConfig(echomiddleware.CORSConfig{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
+		AllowHeaders:     []string{"Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: false,
+		MaxAge:           300,
+	}))
+	e.Use(echomiddleware.CSRFWithConfig(echomiddleware.CSRFConfig{
+		TokenLength:  32,
+		TokenLookup:  "header:X-CSRF-Token",
+		CookieName:   "csrf_token",
+		CookieMaxAge: 86400,
+	}))
 
 	environmentSQLiteRepository := repositories.NewEnvironmentSQLiteRepository(db)
 	projectSQLiteRepository := repositories.NewProjectSQLiteRepository(db, environmentSQLiteRepository)
@@ -137,9 +152,12 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	vercelHandler := handlers.NewVercelHandler(vercelService)
 	serverlessHandler := handlers.NewServerlessHandler(serverlessService)
 
+	authLimiter := middleware.NewRateLimiter(10, time.Minute)
+
 	srv := &Server{
 		router:                 e,
 		mcpBridge:              bridge,
+		authRateLimiter:        authLimiter,
 		deployer:               deployer,
 		traefikManager:         traefikManager,
 		dockerClient:           dockerClient,

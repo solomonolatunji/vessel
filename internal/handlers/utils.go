@@ -16,7 +16,7 @@ func SetAuthCookie(c echo.Context, token string) {
 		Path:     "/",
 		HttpOnly: true,
 		Secure:   true,
-		SameSite: http.SameSiteLaxMode,
+		SameSite: http.SameSiteStrictMode,
 		MaxAge:   72 * 3600,
 	})
 }
