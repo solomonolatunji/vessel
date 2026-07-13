@@ -13,19 +13,25 @@ import (
 	"vessl.dev/vessl/internal/repositories"
 )
 
+type Mailer interface {
+	SendSystemEmail(ctx context.Context, templateName string, toAddress string, subject string, data any) error
+}
+
 type AuthService struct {
 	userRepo         repositories.UserRepository
 	settingsRepo     repositories.SettingsRepository
 	tokenService     *TokenService
 	workspaceService *WorkspaceService
+	mailer           Mailer
 }
 
-func NewAuthService(ur repositories.UserRepository, sr repositories.SettingsRepository, ts *TokenService, ws *WorkspaceService) *AuthService {
+func NewAuthService(ur repositories.UserRepository, sr repositories.SettingsRepository, ts *TokenService, ws *WorkspaceService, m Mailer) *AuthService {
 	return &AuthService{
 		userRepo:         ur,
 		settingsRepo:     sr,
 		tokenService:     ts,
 		workspaceService: ws,
+		mailer:           m,
 	}
 }
 
@@ -113,7 +119,7 @@ func (a *AuthService) Login(ctx context.Context, email, password string) (*model
 	return &uCopy, token, nil
 }
 
-func (a *AuthService) ForgotPassword(ctx context.Context, email string) error {
+func (a *AuthService) ForgotPassword(ctx context.Context, email string, originUrl string) error {
 	if email == "" {
 		return errors.New("email is required")
 	}
@@ -133,14 +139,19 @@ func (a *AuthService) ForgotPassword(ctx context.Context, email string) error {
 		return nil
 	}
 
-	// TODO: implement actual email sending with reset token
-	// This fulfills the immediate requirement of checking if email is enabled
 	token, err := a.tokenService.GeneratePasswordResetToken(u.Email)
 	if err != nil {
 		return err
 	}
-	// Stub: In reality, send this token via email
-	_ = token
+
+	data := map[string]interface{}{
+		"ResetUrl": originUrl + "/reset-password?token=" + token,
+	}
+
+	err = a.mailer.SendSystemEmail(ctx, "password_reset", u.Email, "Reset Your Password", data)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

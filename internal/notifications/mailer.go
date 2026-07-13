@@ -11,18 +11,20 @@ import (
 )
 
 type MailerService struct {
-	settingsService *services.EmailSettingsService
+	workspaceEmailService *services.EmailSettingsService
+	globalSettingsService *services.SettingsService
 }
 
-func NewMailerService(settingsService *services.EmailSettingsService) *MailerService {
+func NewMailerService(workspaceEmail *services.EmailSettingsService, globalSettings *services.SettingsService) *MailerService {
 	return &MailerService{
-		settingsService: settingsService,
+		workspaceEmailService: workspaceEmail,
+		globalSettingsService: globalSettings,
 	}
 }
 
 func (s *MailerService) SendTeamEmail(ctx context.Context, workspaceID, templateName string, toAddress string, subject string, data any) error {
 
-	settings, err := s.settingsService.GetWorkspaceEmailSettings(ctx, workspaceID)
+	settings, err := s.workspaceEmailService.GetWorkspaceEmailSettings(ctx, workspaceID)
 	if err != nil {
 		return fmt.Errorf("fetching team email settings: %w", err)
 	}
@@ -45,6 +47,49 @@ func (s *MailerService) SendTeamEmail(ctx context.Context, workspaceID, template
 
 	if host == "" || from == "" {
 		return fmt.Errorf("SMTP configuration missing for team %s and global env", workspaceID)
+	}
+
+	// Render template
+	var buf bytes.Buffer
+	if err := views.HTMLTemplates.ExecuteTemplate(&buf, templateName, data); err != nil {
+		return fmt.Errorf("executing template %s: %w", templateName, err)
+	}
+
+	msg := fmt.Appendf(nil, "To: %s\r\n"+
+		"From: %s\r\n"+
+		"Subject: %s\r\n"+
+		"Content-Type: text/html; charset=UTF-8\r\n\r\n"+
+		"%s", toAddress, from, subject, buf.String())
+
+	auth := smtp.PlainAuth("", user, pass, host)
+	addr := fmt.Sprintf("%s:%s", host, port)
+
+	err = smtp.SendMail(addr, auth, from, []string{toAddress}, msg)
+	if err != nil {
+		return fmt.Errorf("smtp.SendMail: %w", err)
+	}
+
+	return nil
+}
+
+func (s *MailerService) SendSystemEmail(ctx context.Context, templateName string, toAddress string, subject string, data any) error {
+	settings, err := s.globalSettingsService.GetSettings(ctx)
+	if err != nil {
+		return fmt.Errorf("fetching server settings: %w", err)
+	}
+
+	if settings == nil || !settings.SMTPEnabled {
+		return fmt.Errorf("global SMTP is not configured or enabled")
+	}
+
+	host := settings.SMTPHost
+	port := fmt.Sprintf("%d", settings.SMTPPort)
+	user := settings.SMTPUser
+	pass := settings.SMTPPassword
+	from := settings.SMTPFromAddress
+
+	if host == "" || from == "" {
+		return fmt.Errorf("global SMTP configuration missing")
 	}
 
 	// Render template

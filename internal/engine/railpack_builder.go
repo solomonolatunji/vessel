@@ -29,13 +29,18 @@ func (r *RailpackBuilder) Build(ctx context.Context, opts BuildOptions, engineNa
 	if opts.LogWriter != nil {
 		fmt.Fprintf(opts.LogWriter, "🛠️ [Railpack/Nixpacks] Stack detected: %s\n", stack)
 	}
+	absSourceDir, err := filepath.Abs(opts.SourceDir)
+	if err != nil {
+		return "", fmt.Errorf("failed to resolve absolute source dir: %w", err)
+	}
+
 	if engineName == "buildpacks" {
 		if opts.LogWriter != nil {
 			fmt.Fprintf(opts.LogWriter, "⚙️ [Buildpacks] Executing pack builder engine via Docker container...\n")
 		}
 		cmd := exec.CommandContext(ctx, "docker", "run", "--rm",
 			"-v", "/var/run/docker.sock:/var/run/docker.sock",
-			"-v", fmt.Sprintf("%s:/app", opts.SourceDir),
+			"-v", fmt.Sprintf("%s:/app", absSourceDir),
 			"buildpacksio/pack:latest", "build", imageTag, "--path", "/app", "--builder", "paketobuildpacks/builder:base")
 		cmd.Stdout = opts.LogWriter
 		cmd.Stderr = opts.LogWriter
@@ -52,7 +57,7 @@ func (r *RailpackBuilder) Build(ctx context.Context, opts BuildOptions, engineNa
 		}
 		cmd := exec.CommandContext(ctx, "docker", "run", "--rm",
 			"-v", "/var/run/docker.sock:/var/run/docker.sock",
-			"-v", fmt.Sprintf("%s:/app", opts.SourceDir),
+			"-v", fmt.Sprintf("%s:/app", absSourceDir),
 			"ghcr.io/railwayapp/nixpacks:latest", "build", "/app", "--name", imageTag)
 		cmd.Stdout = opts.LogWriter
 		cmd.Stderr = opts.LogWriter

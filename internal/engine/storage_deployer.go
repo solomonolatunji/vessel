@@ -71,7 +71,7 @@ func (d *StorageDeployer) SpinUp(ctx context.Context, sc *models.Storage) (strin
 	}
 	netCfg := &network.NetworkingConfig{
 		EndpointsConfig: map[string]*network.EndpointSettings{
-			"vessl-net": {
+			utils.GetRuntimeNetwork(): {
 				Aliases: []string{containerName, sc.Name},
 			},
 		},

@@ -44,7 +44,14 @@ func (h *AuthHandler) ForgotPassword(c echo.Context) error {
 	if err := c.Bind(&payload); err != nil {
 		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
-	err := h.authService.ForgotPassword(c.Request().Context(), payload.Email)
+
+	scheme := "http"
+	if c.Request().TLS != nil || c.Request().Header.Get("X-Forwarded-Proto") == "https" {
+		scheme = "https"
+	}
+	originUrl := scheme + "://" + c.Request().Host
+
+	err := h.authService.ForgotPassword(c.Request().Context(), payload.Email, originUrl)
 	if err != nil {
 		return utils.Error(c, http.StatusBadRequest, err.Error())
 	}

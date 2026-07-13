@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"path/filepath"
 	"time"
@@ -109,16 +108,8 @@ func (h *WebhookHandler) HandleServiceWebhook(c echo.Context) error {
 			CreatedAt:     time.Now().UTC(),
 			UpdatedAt:     time.Now().UTC(),
 		}
-		_, _ = h.deploymentService.CreateDeployment(ctx, dep)
-		sourceDir := filepath.Join("data", "builds", "services", appSvc.ID)
-		if h.gitService != nil && appSvc.RepositoryURL != "" {
-			if err := h.gitService.CloneOrPullAppRepository(ctx, appSvc, sourceDir, nil); err != nil {
-				log.Printf("[ServiceGitWebhook] Git clone/pull failed for service %s (%s): %v", appSvc.Name, appSvc.ID, err)
-				_ = h.deploymentService.UpdateStatus(ctx, dep.ID, "FAILED", dep.BuildLogs+fmt.Sprintf("Error cloning repository: %v\n", err), "")
-				return
-			}
-		}
-		_ = h.deploymentService.UpdateStatus(ctx, dep.ID, "ACTIVE", dep.BuildLogs+"Deployment rollout triggered via Webhook.\n", appSvc.ContainerID)
+		dep, _ = h.deploymentService.CreateDeployment(ctx, dep)
+		h.deploymentService.ExecuteDeploymentAsync(dep)
 	}()
 	return c.JSON(http.StatusAccepted, map[string]string{
 		"status":  "accepted",

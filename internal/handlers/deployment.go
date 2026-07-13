@@ -87,6 +87,9 @@ func (h *DeploymentHandler) Trigger(c echo.Context) error {
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
+
+	h.deploymentService.ExecuteDeploymentAsync(created)
+
 	return c.JSON(http.StatusAccepted, created)
 }
 
@@ -121,6 +124,9 @@ func (h *DeploymentHandler) Rollback(c echo.Context) error {
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
+
+	h.deploymentService.ExecuteDeploymentAsync(created)
+
 	return c.JSON(http.StatusAccepted, created)
 }
 

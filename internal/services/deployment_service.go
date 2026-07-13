@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"time"
 
@@ -18,6 +19,7 @@ type DeploymentService struct {
 	appRepo     repositories.AppServiceRepository
 	projectRepo repositories.ProjectRepository
 	deployer    *engine.Deployer
+	gitService  *GitService
 }
 
 func NewDeploymentService(
@@ -25,12 +27,14 @@ func NewDeploymentService(
 	ar repositories.AppServiceRepository,
 	pr repositories.ProjectRepository,
 	d *engine.Deployer,
+	gs *GitService,
 ) *DeploymentService {
 	return &DeploymentService{
 		repo:        r,
 		appRepo:     ar,
 		projectRepo: pr,
 		deployer:    d,
+		gitService:  gs,
 	}
 }
 
@@ -82,6 +86,46 @@ func (s *DeploymentService) UpdateStatus(ctx context.Context, id, status, buildL
 		return errors.New("deployment id required")
 	}
 	return s.repo.UpdateStatus(ctx, id, status, buildLogs, containerID)
+}
+
+func (s *DeploymentService) ExecuteDeploymentAsync(d *models.Deployment) {
+	go func() {
+		bgCtx := context.Background()
+		if s.deployer == nil || s.appRepo == nil || s.gitService == nil {
+			s.UpdateStatus(bgCtx, d.ID, "FAILED", "Deployment dependencies missing\n", "")
+			return
+		}
+
+		app, err := s.appRepo.GetByID(bgCtx, d.ServiceID)
+		if err != nil {
+			s.UpdateStatus(bgCtx, d.ID, "FAILED", fmt.Sprintf("Failed to get app service: %v\n", err), "")
+			return
+		}
+
+		sourceDir := fmt.Sprintf("data/builds/%s/%s", app.ID, d.ID)
+
+		d.Status = "CLONING"
+		_ = s.repo.Update(bgCtx, d)
+
+		if err := s.gitService.CloneOrPullAppRepository(bgCtx, app, sourceDir, nil); err != nil {
+			s.UpdateStatus(bgCtx, d.ID, "FAILED", fmt.Sprintf("Git clone failed: %v\n", err), "")
+			return
+		}
+
+		d.Status = "BUILDING"
+		_ = s.repo.Update(bgCtx, d)
+
+		containerID, err := s.deployer.DeployAppService(bgCtx, app, sourceDir, nil)
+		if err != nil {
+			s.UpdateStatus(bgCtx, d.ID, "FAILED", fmt.Sprintf("Deployment failed: %v\n", err), "")
+			return
+		}
+
+		s.UpdateStatus(bgCtx, d.ID, "READY", "Deployment succeeded.\n", containerID)
+
+		app.ContainerID = containerID
+		_ = s.appRepo.Update(bgCtx, app)
+	}()
 }
 
 func (s *DeploymentService) DeployAppService(ctx context.Context, appID, sourceDir string, logWriter io.Writer) (string, error) {
