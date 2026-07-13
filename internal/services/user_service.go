@@ -5,7 +5,6 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
-	"golang.org/x/crypto/bcrypt"
 	"time"
 
 	"crypto/sha256"
@@ -13,6 +12,7 @@ import (
 
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/repositories"
+	"vessl.dev/vessl/internal/utils"
 )
 
 type UserService struct {
@@ -64,11 +64,11 @@ func (s *UserService) ChangePassword(ctx context.Context, userID, oldPassword, n
 		return errors.New("user not found")
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(oldPassword)); err != nil {
+	if !utils.CheckPasswordHash(oldPassword, u.PasswordHash) {
 		return errors.New("invalid old password")
 	}
 
-	hashed, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	hashed, err := utils.HashPassword(newPassword)
 	if err != nil {
 		return errors.New("failed to hash new password")
 	}

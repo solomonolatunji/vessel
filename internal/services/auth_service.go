@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
 
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/repositories"
+	"vessl.dev/vessl/internal/utils"
 )
 
 type Mailer interface {
@@ -62,7 +62,7 @@ func (a *AuthService) Register(ctx context.Context, name, email, password string
 	if existing != nil {
 		return nil, "", errors.New("user already exists with that email")
 	}
-	hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	hashed, err := utils.HashPassword(password)
 	if err != nil {
 		return nil, "", err
 	}
@@ -107,7 +107,7 @@ func (a *AuthService) Login(ctx context.Context, email, password string) (*model
 	if err != nil || u == nil {
 		return nil, "", errors.New("invalid email or password")
 	}
-	if err := bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(password)); err != nil {
+	if !utils.CheckPasswordHash(password, u.PasswordHash) {
 		return nil, "", errors.New("invalid email or password")
 	}
 	token, err := a.tokenService.GenerateToken(u)
@@ -171,7 +171,7 @@ func (a *AuthService) ResetPassword(ctx context.Context, tokenStr, newPassword s
 		return errors.New("user not found")
 	}
 
-	hashed, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	hashed, err := utils.HashPassword(newPassword)
 	if err != nil {
 		return err
 	}
