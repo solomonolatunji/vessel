@@ -3,11 +3,11 @@ package engine
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
+	"vessl.dev/vessl/internal/utils"
 )
 
 type ContainerHealth struct {
@@ -29,19 +29,19 @@ func NewStatsMonitor(dockerClient *client.Client) *StatsMonitor {
 func (s *StatsMonitor) GetHealth(ctx context.Context, containerIDOrName string) (*ContainerHealth, error) {
 	inspectResp, err := s.dockerClient.ContainerInspect(ctx, containerIDOrName)
 	if err != nil {
-		return &ContainerHealth{Status: "offline"}, fmt.Errorf("container inspect failed: %w", err)
+		return &ContainerHealth{Status: "offline"}, utils.NewEngineError("ContainerInspect", err)
 	}
 	if !inspectResp.State.Running {
 		return &ContainerHealth{Status: "stopped"}, nil
 	}
 	statsResp, err := s.dockerClient.ContainerStatsOneShot(ctx, containerIDOrName)
 	if err != nil {
-		return nil, fmt.Errorf("container stats failed: %w", err)
+		return nil, utils.NewEngineError("ContainerStatsOneShot", err)
 	}
 	defer statsResp.Body.Close()
 	var stats types.StatsJSON
 	if err := json.NewDecoder(statsResp.Body).Decode(&stats); err != nil {
-		return nil, fmt.Errorf("failed to decode stats json: %w", err)
+		return nil, utils.NewEngineError("DecodeStats", err)
 	}
 	cpuPercent := CalculateCPUPercentage(&stats)
 	memoryUsage := stats.MemoryStats.Usage

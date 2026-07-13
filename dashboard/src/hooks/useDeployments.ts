@@ -43,6 +43,7 @@ export const useGetMetrics = (serviceId: string) => {
   return useQuery({
     queryKey: ['deployments', 'getMetrics', serviceId].filter(Boolean),
     queryFn: () => deploymentsService.getMetrics(serviceId),
+    refetchInterval: 3000,
   });
 };
 

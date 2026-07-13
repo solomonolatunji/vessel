@@ -85,3 +85,26 @@ func (e *NotFoundError) Error() string {
 func NewNotFoundError(resource, id string) *NotFoundError {
 	return &NotFoundError{Resource: resource, ID: id}
 }
+
+type EngineError struct {
+	Operation string
+	Err       error
+}
+
+func (e *EngineError) Error() string {
+	if e.Err != nil {
+		return fmt.Sprintf("docker engine operation '%s' failed: %v", e.Operation, e.Err)
+	}
+	return fmt.Sprintf("docker engine operation '%s' failed", e.Operation)
+}
+
+func (e *EngineError) Unwrap() error {
+	return e.Err
+}
+
+func NewEngineError(operation string, err error) *EngineError {
+	return &EngineError{
+		Operation: operation,
+		Err:       err,
+	}
+}

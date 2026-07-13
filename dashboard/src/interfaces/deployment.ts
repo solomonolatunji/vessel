@@ -39,11 +39,11 @@ export interface Deployment {
 }
 
 export interface ServiceMetric {
-  timestamp: string;
-  cpuPercent: number;
-  memoryMB: number;
-  networkRxKB: number;
-  networkTxKB: number;
+  status: string;
+  cpuUsagePercentage: number;
+  memoryUsageBytes: number;
+  memoryLimitBytes: number;
+  uptimeSeconds: number;
 }
 
 export interface Variable {

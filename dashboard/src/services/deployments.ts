@@ -46,9 +46,9 @@ export const deploymentsService = {
     }
   },
 
-  getMetrics: async (serviceId: string): Promise<BaseResponse<ServiceMetric[]>> => {
+  getMetrics: async (serviceId: string): Promise<BaseResponse<ServiceMetric>> => {
     try {
-      return await apiClient.get<BaseResponse<ServiceMetric[]>>(`/services/${serviceId}/metrics`);
+      return await apiClient.get<BaseResponse<ServiceMetric>>(`/services/${serviceId}/metrics`);
     } catch (error) {
       throw handleApiError(error);
     }
