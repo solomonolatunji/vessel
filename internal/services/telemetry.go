@@ -1,26 +1,14 @@
 package services
 
 import (
-	"bytes"
 	"context"
 	"database/sql"
-	"encoding/json"
 	"log"
-	"net/http"
 	"runtime"
 	"time"
 
 	"vessl.dev/vessl/internal/repositories"
 )
-
-type TelemetryPayload struct {
-	InstanceID    string `json:"instance_id"`
-	Version       string `json:"version"`
-	OS            string `json:"os"`
-	Arch          string `json:"arch"`
-	ActiveServers int    `json:"active_servers"`
-	ActiveApps    int    `json:"active_apps"`
-}
 
 func StartTelemetryReporter(db *sql.DB, version string) {
 	go func() {
@@ -54,34 +42,5 @@ func pingTelemetry(db *sql.DB, version string) {
 		activeApps = len(apps)
 	}
 
-	payload := TelemetryPayload{
-		InstanceID:    settings.ID,
-		Version:       version,
-		OS:            runtime.GOOS,
-		Arch:          runtime.GOARCH,
-		ActiveServers: 1,
-		ActiveApps:    activeApps,
-	}
-
-	body, err := json.Marshal(payload)
-	if err != nil {
-		return
-	}
-
-	req, err := http.NewRequest("POST", "https://cloud.vessl.dev/api/cloud/telemetry/ping", bytes.NewBuffer(body))
-	if err != nil {
-		return
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode == http.StatusOK {
-		log.Println("Telemetry ping sent successfully.")
-	}
+	log.Printf("Telemetry: instance=%s version=%s os=%s arch=%s apps=%d", settings.ID, version, runtime.GOOS, runtime.GOARCH, activeApps)
 }

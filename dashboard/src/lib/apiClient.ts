@@ -1,5 +1,12 @@
+/**
+ * A lightweight fetch wrapper for interacting with the Vessl Go Daemon API.
+ * Designed to be used seamlessly with TanStack Query.
+ */
+
 import { env } from '#/env';
 import { authStore } from '#/stores/authStore';
+
+const API_BASE_URL = env.VITE_API_URL;
 
 export class ApiError extends Error {
   public status: number;
@@ -14,11 +21,8 @@ export class ApiError extends Error {
 }
 
 export const apiClient = {
-  /**
-   * Executes an HTTP request to the Vessl API.
-   */
   async fetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const url = `${env.VITE_API_URL}${endpoint}`;
+    const url = `${API_BASE_URL}${endpoint}`;
 
     const headers = new Headers(options.headers || {});
     if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {

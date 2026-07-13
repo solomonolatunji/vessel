@@ -58,3 +58,35 @@
 - Use official `github.com/docker/docker/client` for Docker SDK. Use `gorilla/websocket` for WebSocket upgrades.
 - Avoid `init()` functions. Use explicit constructor functions instead.
 - **Testing:** Unit tests stay co-located with their source files (`service_test.go`). New domain packages must include tests for their service/handler logic.
+
+## Dashboard
+
+```sh
+npm run dev        # starts at http://localhost:3000
+npm run build      # output → dashboard/dist/
+npm run generate-routes  # regenerate route tree after adding routes
+```
+
+**Conventions:**
+
+- Routes live in `dashboard/src/routes/` — TanStack Router file conventions.
+- Add shadcn/Radix UI components via `npx shadcn@latest add button`.
+- Components go in `src/components/ui/`. Prefer existing Radix over building from scratch.
+
+## Web (Marketing)
+
+```sh
+astro dev --background   # use background mode
+astro dev stop|status|logs
+```
+
+Pure Astro + Tailwind CSS v4 — no React/Vue/Svelte islands.
+
+## Docs
+
+```sh
+npm run dev   # starts at http://localhost:4322
+npm run build # output → docs/dist/
+```
+
+Add pages via `.md` files in `src/content/docs/`. Starlight uses file-based routing.

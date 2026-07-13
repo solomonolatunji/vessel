@@ -56,7 +56,6 @@ func (h *SettingsHandler) GetPublicSettings(c echo.Context) error {
 		"registrationEnabled": s.RegistrationEnabled,
 		"siteName":            s.SiteName,
 		"emailEnabled":        s.SMTPEnabled || s.ResendEnabled,
-		"isCloudMode":         false,
 	}
 	return utils.Success(c, "Operation successful", publicSettings)
 }
