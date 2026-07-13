@@ -18,7 +18,6 @@ export function Topbar() {
 
   return (
     <header className="flex h-14 shrink-0 items-center justify-between gap-4 border-b border-border bg-background/95 px-6 backdrop-blur-sm">
-      {/* Page title */}
       <div className="flex items-center gap-3">
         <div>
           <h1 className="text-sm font-semibold text-foreground leading-none">{current.title}</h1>
@@ -30,9 +29,7 @@ export function Topbar() {
         </div>
       </div>
 
-      {/* Right actions */}
       <div className="flex items-center gap-2">
-        {/* Search */}
         <button
           type="button"
           className="flex items-center gap-2 rounded-md border border-border bg-muted/40 px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted/70 hover:text-foreground transition-colors duration-150"
@@ -44,7 +41,6 @@ export function Topbar() {
           </kbd>
         </button>
 
-        {/* New resource button */}
         <button
           type="button"
           className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 transition-colors duration-150"
@@ -53,7 +49,6 @@ export function Topbar() {
           <span className="hidden sm:inline">New</span>
         </button>
 
-        {/* Notifications */}
         <button
           type="button"
           className="relative flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-150"
