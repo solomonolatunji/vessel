@@ -2566,7 +2566,7 @@ paths:
       summary: CreateTrustedDomain endpoint
       tags:
       - Workspaces
-  /ws/services/{id}/terminal:
+  /ws/terminal/{id}:
     get:
       consumes:
       - application/json

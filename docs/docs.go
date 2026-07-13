@@ -2909,7 +2909,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/ws/services/{id}/terminal": {
+        "/ws/terminal/{id}": {
             "get": {
                 "description": "HandleWebSocket endpoint\nHandle Terminal WebSocket",
                 "consumes": [
