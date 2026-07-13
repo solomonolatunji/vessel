@@ -2,7 +2,6 @@ import { TanStackDevtools } from '@tanstack/react-devtools';
 import type { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, HeadContent, Scripts } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
-import { Shell } from '#/components/layout/Shell';
 import { ThemeProvider } from '#/components/theme-provider';
 import { Toaster } from '#/components/ui/sonner';
 import { TooltipProvider } from '#/components/ui/tooltip';
@@ -45,9 +44,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body className="dark">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          <TooltipProvider>
-            <Shell>{children}</Shell>
-          </TooltipProvider>
+          <TooltipProvider>{children}</TooltipProvider>
           <Toaster />
           <TanStackDevtools
             config={{
