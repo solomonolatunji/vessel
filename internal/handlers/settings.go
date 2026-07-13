@@ -54,6 +54,8 @@ func (h *SettingsHandler) GetPublicSettings(c echo.Context) error {
 	// Only return safe public settings
 	publicSettings := map[string]any{
 		"registrationEnabled": s.RegistrationEnabled,
+		"siteName":            s.SiteName,
+		"emailEnabled":        s.SMTPEnabled || s.ResendEnabled,
 	}
 	return utils.Success(c, "Operation successful", publicSettings)
 }

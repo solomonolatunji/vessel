@@ -36,6 +36,24 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   shellComponent: RootDocument,
 });
 
+import { useEffect } from 'react';
+import { useGetPublicSettings } from '#/hooks/useSettings';
+
+function DynamicTitle() {
+  const { data } = useGetPublicSettings();
+  const siteName = data?.data?.siteName;
+
+  useEffect(() => {
+    if (siteName) {
+      document.title = `${siteName} Dashboard`;
+    } else {
+      document.title = 'Vessl Dashboard';
+    }
+  }, [siteName]);
+
+  return null;
+}
+
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -44,6 +62,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+          <DynamicTitle />
           <TooltipProvider>{children}</TooltipProvider>
           <Toaster />
           <TanStackDevtools

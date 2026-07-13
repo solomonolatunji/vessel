@@ -23,6 +23,8 @@ func (s *Server) registerRoutes() {
 	authGroup.Use(s.authGuard.RequireAuth())
 	apiGroup.POST("/auth/signup", s.authHandler.Register)
 	apiGroup.POST("/auth/signin", s.authHandler.Login)
+	apiGroup.POST("/auth/forgot-password", s.authHandler.ForgotPassword)
+	apiGroup.POST("/auth/reset-password", s.authHandler.ResetPassword)
 	apiGroup.GET("/system/public", s.settingsHandler.GetPublicSettings)
 	authGroup.GET("/auth/me", s.userHandler.GetProfile)
 	apiGroup.POST("/auth/logout", s.authHandler.Logout)

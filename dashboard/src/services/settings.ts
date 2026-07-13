@@ -12,9 +12,13 @@ export const settingsService = {
     }
   },
 
-  getPublicSettings: async (): Promise<BaseResponse<{ registrationEnabled: boolean }>> => {
+  getPublicSettings: async (): Promise<
+    BaseResponse<{ registrationEnabled: boolean; siteName?: string; emailEnabled: boolean }>
+  > => {
     try {
-      return await apiClient.get<BaseResponse<{ registrationEnabled: boolean }>>('/system/public');
+      return await apiClient.get<
+        BaseResponse<{ registrationEnabled: boolean; siteName?: string; emailEnabled: boolean }>
+      >('/system/public');
     } catch (error) {
       throw handleApiError(error);
     }

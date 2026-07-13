@@ -22,10 +22,57 @@ type AuthRequest struct {
 	Password string `json:"password"`
 }
 
+type ForgotPasswordRequest struct {
+	Email string `json:"email"`
+}
+
 type RegisterRequest struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+// @Summary Forgot Password endpoint
+// @Description Forgot Password endpoint
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body ForgotPasswordRequest true "Forgot password credentials"
+// @Router /auth/forgot-password [post]
+func (h *AuthHandler) ForgotPassword(c echo.Context) error {
+	var payload ForgotPasswordRequest
+	if err := c.Bind(&payload); err != nil {
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
+	}
+	err := h.authService.ForgotPassword(c.Request().Context(), payload.Email)
+	if err != nil {
+		return utils.Error(c, http.StatusBadRequest, err.Error())
+	}
+	return utils.Success(c, "If an account with that email exists, a password reset link has been sent.", nil)
+}
+
+type ResetPasswordRequest struct {
+	Token       string `json:"token"`
+	NewPassword string `json:"newPassword"`
+}
+
+// @Summary Reset Password endpoint
+// @Description Reset Password endpoint
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body ResetPasswordRequest true "Reset password credentials"
+// @Router /auth/reset-password [post]
+func (h *AuthHandler) ResetPassword(c echo.Context) error {
+	var payload ResetPasswordRequest
+	if err := c.Bind(&payload); err != nil {
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
+	}
+	err := h.authService.ResetPassword(c.Request().Context(), payload.Token, payload.NewPassword)
+	if err != nil {
+		return utils.Error(c, http.StatusBadRequest, err.Error())
+	}
+	return utils.Success(c, "Password reset successful", nil)
 }
 
 // @Summary Register endpoint

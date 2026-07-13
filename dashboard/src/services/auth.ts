@@ -39,6 +39,25 @@ export const authService = {
     }
   },
 
+  forgotPassword: async (email: string): Promise<BaseResponse<void>> => {
+    try {
+      return await apiClient.post<BaseResponse<void>>('/auth/forgot-password', { email });
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  resetPassword: async (token: string, newPassword: string): Promise<BaseResponse<void>> => {
+    try {
+      return await apiClient.post<BaseResponse<void>>('/auth/reset-password', {
+        token,
+        newPassword,
+      });
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
   setup2FA: async (): Promise<BaseResponse<Setup2FAResponse>> => {
     try {
       return await apiClient.post<BaseResponse<Setup2FAResponse>>('/auth/2fa/setup');

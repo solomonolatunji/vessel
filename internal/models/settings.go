@@ -59,6 +59,11 @@ type ServerSettings struct {
 	IPAllowlist                 string `json:"ipAllowlist"`
 	MCPServerEnabled            bool   `json:"mcpServerEnabled"`
 	DefaultWildcardDomain       string `json:"defaultWildcardDomain,omitempty"`
+	SiteName                    string `json:"siteName,omitempty"`
+	PublicIPv4                  string `json:"publicIpv4,omitempty"`
+	PublicIPv6                  string `json:"publicIpv6,omitempty"`
+	ShowSponsorshipPopup        bool   `json:"showSponsorshipPopup"`
+	DisableTwoStepConfirmation  bool   `json:"disableTwoStepConfirmation"`
 	DefaultOpenAIKey            string `json:"defaultOpenAIKey,omitempty"`
 	DefaultAnthropicKey         string `json:"defaultAnthropicKey,omitempty"`
 	UpdateCheckCron             string `json:"updateCheckCron"`

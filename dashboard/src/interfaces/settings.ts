@@ -55,6 +55,11 @@ export interface ServerSettings {
   ipAllowlist: string;
   mcpServerEnabled: boolean;
   defaultWildcardDomain?: string;
+  siteName?: string;
+  publicIpv4?: string;
+  publicIpv6?: string;
+  showSponsorshipPopup: boolean;
+  disableTwoStepConfirmation: boolean;
   defaultOpenAIKey?: string;
   defaultAnthropicKey?: string;
   updateCheckCron: string;

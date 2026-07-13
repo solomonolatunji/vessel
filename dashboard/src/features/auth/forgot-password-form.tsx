@@ -6,15 +6,36 @@ import { Button } from '#/components/ui/button';
 import { Input } from '#/components/ui/input';
 import { Label } from '#/components/ui/label';
 
+import { useForgotPassword } from '#/hooks/useAuth';
+
 export const ForgotPasswordForm = () => {
   const [email, setEmail] = useState('');
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const { mutate, isPending, isSuccess } = useForgotPassword();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Stubbed out hook
-    setIsSubmitted(true);
+    if (!email) return;
+    mutate(email);
   };
+
+  if (isSuccess) {
+    return (
+      <div className="text-center space-y-4">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+          <Mail className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-medium">Check your email</h3>
+        <p className="text-sm text-muted-foreground">
+          If an account with that email exists, we've sent you instructions to reset your password.
+        </p>
+        <div className="mt-8">
+          <Link to="/login" className="text-sm font-medium text-primary hover:underline">
+            Back to sign in
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -35,12 +56,17 @@ export const ForgotPasswordForm = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={isPending}
             />
           </div>
         </div>
 
-        <Button type="submit" className="h-12 w-full text-base font-medium mt-2">
-          {isSubmitted ? 'Link Sent!' : 'Send Reset Link'}
+        <Button
+          type="submit"
+          className="h-12 w-full text-base font-medium mt-2"
+          disabled={isPending || !email}
+        >
+          {isPending ? 'Sending...' : 'Send Reset Link'}
         </Button>
       </form>
 

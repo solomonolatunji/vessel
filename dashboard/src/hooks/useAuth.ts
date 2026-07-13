@@ -59,6 +59,36 @@ export const useRegister = () => {
   });
 };
 
+export const useForgotPassword = () => {
+  return useMutation({
+    mutationFn: (email: string) => authService.forgotPassword(email),
+    onSuccess: (data) => {
+      toast.success(
+        data?.message ||
+          'If an account with that email exists, a password reset link has been sent.'
+      );
+    },
+    onError: (error: Error) => {
+      toast.error(error?.message || 'Failed to request password reset. Please try again.');
+    },
+  });
+};
+
+export const useResetPassword = () => {
+  const router = useRouter();
+  return useMutation({
+    mutationFn: ({ token, newPassword }: { token: string; newPassword: string }) =>
+      authService.resetPassword(token, newPassword),
+    onSuccess: async () => {
+      toast.success('Password successfully reset. You can now sign in.');
+      await router.navigate({ to: '/login' });
+    },
+    onError: (error: Error) => {
+      toast.error(error?.message || 'Failed to reset password. The link might be expired.');
+    },
+  });
+};
+
 export const useLogout = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
