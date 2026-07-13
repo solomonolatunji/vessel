@@ -1,11 +1,19 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, Link, Navigate } from '@tanstack/react-router';
 import { OAuthButtons, RegisterForm } from '#/features/auth';
+import { useGetPublicSettings } from '#/hooks/useSettings';
 
 export const Route = createFileRoute('/_auth/register')({
   component: RegisterPage,
 });
 
 function RegisterPage() {
+  const { data: publicSettings, isLoading } = useGetPublicSettings();
+  const registrationEnabled = publicSettings?.data?.registrationEnabled ?? true;
+
+  if (!isLoading && !registrationEnabled) {
+    return <Navigate to="/login" replace />;
+  }
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col space-y-2 text-center mb-8">

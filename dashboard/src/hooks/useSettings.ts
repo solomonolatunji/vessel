@@ -8,6 +8,13 @@ export const useGetSettings = () => {
   });
 };
 
+export const useGetPublicSettings = () => {
+  return useQuery({
+    queryKey: ['settings', 'getPublicSettings'],
+    queryFn: () => settingsService.getPublicSettings(),
+  });
+};
+
 export const useUpdateSettings = () => {
   const queryClient = useQueryClient();
   return useMutation({

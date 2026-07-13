@@ -12,6 +12,14 @@ export const settingsService = {
     }
   },
 
+  getPublicSettings: async (): Promise<BaseResponse<{ registrationEnabled: boolean }>> => {
+    try {
+      return await apiClient.get<BaseResponse<{ registrationEnabled: boolean }>>('/system/public');
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
   updateSettings: async (payload: UpdateSettingsRequest): Promise<BaseResponse<ServerSettings>> => {
     try {
       return await apiClient.put<BaseResponse<ServerSettings>>('/settings', payload);

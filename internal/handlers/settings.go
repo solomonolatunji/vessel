@@ -39,6 +39,25 @@ func (h *SettingsHandler) GetSettings(c echo.Context) error {
 	return utils.Success(c, "Operation successful", s)
 }
 
+// @Summary GetPublicSettings endpoint
+// @Description Get public settings for the frontend (e.g., if registration is enabled)
+// @Tags Settings
+// @Accept json
+// @Produce json
+// @Router /system/public [get]
+func (h *SettingsHandler) GetPublicSettings(c echo.Context) error {
+	s, err := h.settingsService.GetSettings(c.Request().Context())
+	if err != nil {
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
+	}
+
+	// Only return safe public settings
+	publicSettings := map[string]any{
+		"registrationEnabled": s.RegistrationEnabled,
+	}
+	return utils.Success(c, "Operation successful", publicSettings)
+}
+
 // @Summary UpdateSettings endpoint
 // @Description UpdateSettings endpoint
 // @Tags Settings
