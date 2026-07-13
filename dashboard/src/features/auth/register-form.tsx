@@ -1,35 +1,46 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { Button } from '#/components/ui/button';
 import { Input } from '#/components/ui/input';
 import { Label } from '#/components/ui/label';
 import { useRegister } from '#/hooks/useAuth';
 
-export const RegisterForm = () => {
-  const { mutateAsync: register, isPending } = useRegister();
+const registerSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.email('Please enter a valid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters long'),
+});
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+type RegisterSchema = z.infer<typeof registerSchema>;
+
+export const RegisterForm = () => {
+  const { mutateAsync: registerUser, isPending } = useRegister();
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name || !email || !password) {
-      toast.error('Please fill in all fields');
-      return;
-    }
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterSchema>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+    },
+  });
 
+  const onSubmit = async (data: RegisterSchema) => {
     try {
-      await register({ name, email, password });
-    } catch {
-      // errors handled in onError inside useRegister
-    }
+      await registerUser(data);
+    } catch {}
   };
 
   return (
-    <form onSubmit={handleRegister} className="space-y-5">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <div className="space-y-2">
         <Label htmlFor="name" className="text-sm font-medium">
           Full Name
@@ -43,11 +54,10 @@ export const RegisterForm = () => {
             type="text"
             placeholder="John Doe"
             className="h-12 pl-10 bg-background text-base"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
+            {...register('name')}
           />
         </div>
+        {errors.name && <p className="text-[13px] text-destructive">{errors.name.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -63,11 +73,10 @@ export const RegisterForm = () => {
             type="email"
             placeholder="name@example.com"
             className="h-12 pl-10 bg-background text-base"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
+            {...register('email')}
           />
         </div>
+        {errors.email && <p className="text-[13px] text-destructive">{errors.email.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -82,9 +91,7 @@ export const RegisterForm = () => {
             id="password"
             type={showPassword ? 'text' : 'password'}
             className="h-12 pl-10 pr-12 bg-background text-base"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
+            {...register('password')}
           />
           <button
             type="button"
@@ -94,7 +101,11 @@ export const RegisterForm = () => {
             {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
           </button>
         </div>
-        <p className="text-xs text-muted-foreground pt-1">Must be at least 8 characters long.</p>
+        {errors.password ? (
+          <p className="text-[13px] text-destructive">{errors.password.message}</p>
+        ) : (
+          <p className="text-xs text-muted-foreground pt-1">Must be at least 8 characters long.</p>
+        )}
       </div>
 
       <Button type="submit" className="h-12 w-full text-base font-medium mt-2" disabled={isPending}>

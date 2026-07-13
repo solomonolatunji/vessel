@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as WorkspaceRouteImport } from './routes/_workspace'
 import { Route as ProjectRouteImport } from './routes/_project'
 import { Route as AuthRouteImport } from './routes/_auth'
@@ -25,6 +26,11 @@ import { Route as ProjectProjectIdSettingsRouteImport } from './routes/_project/
 import { Route as ProjectProjectIdDeploymentsRouteImport } from './routes/_project/$projectId/deployments'
 import { Route as ProjectProjectIdServicesServiceIdRouteImport } from './routes/_project/$projectId/services/$serviceId'
 
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WorkspaceRoute = WorkspaceRouteImport.update({
   id: '/_workspace',
   getParentRoute: () => rootRouteImport,
@@ -104,6 +110,7 @@ const ProjectProjectIdServicesServiceIdRoute =
 export interface FileRoutesByFullPath {
   '/$': typeof SplatRoute
   '/': typeof WorkspaceIndexRoute
+  '/onboarding': typeof OnboardingRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
@@ -118,6 +125,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/$': typeof SplatRoute
   '/': typeof WorkspaceIndexRoute
+  '/onboarding': typeof OnboardingRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
@@ -135,6 +143,7 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteWithChildren
   '/_project': typeof ProjectRouteWithChildren
   '/_workspace': typeof WorkspaceRouteWithChildren
+  '/onboarding': typeof OnboardingRoute
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/register': typeof AuthRegisterRoute
@@ -152,6 +161,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/$'
     | '/'
+    | '/onboarding'
     | '/forgot-password'
     | '/login'
     | '/register'
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
   to:
     | '/$'
     | '/'
+    | '/onboarding'
     | '/forgot-password'
     | '/login'
     | '/register'
@@ -182,6 +193,7 @@ export interface FileRouteTypes {
     | '/_auth'
     | '/_project'
     | '/_workspace'
+    | '/onboarding'
     | '/_auth/forgot-password'
     | '/_auth/login'
     | '/_auth/register'
@@ -200,10 +212,18 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRouteWithChildren
   ProjectRoute: typeof ProjectRouteWithChildren
   WorkspaceRoute: typeof WorkspaceRouteWithChildren
+  OnboardingRoute: typeof OnboardingRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_workspace': {
       id: '/_workspace'
       path: ''
@@ -367,6 +387,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
   ProjectRoute: ProjectRouteWithChildren,
   WorkspaceRoute: WorkspaceRouteWithChildren,
+  OnboardingRoute: OnboardingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

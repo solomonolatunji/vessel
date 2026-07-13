@@ -1,5 +1,6 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import { Shell } from '#/components/layout/shell';
+import { useListWorkspaces } from '#/hooks/useWorkspaces';
 import { authStore } from '#/stores/authStore';
 
 export const Route = createFileRoute('/_workspace')({
@@ -8,9 +9,15 @@ export const Route = createFileRoute('/_workspace')({
       throw redirect({ to: '/login' });
     }
   },
-  component: () => (
+  component: WorkspaceLayout,
+});
+
+function WorkspaceLayout() {
+  useListWorkspaces();
+
+  return (
     <Shell>
       <Outlet />
     </Shell>
-  ),
-});
+  );
+}

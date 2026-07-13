@@ -1,3 +1,4 @@
+import { useSelector } from '@tanstack/react-store';
 import { Store } from '@tanstack/store';
 import type { Workspace } from '#/interfaces/workspace';
 
@@ -47,4 +48,8 @@ export const workspaceActions = {
   switchWorkspace: (workspace: Workspace) => {
     workspaceStore.setState((s) => ({ ...s, activeWorkspace: workspace }));
   },
+};
+
+export const useWorkspaceState = () => {
+  return useSelector(workspaceStore, (state) => state);
 };

@@ -1,10 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { workspacesService } from '#/services/workspaces';
+import { workspaceActions } from '#/stores/workspaceStore';
 
 export const useListWorkspaces = () => {
   return useQuery({
     queryKey: ['workspaces', 'listWorkspaces'].filter(Boolean),
-    queryFn: () => workspacesService.listWorkspaces(),
+    queryFn: async () => {
+      const res = await workspacesService.listWorkspaces();
+      if (res?.data) {
+        workspaceActions.setWorkspaces(res.data);
+      }
+      return res;
+    },
   });
 };
 

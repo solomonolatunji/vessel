@@ -49,7 +49,7 @@ export const useRegister = () => {
 
       authActions.setAuth(data.token, data.user);
       queryClient.clear();
-      await router.navigate({ to: '/' });
+      await router.navigate({ to: '/onboarding' });
 
       toast.success('Account created! Welcome to Vessl.');
     },

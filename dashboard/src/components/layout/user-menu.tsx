@@ -1,5 +1,4 @@
 import { Link } from '@tanstack/react-router';
-import { useStore } from '@tanstack/react-store';
 import {
   BarChart3,
   FileText,
@@ -14,11 +13,11 @@ import {
 import { useTheme } from 'next-themes';
 import { useEffect, useRef, useState } from 'react';
 import { useLogout } from '#/hooks/useAuth';
-import { authStore } from '#/stores/authStore';
+import { authStore, useAuthState } from '#/stores/authStore';
 
 export function UserMenu() {
   const { theme, setTheme } = useTheme();
-  const authState = useStore(authStore);
+  const authState = useAuthState();
   const { mutateAsync: logout } = useLogout();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);

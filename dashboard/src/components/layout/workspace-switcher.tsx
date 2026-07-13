@@ -1,28 +1,15 @@
 import { Link } from '@tanstack/react-router';
-import { useStore } from '@tanstack/react-store';
 import { CheckCircle, ChevronDown, Plus } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useListWorkspaces } from '#/hooks/useWorkspaces';
-import type { Workspace } from '#/interfaces/workspace';
-import { workspaceActions, workspaceStore } from '#/stores/workspaceStore';
+import { useEffect, useRef, useState } from 'react';
+import { useWorkspaceState, workspaceActions } from '#/stores/workspaceStore';
 
 export function WorkspaceSwitcher() {
-  const { data } = useListWorkspaces();
-  const workspaceState = useStore(workspaceStore);
+  const workspaceState = useWorkspaceState();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const workspaces: Workspace[] = useMemo(
-    () => (data as { data?: Workspace[] } | undefined)?.data ?? [],
-    [data]
-  );
+  const workspaces = workspaceState.workspaces;
   const active = workspaceState.activeWorkspace;
-
-  useEffect(() => {
-    if (workspaces.length > 0) {
-      workspaceActions.setWorkspaces(workspaces);
-    }
-  }, [workspaces]);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
