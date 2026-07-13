@@ -1,5 +1,5 @@
-import { env } from '#/env';
-import { authStore } from '#/stores/authStore';
+import { env } from "#/env";
+import { authStore } from "#/stores/authStore";
 
 const API_BASE_URL = env.VITE_API_URL;
 
@@ -11,7 +11,7 @@ export class ApiError extends Error {
     super(message);
     this.status = status;
     this.data = data;
-    this.name = 'ApiError';
+    this.name = "ApiError";
   }
 }
 
@@ -22,37 +22,18 @@ export const apiClient = {
    * the request is automatically proxied through the active server tunnel.
    */
   async fetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const isCloud = env.VITE_IS_CLOUD;
-    let rewrittenEndpoint = endpoint;
-
-    if (isCloud) {
-      const isCloudNative =
-        endpoint.startsWith('/auth/') ||
-        endpoint.startsWith('/system/') ||
-        endpoint.startsWith('/billing/') ||
-        endpoint.startsWith('/teams/') ||
-        endpoint.startsWith('/users/') ||
-        endpoint.startsWith('/servers/') ||
-        endpoint.startsWith('/cloud/'); // fallback just in case
-
-      if (!isCloudNative) {
-        const activeServerId = localStorage.getItem('vessl_active_server_id');
-        if (activeServerId) {
-          rewrittenEndpoint = `/servers/${activeServerId}/proxy/api${endpoint}`;
-        }
-      }
-    }
+    const rewrittenEndpoint = endpoint;
 
     const url = `${API_BASE_URL}${rewrittenEndpoint}`;
 
     const headers = new Headers(options.headers || {});
-    if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {
-      headers.set('Content-Type', 'application/json');
+    if (!headers.has("Content-Type") && !(options.body instanceof FormData)) {
+      headers.set("Content-Type", "application/json");
     }
 
     const token = authStore.state.token;
     if (token) {
-      headers.set('Authorization', `Bearer ${token}`);
+      headers.set("Authorization", `Bearer ${token}`);
     }
 
     const response = await fetch(url, {
@@ -64,14 +45,16 @@ export const apiClient = {
       return {} as T;
     }
 
-    const isJson = response.headers.get('content-type')?.includes('application/json');
+    const isJson = response.headers
+      .get("content-type")
+      ?.includes("application/json");
     const data = isJson ? await response.json() : await response.text();
 
     if (!response.ok) {
       throw new ApiError(
         response.status,
-        data?.error || response.statusText || 'An error occurred',
-        data
+        data?.error || response.statusText || "An error occurred",
+        data,
       );
     }
 
@@ -79,13 +62,13 @@ export const apiClient = {
   },
 
   get<T>(endpoint: string, options?: RequestInit) {
-    return this.fetch<T>(endpoint, { ...options, method: 'GET' });
+    return this.fetch<T>(endpoint, { ...options, method: "GET" });
   },
 
   post<T>(endpoint: string, body?: unknown, options?: RequestInit) {
     return this.fetch<T>(endpoint, {
       ...options,
-      method: 'POST',
+      method: "POST",
       body: body instanceof FormData ? body : JSON.stringify(body),
     });
   },
@@ -93,12 +76,12 @@ export const apiClient = {
   put<T>(endpoint: string, body?: unknown, options?: RequestInit) {
     return this.fetch<T>(endpoint, {
       ...options,
-      method: 'PUT',
+      method: "PUT",
       body: body instanceof FormData ? body : JSON.stringify(body),
     });
   },
 
   delete<T>(endpoint: string, options?: RequestInit) {
-    return this.fetch<T>(endpoint, { ...options, method: 'DELETE' });
+    return this.fetch<T>(endpoint, { ...options, method: "DELETE" });
   },
 };

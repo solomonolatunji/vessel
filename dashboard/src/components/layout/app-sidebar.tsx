@@ -15,7 +15,6 @@ import {
 import { useGetPublicSettings } from '#/hooks/useSettings';
 import { workspaceStore } from '#/stores/workspaceStore';
 import { NavItem } from './nav-item';
-import { ServerSwitcher } from './server-switcher';
 import { UserMenu } from './user-menu';
 import { WorkspaceSwitcher } from './workspace-switcher';
 
@@ -55,14 +54,8 @@ export function AppSidebar() {
   const { data: settings } = useGetPublicSettings();
   const { activeWorkspace } = useStore(workspaceStore);
 
-  const isCloudMode = settings?.data?.isCloudMode;
-  const isSubscribed = activeWorkspace?.subscriptionStatus === 'active';
-  const requiresSubscription = isCloudMode && !isSubscribed && activeWorkspace;
-
-  const visibleMainNav = requiresSubscription ? [] : mainNav;
-  const visibleBottomNav = requiresSubscription
-    ? bottomNav.filter((n) => n.title === 'Feedback')
-    : bottomNav;
+  const visibleMainNav = mainNav;
+  const visibleBottomNav = bottomNav;
 
   return (
     <aside className="fixed inset-y-0 left-0 z-20 flex w-60 flex-col border-r border-sidebar-border bg-sidebar">
@@ -79,7 +72,6 @@ export function AppSidebar() {
       </div>
 
       <div className="shrink-0 pt-4">
-        {isCloudMode && <ServerSwitcher />}
         <WorkspaceSwitcher />
       </div>
 

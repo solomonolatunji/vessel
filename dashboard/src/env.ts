@@ -11,10 +11,6 @@ export const env = createEnv({
   client: {
     VITE_APP_TITLE: z.string().min(1).optional(),
     VITE_API_URL: z.string().url().optional().default('http://localhost:8080/api'),
-    VITE_IS_CLOUD: z
-      .enum(['true', 'false'])
-      .default('false')
-      .transform((v) => v === 'true'),
   },
 
   runtimeEnv: import.meta.env,
