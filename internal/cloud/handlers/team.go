@@ -31,7 +31,7 @@ type UpdateBrandingPayload struct {
 // @Produce json
 // @Param id path string true "Team ID"
 // @Success 200 {object} models.CloudTeam
-// @Router /cloud/teams/{id}/branding [patch]
+// @Router /teams/{id}/branding [patch]
 func (h *TeamHandler) UpdateBranding(c echo.Context) error {
 	teamID, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -60,5 +60,26 @@ func (h *TeamHandler) UpdateBranding(c echo.Context) error {
 		return utils.Error(c, http.StatusInternalServerError, "Failed to update team branding")
 	}
 
-	return utils.Success(c, "Success", team)
+	return utils.Success(c, "Branding updated", team)
+}
+
+// @Summary List Team Servers
+// @Description Fetch all active servers associated with a team
+// @Tags Cloud-Team
+// @Produce json
+// @Param id path string true "Team ID"
+// @Success 200 {object} []models.CloudServer
+// @Router /teams/{id}/servers [get]
+func (h *TeamHandler) ListServers(c echo.Context) error {
+	teamID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		return utils.Error(c, http.StatusBadRequest, "Invalid team ID")
+	}
+
+	servers, err := h.repo.GetTeamServers(uint(teamID))
+	if err != nil {
+		return utils.Error(c, http.StatusInternalServerError, "Failed to list servers")
+	}
+
+	return utils.Success(c, "Servers retrieved", servers)
 }

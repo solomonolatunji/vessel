@@ -55,7 +55,7 @@ func MountCloudRoutes(e *echo.Echo) {
 		wizardHandler:    handlers.NewWizardHandler(cloudRepo),
 		billingHandler:   handlers.NewBillingHandler(cloudRepo),
 		authHandler:      handlers.NewAuthHandler(authService),
-		userHandler:      handlers.NewUserHandler(),
+		userHandler:      handlers.NewUserHandler(cloudRepo, authRepo),
 		adminHandler:     handlers.NewAdminHandler(cloudRepo, authRepo),
 		meteringHandler:  handlers.NewMeteringHandler(cloudRepo, meteringService),
 		telemetryHandler: handlers.NewTelemetryHandler(cloudRepo),

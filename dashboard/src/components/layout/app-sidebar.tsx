@@ -15,6 +15,7 @@ import {
 import { useGetPublicSettings } from '#/hooks/useSettings';
 import { workspaceStore } from '#/stores/workspaceStore';
 import { NavItem } from './nav-item';
+import { ServerSwitcher } from './server-switcher';
 import { UserMenu } from './user-menu';
 import { WorkspaceSwitcher } from './workspace-switcher';
 
@@ -78,6 +79,7 @@ export function AppSidebar() {
       </div>
 
       <div className="shrink-0 pt-4">
+        {isCloudMode && <ServerSwitcher />}
         <WorkspaceSwitcher />
       </div>
 

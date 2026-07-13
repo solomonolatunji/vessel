@@ -1,18 +1,26 @@
 basePath: /api
 definitions:
-  internal_handlers.ActivateLicenseRequest:
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  handlers.ActivateLicenseRequest:
     properties:
       license_key:
         type: string
     type: object
-  internal_handlers.AuthRequest:
+  handlers.AuthRequest:
     properties:
       email:
         type: string
       password:
         type: string
     type: object
-  internal_handlers.ChangePasswordRequest:
+  handlers.ChangePasswordRequest:
     properties:
       newPassword:
         type: string
@@ -22,41 +30,41 @@ definitions:
     - newPassword
     - oldPassword
     type: object
-  internal_handlers.CreatePATRequest:
+  handlers.CreatePATRequest:
     properties:
       name:
         type: string
     type: object
-  internal_handlers.CreateSSHKeyRequest:
+  handlers.CreateSSHKeyRequest:
     properties:
       name:
         type: string
       publicKey:
         type: string
     type: object
-  internal_handlers.CreateTrustedDomainRequest:
+  handlers.CreateTrustedDomainRequest:
     properties:
       domain:
         type: string
     type: object
-  internal_handlers.CreateWorkspaceRequest:
+  handlers.CreateWorkspaceRequest:
     properties:
       name:
         type: string
     type: object
-  internal_handlers.ForgotPasswordRequest:
+  handlers.ForgotPasswordRequest:
     properties:
       email:
         type: string
     type: object
-  internal_handlers.GitAppsManifestRequest:
+  handlers.GitAppsManifestRequest:
     properties:
       code:
         type: string
       workspaceId:
         type: string
     type: object
-  internal_handlers.GithubWebhookPayload:
+  handlers.GithubWebhookPayload:
     properties:
       action:
         type: string
@@ -73,7 +81,7 @@ definitions:
             type: object
         type: object
     type: object
-  internal_handlers.RegisterRequest:
+  handlers.RegisterRequest:
     properties:
       email:
         type: string
@@ -82,14 +90,14 @@ definitions:
       password:
         type: string
     type: object
-  internal_handlers.ResetPasswordRequest:
+  handlers.ResetPasswordRequest:
     properties:
       newPassword:
         type: string
       token:
         type: string
     type: object
-  internal_handlers.TestNotificationRequest:
+  handlers.TestNotificationRequest:
     properties:
       channelId:
         type: string
@@ -98,19 +106,19 @@ definitions:
       workspaceId:
         type: string
     type: object
-  internal_handlers.UpdateProfileRequest:
+  handlers.UpdateProfileRequest:
     properties:
       email:
         type: string
       role:
         type: string
     type: object
-  internal_handlers.Verify2FARequest:
+  handlers.Verify2FARequest:
     properties:
       passcode:
         type: string
     type: object
-  vessl_dev_vessl_internal_models.AppService:
+  models.AppService:
     properties:
       branch:
         type: string
@@ -149,7 +157,7 @@ definitions:
       updatedAt:
         type: string
     type: object
-  vessl_dev_vessl_internal_models.BackupConfig:
+  models.BackupConfig:
     properties:
       createdAt:
         type: string
@@ -174,7 +182,55 @@ definitions:
       updatedAt:
         type: string
     type: object
-  vessl_dev_vessl_internal_models.CreateDatabaseRequest:
+  models.CloudServer:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      ipaddress:
+        type: string
+      isActive:
+        type: boolean
+      lastPing:
+        type: string
+      name:
+        type: string
+      serverID:
+        type: string
+      updatedAt:
+        type: string
+      workspaceID:
+        type: integer
+    type: object
+  models.CloudTeam:
+    properties:
+      createdAt:
+        type: string
+      customDomain:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      logoURL:
+        type: string
+      name:
+        type: string
+      paddleCustomerID:
+        type: string
+      plan:
+        type: string
+      primaryColor:
+        type: string
+      stripeCustomerID:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.CreateDatabaseRequest:
     properties:
       customArgs:
         type: string
@@ -199,7 +255,7 @@ definitions:
       volumePath:
         type: string
     type: object
-  vessl_dev_vessl_internal_models.CreateProjectRequest:
+  models.CreateProjectRequest:
     properties:
       branch:
         type: string
@@ -222,7 +278,7 @@ definitions:
       workspaceId:
         type: string
     type: object
-  vessl_dev_vessl_internal_models.CreateTokenRequest:
+  models.CreateTokenRequest:
     properties:
       environmentId:
         type: string
@@ -239,12 +295,12 @@ definitions:
           type: string
         type: array
     type: object
-  vessl_dev_vessl_internal_models.DatabaseQueryRequest:
+  models.DatabaseQueryRequest:
     properties:
       query:
         type: string
     type: object
-  vessl_dev_vessl_internal_models.DomainConfig:
+  models.DomainConfig:
     properties:
       createdAt:
         type: string
@@ -263,7 +319,7 @@ definitions:
       updatedAt:
         type: string
     type: object
-  vessl_dev_vessl_internal_models.EnvironmentConfig:
+  models.EnvironmentConfig:
     properties:
       createdAt:
         type: string
@@ -278,7 +334,7 @@ definitions:
       updatedAt:
         type: string
     type: object
-  vessl_dev_vessl_internal_models.GitConnectRequest:
+  models.GitConnectRequest:
     properties:
       accessToken:
         type: string
@@ -287,7 +343,7 @@ definitions:
       provider:
         type: string
     type: object
-  vessl_dev_vessl_internal_models.Job:
+  models.Job:
     properties:
       command:
         type: string
@@ -310,7 +366,7 @@ definitions:
       updatedAt:
         type: string
     type: object
-  vessl_dev_vessl_internal_models.OAuthProviderConfig:
+  models.OAuthProviderConfig:
     properties:
       baseUrl:
         type: string
@@ -333,7 +389,7 @@ definitions:
       updatedAt:
         type: string
     type: object
-  vessl_dev_vessl_internal_models.ProjectMember:
+  models.ProjectMember:
     properties:
       acceptedAt:
         type: string
@@ -352,7 +408,7 @@ definitions:
       userId:
         type: string
     type: object
-  vessl_dev_vessl_internal_models.S3Destination:
+  models.S3Destination:
     properties:
       accessKeyId:
         type: string
@@ -373,7 +429,7 @@ definitions:
       secretAccessKey:
         type: string
     type: object
-  vessl_dev_vessl_internal_models.ServerSettings:
+  models.ServerSettings:
     properties:
       autoUpdateEnabled:
         type: boolean
@@ -474,7 +530,7 @@ definitions:
       updatedAt:
         type: string
     type: object
-  vessl_dev_vessl_internal_models.Storage:
+  models.Storage:
     properties:
       accessKey:
         type: string
@@ -511,7 +567,7 @@ definitions:
       volumePath:
         type: string
     type: object
-  vessl_dev_vessl_internal_models.Variable:
+  models.Variable:
     properties:
       createdAt:
         type: string
@@ -532,7 +588,7 @@ definitions:
       value:
         type: string
     type: object
-  vessl_dev_vessl_internal_models.Webhook:
+  models.Webhook:
     properties:
       createdAt:
         type: string
@@ -551,7 +607,7 @@ definitions:
       url:
         type: string
     type: object
-  vessl_dev_vessl_internal_models.Workspace:
+  models.Workspace:
     properties:
       avatarUrl:
         type: string
@@ -568,7 +624,7 @@ definitions:
       updatedAt:
         type: string
     type: object
-  vessl_dev_vessl_internal_models.WorkspaceAISettings:
+  models.WorkspaceAISettings:
     properties:
       apiKey:
         type: string
@@ -583,7 +639,7 @@ definitions:
       workspaceId:
         type: string
     type: object
-  vessl_dev_vessl_internal_models.WorkspaceEmailSettings:
+  models.WorkspaceEmailSettings:
     properties:
       createdAt:
         type: string
@@ -610,7 +666,7 @@ definitions:
       workspaceId:
         type: string
     type: object
-  vessl_dev_vessl_internal_models.WorkspaceNotificationChannel:
+  models.WorkspaceNotificationChannel:
     properties:
       config:
         description: Generic JSON config tailored to the provider
@@ -643,6 +699,70 @@ info:
   title: Vessl API
   version: "1.0"
 paths:
+  /admin/audit-logs:
+    get:
+      description: Fetch paginated audit logs (Staff Only)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+      summary: Get Audit Logs
+      tags:
+      - Cloud-Admin
+  /admin/licenses:
+    post:
+      consumes:
+      - application/json
+      description: Generates a signed license for self-hosted enterprise users
+      parameters:
+      - description: Payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Generate Offline License
+      tags:
+      - Cloud-Admin
+  /admin/stats:
+    get:
+      description: Fetch total users, servers, and active subscriptions (Staff Only)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get System Stats
+      tags:
+      - Cloud-Admin
+  /agent/connect:
+    get:
+      description: Accepts an inbound WebSocket tunnel from a remote vessl daemon
+      responses:
+        "101":
+          description: Switching Protocols
+      summary: Accept Agent Connection
+      tags:
+      - Cloud-Fleet
   /apps/{id}:
     delete:
       consumes:
@@ -691,7 +811,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vessl_dev_vessl_internal_models.AppService'
+          $ref: '#/definitions/models.AppService'
       produces:
       - application/json
       responses: {}
@@ -731,7 +851,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/internal_handlers.Verify2FARequest'
+          $ref: '#/definitions/handlers.Verify2FARequest'
       produces:
       - application/json
       responses: {}
@@ -749,7 +869,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/internal_handlers.ForgotPasswordRequest'
+          $ref: '#/definitions/handlers.ForgotPasswordRequest'
       produces:
       - application/json
       responses: {}
@@ -823,7 +943,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/internal_handlers.ResetPasswordRequest'
+          $ref: '#/definitions/handlers.ResetPasswordRequest'
       produces:
       - application/json
       responses: {}
@@ -841,7 +961,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/internal_handlers.AuthRequest'
+          $ref: '#/definitions/handlers.AuthRequest'
       produces:
       - application/json
       responses: {}
@@ -859,7 +979,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/internal_handlers.RegisterRequest'
+          $ref: '#/definitions/handlers.RegisterRequest'
       produces:
       - application/json
       responses: {}
@@ -887,7 +1007,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vessl_dev_vessl_internal_models.BackupConfig'
+          $ref: '#/definitions/models.BackupConfig'
       produces:
       - application/json
       responses: {}
@@ -944,6 +1064,108 @@ paths:
       summary: Trigger endpoint
       tags:
       - Backups
+  /billing/paddle/checkout:
+    post:
+      consumes:
+      - application/json
+      description: Generates a checkout URL/Transaction for subscriptions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create Paddle Checkout
+      tags:
+      - Cloud-Billing
+  /billing/paddle/webhook:
+    post:
+      consumes:
+      - application/json
+      description: Receives billing events from Paddle
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Paddle Webhook
+      tags:
+      - Cloud-Billing
+  /billing/stripe/checkout:
+    post:
+      consumes:
+      - application/json
+      description: Generates a checkout URL for subscriptions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create Stripe Checkout
+      tags:
+      - Cloud-Billing
+  /billing/stripe/portal:
+    post:
+      consumes:
+      - application/json
+      description: Generates a portal URL for subscription management
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create Stripe Customer Portal
+      tags:
+      - Cloud-Billing
+  /billing/stripe/webhook:
+    post:
+      consumes:
+      - application/json
+      description: Receives billing events from Stripe to update subscription status
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Stripe Webhook
+      tags:
+      - Cloud-Billing
+  /billing/usage/report:
+    post:
+      consumes:
+      - application/json
+      description: Receives telemetry from Vossel Daemons for billing
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Report Usage Metrics
+      tags:
+      - Cloud-Billing
   /databases:
     get:
       consumes:
@@ -965,7 +1187,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vessl_dev_vessl_internal_models.CreateDatabaseRequest'
+          $ref: '#/definitions/models.CreateDatabaseRequest'
       produces:
       - application/json
       responses: {}
@@ -1021,7 +1243,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vessl_dev_vessl_internal_models.DatabaseQueryRequest'
+          $ref: '#/definitions/models.DatabaseQueryRequest'
       produces:
       - application/json
       responses: {}
@@ -1179,7 +1401,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vessl_dev_vessl_internal_models.AppService'
+          $ref: '#/definitions/models.AppService'
       produces:
       - application/json
       responses: {}
@@ -1203,6 +1425,23 @@ paths:
       summary: GetEnvironmentCanvas endpoint
       tags:
       - Environments
+  /fleet/deploy:
+    post:
+      consumes:
+      - application/json
+      description: Dispatch a deployment instruction to a subset of connected Vessl
+        Daemons
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Fleet Deployment
+      tags:
+      - Cloud-Fleet
   /git/connect:
     post:
       consumes:
@@ -1214,7 +1453,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vessl_dev_vessl_internal_models.GitConnectRequest'
+          $ref: '#/definitions/models.GitConnectRequest'
       produces:
       - application/json
       responses: {}
@@ -1281,7 +1520,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vessl_dev_vessl_internal_models.Job'
+          $ref: '#/definitions/models.Job'
       produces:
       - application/json
       responses: {}
@@ -1370,7 +1609,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/internal_handlers.UpdateProfileRequest'
+          $ref: '#/definitions/handlers.UpdateProfileRequest'
       produces:
       - application/json
       responses: {}
@@ -1388,7 +1627,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/internal_handlers.ChangePasswordRequest'
+          $ref: '#/definitions/handlers.ChangePasswordRequest'
       produces:
       - application/json
       responses: {}
@@ -1416,7 +1655,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/internal_handlers.CreatePATRequest'
+          $ref: '#/definitions/handlers.CreatePATRequest'
       produces:
       - application/json
       responses: {}
@@ -1470,7 +1709,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vessl_dev_vessl_internal_models.CreateProjectRequest'
+          $ref: '#/definitions/models.CreateProjectRequest'
       produces:
       - application/json
       responses: {}
@@ -1576,7 +1815,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vessl_dev_vessl_internal_models.DomainConfig'
+          $ref: '#/definitions/models.DomainConfig'
       produces:
       - application/json
       responses: {}
@@ -1643,7 +1882,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vessl_dev_vessl_internal_models.EnvironmentConfig'
+          $ref: '#/definitions/models.EnvironmentConfig'
       produces:
       - application/json
       responses: {}
@@ -1699,7 +1938,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vessl_dev_vessl_internal_models.ProjectMember'
+          $ref: '#/definitions/models.ProjectMember'
       produces:
       - application/json
       responses: {}
@@ -1775,7 +2014,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vessl_dev_vessl_internal_models.CreateTokenRequest'
+          $ref: '#/definitions/models.CreateTokenRequest'
       produces:
       - application/json
       responses: {}
@@ -1836,7 +2075,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vessl_dev_vessl_internal_models.Webhook'
+          $ref: '#/definitions/models.Webhook'
       produces:
       - application/json
       responses: {}
@@ -2017,7 +2256,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vessl_dev_vessl_internal_models.Variable'
+          $ref: '#/definitions/models.Variable'
       produces:
       - application/json
       responses: {}
@@ -2066,7 +2305,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vessl_dev_vessl_internal_models.Variable'
+          $ref: '#/definitions/models.Variable'
       produces:
       - application/json
       responses: {}
@@ -2084,7 +2323,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vessl_dev_vessl_internal_models.ServerSettings'
+          $ref: '#/definitions/models.ServerSettings'
       produces:
       - application/json
       responses: {}
@@ -2119,7 +2358,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/internal_handlers.GitAppsManifestRequest'
+          $ref: '#/definitions/handlers.GitAppsManifestRequest'
       produces:
       - application/json
       responses: {}
@@ -2140,7 +2379,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/internal_handlers.ActivateLicenseRequest'
+          $ref: '#/definitions/handlers.ActivateLicenseRequest'
       produces:
       - application/json
       - application/json
@@ -2170,7 +2409,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vessl_dev_vessl_internal_models.WorkspaceNotificationChannel'
+          $ref: '#/definitions/models.WorkspaceNotificationChannel'
       produces:
       - application/json
       responses: {}
@@ -2221,7 +2460,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/internal_handlers.TestNotificationRequest'
+          $ref: '#/definitions/handlers.TestNotificationRequest'
       produces:
       - application/json
       responses: {}
@@ -2249,7 +2488,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vessl_dev_vessl_internal_models.OAuthProviderConfig'
+          $ref: '#/definitions/models.OAuthProviderConfig'
       produces:
       - application/json
       responses: {}
@@ -2278,7 +2517,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vessl_dev_vessl_internal_models.Storage'
+          $ref: '#/definitions/models.Storage'
       produces:
       - application/json
       responses: {}
@@ -2348,6 +2587,65 @@ paths:
       summary: GetPublicSettings endpoint
       tags:
       - Settings
+  /teams/{id}/branding:
+    patch:
+      consumes:
+      - application/json
+      description: Updates the white-label branding for an enterprise team
+      parameters:
+      - description: Team ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CloudTeam'
+      summary: Update Team Branding
+      tags:
+      - Cloud-Team
+  /teams/{id}/servers:
+    get:
+      description: Fetch all active servers associated with a team
+      parameters:
+      - description: Team ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.CloudServer'
+            type: array
+      summary: List Team Servers
+      tags:
+      - Cloud-Team
+  /telemetry/ping:
+    post:
+      consumes:
+      - application/json
+      description: Receives anonymous telemetry pings from OSS instances
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Receive Telemetry Ping
+      tags:
+      - Cloud-Telemetry
   /users:
     get:
       consumes:
@@ -2368,6 +2666,20 @@ paths:
       summary: ListUsers endpoint
       tags:
       - Users
+  /users/me:
+    get:
+      description: Fetch current user details
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get User Profile
+      tags:
+      - Cloud-Users
   /vercel/projects:
     get:
       consumes:
@@ -2446,13 +2758,30 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/internal_handlers.GithubWebhookPayload'
+          $ref: '#/definitions/handlers.GithubWebhookPayload'
       produces:
       - application/json
       responses: {}
       summary: HandleGitHubWebhook endpoint
       tags:
       - Webhooks
+  /wizard/token:
+    post:
+      consumes:
+      - application/json
+      description: Generates a unique secure token that the remote server uses to
+        connect to Vessl Cloud
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Generate an agent connection token
+      tags:
+      - Cloud-Wizard
   /workspaces:
     post:
       consumes:
@@ -2464,7 +2793,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/internal_handlers.CreateWorkspaceRequest'
+          $ref: '#/definitions/handlers.CreateWorkspaceRequest'
       produces:
       - application/json
       responses: {}
@@ -2519,7 +2848,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vessl_dev_vessl_internal_models.Workspace'
+          $ref: '#/definitions/models.Workspace'
       produces:
       - application/json
       responses: {}
@@ -2558,7 +2887,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vessl_dev_vessl_internal_models.WorkspaceAISettings'
+          $ref: '#/definitions/models.WorkspaceAISettings'
       produces:
       - application/json
       responses: {}
@@ -2614,7 +2943,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vessl_dev_vessl_internal_models.WorkspaceEmailSettings'
+          $ref: '#/definitions/models.WorkspaceEmailSettings'
       produces:
       - application/json
       responses: {}
@@ -2653,7 +2982,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/internal_handlers.CreateSSHKeyRequest'
+          $ref: '#/definitions/handlers.CreateSSHKeyRequest'
       produces:
       - application/json
       responses: {}
@@ -2692,7 +3021,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/internal_handlers.CreateTrustedDomainRequest'
+          $ref: '#/definitions/handlers.CreateTrustedDomainRequest'
       produces:
       - application/json
       responses: {}

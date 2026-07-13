@@ -34,10 +34,10 @@ type Server struct {
 }
 
 func (s *Server) registerRoutes() {
-	api := s.router.Group("/api/cloud")
+	api := s.router.Group("/api")
 
 	if s.ssoHandler != nil {
-		s.ssoHandler.RegisterRoutes(s.router.Group("/api/cloud/sso"))
+		s.ssoHandler.RegisterRoutes(s.router.Group("/api/sso"))
 		api.GET("/sso/session", func(c echo.Context) error {
 			return c.JSON(200, map[string]interface{}{
 				"status":  "success",
@@ -84,14 +84,15 @@ func (s *Server) registerRoutes() {
 
 	api.POST("/billing/usage/report", s.meteringHandler.ReportUsage)
 
-	api.POST("/auth/register", s.authHandler.Register)
-	api.POST("/auth/login", s.authHandler.Login)
+	api.POST("/auth/signup", s.authHandler.Register)
+	api.POST("/auth/signin", s.authHandler.Login)
 	api.POST("/auth/forgot-password", s.authHandler.ForgotPassword)
 	api.POST("/auth/reset-password", s.authHandler.ResetPassword)
 	api.GET("/auth/verify-email", s.authHandler.VerifyEmail)
 
 	api.GET("/users/me", s.userHandler.GetProfile)
 
+	api.GET("/teams/:id/servers", s.teamHandler.ListServers, vesslMiddleware.RequireCloudAuth(), vesslMiddleware.RequireTeamRole(s.repo, "owner", "admin", "member"))
 	api.PATCH("/teams/:id/branding", s.teamHandler.UpdateBranding, vesslMiddleware.RequireCloudAuth(), vesslMiddleware.RequireTeamRole(s.repo, "owner", "admin"))
 
 	api.GET("/admin/stats", s.adminHandler.GetSystemStats, vesslMiddleware.RequireAdmin())

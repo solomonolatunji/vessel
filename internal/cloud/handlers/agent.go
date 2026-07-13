@@ -45,7 +45,7 @@ func NewAgentHandler(repo repos.CloudRepo, meteringService services.MeteringServ
 // @Description Accepts an inbound WebSocket tunnel from a remote vessl daemon
 // @Tags Cloud-Fleet
 // @Success 101
-// @Router /cloud/agent/connect [get]
+// @Router /agent/connect [get]
 func (h *AgentHandler) AcceptConnection(c echo.Context) error {
 	authHeader := c.Request().Header.Get("Authorization")
 	if authHeader == "" {
@@ -108,7 +108,7 @@ type FleetDeployRequest struct {
 // @Accept json
 // @Produce json
 // @Success 202 {object} map[string]interface{}
-// @Router /cloud/fleet/deploy [post]
+// @Router /fleet/deploy [post]
 func (h *AgentHandler) DeployToFleet(c echo.Context) error {
 	var req FleetDeployRequest
 	if err := c.Bind(&req); err != nil {

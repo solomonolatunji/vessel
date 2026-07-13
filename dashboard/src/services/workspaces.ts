@@ -19,6 +19,9 @@ import { apiClient } from '#/lib/apiClient';
 import { handleApiError } from '#/lib/error';
 
 export const workspacesService = {
+  /**
+   * Retrieves all workspaces for the currently authenticated context.
+   */
   listWorkspaces: async (): Promise<ListWorkspacesResponse> => {
     try {
       return await apiClient.get<ListWorkspacesResponse>('/workspaces');

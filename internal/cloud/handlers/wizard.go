@@ -27,7 +27,7 @@ func NewWizardHandler(repo repos.CloudRepo) *WizardHandler {
 // @Accept json
 // @Produce json
 // @Success 200 {object} map[string]interface{}
-// @Router /cloud/wizard/token [post]
+// @Router /wizard/token [post]
 func (h *WizardHandler) GenerateAgentToken(c echo.Context) error {
 	token, err := generateSecureToken()
 	if err != nil {

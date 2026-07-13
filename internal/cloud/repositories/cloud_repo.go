@@ -29,6 +29,8 @@ type CloudRepo interface {
 	GetActiveSubscriptions(ctx context.Context) (int64, error)
 	ListAuditLogs(ctx context.Context, limit int, offset int) ([]models.AuditLog, error)
 	GetCurrentMonthUsage(teamID uint) (int, int, error)
+	GetUserTeams(userID string) ([]models.CloudTeam, error)
+	GetTeamServers(teamID uint) ([]models.CloudServer, error)
 }
 
 type cloudRepo struct {
@@ -191,4 +193,38 @@ func (r *cloudRepo) GetCurrentMonthUsage(teamID uint) (int, int, error) {
 		Where("team_id = ? AND reported_at >= ?", teamID, startOfMonth).
 		Scan(&result).Error
 	return result.TotalHours, result.TotalBandwidth, err
+}
+
+func (r *cloudRepo) GetUserTeams(userID string) ([]models.CloudTeam, error) {
+	// Find all workspace memberships for this user
+	var memberships []models.WorkspaceMember
+	if err := r.db.Where("user_id = ?", userID).Find(&memberships).Error; err != nil {
+		return nil, err
+	}
+
+	if len(memberships) == 0 {
+		return []models.CloudTeam{}, nil
+	}
+
+	// Extract team IDs
+	var teamIDs []string
+	for _, m := range memberships {
+		teamIDs = append(teamIDs, m.WorkspaceID)
+	}
+
+	// Find the actual CloudTeams
+	var teams []models.CloudTeam
+	if err := r.db.Where("id IN ?", teamIDs).Find(&teams).Error; err != nil {
+		return nil, err
+	}
+
+	return teams, nil
+}
+
+func (r *cloudRepo) GetTeamServers(teamID uint) ([]models.CloudServer, error) {
+	var servers []models.CloudServer
+	if err := r.db.Where("workspace_id = ?", teamID).Find(&servers).Error; err != nil {
+		return nil, err
+	}
+	return servers, nil
 }

@@ -30,7 +30,7 @@ func NewAdminHandler(cloudRepo repos.CloudRepo, authRepo repos.AuthRepo) *AdminH
 // @Tags Cloud-Admin
 // @Produce json
 // @Success 200 {object} map[string]interface{}
-// @Router /cloud/admin/stats [get]
+// @Router /admin/stats [get]
 func (h *AdminHandler) GetSystemStats(c echo.Context) error {
 	ctx := c.Request().Context()
 	totalUsers, _ := h.authRepo.GetTotalUsers(ctx)
@@ -50,7 +50,7 @@ func (h *AdminHandler) GetSystemStats(c echo.Context) error {
 // @Tags Cloud-Admin
 // @Produce json
 // @Success 200 {array} map[string]interface{}
-// @Router /cloud/admin/audit-logs [get]
+// @Router /admin/audit-logs [get]
 func (h *AdminHandler) GetAuditLogs(c echo.Context) error {
 	ctx := c.Request().Context()
 	limit := 100
@@ -80,7 +80,7 @@ func (h *AdminHandler) GetAuditLogs(c echo.Context) error {
 // @Produce json
 // @Param payload body map[string]interface{} true "Payload"
 // @Success 200 {object} map[string]string
-// @Router /cloud/admin/licenses [post]
+// @Router /admin/licenses [post]
 func (h *AdminHandler) GenerateOfflineLicense(c echo.Context) error {
 	var payload struct {
 		TeamID   string `json:"team_id"`

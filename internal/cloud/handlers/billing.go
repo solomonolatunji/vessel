@@ -59,7 +59,7 @@ func planFromPaddlePriceID(priceID string) string {
 // @Accept json
 // @Produce json
 // @Success 200 {object} map[string]string
-// @Router /cloud/billing/stripe/webhook [post]
+// @Router /billing/stripe/webhook [post]
 func (h *BillingHandler) HandleStripeWebhook(c echo.Context) error {
 	const maxBodyBytes = int64(65536)
 	c.Request().Body = http.MaxBytesReader(c.Response(), c.Request().Body, maxBodyBytes)
@@ -140,7 +140,7 @@ func (h *BillingHandler) handleStripeCheckoutCompleted(event stripe.Event) error
 	team.StripeCustomerID = session.Customer.ID
 	h.cloudRepo.UpdateTeam(team)
 
-	log.Printf("Checkout Completed | Workspace: %s | Customer: %s", workspaceID, session.Customer.ID)
+	log.Printf("Checkout Completed | Workspace: %d | Customer: %s", workspaceID, session.Customer.ID)
 	return nil
 }
 
@@ -187,7 +187,7 @@ func (h *BillingHandler) handleStripeSubscriptionDeleted(event stripe.Event) err
 // @Accept json
 // @Produce json
 // @Success 200 {object} map[string]string
-// @Router /cloud/billing/paddle/webhook [post]
+// @Router /billing/paddle/webhook [post]
 func (h *BillingHandler) HandlePaddleWebhook(c echo.Context) error {
 	const maxBodyBytes = int64(65536)
 	c.Request().Body = http.MaxBytesReader(c.Response(), c.Request().Body, maxBodyBytes)
@@ -279,7 +279,7 @@ type CheckoutRequest struct {
 // @Accept json
 // @Produce json
 // @Success 200 {object} map[string]string
-// @Router /cloud/billing/stripe/checkout [post]
+// @Router /billing/stripe/checkout [post]
 func (h *BillingHandler) CreateStripeCheckout(c echo.Context) error {
 	var req CheckoutRequest
 	if err := c.Bind(&req); err != nil {
@@ -320,7 +320,7 @@ func (h *BillingHandler) CreateStripeCheckout(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Success 200 {object} map[string]string
-// @Router /cloud/billing/paddle/checkout [post]
+// @Router /billing/paddle/checkout [post]
 func (h *BillingHandler) CreatePaddleCheckout(c echo.Context) error {
 	var req CheckoutRequest
 	if err := c.Bind(&req); err != nil {
@@ -368,7 +368,7 @@ func paddlePriceID(plan string) string {
 // @Accept json
 // @Produce json
 // @Success 200 {object} map[string]string
-// @Router /cloud/billing/stripe/portal [post]
+// @Router /billing/stripe/portal [post]
 func (h *BillingHandler) CreateStripePortal(c echo.Context) error {
 	var req struct {
 		WorkspaceID uint   `json:"team_id"`

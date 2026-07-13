@@ -15,6 +15,103 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/admin/audit-logs": {
+            "get": {
+                "description": "Fetch paginated audit logs (Staff Only)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cloud-Admin"
+                ],
+                "summary": "Get Audit Logs",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/licenses": {
+            "post": {
+                "description": "Generates a signed license for self-hosted enterprise users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cloud-Admin"
+                ],
+                "summary": "Generate Offline License",
+                "parameters": [
+                    {
+                        "description": "Payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/stats": {
+            "get": {
+                "description": "Fetch total users, servers, and active subscriptions (Staff Only)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cloud-Admin"
+                ],
+                "summary": "Get System Stats",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/connect": {
+            "get": {
+                "description": "Accepts an inbound WebSocket tunnel from a remote vessl daemon",
+                "tags": [
+                    "Cloud-Fleet"
+                ],
+                "summary": "Accept Agent Connection",
+                "responses": {
+                    "101": {
+                        "description": "Switching Protocols"
+                    }
+                }
+            }
+        },
         "/apps/{id}": {
             "get": {
                 "description": "Get App Service",
@@ -65,7 +162,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.AppService"
+                            "$ref": "#/definitions/models.AppService"
                         }
                     }
                 ],
@@ -147,7 +244,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.Verify2FARequest"
+                            "$ref": "#/definitions/handlers.Verify2FARequest"
                         }
                     }
                 ],
@@ -174,7 +271,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.ForgotPasswordRequest"
+                            "$ref": "#/definitions/handlers.ForgotPasswordRequest"
                         }
                     }
                 ],
@@ -283,7 +380,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.ResetPasswordRequest"
+                            "$ref": "#/definitions/handlers.ResetPasswordRequest"
                         }
                     }
                 ],
@@ -310,7 +407,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.AuthRequest"
+                            "$ref": "#/definitions/handlers.AuthRequest"
                         }
                     }
                 ],
@@ -337,7 +434,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.RegisterRequest"
+                            "$ref": "#/definitions/handlers.RegisterRequest"
                         }
                     }
                 ],
@@ -378,7 +475,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.BackupConfig"
+                            "$ref": "#/definitions/models.BackupConfig"
                         }
                     }
                 ],
@@ -458,6 +555,162 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/billing/paddle/checkout": {
+            "post": {
+                "description": "Generates a checkout URL/Transaction for subscriptions",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cloud-Billing"
+                ],
+                "summary": "Create Paddle Checkout",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/billing/paddle/webhook": {
+            "post": {
+                "description": "Receives billing events from Paddle",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cloud-Billing"
+                ],
+                "summary": "Paddle Webhook",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/billing/stripe/checkout": {
+            "post": {
+                "description": "Generates a checkout URL for subscriptions",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cloud-Billing"
+                ],
+                "summary": "Create Stripe Checkout",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/billing/stripe/portal": {
+            "post": {
+                "description": "Generates a portal URL for subscription management",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cloud-Billing"
+                ],
+                "summary": "Create Stripe Customer Portal",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/billing/stripe/webhook": {
+            "post": {
+                "description": "Receives billing events from Stripe to update subscription status",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cloud-Billing"
+                ],
+                "summary": "Stripe Webhook",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/billing/usage/report": {
+            "post": {
+                "description": "Receives telemetry from Vossel Daemons for billing",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cloud-Billing"
+                ],
+                "summary": "Report Usage Metrics",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/databases": {
             "get": {
                 "description": "ListDatabases endpoint",
@@ -492,7 +745,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.CreateDatabaseRequest"
+                            "$ref": "#/definitions/models.CreateDatabaseRequest"
                         }
                     }
                 ],
@@ -574,7 +827,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.DatabaseQueryRequest"
+                            "$ref": "#/definitions/models.DatabaseQueryRequest"
                         }
                     }
                 ],
@@ -806,7 +1059,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.AppService"
+                            "$ref": "#/definitions/models.AppService"
                         }
                     }
                 ],
@@ -838,6 +1091,30 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/fleet/deploy": {
+            "post": {
+                "description": "Dispatch a deployment instruction to a subset of connected Vessl Daemons",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cloud-Fleet"
+                ],
+                "summary": "Fleet Deployment",
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/git/connect": {
             "post": {
                 "description": "Connect endpoint",
@@ -858,7 +1135,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.GitConnectRequest"
+                            "$ref": "#/definitions/models.GitConnectRequest"
                         }
                     }
                 ],
@@ -956,7 +1233,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.Job"
+                            "$ref": "#/definitions/models.Job"
                         }
                     }
                 ],
@@ -1086,7 +1363,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.UpdateProfileRequest"
+                            "$ref": "#/definitions/handlers.UpdateProfileRequest"
                         }
                     }
                 ],
@@ -1113,7 +1390,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.ChangePasswordRequest"
+                            "$ref": "#/definitions/handlers.ChangePasswordRequest"
                         }
                     }
                 ],
@@ -1154,7 +1431,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.CreatePATRequest"
+                            "$ref": "#/definitions/handlers.CreatePATRequest"
                         }
                     }
                 ],
@@ -1234,7 +1511,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.CreateProjectRequest"
+                            "$ref": "#/definitions/models.CreateProjectRequest"
                         }
                     }
                 ],
@@ -1389,7 +1666,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.DomainConfig"
+                            "$ref": "#/definitions/models.DomainConfig"
                         }
                     }
                 ],
@@ -1487,7 +1764,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.EnvironmentConfig"
+                            "$ref": "#/definitions/models.EnvironmentConfig"
                         }
                     }
                 ],
@@ -1569,7 +1846,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.ProjectMember"
+                            "$ref": "#/definitions/models.ProjectMember"
                         }
                     }
                 ],
@@ -1675,7 +1952,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.CreateTokenRequest"
+                            "$ref": "#/definitions/models.CreateTokenRequest"
                         }
                     }
                 ],
@@ -1764,7 +2041,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.Webhook"
+                            "$ref": "#/definitions/models.Webhook"
                         }
                     }
                 ],
@@ -2029,7 +2306,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.Variable"
+                            "$ref": "#/definitions/models.Variable"
                         }
                     }
                 ],
@@ -2070,7 +2347,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.Variable"
+                            "$ref": "#/definitions/models.Variable"
                         }
                     }
                 ],
@@ -2127,7 +2404,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.ServerSettings"
+                            "$ref": "#/definitions/models.ServerSettings"
                         }
                     }
                 ],
@@ -2179,7 +2456,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.GitAppsManifestRequest"
+                            "$ref": "#/definitions/handlers.GitAppsManifestRequest"
                         }
                     }
                 ],
@@ -2209,7 +2486,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.ActivateLicenseRequest"
+                            "$ref": "#/definitions/handlers.ActivateLicenseRequest"
                         }
                     }
                 ],
@@ -2250,7 +2527,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.WorkspaceNotificationChannel"
+                            "$ref": "#/definitions/models.WorkspaceNotificationChannel"
                         }
                     }
                 ],
@@ -2277,7 +2554,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.TestNotificationRequest"
+                            "$ref": "#/definitions/handlers.TestNotificationRequest"
                         }
                     }
                 ],
@@ -2366,7 +2643,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.OAuthProviderConfig"
+                            "$ref": "#/definitions/models.OAuthProviderConfig"
                         }
                     }
                 ],
@@ -2409,7 +2686,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.Storage"
+                            "$ref": "#/definitions/models.Storage"
                         }
                     }
                 ],
@@ -2507,6 +2784,96 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/teams/{id}/branding": {
+            "patch": {
+                "description": "Updates the white-label branding for an enterprise team",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cloud-Team"
+                ],
+                "summary": "Update Team Branding",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Team ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CloudTeam"
+                        }
+                    }
+                }
+            }
+        },
+        "/teams/{id}/servers": {
+            "get": {
+                "description": "Fetch all active servers associated with a team",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cloud-Team"
+                ],
+                "summary": "List Team Servers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Team ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.CloudServer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/telemetry/ping": {
+            "post": {
+                "description": "Receives anonymous telemetry pings from OSS instances",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cloud-Telemetry"
+                ],
+                "summary": "Receive Telemetry Ping",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "get": {
                 "description": "ListUsers endpoint",
@@ -2535,6 +2902,27 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {}
+            }
+        },
+        "/users/me": {
+            "get": {
+                "description": "Fetch current user details",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cloud-Users"
+                ],
+                "summary": "Get User Profile",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
             }
         },
         "/vercel/projects": {
@@ -2655,11 +3043,35 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.GithubWebhookPayload"
+                            "$ref": "#/definitions/handlers.GithubWebhookPayload"
                         }
                     }
                 ],
                 "responses": {}
+            }
+        },
+        "/wizard/token": {
+            "post": {
+                "description": "Generates a unique secure token that the remote server uses to connect to Vessl Cloud",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cloud-Wizard"
+                ],
+                "summary": "Generate an agent connection token",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
             }
         },
         "/workspaces": {
@@ -2682,7 +3094,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.CreateWorkspaceRequest"
+                            "$ref": "#/definitions/handlers.CreateWorkspaceRequest"
                         }
                     }
                 ],
@@ -2739,7 +3151,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.Workspace"
+                            "$ref": "#/definitions/models.Workspace"
                         }
                     }
                 ],
@@ -2819,7 +3231,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.WorkspaceAISettings"
+                            "$ref": "#/definitions/models.WorkspaceAISettings"
                         }
                     }
                 ],
@@ -2901,7 +3313,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vessl_dev_vessl_internal_models.WorkspaceEmailSettings"
+                            "$ref": "#/definitions/models.WorkspaceEmailSettings"
                         }
                     }
                 ],
@@ -2958,7 +3370,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.CreateSSHKeyRequest"
+                            "$ref": "#/definitions/handlers.CreateSSHKeyRequest"
                         }
                     }
                 ],
@@ -3015,7 +3427,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.CreateTrustedDomainRequest"
+                            "$ref": "#/definitions/handlers.CreateTrustedDomainRequest"
                         }
                     }
                 ],
@@ -3062,7 +3474,19 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "internal_handlers.ActivateLicenseRequest": {
+        "gorm.DeletedAt": {
+            "type": "object",
+            "properties": {
+                "time": {
+                    "type": "string"
+                },
+                "valid": {
+                    "description": "Valid is true if Time is not NULL",
+                    "type": "boolean"
+                }
+            }
+        },
+        "handlers.ActivateLicenseRequest": {
             "type": "object",
             "properties": {
                 "license_key": {
@@ -3070,7 +3494,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_handlers.AuthRequest": {
+        "handlers.AuthRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -3081,7 +3505,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_handlers.ChangePasswordRequest": {
+        "handlers.ChangePasswordRequest": {
             "type": "object",
             "required": [
                 "newPassword",
@@ -3096,7 +3520,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_handlers.CreatePATRequest": {
+        "handlers.CreatePATRequest": {
             "type": "object",
             "properties": {
                 "name": {
@@ -3104,7 +3528,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_handlers.CreateSSHKeyRequest": {
+        "handlers.CreateSSHKeyRequest": {
             "type": "object",
             "properties": {
                 "name": {
@@ -3115,7 +3539,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_handlers.CreateTrustedDomainRequest": {
+        "handlers.CreateTrustedDomainRequest": {
             "type": "object",
             "properties": {
                 "domain": {
@@ -3123,7 +3547,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_handlers.CreateWorkspaceRequest": {
+        "handlers.CreateWorkspaceRequest": {
             "type": "object",
             "properties": {
                 "name": {
@@ -3131,7 +3555,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_handlers.ForgotPasswordRequest": {
+        "handlers.ForgotPasswordRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -3139,7 +3563,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_handlers.GitAppsManifestRequest": {
+        "handlers.GitAppsManifestRequest": {
             "type": "object",
             "properties": {
                 "code": {
@@ -3150,7 +3574,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_handlers.GithubWebhookPayload": {
+        "handlers.GithubWebhookPayload": {
             "type": "object",
             "properties": {
                 "action": {
@@ -3177,7 +3601,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_handlers.RegisterRequest": {
+        "handlers.RegisterRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -3191,7 +3615,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_handlers.ResetPasswordRequest": {
+        "handlers.ResetPasswordRequest": {
             "type": "object",
             "properties": {
                 "newPassword": {
@@ -3202,7 +3626,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_handlers.TestNotificationRequest": {
+        "handlers.TestNotificationRequest": {
             "type": "object",
             "properties": {
                 "channelId": {
@@ -3216,7 +3640,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_handlers.UpdateProfileRequest": {
+        "handlers.UpdateProfileRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -3227,7 +3651,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_handlers.Verify2FARequest": {
+        "handlers.Verify2FARequest": {
             "type": "object",
             "properties": {
                 "passcode": {
@@ -3235,7 +3659,7 @@ const docTemplate = `{
                 }
             }
         },
-        "vessl_dev_vessl_internal_models.AppService": {
+        "models.AppService": {
             "type": "object",
             "properties": {
                 "branch": {
@@ -3294,7 +3718,7 @@ const docTemplate = `{
                 }
             }
         },
-        "vessl_dev_vessl_internal_models.BackupConfig": {
+        "models.BackupConfig": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -3332,7 +3756,80 @@ const docTemplate = `{
                 }
             }
         },
-        "vessl_dev_vessl_internal_models.CreateDatabaseRequest": {
+        "models.CloudServer": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "ipaddress": {
+                    "type": "string"
+                },
+                "isActive": {
+                    "type": "boolean"
+                },
+                "lastPing": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "serverID": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "workspaceID": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.CloudTeam": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "customDomain": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "logoURL": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "paddleCustomerID": {
+                    "type": "string"
+                },
+                "plan": {
+                    "type": "string"
+                },
+                "primaryColor": {
+                    "type": "string"
+                },
+                "stripeCustomerID": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.CreateDatabaseRequest": {
             "type": "object",
             "properties": {
                 "customArgs": {
@@ -3370,7 +3867,7 @@ const docTemplate = `{
                 }
             }
         },
-        "vessl_dev_vessl_internal_models.CreateProjectRequest": {
+        "models.CreateProjectRequest": {
             "type": "object",
             "properties": {
                 "branch": {
@@ -3405,7 +3902,7 @@ const docTemplate = `{
                 }
             }
         },
-        "vessl_dev_vessl_internal_models.CreateTokenRequest": {
+        "models.CreateTokenRequest": {
             "type": "object",
             "properties": {
                 "environmentId": {
@@ -3431,7 +3928,7 @@ const docTemplate = `{
                 }
             }
         },
-        "vessl_dev_vessl_internal_models.DatabaseQueryRequest": {
+        "models.DatabaseQueryRequest": {
             "type": "object",
             "properties": {
                 "query": {
@@ -3439,7 +3936,7 @@ const docTemplate = `{
                 }
             }
         },
-        "vessl_dev_vessl_internal_models.DomainConfig": {
+        "models.DomainConfig": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -3468,7 +3965,7 @@ const docTemplate = `{
                 }
             }
         },
-        "vessl_dev_vessl_internal_models.EnvironmentConfig": {
+        "models.EnvironmentConfig": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -3491,7 +3988,7 @@ const docTemplate = `{
                 }
             }
         },
-        "vessl_dev_vessl_internal_models.GitConnectRequest": {
+        "models.GitConnectRequest": {
             "type": "object",
             "properties": {
                 "accessToken": {
@@ -3505,7 +4002,7 @@ const docTemplate = `{
                 }
             }
         },
-        "vessl_dev_vessl_internal_models.Job": {
+        "models.Job": {
             "type": "object",
             "properties": {
                 "command": {
@@ -3540,7 +4037,7 @@ const docTemplate = `{
                 }
             }
         },
-        "vessl_dev_vessl_internal_models.OAuthProviderConfig": {
+        "models.OAuthProviderConfig": {
             "type": "object",
             "properties": {
                 "baseUrl": {
@@ -3575,7 +4072,7 @@ const docTemplate = `{
                 }
             }
         },
-        "vessl_dev_vessl_internal_models.ProjectMember": {
+        "models.ProjectMember": {
             "type": "object",
             "properties": {
                 "acceptedAt": {
@@ -3604,7 +4101,7 @@ const docTemplate = `{
                 }
             }
         },
-        "vessl_dev_vessl_internal_models.S3Destination": {
+        "models.S3Destination": {
             "type": "object",
             "properties": {
                 "accessKeyId": {
@@ -3636,7 +4133,7 @@ const docTemplate = `{
                 }
             }
         },
-        "vessl_dev_vessl_internal_models.ServerSettings": {
+        "models.ServerSettings": {
             "type": "object",
             "properties": {
                 "autoUpdateEnabled": {
@@ -3788,7 +4285,7 @@ const docTemplate = `{
                 }
             }
         },
-        "vessl_dev_vessl_internal_models.Storage": {
+        "models.Storage": {
             "type": "object",
             "properties": {
                 "accessKey": {
@@ -3844,7 +4341,7 @@ const docTemplate = `{
                 }
             }
         },
-        "vessl_dev_vessl_internal_models.Variable": {
+        "models.Variable": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -3876,7 +4373,7 @@ const docTemplate = `{
                 }
             }
         },
-        "vessl_dev_vessl_internal_models.Webhook": {
+        "models.Webhook": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -3905,7 +4402,7 @@ const docTemplate = `{
                 }
             }
         },
-        "vessl_dev_vessl_internal_models.Workspace": {
+        "models.Workspace": {
             "type": "object",
             "properties": {
                 "avatarUrl": {
@@ -3931,7 +4428,7 @@ const docTemplate = `{
                 }
             }
         },
-        "vessl_dev_vessl_internal_models.WorkspaceAISettings": {
+        "models.WorkspaceAISettings": {
             "type": "object",
             "properties": {
                 "apiKey": {
@@ -3954,7 +4451,7 @@ const docTemplate = `{
                 }
             }
         },
-        "vessl_dev_vessl_internal_models.WorkspaceEmailSettings": {
+        "models.WorkspaceEmailSettings": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -3995,7 +4492,7 @@ const docTemplate = `{
                 }
             }
         },
-        "vessl_dev_vessl_internal_models.WorkspaceNotificationChannel": {
+        "models.WorkspaceNotificationChannel": {
             "type": "object",
             "properties": {
                 "config": {

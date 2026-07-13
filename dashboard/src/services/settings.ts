@@ -13,11 +13,21 @@ export const settingsService = {
   },
 
   getPublicSettings: async (): Promise<
-    BaseResponse<{ registrationEnabled: boolean; siteName?: string; emailEnabled: boolean }>
+    BaseResponse<{
+      registrationEnabled: boolean;
+      siteName?: string;
+      emailEnabled: boolean;
+      isCloudMode?: boolean;
+    }>
   > => {
     try {
       return await apiClient.get<
-        BaseResponse<{ registrationEnabled: boolean; siteName?: string; emailEnabled: boolean }>
+        BaseResponse<{
+          registrationEnabled: boolean;
+          siteName?: string;
+          emailEnabled: boolean;
+          isCloudMode?: boolean;
+        }>
       >('/system/public');
     } catch (error) {
       throw handleApiError(error);

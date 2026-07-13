@@ -16,8 +16,34 @@ export class ApiError extends Error {
 }
 
 export const apiClient = {
+  /**
+   * Executes an HTTP request to the Vessl API.
+   * If VITE_IS_CLOUD is enabled and the endpoint is not a cloud-native route,
+   * the request is automatically proxied through the active server tunnel.
+   */
   async fetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const url = `${API_BASE_URL}${endpoint}`;
+    const isCloud = env.VITE_IS_CLOUD;
+    let rewrittenEndpoint = endpoint;
+
+    if (isCloud) {
+      const isCloudNative =
+        endpoint.startsWith('/auth/') ||
+        endpoint.startsWith('/system/') ||
+        endpoint.startsWith('/billing/') ||
+        endpoint.startsWith('/teams/') ||
+        endpoint.startsWith('/users/') ||
+        endpoint.startsWith('/servers/') ||
+        endpoint.startsWith('/cloud/'); // fallback just in case
+
+      if (!isCloudNative) {
+        const activeServerId = localStorage.getItem('vessl_active_server_id');
+        if (activeServerId) {
+          rewrittenEndpoint = `/servers/${activeServerId}/proxy/api${endpoint}`;
+        }
+      }
+    }
+
+    const url = `${API_BASE_URL}${rewrittenEndpoint}`;
 
     const headers = new Headers(options.headers || {});
     if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {

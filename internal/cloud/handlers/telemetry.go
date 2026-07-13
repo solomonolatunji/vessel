@@ -34,7 +34,7 @@ type TelemetryPayload struct {
 // @Accept json
 // @Produce json
 // @Success 200 {object} map[string]string
-// @Router /cloud/telemetry/ping [post]
+// @Router /telemetry/ping [post]
 func (h *TelemetryHandler) ReceivePing(c echo.Context) error {
 	var payload TelemetryPayload
 	if err := c.Bind(&payload); err != nil {

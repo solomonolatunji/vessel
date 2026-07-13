@@ -37,7 +37,7 @@ type UsageReport struct {
 // @Accept json
 // @Produce json
 // @Success 200 {object} map[string]string
-// @Router /cloud/billing/usage/report [post]
+// @Router /billing/usage/report [post]
 func (h *MeteringHandler) ReportUsage(c echo.Context) error {
 	authHeader := c.Request().Header.Get("Authorization")
 	if authHeader == "" {
