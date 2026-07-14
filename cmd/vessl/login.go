@@ -47,7 +47,7 @@ var loginCmd = &cobra.Command{
 
 		// Initialize client without token just to login
 		client := http.NewClient(serverURL, "")
-		
+
 		authResp, err := client.Login(email, password)
 		if err != nil {
 			fmt.Printf("❌ Authentication failed: %v\n", err)
