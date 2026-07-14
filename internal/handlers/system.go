@@ -15,6 +15,12 @@ func NewSystemHandler() *SystemHandler {
 	return &SystemHandler{}
 }
 
+// @Summary Restart the Vessl daemon
+// @Description Triggers a restart of the Vessl daemon (admin only)
+// @Tags System
+// @Produce json
+// @Success 200 {object} utils.BaseResponse
+// @Router /system/restart [post]
 func (h *SystemHandler) Restart(c echo.Context) error {
 	go func() {
 		if _, err := exec.LookPath("docker"); err == nil {

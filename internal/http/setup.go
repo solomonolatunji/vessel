@@ -166,6 +166,8 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	emailSettingsHandler := handlers.NewEmailSettingsHandler(emailSettingsService)
 	aiDiagnosticsHandler := handlers.NewAIDiagnosticsHandler(aiSettingsService, deploymentService, projectService)
 	vercelHandler := handlers.NewVercelHandler(vercelService)
+	composeDeployer := engine.NewComposeDeployer(dockerClient)
+	composeHandler := handlers.NewComposeHandler(composeDeployer, projectService, appService, environmentSQLiteRepository, appServiceSQLiteRepository)
 	serverlessHandler := handlers.NewServerlessHandler(serverlessService)
 	systemHandler := handlers.NewSystemHandler()
 
@@ -213,6 +215,7 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 		vercelHandler:          vercelHandler,
 		serverlessHandler:      serverlessHandler,
 		systemHandler:          systemHandler,
+		composeHandler:         composeHandler,
 	}
 
 	if srv.deployer != nil {

@@ -22,6 +22,7 @@ import (
 func runDeploy(args []string) {
 	gitURL := ""
 	imageRef := ""
+	composePath := ""
 	projectID := ""
 	branch := "main"
 	port := 3000
@@ -36,6 +37,11 @@ func runDeploy(args []string) {
 		case "--image", "-i":
 			if i+1 < len(args) {
 				imageRef = args[i+1]
+				i++
+			}
+		case "--compose", "-c":
+			if i+1 < len(args) {
+				composePath = args[i+1]
 				i++
 			}
 		case "--project", "-p":
@@ -64,12 +70,12 @@ func runDeploy(args []string) {
 		}
 	}
 
-	if gitURL == "" && imageRef == "" {
-		exitError("Usage: vessld deploy <git-url> or vessld deploy --image <image> [--port <n>]")
+	if gitURL == "" && imageRef == "" && composePath == "" {
+		exitError("Usage: vessld deploy <git-url> or --image <image> or --compose <file>")
 	}
 
-	if gitURL != "" && imageRef != "" {
-		exitError("Specify either a Git URL or --image, not both")
+	if (gitURL != "" && imageRef != "") || (gitURL != "" && composePath != "") || (imageRef != "" && composePath != "") {
+		exitError("Specify only one: Git URL, --image, or --compose")
 	}
 
 	dataDir, db, vlt := initDataDir()
@@ -187,7 +193,7 @@ func runDeploy(args []string) {
 			exitError("Deployment failed: %v", err)
 		}
 		fmt.Printf("\n✅ Deployed! Container: %s\n", containerID)
-	} else {
+	} else if imageRef != "" {
 		fmt.Printf("🐳 Deploying image %s...\n", imageRef)
 		deployer := engine.NewDeployer(dockerClient, &dbDeployerStore{db: db, vault: vlt})
 		containerID, err := deployer.DeployImage(context.Background(), svc, os.Stdout)
@@ -196,6 +202,17 @@ func runDeploy(args []string) {
 		}
 		slog.Info("container started from image", "image", imageRef, "containerID", containerID)
 		fmt.Printf("\n✅ Deployed! Container: %s\n", containerID)
+	} else {
+		fmt.Printf("📦 Deploying compose file %s...\n", composePath)
+		composeDeployer := engine.NewComposeDeployer(dockerClient)
+		services, err := composeDeployer.Deploy(context.Background(), composePath, projectID)
+		if err != nil {
+			exitError("Compose deploy failed: %v", err)
+		}
+		fmt.Printf("\n✅ Deployed %d services from compose file\n", len(services))
+		for _, s := range services {
+			fmt.Printf("   - %s (%s)\n", s.Name, s.ContainerID[:12])
+		}
 	}
 
 	fmt.Printf("   App: %s (%s)\n", appName, svc.ID[:8])
