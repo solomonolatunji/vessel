@@ -55,13 +55,21 @@ body {
 
 body {
   background-color: var(--vessl-bg);
-  background-image: 
+  background-image:
     linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
     radial-gradient(circle at 15% 50%, rgba(124, 58, 237, 0.12), transparent 40%),
     radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.12), transparent 40%);
-  background-size: 3rem 3rem, 3rem 3rem, cover, cover;
-  background-position: center top, center top, center center, center center;
+  background-size:
+    3rem 3rem,
+    3rem 3rem,
+    cover,
+    cover;
+  background-position:
+    center top,
+    center top,
+    center center,
+    center center;
   background-attachment: fixed;
 }
 
