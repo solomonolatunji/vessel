@@ -6,6 +6,7 @@ export interface AppService {
   environmentId: string;
   name: string;
   repositoryUrl: string;
+  imageRef?: string;
   branch: string;
   rootDirectory: string;
   buildCommand: string;
@@ -89,6 +90,7 @@ export interface CreateAppServiceRequest {
   projectId: string;
   name: string;
   repositoryUrl: string;
+  imageRef?: string;
   branch: string;
   rootDirectory: string;
   buildCommand: string;
@@ -103,6 +105,7 @@ export interface CreateAppServiceRequest {
 export interface UpdateAppServiceRequest {
   name: string;
   repositoryUrl: string;
+  imageRef?: string;
   branch: string;
   rootDirectory: string;
   buildCommand: string;

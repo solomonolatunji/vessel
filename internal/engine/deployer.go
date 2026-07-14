@@ -315,3 +315,19 @@ func (d *Deployer) waitForHealthyContainer(ctx context.Context, containerName st
 	}
 	return false
 }
+
+func (d *Deployer) DeployImage(ctx context.Context, app *models.AppService, logWriter io.Writer) (string, error) {
+	if app.ImageRef == "" {
+		return "", fmt.Errorf("image ref is empty")
+	}
+
+	port := app.InternalPort
+	if port <= 0 {
+		port = defaultAppPort()
+	}
+
+	containerName := fmt.Sprintf("vessl-app-%s", utils.NormalizeContainerName(app.ID))
+	domain := app.Domain
+
+	return d.containerManager.CreateAndStart(ctx, containerName, app.ImageRef, app.ID, domain, port, nil, defaultMemoryMB(), defaultCPURequest(), app.HealthCheckPath)
+}

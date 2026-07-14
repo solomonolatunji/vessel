@@ -37,6 +37,7 @@ type AppService struct {
 	EnvironmentID   string    `json:"environmentId"`
 	Name            string    `json:"name"`
 	RepositoryURL   string    `json:"repositoryUrl"`
+	ImageRef        string    `json:"imageRef,omitempty"`
 	Branch          string    `json:"branch"`
 	RootDirectory   string    `json:"rootDirectory"`
 	BuildCommand    string    `json:"buildCommand"`

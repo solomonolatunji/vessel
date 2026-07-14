@@ -105,6 +105,22 @@ func (s *DeploymentService) ExecuteDeploymentAsync(d *models.Deployment) {
 			return
 		}
 
+		if app.ImageRef != "" {
+			d.Status = "PULLING"
+			_ = s.repo.Update(bgCtx, d)
+
+			containerID, err := s.deployer.DeployImage(bgCtx, app, nil)
+			if err != nil {
+				s.UpdateStatus(bgCtx, d.ID, "FAILED", fmt.Sprintf("Image deploy failed: %v\n", err), "")
+				return
+			}
+
+			s.UpdateStatus(bgCtx, d.ID, "READY", "Deployment succeeded.\n", containerID)
+			app.ContainerID = containerID
+			_ = s.appRepo.Update(bgCtx, app)
+			return
+		}
+
 		sourceDir := fmt.Sprintf("data/builds/%s/%s", app.ID, d.ID)
 
 		d.Status = "CLONING"

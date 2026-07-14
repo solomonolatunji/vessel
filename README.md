@@ -35,7 +35,8 @@ vesslctl config                # View config
 vesslctl config site-name=Prod # Update setting
 vesslctl logs -f               # Tail logs
 vesslctl restart               # Restart daemon (applies domain/config changes)
-vesslctl deploy <git-url>      # Deploy app
+vesslctl deploy <git-url>           # Deploy app from Git
+vesslctl deploy --image nginx:latest  # Deploy from Docker image
 vesslctl apps:list             # List apps
 vesslctl db:create my-db postgres --project <id>  # Create DB
 vesslctl backup                # Backup database

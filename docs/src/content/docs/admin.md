@@ -23,6 +23,7 @@ vesslctl restart          # Restart the Vessl daemon
 
 # App management
 vesslctl deploy <git-url>           # Deploy an app from a Git URL
+vesslctl deploy --image nginx:latest --port 80  # Deploy from a Docker image
 vesslctl apps:list                  # List all apps
 vesslctl apps:show <id>             # Show app details
 vesslctl apps:create <name>         # Create an app

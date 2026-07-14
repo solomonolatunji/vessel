@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -20,14 +21,21 @@ import (
 
 func runDeploy(args []string) {
 	gitURL := ""
+	imageRef := ""
 	projectID := ""
 	branch := "main"
+	port := 3000
 
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--git", "-g":
 			if i+1 < len(args) {
 				gitURL = args[i+1]
+				i++
+			}
+		case "--image", "-i":
+			if i+1 < len(args) {
+				imageRef = args[i+1]
 				i++
 			}
 		case "--project", "-p":
@@ -40,15 +48,28 @@ func runDeploy(args []string) {
 				branch = args[i+1]
 				i++
 			}
+		case "--port":
+			if i+1 < len(args) {
+				if p, err := parseUint(args[i+1]); err == nil {
+					port = p
+				}
+				i++
+			}
 		default:
 			if strings.HasPrefix(args[i], "http") || strings.HasPrefix(args[i], "git@") {
 				gitURL = args[i]
+			} else if strings.Contains(args[i], ":") || strings.Contains(args[i], "/") {
+				imageRef = args[i]
 			}
 		}
 	}
 
-	if gitURL == "" {
-		exitError("Usage: vessld deploy <git-url> [--project <id>] [--branch <name>]")
+	if gitURL == "" && imageRef == "" {
+		exitError("Usage: vessld deploy <git-url> or vessld deploy --image <image> [--port <n>]")
+	}
+
+	if gitURL != "" && imageRef != "" {
+		exitError("Specify either a Git URL or --image, not both")
 	}
 
 	dataDir, db, vlt := initDataDir()
@@ -64,6 +85,15 @@ func runDeploy(args []string) {
 	projectRepo := repositories.NewProjectSQLiteRepository(db, envRepo)
 	settingsRepo := repositories.NewSettingsSQLiteRepository(db)
 
+	appName := extractRepoName(gitURL)
+	if appName == "app" && imageRef != "" {
+		appName = imageRef
+		if idx := strings.LastIndex(appName, "/"); idx >= 0 {
+			appName = appName[idx+1:]
+		}
+		appName = strings.Split(appName, ":")[0]
+	}
+
 	if projectID == "" {
 		projects, _, _ := projectRepo.List(context.Background(), "", 100, 0)
 		if len(projects) > 0 {
@@ -72,7 +102,7 @@ func runDeploy(args []string) {
 		} else {
 			p := &models.ProjectConfig{
 				ID:        uuid.New().String(),
-				Name:      extractRepoName(gitURL),
+				Name:      appName,
 				CreatedAt: time.Now(),
 				UpdatedAt: time.Now(),
 			}
@@ -103,7 +133,6 @@ func runDeploy(args []string) {
 		fmt.Println("  Created environment: production")
 	}
 
-	appName := extractRepoName(gitURL)
 	apps, _ := appRepo.ListByProject(context.Background(), projectID)
 	var svc *models.AppService
 	for _, a := range apps {
@@ -118,11 +147,13 @@ func runDeploy(args []string) {
 			ProjectID:     projectID,
 			EnvironmentID: envID,
 			Name:          appName,
-			InternalPort:  3000,
-			BuildEngine:   "railpack",
+			InternalPort:  port,
 			Status:        "created",
 			CreatedAt:     time.Now(),
 			UpdatedAt:     time.Now(),
+		}
+		if imageRef != "" {
+			svc.RepositoryURL = imageRef
 		}
 		if err := appRepo.Create(context.Background(), svc); err != nil {
 			exitError("Failed to create app: %v", err)
@@ -132,30 +163,53 @@ func runDeploy(args []string) {
 		fmt.Printf("📦 Using existing app: %s (%s)\n", appName, svc.ID[:8])
 	}
 
-	cloneDir := filepath.Join(dataDir, "builds", svc.ID)
-	_ = os.RemoveAll(cloneDir)
-	_ = os.MkdirAll(cloneDir, 0o755)
-	fmt.Printf("📥 Cloning %s (branch: %s)...\n", gitURL, branch)
-	cloneCmd := exec.Command("git", "clone", "--depth", "1", "--branch", branch, gitURL, cloneDir)
-	cloneCmd.Stdout = os.Stdout
-	cloneCmd.Stderr = os.Stderr
-	if err := cloneCmd.Run(); err != nil {
-		exitError("Git clone failed: %v", err)
+	if gitURL != "" {
+		cloneDir := filepath.Join(dataDir, "builds", svc.ID)
+		_ = os.RemoveAll(cloneDir)
+		_ = os.MkdirAll(cloneDir, 0o755)
+		fmt.Printf("📥 Cloning %s (branch: %s)...\n", gitURL, branch)
+		cloneCmd := exec.Command("git", "clone", "--depth", "1", "--branch", branch, gitURL, cloneDir)
+		cloneCmd.Stdout = os.Stdout
+		cloneCmd.Stderr = os.Stderr
+		if err := cloneCmd.Run(); err != nil {
+			exitError("Git clone failed: %v", err)
+		}
+
+		project, err := projectRepo.Get(context.Background(), projectID)
+		if err != nil {
+			exitError("Failed to load project: %v", err)
+		}
+
+		deployer := engine.NewDeployer(dockerClient, &dbDeployerStore{db: db, vault: vlt})
+		fmt.Println("🔨 Building and deploying...")
+		containerID, err := deployer.Deploy(context.Background(), project, cloneDir, os.Stdout)
+		if err != nil {
+			exitError("Deployment failed: %v", err)
+		}
+		fmt.Printf("\n✅ Deployed! Container: %s\n", containerID)
+	} else {
+		fmt.Printf("🐳 Pulling image %s...\n", imageRef)
+		cm := engine.NewContainerManager(dockerClient, &dbDeployerStore{db: db, vault: vlt})
+		containerName := fmt.Sprintf("vessl-app-%s", svc.ID[:8])
+		containerID, err := cm.CreateAndStart(
+			context.Background(),
+			containerName,
+			imageRef,
+			svc.ID,
+			"",
+			port,
+			[]string{},
+			512,
+			0.5,
+			"",
+		)
+		if err != nil {
+			exitError("Failed to start container: %v", err)
+		}
+		slog.Info("container started from image", "image", imageRef, "containerID", containerID)
+		fmt.Printf("\n✅ Deployed! Container: %s\n", containerID)
 	}
 
-	project, err := projectRepo.Get(context.Background(), projectID)
-	if err != nil {
-		exitError("Failed to load project: %v", err)
-	}
-
-	deployer := engine.NewDeployer(dockerClient, &dbDeployerStore{db: db, vault: vlt})
-	fmt.Println("🔨 Building and deploying...")
-	containerID, err := deployer.Deploy(context.Background(), project, cloneDir, os.Stdout)
-	if err != nil {
-		exitError("Deployment failed: %v", err)
-	}
-
-	fmt.Printf("\n✅ Deployed! Container: %s\n", containerID)
 	fmt.Printf("   App: %s (%s)\n", appName, svc.ID[:8])
 
 	wildcard := ""
