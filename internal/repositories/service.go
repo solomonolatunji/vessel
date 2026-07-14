@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
 
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/utils"
@@ -26,11 +27,11 @@ type AppServiceRepository interface {
 
 type AppServiceSQLiteRepository struct {
 	mu sync.RWMutex
-	db *sql.DB
+	db *sqlx.DB
 }
 
 func NewAppServiceSQLiteRepository(db *sql.DB) *AppServiceSQLiteRepository {
-	return &AppServiceSQLiteRepository{db: db}
+	return &AppServiceSQLiteRepository{db: sqlx.NewDb(db, "sqlite")}
 }
 
 func (r *AppServiceSQLiteRepository) Create(_ context.Context, svc *models.AppService) error {
@@ -61,18 +62,13 @@ func (r *AppServiceSQLiteRepository) Create(_ context.Context, svc *models.AppSe
 	return nil
 }
 
-func (r *AppServiceSQLiteRepository) GetByID(_ context.Context, id string) (*models.AppService, error) {
+func (r *AppServiceSQLiteRepository) GetByID(ctx context.Context, id string) (*models.AppService, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	row := r.db.QueryRow(
-		`SELECT id, project_id, environment_id, name, repository_url, COALESCE(image_ref,''), branch, root_directory, build_command, start_command, dockerfile_path, build_engine, internal_port, domain, health_check_path, container_id, status, created_at, updated_at
-		FROM app_services WHERE id = ?`, id,
-	)
 	var svc models.AppService
-	err := row.Scan(
-		&svc.ID, &svc.ProjectID, &svc.EnvironmentID, &svc.Name, &svc.RepositoryURL, &svc.ImageRef, &svc.Branch,
-		&svc.RootDirectory, &svc.BuildCommand, &svc.StartCommand, &svc.DockerfilePath, &svc.BuildEngine,
-		&svc.InternalPort, &svc.Domain, &svc.HealthCheckPath, &svc.ContainerID, &svc.Status, &svc.CreatedAt, &svc.UpdatedAt,
+	err := r.db.GetContext(ctx, &svc,
+		`SELECT id, project_id, environment_id, name, repository_url, COALESCE(image_ref,'') AS image_ref, branch, root_directory, build_command, start_command, dockerfile_path, build_engine, internal_port, domain, health_check_path, container_id, status, created_at, updated_at
+		FROM app_services WHERE id = ?`, id,
 	)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, utils.NewNotFoundError("AppService", id)
@@ -83,46 +79,55 @@ func (r *AppServiceSQLiteRepository) GetByID(_ context.Context, id string) (*mod
 	return &svc, nil
 }
 
-func (r *AppServiceSQLiteRepository) ListByEnvironment(_ context.Context, environmentID string) ([]*models.AppService, error) {
+func (r *AppServiceSQLiteRepository) ListByEnvironment(ctx context.Context, environmentID string) ([]*models.AppService, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	rows, err := r.db.Query(
-		`SELECT id, project_id, environment_id, name, repository_url, COALESCE(image_ref,''), branch, root_directory, build_command, start_command, dockerfile_path, build_engine, internal_port, domain, health_check_path, container_id, status, created_at, updated_at
+	var list []*models.AppService
+	err := r.db.SelectContext(ctx, &list,
+		`SELECT id, project_id, environment_id, name, repository_url, COALESCE(image_ref,'') AS image_ref, branch, root_directory, build_command, start_command, dockerfile_path, build_engine, internal_port, domain, health_check_path, container_id, status, created_at, updated_at
 		FROM app_services WHERE environment_id = ? ORDER BY created_at ASC`, environmentID,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list app services by environment: %w", err)
 	}
-	defer rows.Close()
-	return scanServices(rows)
+	if list == nil {
+		list = make([]*models.AppService, 0)
+	}
+	return list, nil
 }
 
-func (r *AppServiceSQLiteRepository) ListByProject(_ context.Context, projectID string) ([]*models.AppService, error) {
+func (r *AppServiceSQLiteRepository) ListByProject(ctx context.Context, projectID string) ([]*models.AppService, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	rows, err := r.db.Query(
-		`SELECT id, project_id, environment_id, name, repository_url, COALESCE(image_ref,''), branch, root_directory, build_command, start_command, dockerfile_path, build_engine, internal_port, domain, health_check_path, container_id, status, created_at, updated_at
+	var list []*models.AppService
+	err := r.db.SelectContext(ctx, &list,
+		`SELECT id, project_id, environment_id, name, repository_url, COALESCE(image_ref,'') AS image_ref, branch, root_directory, build_command, start_command, dockerfile_path, build_engine, internal_port, domain, health_check_path, container_id, status, created_at, updated_at
 		FROM app_services WHERE project_id = ? ORDER BY created_at ASC`, projectID,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list app services by project: %w", err)
 	}
-	defer rows.Close()
-	return scanServices(rows)
+	if list == nil {
+		list = make([]*models.AppService, 0)
+	}
+	return list, nil
 }
 
-func (r *AppServiceSQLiteRepository) ListAll(_ context.Context) ([]*models.AppService, error) {
+func (r *AppServiceSQLiteRepository) ListAll(ctx context.Context) ([]*models.AppService, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	rows, err := r.db.Query(
-		`SELECT id, project_id, environment_id, name, repository_url, COALESCE(image_ref,''), branch, root_directory, build_command, start_command, dockerfile_path, build_engine, internal_port, domain, health_check_path, container_id, status, created_at, updated_at
+	var list []*models.AppService
+	err := r.db.SelectContext(ctx, &list,
+		`SELECT id, project_id, environment_id, name, repository_url, COALESCE(image_ref,'') AS image_ref, branch, root_directory, build_command, start_command, dockerfile_path, build_engine, internal_port, domain, health_check_path, container_id, status, created_at, updated_at
 		FROM app_services ORDER BY created_at ASC`,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list all app services: %w", err)
 	}
-	defer rows.Close()
-	return scanServices(rows)
+	if list == nil {
+		list = make([]*models.AppService, 0)
+	}
+	return list, nil
 }
 
 func (r *AppServiceSQLiteRepository) Update(_ context.Context, svc *models.AppService) error {
@@ -147,20 +152,4 @@ func (r *AppServiceSQLiteRepository) Delete(_ context.Context, id string) error 
 	defer r.mu.Unlock()
 	_, err := r.db.Exec(`DELETE FROM app_services WHERE id = ?`, id)
 	return err
-}
-
-func scanServices(rows *sql.Rows) ([]*models.AppService, error) {
-	var list []*models.AppService
-	for rows.Next() {
-		var svc models.AppService
-		if err := rows.Scan(
-			&svc.ID, &svc.ProjectID, &svc.EnvironmentID, &svc.Name, &svc.RepositoryURL, &svc.ImageRef, &svc.Branch,
-			&svc.RootDirectory, &svc.BuildCommand, &svc.StartCommand, &svc.DockerfilePath, &svc.BuildEngine,
-			&svc.InternalPort, &svc.Domain, &svc.HealthCheckPath, &svc.ContainerID, &svc.Status, &svc.CreatedAt, &svc.UpdatedAt,
-		); err != nil {
-			return nil, fmt.Errorf("failed to scan app service row: %w", err)
-		}
-		list = append(list, &svc)
-	}
-	return list, rows.Err()
 }

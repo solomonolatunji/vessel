@@ -6,6 +6,9 @@ import (
 	"errors"
 	"fmt"
 	"time"
+
+	"github.com/jmoiron/sqlx"
+
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/utils"
 )
@@ -18,11 +21,11 @@ type NotificationRepository interface {
 }
 
 type NotificationSQLiteRepository struct {
-	db *sql.DB
+	db *sqlx.DB
 }
 
 func NewNotificationSQLiteRepository(db *sql.DB) *NotificationSQLiteRepository {
-	return &NotificationSQLiteRepository{db: db}
+	return &NotificationSQLiteRepository{db: sqlx.NewDb(db, "sqlite")}
 }
 
 func (r *NotificationSQLiteRepository) ListChannelsByTeam(ctx context.Context, workspaceID string) ([]models.WorkspaceNotificationChannel, error) {

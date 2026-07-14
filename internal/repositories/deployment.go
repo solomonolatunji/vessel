@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
 
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/utils"
@@ -23,12 +24,12 @@ type DeploymentRepository interface {
 }
 
 type DeploymentSQLiteRepository struct {
-	db *sql.DB
+	db *sqlx.DB
 	mu sync.Mutex
 }
 
 func NewDeploymentSQLiteRepository(db *sql.DB) *DeploymentSQLiteRepository {
-	return &DeploymentSQLiteRepository{db: db}
+	return &DeploymentSQLiteRepository{db: sqlx.NewDb(db, "sqlite")}
 }
 
 func (r *DeploymentSQLiteRepository) Create(_ context.Context, d *models.Deployment) error {
@@ -55,57 +56,37 @@ func (r *DeploymentSQLiteRepository) Create(_ context.Context, d *models.Deploym
 	return nil
 }
 
-func (r *DeploymentSQLiteRepository) GetByID(_ context.Context, id string) (*models.Deployment, error) {
-	row := r.db.QueryRow(`SELECT id, service_id, environment_id, project_id, status, commit_hash,
+func (r *DeploymentSQLiteRepository) GetByID(ctx context.Context, id string) (*models.Deployment, error) {
+	var d models.Deployment
+	err := r.db.GetContext(ctx, &d, `SELECT id, service_id, environment_id, project_id, status, commit_hash,
 		commit_message, branch, trigger, build_logs, container_id, created_at, updated_at, finished_at
 		FROM deployments WHERE id = ?`, id)
-	var d models.Deployment
-	var finishedAt sql.NullTime
-	err := row.Scan(
-		&d.ID, &d.ServiceID, &d.EnvironmentID, &d.ProjectID, &d.Status, &d.CommitHash,
-		&d.CommitMessage, &d.Branch, &d.Trigger, &d.BuildLogs, &d.ContainerID, &d.CreatedAt, &d.UpdatedAt, &finishedAt,
-	)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, utils.NewNotFoundError("Deployment", id)
 	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to scan deployment: %w", err)
 	}
-	if finishedAt.Valid {
-		d.FinishedAt = finishedAt.Time
-	}
 	return &d, nil
 }
 
-func (r *DeploymentSQLiteRepository) ListByService(_ context.Context, serviceID string, limit, offset int) ([]*models.Deployment, int, error) {
+func (r *DeploymentSQLiteRepository) ListByService(ctx context.Context, serviceID string, limit, offset int) ([]*models.Deployment, int, error) {
 	var total int
-	if err := r.db.QueryRow(`SELECT COUNT(*) FROM deployments WHERE service_id = ?`, serviceID).Scan(&total); err != nil {
+	if err := r.db.GetContext(ctx, &total, `SELECT COUNT(*) FROM deployments WHERE service_id = ?`, serviceID); err != nil {
 		return nil, 0, err
 	}
 
-	rows, err := r.db.Query(`SELECT id, service_id, environment_id, project_id, status, commit_hash,
+	var deps []*models.Deployment
+	err := r.db.SelectContext(ctx, &deps, `SELECT id, service_id, environment_id, project_id, status, commit_hash,
 		commit_message, branch, trigger, build_logs, container_id, created_at, updated_at, finished_at
 		FROM deployments WHERE service_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?`, serviceID, limit, offset)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to query service deployments: %w", err)
 	}
-	defer rows.Close()
-	var deps []*models.Deployment
-	for rows.Next() {
-		var d models.Deployment
-		var finishedAt sql.NullTime
-		if err := rows.Scan(
-			&d.ID, &d.ServiceID, &d.EnvironmentID, &d.ProjectID, &d.Status, &d.CommitHash,
-			&d.CommitMessage, &d.Branch, &d.Trigger, &d.BuildLogs, &d.ContainerID, &d.CreatedAt, &d.UpdatedAt, &finishedAt,
-		); err != nil {
-			return nil, 0, fmt.Errorf("failed to scan deployment row: %w", err)
-		}
-		if finishedAt.Valid {
-			d.FinishedAt = finishedAt.Time
-		}
-		deps = append(deps, &d)
+	if deps == nil {
+		deps = make([]*models.Deployment, 0)
 	}
-	return deps, total, rows.Err()
+	return deps, total, nil
 }
 
 func (r *DeploymentSQLiteRepository) Update(_ context.Context, d *models.Deployment) error {

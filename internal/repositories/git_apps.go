@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/jmoiron/sqlx"
+
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/utils"
 )
@@ -30,49 +32,15 @@ type GitAppRepository interface {
 }
 
 type GitAppSQLiteRepository struct {
-	db    *sql.DB
+	db    *sqlx.DB
 	vault Vault
 }
 
 func NewGitAppSQLiteRepository(db *sql.DB, vault Vault) *GitAppSQLiteRepository {
-	return &GitAppSQLiteRepository{db: db, vault: vault}
+	return &GitAppSQLiteRepository{db: sqlx.NewDb(db, "sqlite"), vault: vault}
 }
 
-type scanner interface {
-	Scan(dest ...any) error
-}
-
-func listApps[T any](ctx context.Context, db *sql.DB, query string, workspaceID string, scanFn func(scanner, *T) error) ([]T, error) {
-	rows, err := db.QueryContext(ctx, query, workspaceID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var apps []T
-	for rows.Next() {
-		var a T
-		if err := scanFn(rows, &a); err != nil {
-			return nil, err
-		}
-		apps = append(apps, a)
-	}
-	return apps, nil
-}
-
-func getApp[T any](ctx context.Context, db *sql.DB, query string, id string, modelName string, scanFn func(scanner, *T) error) (*T, error) {
-	row := db.QueryRowContext(ctx, query, id)
-	var a T
-	if err := scanFn(row, &a); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, utils.NewNotFoundError(modelName, id)
-		}
-		return nil, err
-	}
-	return &a, nil
-}
-
-func saveApp(ctx context.Context, db *sql.DB, tableName string, columns []string, values []any) error {
+func saveApp(ctx context.Context, db *sqlx.DB, tableName string, columns []string, values []any) error {
 	placeholders := make([]string, len(columns))
 	updates := make([]string, len(columns))
 	for i, col := range columns {
@@ -101,39 +69,42 @@ func saveApp(ctx context.Context, db *sql.DB, tableName string, columns []string
 	return err
 }
 
-func deleteApp(ctx context.Context, db *sql.DB, tableName, id string) error {
+func deleteApp(ctx context.Context, db *sqlx.DB, tableName, id string) error {
 	_, err := db.ExecContext(ctx, fmt.Sprintf("DELETE FROM %s WHERE id = ?", tableName), id)
 	return err
 }
 
 func (r *GitAppSQLiteRepository) ListGithubApps(ctx context.Context, workspaceID string) ([]models.GithubApp, error) {
 	query := `SELECT id, workspace_id, name, app_id, installation_id, client_id, is_public, created_at, updated_at FROM github_apps WHERE workspace_id = ?`
-	return listApps(ctx, r.db, query, workspaceID, func(s scanner, a *models.GithubApp) error {
-		return s.Scan(&a.ID, &a.WorkspaceID, &a.Name, &a.AppID, &a.InstallationID, &a.ClientID, &a.IsPublic, &a.CreatedAt, &a.UpdatedAt)
-	})
+	var apps []models.GithubApp
+	if err := r.db.SelectContext(ctx, &apps, query, workspaceID); err != nil {
+		return nil, err
+	}
+	if apps == nil {
+		apps = make([]models.GithubApp, 0)
+	}
+	return apps, nil
 }
 
 func (r *GitAppSQLiteRepository) GetGithubApp(ctx context.Context, id string) (*models.GithubApp, error) {
 	query := `SELECT id, workspace_id, name, app_id, installation_id, client_id, client_secret, webhook_secret, private_key, is_public, created_at, updated_at FROM github_apps WHERE id = ?`
-	return getApp(ctx, r.db, query, id, "GithubApp", func(s scanner, a *models.GithubApp) error {
-		var cs, ws, pk string
-		if err := s.Scan(&a.ID, &a.WorkspaceID, &a.Name, &a.AppID, &a.InstallationID, &a.ClientID, &cs, &ws, &pk, &a.IsPublic, &a.CreatedAt, &a.UpdatedAt); err != nil {
-			return err
+	var a models.GithubApp
+	if err := r.db.GetContext(ctx, &a, query, id); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, utils.NewNotFoundError("GithubApp", id)
 		}
-		a.ClientSecret, _ = r.vault.Decrypt(cs)
-		if a.ClientSecret == "" {
-			a.ClientSecret = cs
-		}
-		a.WebhookSecret, _ = r.vault.Decrypt(ws)
-		if a.WebhookSecret == "" {
-			a.WebhookSecret = ws
-		}
-		a.PrivateKey, _ = r.vault.Decrypt(pk)
-		if a.PrivateKey == "" {
-			a.PrivateKey = pk
-		}
-		return nil
-	})
+		return nil, err
+	}
+	if cs, err := r.vault.Decrypt(a.ClientSecret); err == nil && cs != "" {
+		a.ClientSecret = cs
+	}
+	if ws, err := r.vault.Decrypt(a.WebhookSecret); err == nil && ws != "" {
+		a.WebhookSecret = ws
+	}
+	if pk, err := r.vault.Decrypt(a.PrivateKey); err == nil && pk != "" {
+		a.PrivateKey = pk
+	}
+	return &a, nil
 }
 
 func (r *GitAppSQLiteRepository) SaveGithubApp(ctx context.Context, app *models.GithubApp) error {
@@ -156,28 +127,32 @@ func (r *GitAppSQLiteRepository) DeleteGithubApp(ctx context.Context, id string)
 
 func (r *GitAppSQLiteRepository) ListGitlabApps(ctx context.Context, workspaceID string) ([]models.GitlabApp, error) {
 	query := `SELECT id, workspace_id, name, app_id, api_url, is_public, created_at, updated_at FROM gitlab_apps WHERE workspace_id = ?`
-	return listApps(ctx, r.db, query, workspaceID, func(s scanner, a *models.GitlabApp) error {
-		return s.Scan(&a.ID, &a.WorkspaceID, &a.Name, &a.AppID, &a.APIURL, &a.IsPublic, &a.CreatedAt, &a.UpdatedAt)
-	})
+	var apps []models.GitlabApp
+	if err := r.db.SelectContext(ctx, &apps, query, workspaceID); err != nil {
+		return nil, err
+	}
+	if apps == nil {
+		apps = make([]models.GitlabApp, 0)
+	}
+	return apps, nil
 }
 
 func (r *GitAppSQLiteRepository) GetGitlabApp(ctx context.Context, id string) (*models.GitlabApp, error) {
 	query := `SELECT id, workspace_id, name, app_id, app_secret, webhook_secret, api_url, is_public, created_at, updated_at FROM gitlab_apps WHERE id = ?`
-	return getApp(ctx, r.db, query, id, "GitlabApp", func(s scanner, a *models.GitlabApp) error {
-		var as, ws string
-		if err := s.Scan(&a.ID, &a.WorkspaceID, &a.Name, &a.AppID, &as, &ws, &a.APIURL, &a.IsPublic, &a.CreatedAt, &a.UpdatedAt); err != nil {
-			return err
+	var a models.GitlabApp
+	if err := r.db.GetContext(ctx, &a, query, id); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, utils.NewNotFoundError("GitlabApp", id)
 		}
-		a.AppSecret, _ = r.vault.Decrypt(as)
-		if a.AppSecret == "" {
-			a.AppSecret = as
-		}
-		a.WebhookSecret, _ = r.vault.Decrypt(ws)
-		if a.WebhookSecret == "" {
-			a.WebhookSecret = ws
-		}
-		return nil
-	})
+		return nil, err
+	}
+	if as, err := r.vault.Decrypt(a.AppSecret); err == nil && as != "" {
+		a.AppSecret = as
+	}
+	if ws, err := r.vault.Decrypt(a.WebhookSecret); err == nil && ws != "" {
+		a.WebhookSecret = ws
+	}
+	return &a, nil
 }
 
 func (r *GitAppSQLiteRepository) SaveGitlabApp(ctx context.Context, app *models.GitlabApp) error {
@@ -199,28 +174,32 @@ func (r *GitAppSQLiteRepository) DeleteGitlabApp(ctx context.Context, id string)
 
 func (r *GitAppSQLiteRepository) ListBitbucketApps(ctx context.Context, workspaceID string) ([]models.BitbucketApp, error) {
 	query := `SELECT id, workspace_id, name, workspace, client_id, is_public, created_at, updated_at FROM bitbucket_apps WHERE workspace_id = ?`
-	return listApps(ctx, r.db, query, workspaceID, func(s scanner, a *models.BitbucketApp) error {
-		return s.Scan(&a.ID, &a.WorkspaceID, &a.Name, &a.Workspace, &a.ClientID, &a.IsPublic, &a.CreatedAt, &a.UpdatedAt)
-	})
+	var apps []models.BitbucketApp
+	if err := r.db.SelectContext(ctx, &apps, query, workspaceID); err != nil {
+		return nil, err
+	}
+	if apps == nil {
+		apps = make([]models.BitbucketApp, 0)
+	}
+	return apps, nil
 }
 
 func (r *GitAppSQLiteRepository) GetBitbucketApp(ctx context.Context, id string) (*models.BitbucketApp, error) {
 	query := `SELECT id, workspace_id, name, workspace, client_id, client_secret, webhook_secret, is_public, created_at, updated_at FROM bitbucket_apps WHERE id = ?`
-	return getApp(ctx, r.db, query, id, "BitbucketApp", func(s scanner, a *models.BitbucketApp) error {
-		var cs, ws string
-		if err := s.Scan(&a.ID, &a.WorkspaceID, &a.Name, &a.Workspace, &a.ClientID, &cs, &ws, &a.IsPublic, &a.CreatedAt, &a.UpdatedAt); err != nil {
-			return err
+	var a models.BitbucketApp
+	if err := r.db.GetContext(ctx, &a, query, id); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, utils.NewNotFoundError("BitbucketApp", id)
 		}
-		a.ClientSecret, _ = r.vault.Decrypt(cs)
-		if a.ClientSecret == "" {
-			a.ClientSecret = cs
-		}
-		a.WebhookSecret, _ = r.vault.Decrypt(ws)
-		if a.WebhookSecret == "" {
-			a.WebhookSecret = ws
-		}
-		return nil
-	})
+		return nil, err
+	}
+	if cs, err := r.vault.Decrypt(a.ClientSecret); err == nil && cs != "" {
+		a.ClientSecret = cs
+	}
+	if ws, err := r.vault.Decrypt(a.WebhookSecret); err == nil && ws != "" {
+		a.WebhookSecret = ws
+	}
+	return &a, nil
 }
 
 func (r *GitAppSQLiteRepository) SaveBitbucketApp(ctx context.Context, app *models.BitbucketApp) error {

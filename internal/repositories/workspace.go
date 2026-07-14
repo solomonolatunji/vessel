@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
 
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/utils"
@@ -37,12 +38,12 @@ type WorkspaceRepository interface {
 }
 
 type WorkspaceSQLiteRepository struct {
-	db *sql.DB
+	db *sqlx.DB
 	mu sync.Mutex
 }
 
 func NewWorkspaceSQLiteRepository(db *sql.DB) *WorkspaceSQLiteRepository {
-	return &WorkspaceSQLiteRepository{db: db}
+	return &WorkspaceSQLiteRepository{db: sqlx.NewDb(db, "sqlite")}
 }
 
 func (r *WorkspaceSQLiteRepository) Migrate(ctx context.Context) error {
@@ -112,17 +113,13 @@ func (r *WorkspaceSQLiteRepository) Get(ctx context.Context, id string) (*models
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	var ws models.Workspace
-	var createdStr, updatedStr string
-	err := r.db.QueryRowContext(ctx, `SELECT id, name, avatar_url, preferred_region, owner_id, created_at, updated_at FROM workspaces WHERE id = ?`, id).
-		Scan(&ws.ID, &ws.Name, &ws.AvatarURL, &ws.PreferredRegion, &ws.OwnerID, &createdStr, &updatedStr)
+	err := r.db.GetContext(ctx, &ws, `SELECT id, name, avatar_url, preferred_region, owner_id, created_at, updated_at FROM workspaces WHERE id = ?`, id)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	}
 	if err != nil {
 		return nil, fmt.Errorf("get workspace: %w", err)
 	}
-	ws.CreatedAt, _ = time.Parse(time.RFC3339, createdStr)
-	ws.UpdatedAt, _ = time.Parse(time.RFC3339, updatedStr)
 	return &ws, nil
 }
 
@@ -131,26 +128,18 @@ func (r *WorkspaceSQLiteRepository) List(ctx context.Context, ownerID string, li
 	defer r.mu.Unlock()
 
 	var total int
-	err := r.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM workspaces WHERE owner_id = ?`, ownerID).Scan(&total)
+	err := r.db.GetContext(ctx, &total, `SELECT COUNT(*) FROM workspaces WHERE owner_id = ?`, ownerID)
 	if err != nil {
 		return nil, 0, fmt.Errorf("count workspaces: %w", err)
 	}
 
-	rows, err := r.db.QueryContext(ctx, `SELECT id, name, avatar_url, preferred_region, owner_id, created_at, updated_at FROM workspaces WHERE owner_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?`, ownerID, limit, offset)
+	var list []*models.Workspace
+	err = r.db.SelectContext(ctx, &list, `SELECT id, name, avatar_url, preferred_region, owner_id, created_at, updated_at FROM workspaces WHERE owner_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?`, ownerID, limit, offset)
 	if err != nil {
 		return nil, 0, fmt.Errorf("list workspaces: %w", err)
 	}
-	defer rows.Close()
-	var list []*models.Workspace
-	for rows.Next() {
-		var ws models.Workspace
-		var createdStr, updatedStr string
-		if err := rows.Scan(&ws.ID, &ws.Name, &ws.AvatarURL, &ws.PreferredRegion, &ws.OwnerID, &createdStr, &updatedStr); err != nil {
-			return nil, 0, err
-		}
-		ws.CreatedAt, _ = time.Parse(time.RFC3339, createdStr)
-		ws.UpdatedAt, _ = time.Parse(time.RFC3339, updatedStr)
-		list = append(list, &ws)
+	if list == nil {
+		list = make([]*models.Workspace, 0)
 	}
 	return list, total, nil
 }
@@ -186,21 +175,13 @@ func (r *WorkspaceSQLiteRepository) ListWorkspacesByUser(ctx context.Context, us
 	          FROM workspaces t
 	          JOIN workspace_members m ON t.id = m.workspace_id
 	          WHERE m.user_id = ? ORDER BY t.created_at DESC`
-	rows, err := r.db.QueryContext(ctx, query, userID)
+	var list []*models.Workspace
+	err := r.db.SelectContext(ctx, &list, query, userID)
 	if err != nil {
 		return nil, fmt.Errorf("list workspaces by user: %w", err)
 	}
-	defer rows.Close()
-	var list []*models.Workspace
-	for rows.Next() {
-		var t models.Workspace
-		var createdStr, updatedStr string
-		if err := rows.Scan(&t.ID, &t.Name, &t.AvatarURL, &t.PreferredRegion, &t.OwnerID, &createdStr, &updatedStr); err != nil {
-			return nil, err
-		}
-		t.CreatedAt, _ = time.Parse(time.RFC3339, createdStr)
-		t.UpdatedAt, _ = time.Parse(time.RFC3339, updatedStr)
-		list = append(list, &t)
+	if list == nil {
+		list = make([]*models.Workspace, 0)
 	}
 	return list, nil
 }
@@ -242,20 +223,13 @@ func (r *WorkspaceSQLiteRepository) RemoveMember(ctx context.Context, workspaceI
 func (r *WorkspaceSQLiteRepository) ListMembers(ctx context.Context, workspaceID string) ([]*models.WorkspaceMember, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	rows, err := r.db.QueryContext(ctx, `SELECT id, workspace_id, user_id, user_email, role, joined_at FROM workspace_members WHERE workspace_id = ? ORDER BY joined_at ASC`, workspaceID)
+	var list []*models.WorkspaceMember
+	err := r.db.SelectContext(ctx, &list, `SELECT id, workspace_id, user_id, user_email, role, joined_at FROM workspace_members WHERE workspace_id = ? ORDER BY joined_at ASC`, workspaceID)
 	if err != nil {
 		return nil, fmt.Errorf("list workspace members: %w", err)
 	}
-	defer rows.Close()
-	var list []*models.WorkspaceMember
-	for rows.Next() {
-		var m models.WorkspaceMember
-		var joinedStr string
-		if err := rows.Scan(&m.ID, &m.WorkspaceID, &m.UserID, &m.UserEmail, &m.Role, &joinedStr); err != nil {
-			return nil, err
-		}
-		m.JoinedAt, _ = time.Parse(time.RFC3339, joinedStr)
-		list = append(list, &m)
+	if list == nil {
+		list = make([]*models.WorkspaceMember, 0)
 	}
 	return list, nil
 }
@@ -291,17 +265,13 @@ func (r *WorkspaceSQLiteRepository) GetInviteByToken(ctx context.Context, token 
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	var inv models.WorkspaceInvite
-	var expStr, createdStr string
-	err := r.db.QueryRowContext(ctx, `SELECT id, workspace_id, email, role, token, invited_by, expires_at, created_at FROM workspace_invites WHERE token = ?`, token).
-		Scan(&inv.ID, &inv.WorkspaceID, &inv.Email, &inv.Role, &inv.Token, &inv.InvitedBy, &expStr, &createdStr)
+	err := r.db.GetContext(ctx, &inv, `SELECT id, workspace_id, email, role, token, invited_by, expires_at, created_at FROM workspace_invites WHERE token = ?`, token)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, utils.NewNotFoundError("Invite", token)
 	}
 	if err != nil {
 		return nil, fmt.Errorf("get workspace invite: %w", err)
 	}
-	inv.ExpiresAt, _ = time.Parse(time.RFC3339, expStr)
-	inv.CreatedAt, _ = time.Parse(time.RFC3339, createdStr)
 	return &inv, nil
 }
 

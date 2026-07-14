@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
 
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/utils"
@@ -30,54 +31,39 @@ type DomainRepository interface {
 
 type EnvironmentSQLiteRepository struct {
 	mu sync.RWMutex
-	db *sql.DB
+	db *sqlx.DB
 }
 
 func NewEnvironmentSQLiteRepository(db *sql.DB) *EnvironmentSQLiteRepository {
-	return &EnvironmentSQLiteRepository{db: db}
+	return &EnvironmentSQLiteRepository{db: sqlx.NewDb(db, "sqlite")}
 }
 
 func (r *EnvironmentSQLiteRepository) Get(_ context.Context, id string) (*models.EnvironmentConfig, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	row := r.db.QueryRow(
-		`SELECT id, project_id, name, is_default, created_at, updated_at FROM environments WHERE id = ?`, id,
-	)
 	var env models.EnvironmentConfig
-	var isDefault int
-	err := row.Scan(&env.ID, &env.ProjectID, &env.Name, &isDefault, &env.CreatedAt, &env.UpdatedAt)
+	err := r.db.Get(&env, `SELECT id, project_id, name, is_default, created_at, updated_at FROM environments WHERE id = ?`, id)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, utils.NewNotFoundError("Environment", id)
 	}
 	if err != nil {
 		return nil, err
 	}
-	env.IsDefault = isDefault == 1
 	return &env, nil
 }
 
 func (r *EnvironmentSQLiteRepository) ListByProject(_ context.Context, projectID string) ([]models.EnvironmentConfig, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	rows, err := r.db.Query(
-		`SELECT id, project_id, name, is_default, created_at, updated_at FROM environments WHERE project_id = ? ORDER BY is_default DESC, created_at ASC`,
-		projectID,
-	)
+	var envs []models.EnvironmentConfig
+	err := r.db.Select(&envs, `SELECT id, project_id, name, is_default, created_at, updated_at FROM environments WHERE project_id = ? ORDER BY is_default DESC, created_at ASC`, projectID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list environments: %w", err)
 	}
-	defer rows.Close()
-	var envs []models.EnvironmentConfig
-	for rows.Next() {
-		var env models.EnvironmentConfig
-		var isDefault int
-		if err := rows.Scan(&env.ID, &env.ProjectID, &env.Name, &isDefault, &env.CreatedAt, &env.UpdatedAt); err != nil {
-			return nil, fmt.Errorf("failed to scan environment row: %w", err)
-		}
-		env.IsDefault = isDefault == 1
-		envs = append(envs, env)
+	if envs == nil {
+		envs = make([]models.EnvironmentConfig, 0)
 	}
-	return envs, rows.Err()
+	return envs, nil
 }
 
 func (r *EnvironmentSQLiteRepository) Create(_ context.Context, env *models.EnvironmentConfig) error {
@@ -107,50 +93,35 @@ func (r *EnvironmentSQLiteRepository) Delete(_ context.Context, id string) error
 }
 
 type DomainSQLiteRepository struct {
-	db *sql.DB
+	db *sqlx.DB
 }
 
 func NewDomainSQLiteRepository(db *sql.DB) *DomainSQLiteRepository {
-	return &DomainSQLiteRepository{db: db}
+	return &DomainSQLiteRepository{db: sqlx.NewDb(db, "sqlite")}
 }
 
 func (r *DomainSQLiteRepository) ListByProject(_ context.Context, projectID string) ([]models.DomainConfig, error) {
-	rows, err := r.db.Query(
-		`SELECT id, project_id, domain_name, redirect_to, ssl_cert_status, path_prefix, created_at, updated_at FROM domains WHERE project_id = ? ORDER BY domain_name ASC`,
-		projectID,
-	)
+	var domains []models.DomainConfig
+	err := r.db.Select(&domains, `SELECT id, project_id, domain_name, redirect_to, ssl_cert_status, path_prefix, created_at, updated_at FROM domains WHERE project_id = ? ORDER BY domain_name ASC`, projectID)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	var domains []models.DomainConfig
-	for rows.Next() {
-		var d models.DomainConfig
-		if err := rows.Scan(&d.ID, &d.ProjectID, &d.DomainName, &d.RedirectTo, &d.SSLCertStatus, &d.PathPrefix, &d.CreatedAt, &d.UpdatedAt); err != nil {
-			return nil, err
-		}
-		domains = append(domains, d)
+	if domains == nil {
+		domains = make([]models.DomainConfig, 0)
 	}
-	return domains, rows.Err()
+	return domains, nil
 }
 
 func (r *DomainSQLiteRepository) ListAll(ctx context.Context) ([]models.DomainConfig, error) {
-	rows, err := r.db.Query(
-		`SELECT id, project_id, domain_name, redirect_to, ssl_cert_status, path_prefix, created_at, updated_at FROM domains ORDER BY domain_name ASC`,
-	)
+	var domains []models.DomainConfig
+	err := r.db.Select(&domains, `SELECT id, project_id, domain_name, redirect_to, ssl_cert_status, path_prefix, created_at, updated_at FROM domains ORDER BY domain_name ASC`)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	var domains []models.DomainConfig
-	for rows.Next() {
-		var d models.DomainConfig
-		if err := rows.Scan(&d.ID, &d.ProjectID, &d.DomainName, &d.RedirectTo, &d.SSLCertStatus, &d.PathPrefix, &d.CreatedAt, &d.UpdatedAt); err != nil {
-			return nil, err
-		}
-		domains = append(domains, d)
+	if domains == nil {
+		domains = make([]models.DomainConfig, 0)
 	}
-	return domains, rows.Err()
+	return domains, nil
 }
 
 func (r *DomainSQLiteRepository) Create(_ context.Context, d *models.DomainConfig) error {

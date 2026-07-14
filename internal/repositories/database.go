@@ -9,6 +9,7 @@ import (
 	"vessl.dev/vessl/internal/utils"
 
 	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
 
 	"vessl.dev/vessl/internal/models"
 )
@@ -23,13 +24,13 @@ type DatabaseRepository interface {
 }
 
 type DatabaseSQLiteRepository struct {
-	db    *sql.DB
+	db    *sqlx.DB
 	mu    sync.Mutex
 	vault Vault
 }
 
 func NewDatabaseSQLiteRepository(db *sql.DB, vault Vault) *DatabaseSQLiteRepository {
-	return &DatabaseSQLiteRepository{db: db, vault: vault}
+	return &DatabaseSQLiteRepository{db: sqlx.NewDb(db, "sqlite"), vault: vault}
 }
 
 func (r *DatabaseSQLiteRepository) Create(_ context.Context, db *models.Database) error {
@@ -52,18 +53,7 @@ func (r *DatabaseSQLiteRepository) Create(_ context.Context, db *models.Database
 	return err
 }
 
-const listDatabaseQuery = `SELECT id, COALESCE(project_id, ''), COALESCE(environment_id, ''), name, engine, version, port, username, encrypted_password, database_name, volume_path, COALESCE(container_id, ''), status, COALESCE(internal_dns, ''), COALESCE(external_dns, ''), COALESCE(custom_args, ''), created_at, updated_at FROM databases`
-
-func scanDatabase(scanner interface {
-	Scan(dest ...any) error
-}, d *models.Database, encryptedPassword *string,
-) error {
-	return scanner.Scan(
-		&d.ID, &d.ProjectID, &d.EnvironmentID, &d.Name, &d.Engine, &d.Version,
-		&d.Port, &d.Username, encryptedPassword, &d.DatabaseName, &d.VolumePath,
-		&d.ContainerID, &d.Status, &d.InternalDNS, &d.ExternalDNS, &d.CustomArgs, &d.CreatedAt, &d.UpdatedAt,
-	)
-}
+const listDatabaseQuery = `SELECT id, COALESCE(project_id, '') AS project_id, COALESCE(environment_id, '') AS environment_id, name, engine, version, port, username, encrypted_password, database_name, volume_path, COALESCE(container_id, '') AS container_id, status, COALESCE(internal_dns, '') AS internal_dns, COALESCE(external_dns, '') AS external_dns, COALESCE(custom_args, '') AS custom_args, created_at, updated_at FROM databases`
 
 func (r *DatabaseSQLiteRepository) decryptPassword(encrypted string, d *models.Database) {
 	if plain, err := r.vault.Decrypt(encrypted); err == nil {
@@ -74,36 +64,31 @@ func (r *DatabaseSQLiteRepository) decryptPassword(encrypted string, d *models.D
 func (r *DatabaseSQLiteRepository) GetByID(_ context.Context, id string) (*models.Database, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	row := r.db.QueryRow(listDatabaseQuery+` WHERE id = ?`, id)
 	var d models.Database
-	var encryptedPassword string
-	if err := scanDatabase(row, &d, &encryptedPassword); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, utils.NewNotFoundError("Entity", id)
-		}
+	err := r.db.Get(&d, listDatabaseQuery+` WHERE id = ?`, id)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, utils.NewNotFoundError("Entity", id)
+	}
+	if err != nil {
 		return nil, err
 	}
-	r.decryptPassword(encryptedPassword, &d)
+	r.decryptPassword(d.EncryptedPassword, &d)
 	return &d, nil
 }
 
 func (r *DatabaseSQLiteRepository) List(_ context.Context) ([]*models.Database, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	rows, err := r.db.Query(listDatabaseQuery + ` ORDER BY created_at ASC`)
+	var list []*models.Database
+	err := r.db.Select(&list, listDatabaseQuery+` ORDER BY created_at ASC`)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	var list []*models.Database
-	for rows.Next() {
-		var d models.Database
-		var encryptedPassword string
-		if err := scanDatabase(rows, &d, &encryptedPassword); err != nil {
-			return nil, err
-		}
-		r.decryptPassword(encryptedPassword, &d)
-		list = append(list, &d)
+	if list == nil {
+		list = make([]*models.Database, 0)
+	}
+	for _, d := range list {
+		r.decryptPassword(d.EncryptedPassword, d)
 	}
 	return list, nil
 }
@@ -111,20 +96,16 @@ func (r *DatabaseSQLiteRepository) List(_ context.Context) ([]*models.Database, 
 func (r *DatabaseSQLiteRepository) ListByProject(_ context.Context, projectID string) ([]*models.Database, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	rows, err := r.db.Query(listDatabaseQuery+` WHERE project_id = ? ORDER BY created_at ASC`, projectID)
+	var list []*models.Database
+	err := r.db.Select(&list, listDatabaseQuery+` WHERE project_id = ? ORDER BY created_at ASC`, projectID)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	var list []*models.Database
-	for rows.Next() {
-		var d models.Database
-		var encryptedPassword string
-		if err := scanDatabase(rows, &d, &encryptedPassword); err != nil {
-			return nil, err
-		}
-		r.decryptPassword(encryptedPassword, &d)
-		list = append(list, &d)
+	if list == nil {
+		list = make([]*models.Database, 0)
+	}
+	for _, d := range list {
+		r.decryptPassword(d.EncryptedPassword, d)
 	}
 	return list, nil
 }

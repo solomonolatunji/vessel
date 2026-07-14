@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
 
 	"vessl.dev/vessl/internal/models"
 )
@@ -23,50 +24,43 @@ type EnvRepository interface {
 }
 
 type ProjectSQLiteRepository struct {
-	db           *sql.DB
+	db           *sqlx.DB
 	environments EnvironmentRepository
 }
 
 func NewProjectSQLiteRepository(db *sql.DB, envRepo EnvironmentRepository) *ProjectSQLiteRepository {
-	return &ProjectSQLiteRepository{db: db, environments: envRepo}
+	return &ProjectSQLiteRepository{db: sqlx.NewDb(db, "sqlite"), environments: envRepo}
 }
 
 func (r *ProjectSQLiteRepository) List(_ context.Context, workspaceID string, limit, offset int) ([]models.ProjectConfig, int, error) {
 	var total int
 	var err error
-	var rows *sql.Rows
+	var projects []models.ProjectConfig
 
 	if workspaceID != "" {
-		if err = r.db.QueryRow(`SELECT COUNT(*) FROM projects WHERE workspace_id = ?`, workspaceID).Scan(&total); err != nil {
+		if err = r.db.Get(&total, `SELECT COUNT(*) FROM projects WHERE workspace_id = ?`, workspaceID); err != nil {
 			return nil, 0, err
 		}
-		rows, err = r.db.Query(`SELECT id, COALESCE(workspace_id, ''), name, COALESCE(description,''), created_at, updated_at FROM projects WHERE workspace_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?`, workspaceID, limit, offset)
+		err = r.db.Select(&projects, `SELECT id, COALESCE(workspace_id, '') AS workspace_id, name, COALESCE(description,'') AS description, created_at, updated_at FROM projects WHERE workspace_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?`, workspaceID, limit, offset)
 	} else {
-		if err = r.db.QueryRow(`SELECT COUNT(*) FROM projects`).Scan(&total); err != nil {
+		if err = r.db.Get(&total, `SELECT COUNT(*) FROM projects`); err != nil {
 			return nil, 0, err
 		}
-		rows, err = r.db.Query(`SELECT id, COALESCE(workspace_id, ''), name, COALESCE(description,''), created_at, updated_at FROM projects ORDER BY created_at DESC LIMIT ? OFFSET ?`, limit, offset)
+		err = r.db.Select(&projects, `SELECT id, COALESCE(workspace_id, '') AS workspace_id, name, COALESCE(description,'') AS description, created_at, updated_at FROM projects ORDER BY created_at DESC LIMIT ? OFFSET ?`, limit, offset)
 	}
 
 	if err != nil {
 		return nil, 0, err
 	}
-	defer rows.Close()
-	var projects []models.ProjectConfig
-	for rows.Next() {
-		var p models.ProjectConfig
-		if err := rows.Scan(&p.ID, &p.WorkspaceID, &p.Name, &p.Description, &p.CreatedAt, &p.UpdatedAt); err != nil {
-			return nil, 0, err
-		}
-		projects = append(projects, p)
+	if projects == nil {
+		projects = make([]models.ProjectConfig, 0)
 	}
-	return projects, total, rows.Err()
+	return projects, total, nil
 }
 
 func (r *ProjectSQLiteRepository) Get(_ context.Context, id string) (*models.ProjectConfig, error) {
-	row := r.db.QueryRow(`SELECT id, COALESCE(workspace_id, ''), name, COALESCE(description,''), created_at, updated_at FROM projects WHERE id = ?`, id)
 	var p models.ProjectConfig
-	err := row.Scan(&p.ID, &p.WorkspaceID, &p.Name, &p.Description, &p.CreatedAt, &p.UpdatedAt)
+	err := r.db.Get(&p, `SELECT id, COALESCE(workspace_id, '') AS workspace_id, name, COALESCE(description,'') AS description, created_at, updated_at FROM projects WHERE id = ?`, id)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -104,12 +98,12 @@ func (r *ProjectSQLiteRepository) Delete(_ context.Context, id string) error {
 }
 
 type EnvSQLiteRepository struct {
-	db    *sql.DB
+	db    *sqlx.DB
 	vault Vault
 }
 
 func NewEnvSQLiteRepository(db *sql.DB, vault Vault) *EnvSQLiteRepository {
-	return &EnvSQLiteRepository{db: db, vault: vault}
+	return &EnvSQLiteRepository{db: sqlx.NewDb(db, "sqlite"), vault: vault}
 }
 
 func (r *EnvSQLiteRepository) GetVars(_ context.Context, projectID string) (map[string]string, error) {

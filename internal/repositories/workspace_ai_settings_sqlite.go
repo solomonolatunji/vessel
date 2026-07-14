@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/jmoiron/sqlx"
+
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/utils"
 )
@@ -17,12 +19,12 @@ type WorkspaceAISettingsRepository interface {
 }
 
 type WorkspaceAISettingsSQLiteRepository struct {
-	db    *sql.DB
+	db    *sqlx.DB
 	vault Vault
 }
 
 func NewWorkspaceAISettingsSQLiteRepository(db *sql.DB, vault Vault) *WorkspaceAISettingsSQLiteRepository {
-	return &WorkspaceAISettingsSQLiteRepository{db: db, vault: vault}
+	return &WorkspaceAISettingsSQLiteRepository{db: sqlx.NewDb(db, "sqlite"), vault: vault}
 }
 
 func (r *WorkspaceAISettingsSQLiteRepository) Get(ctx context.Context, workspaceID string) (*models.WorkspaceAISettings, error) {

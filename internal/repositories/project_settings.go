@@ -11,6 +11,7 @@ import (
 	"vessl.dev/vessl/internal/utils"
 
 	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
 
 	"vessl.dev/vessl/internal/models"
 )
@@ -30,12 +31,12 @@ type ProjectSettingsRepository interface {
 }
 
 type ProjectSettingsSQLiteRepository struct {
-	db *sql.DB
+	db *sqlx.DB
 	mu sync.Mutex
 }
 
 func NewProjectSettingsSQLiteRepository(db *sql.DB) *ProjectSettingsSQLiteRepository {
-	return &ProjectSettingsSQLiteRepository{db: db}
+	return &ProjectSettingsSQLiteRepository{db: sqlx.NewDb(db, "sqlite")}
 }
 
 func (r *ProjectSettingsSQLiteRepository) CreateWebhook(ctx context.Context, w *models.Webhook) error {

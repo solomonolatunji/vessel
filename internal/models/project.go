@@ -3,41 +3,41 @@ package models
 import "time"
 
 type ProjectConfig struct {
-	ID          string    `json:"id"`
-	WorkspaceID string    `json:"workspaceId,omitempty"`
-	Name        string    `json:"name"`
-	Description string    `json:"description,omitempty"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
+	ID          string    `json:"id" db:"id"`
+	WorkspaceID string    `json:"workspaceId,omitempty" db:"workspace_id"`
+	Name        string    `json:"name" db:"name"`
+	Description string    `json:"description,omitempty" db:"description"`
+	CreatedAt   time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt   time.Time `json:"updatedAt" db:"updated_at"`
 }
 
 type DomainConfig struct {
-	ID            string    `json:"id"`
-	ProjectID     string    `json:"projectId"`
-	DomainName    string    `json:"domainName"`
-	RedirectTo    string    `json:"redirectTo,omitempty"`
-	SSLCertStatus string    `json:"sslCertStatus"`
-	PathPrefix    string    `json:"pathPrefix"`
-	CreatedAt     time.Time `json:"createdAt"`
-	UpdatedAt     time.Time `json:"updatedAt"`
+	ID            string    `json:"id" db:"id"`
+	ProjectID     string    `json:"projectId" db:"project_id"`
+	DomainName    string    `json:"domainName" db:"domain_name"`
+	RedirectTo    string    `json:"redirectTo,omitempty" db:"redirect_to"`
+	SSLCertStatus string    `json:"sslCertStatus" db:"ssl_cert_status"`
+	PathPrefix    string    `json:"pathPrefix" db:"path_prefix"`
+	CreatedAt     time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt     time.Time `json:"updatedAt" db:"updated_at"`
 }
 
 type ServerlessFunctionCode struct {
-	ID          string    `json:"id"`
-	ServiceID   string    `json:"serviceId"`
-	Runtime     string    `json:"runtime"`
-	CodeContent string    `json:"codeContent"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
+	ID          string    `json:"id" db:"id"`
+	ServiceID   string    `json:"serviceId" db:"service_id"`
+	Runtime     string    `json:"runtime" db:"runtime"`
+	CodeContent string    `json:"codeContent" db:"code_content"`
+	CreatedAt   time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt   time.Time `json:"updatedAt" db:"updated_at"`
 }
 
 type EnvironmentConfig struct {
-	ID        string    `json:"id"`
-	ProjectID string    `json:"projectId"`
-	Name      string    `json:"name"`
-	IsDefault bool      `json:"isDefault"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	ID        string    `json:"id" db:"id"`
+	ProjectID string    `json:"projectId" db:"project_id"`
+	Name      string    `json:"name" db:"name"`
+	IsDefault bool      `json:"isDefault" db:"is_default"`
+	CreatedAt time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
 }
 
 type CanvasSummary struct {
@@ -81,37 +81,37 @@ type (
 	SetEnvVarsRequest map[string]string
 	VarsRequest       map[string]string
 	Webhook           struct {
-		ID                    string    `json:"id"`
-		ProjectID             string    `json:"projectId"`
-		URL                   string    `json:"url"`
-		EventTypes            []string  `json:"eventTypes"`
-		IncludePREnvironments bool      `json:"includePrEnvironments"`
-		CreatedAt             time.Time `json:"createdAt"`
-		UpdatedAt             time.Time `json:"updatedAt"`
+		ID                    string    `json:"id" db:"id"`
+		ProjectID             string    `json:"projectId" db:"project_id"`
+		URL                   string    `json:"url" db:"url"`
+		EventTypes            []string  `json:"eventTypes" db:"-"`
+		IncludePREnvironments bool      `json:"includePrEnvironments" db:"include_pr_environments"`
+		CreatedAt             time.Time `json:"createdAt" db:"created_at"`
+		UpdatedAt             time.Time `json:"updatedAt" db:"updated_at"`
 	}
 )
 
 type ProjectToken struct {
-	ID            string     `json:"id"`
-	ProjectID     string     `json:"projectId"`
-	EnvironmentID string     `json:"environmentId"`
-	Name          string     `json:"name"`
-	TokenPrefix   string     `json:"tokenPrefix"`
-	Scopes        []string   `json:"scopes"`
-	IPAllowlist   []string   `json:"ipAllowlist"`
-	ExpiresAt     *time.Time `json:"expiresAt,omitempty"`
-	CreatedAt     time.Time  `json:"createdAt"`
+	ID            string     `json:"id" db:"id"`
+	ProjectID     string     `json:"projectId" db:"project_id"`
+	EnvironmentID string     `json:"environmentId" db:"environment_id"`
+	Name          string     `json:"name" db:"name"`
+	TokenPrefix   string     `json:"tokenPrefix" db:"token_prefix"`
+	Scopes        []string   `json:"scopes" db:"-"`
+	IPAllowlist   []string   `json:"ipAllowlist" db:"-"`
+	ExpiresAt     *time.Time `json:"expiresAt,omitempty" db:"expires_at"`
+	CreatedAt     time.Time  `json:"createdAt" db:"created_at"`
 }
 
 type ProjectMember struct {
-	ID         string    `json:"id"`
-	ProjectID  string    `json:"projectId"`
-	UserID     string    `json:"userId,omitempty"`
-	Email      string    `json:"email"`
-	Permission string    `json:"permission"`
-	Status     string    `json:"status"`
-	InvitedAt  time.Time `json:"invitedAt"`
-	AcceptedAt time.Time `json:"acceptedAt,omitempty"`
+	ID         string    `json:"id" db:"id"`
+	ProjectID  string    `json:"projectId" db:"project_id"`
+	UserID     string    `json:"userId,omitempty" db:"user_id"`
+	Email      string    `json:"email" db:"email"`
+	Permission string    `json:"permission" db:"permission"`
+	Status     string    `json:"status" db:"status"`
+	InvitedAt  time.Time `json:"invitedAt" db:"invited_at"`
+	AcceptedAt time.Time `json:"acceptedAt,omitempty" db:"accepted_at"`
 }
 
 type CreateWebhookRequest struct {

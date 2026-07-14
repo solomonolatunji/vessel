@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/jmoiron/sqlx"
+
 	"vessl.dev/vessl/internal/models"
 )
 
@@ -16,13 +18,13 @@ type CanvasRepository interface {
 }
 
 type CanvasSQLiteRepository struct {
-	db           *sql.DB
+	db           *sqlx.DB
 	mu           sync.Mutex
 	environments EnvironmentRepository
 }
 
 func NewCanvasSQLiteRepository(db *sql.DB, envRepo EnvironmentRepository) *CanvasSQLiteRepository {
-	return &CanvasSQLiteRepository{db: db, environments: envRepo}
+	return &CanvasSQLiteRepository{db: sqlx.NewDb(db, "sqlite"), environments: envRepo}
 }
 
 func (r *CanvasSQLiteRepository) ListCanvasSummaries(ctx context.Context) ([]models.CanvasSummary, error) {

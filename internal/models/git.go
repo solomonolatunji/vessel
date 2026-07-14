@@ -3,13 +3,13 @@ package models
 import "time"
 
 type GitProviderConfig struct {
-	ID          string    `json:"id"`
-	UserID      string    `json:"userId"`
-	Provider    string    `json:"provider"`
-	AccessToken string    `json:"accessToken,omitempty"`
-	AccountName string    `json:"accountName"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
+	ID          string    `json:"id" db:"id"`
+	UserID      string    `json:"userId" db:"user_id"`
+	Provider    string    `json:"provider" db:"provider"`
+	AccessToken string    `json:"accessToken,omitempty" db:"encrypted_access_token"`
+	AccountName string    `json:"accountName" db:"account_name"`
+	CreatedAt   time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt   time.Time `json:"updatedAt" db:"updated_at"`
 }
 
 type GitRepository struct {
@@ -29,42 +29,42 @@ type GitConnectRequest struct {
 }
 
 type GithubApp struct {
-	ID             string    `json:"id"`
-	WorkspaceID    string    `json:"workspaceId"`
-	Name           string    `json:"name"`
-	AppID          string    `json:"appId"`
-	InstallationID string    `json:"installationId"`
-	ClientID       string    `json:"clientId"`
-	ClientSecret   string    `json:"clientSecret"`
-	WebhookSecret  string    `json:"webhookSecret"`
-	PrivateKey     string    `json:"privateKey"`
-	IsPublic       bool      `json:"isPublic"`
-	CreatedAt      time.Time `json:"createdAt"`
-	UpdatedAt      time.Time `json:"updatedAt"`
+	ID             string    `json:"id" db:"id"`
+	WorkspaceID    string    `json:"workspaceId" db:"workspace_id"`
+	Name           string    `json:"name" db:"name"`
+	AppID          string    `json:"appId" db:"app_id"`
+	InstallationID string    `json:"installationId" db:"installation_id"`
+	ClientID       string    `json:"clientId" db:"client_id"`
+	ClientSecret   string    `json:"clientSecret" db:"client_secret"`
+	WebhookSecret  string    `json:"webhookSecret" db:"webhook_secret"`
+	PrivateKey     string    `json:"privateKey" db:"private_key"`
+	IsPublic       bool      `json:"isPublic" db:"is_public"`
+	CreatedAt      time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt      time.Time `json:"updatedAt" db:"updated_at"`
 }
 
 type GitlabApp struct {
-	ID            string    `json:"id"`
-	WorkspaceID   string    `json:"workspaceId"`
-	Name          string    `json:"name"`
-	AppID         string    `json:"appId"`
-	AppSecret     string    `json:"appSecret"`
-	WebhookSecret string    `json:"webhookSecret"`
-	APIURL        string    `json:"apiUrl"`
-	IsPublic      bool      `json:"isPublic"`
-	CreatedAt     time.Time `json:"createdAt"`
-	UpdatedAt     time.Time `json:"updatedAt"`
+	ID            string    `json:"id" db:"id"`
+	WorkspaceID   string    `json:"workspaceId" db:"workspace_id"`
+	Name          string    `json:"name" db:"name"`
+	AppID         string    `json:"appId" db:"app_id"`
+	AppSecret     string    `json:"appSecret" db:"app_secret"`
+	WebhookSecret string    `json:"webhookSecret" db:"webhook_secret"`
+	APIURL        string    `json:"apiUrl" db:"api_url"`
+	IsPublic      bool      `json:"isPublic" db:"is_public"`
+	CreatedAt     time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt     time.Time `json:"updatedAt" db:"updated_at"`
 }
 
 type BitbucketApp struct {
-	ID            string    `json:"id"`
-	WorkspaceID   string    `json:"workspaceId"`
-	Name          string    `json:"name"`
-	Workspace     string    `json:"workspace"`
-	ClientID      string    `json:"clientId"`
-	ClientSecret  string    `json:"clientSecret"`
-	WebhookSecret string    `json:"webhookSecret"`
-	IsPublic      bool      `json:"isPublic"`
-	CreatedAt     time.Time `json:"createdAt"`
-	UpdatedAt     time.Time `json:"updatedAt"`
+	ID            string    `json:"id" db:"id"`
+	WorkspaceID   string    `json:"workspaceId" db:"workspace_id"`
+	Name          string    `json:"name" db:"name"`
+	Workspace     string    `json:"workspace" db:"workspace"`
+	ClientID      string    `json:"clientId" db:"client_id"`
+	ClientSecret  string    `json:"clientSecret" db:"client_secret"`
+	WebhookSecret string    `json:"webhookSecret" db:"webhook_secret"`
+	IsPublic      bool      `json:"isPublic" db:"is_public"`
+	CreatedAt     time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt     time.Time `json:"updatedAt" db:"updated_at"`
 }

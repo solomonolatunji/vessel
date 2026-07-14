@@ -9,6 +9,7 @@ import (
 	"vessl.dev/vessl/internal/utils"
 
 	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
 
 	"vessl.dev/vessl/internal/models"
 )
@@ -24,12 +25,12 @@ type JobRepository interface {
 }
 
 type JobSQLiteRepository struct {
-	db *sql.DB
+	db *sqlx.DB
 	mu sync.Mutex
 }
 
 func NewJobSQLiteRepository(db *sql.DB) *JobSQLiteRepository {
-	return &JobSQLiteRepository{db: db}
+	return &JobSQLiteRepository{db: sqlx.NewDb(db, "sqlite")}
 }
 
 func (r *JobSQLiteRepository) Create(_ context.Context, j *models.Job) error {
@@ -53,64 +54,40 @@ func (r *JobSQLiteRepository) Create(_ context.Context, j *models.Job) error {
 
 func (r *JobSQLiteRepository) GetByID(_ context.Context, id string) (*models.Job, error) {
 	var j models.Job
-	var lastRunAt sql.NullTime
-	err := r.db.QueryRow(`SELECT id, project_id, name, schedule, command, status, last_run_at, COALESCE(last_output, ''), created_at, updated_at
-		FROM jobs WHERE id = ?`, id).Scan(
-		&j.ID, &j.ProjectID, &j.Name, &j.Schedule, &j.Command, &j.Status, &lastRunAt, &j.LastOutput, &j.CreatedAt, &j.UpdatedAt,
-	)
+	err := r.db.Get(&j, `SELECT id, project_id, name, schedule, command, status, last_run_at, COALESCE(last_output, '') AS last_output, created_at, updated_at
+		FROM jobs WHERE id = ?`, id)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, utils.NewNotFoundError("Entity", id)
 	}
 	if err != nil {
 		return nil, err
 	}
-	if lastRunAt.Valid {
-		j.LastRunAt = &lastRunAt.Time
-	}
 	return &j, nil
 }
 
 func (r *JobSQLiteRepository) ListAll(_ context.Context) ([]models.Job, error) {
-	rows, err := r.db.Query(`SELECT id, project_id, name, schedule, command, status, last_run_at, COALESCE(last_output, ''), created_at, updated_at FROM jobs ORDER BY created_at ASC`)
+	var jobs []models.Job
+	err := r.db.Select(&jobs, `SELECT id, project_id, name, schedule, command, status, last_run_at, COALESCE(last_output, '') AS last_output, created_at, updated_at FROM jobs ORDER BY created_at ASC`)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	var jobs []models.Job
-	for rows.Next() {
-		var j models.Job
-		var lastRunAt sql.NullTime
-		if err := rows.Scan(&j.ID, &j.ProjectID, &j.Name, &j.Schedule, &j.Command, &j.Status, &lastRunAt, &j.LastOutput, &j.CreatedAt, &j.UpdatedAt); err != nil {
-			return nil, err
-		}
-		if lastRunAt.Valid {
-			j.LastRunAt = &lastRunAt.Time
-		}
-		jobs = append(jobs, j)
+	if jobs == nil {
+		jobs = make([]models.Job, 0)
 	}
-	return jobs, rows.Err()
+	return jobs, nil
 }
 
 func (r *JobSQLiteRepository) ListByProject(_ context.Context, projectID string) ([]models.Job, error) {
-	rows, err := r.db.Query(`SELECT id, project_id, name, schedule, command, status, last_run_at, COALESCE(last_output, ''), created_at, updated_at
+	var jobs []models.Job
+	err := r.db.Select(&jobs, `SELECT id, project_id, name, schedule, command, status, last_run_at, COALESCE(last_output, '') AS last_output, created_at, updated_at
 		FROM jobs WHERE project_id = ? ORDER BY created_at ASC`, projectID)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	var jobs []models.Job
-	for rows.Next() {
-		var j models.Job
-		var lastRunAt sql.NullTime
-		if err := rows.Scan(&j.ID, &j.ProjectID, &j.Name, &j.Schedule, &j.Command, &j.Status, &lastRunAt, &j.LastOutput, &j.CreatedAt, &j.UpdatedAt); err != nil {
-			return nil, err
-		}
-		if lastRunAt.Valid {
-			j.LastRunAt = &lastRunAt.Time
-		}
-		jobs = append(jobs, j)
+	if jobs == nil {
+		jobs = make([]models.Job, 0)
 	}
-	return jobs, rows.Err()
+	return jobs, nil
 }
 
 func (r *JobSQLiteRepository) Update(_ context.Context, j *models.Job) error {

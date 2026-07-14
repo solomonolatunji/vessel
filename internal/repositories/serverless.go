@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
+
 	"vessl.dev/vessl/internal/models"
 )
 
@@ -16,11 +18,11 @@ type ServerlessRepository interface {
 }
 
 type sqliteServerlessRepo struct {
-	db *sql.DB
+	db *sqlx.DB
 }
 
 func NewServerlessRepository(db *sql.DB) ServerlessRepository {
-	return &sqliteServerlessRepo{db: db}
+	return &sqliteServerlessRepo{db: sqlx.NewDb(db, "sqlite")}
 }
 
 func (r *sqliteServerlessRepo) SaveCode(ctx context.Context, serviceID, runtime, codeContent string) (*models.ServerlessFunctionCode, error) {
@@ -61,10 +63,8 @@ func (r *sqliteServerlessRepo) SaveCode(ctx context.Context, serviceID, runtime,
 
 func (r *sqliteServerlessRepo) GetCodeByServiceID(ctx context.Context, serviceID string) (*models.ServerlessFunctionCode, error) {
 	query := `SELECT id, service_id, runtime, code_content, created_at, updated_at FROM serverless_functions_code WHERE service_id = ?`
-	row := r.db.QueryRowContext(ctx, query, serviceID)
-
 	var code models.ServerlessFunctionCode
-	err := row.Scan(&code.ID, &code.ServiceID, &code.Runtime, &code.CodeContent, &code.CreatedAt, &code.UpdatedAt)
+	err := r.db.GetContext(ctx, &code, query, serviceID)
 	if err != nil {
 		return nil, err
 	}

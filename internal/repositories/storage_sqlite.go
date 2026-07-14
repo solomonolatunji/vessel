@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/utils"
 )
@@ -22,13 +23,13 @@ type StorageRepository interface {
 }
 
 type StorageSQLiteRepository struct {
-	db    *sql.DB
+	db    *sqlx.DB
 	mu    sync.Mutex
 	vault Vault
 }
 
 func NewStorageSQLiteRepository(db *sql.DB, vault Vault) *StorageSQLiteRepository {
-	return &StorageSQLiteRepository{db: db, vault: vault}
+	return &StorageSQLiteRepository{db: sqlx.NewDb(db, "sqlite"), vault: vault}
 }
 
 const listStorageQuery = `SELECT id, COALESCE(project_id, ''), COALESCE(environment_id, ''), name, type, api_port, console_port, access_key, encrypted_secret_key, bucket_name, COALESCE(volume_path, ''), COALESCE(container_id, ''), COALESCE(status, 'stopped'), COALESCE(internal_dns, ''), COALESCE(external_dns, ''), created_at, updated_at FROM storage`

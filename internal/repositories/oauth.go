@@ -10,6 +10,8 @@ import (
 
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/utils"
+
+	"github.com/jmoiron/sqlx"
 )
 
 type OAuthRepository interface {
@@ -21,36 +23,31 @@ type OAuthRepository interface {
 }
 
 type OAuthSQLiteRepository struct {
-	db *sql.DB
+	db *sqlx.DB
 }
 
 func NewOAuthSQLiteRepository(db *sql.DB) *OAuthSQLiteRepository {
-	return &OAuthSQLiteRepository{db: db}
+	return &OAuthSQLiteRepository{db: sqlx.NewDb(db, "sqlite")}
 }
 
 func (r *OAuthSQLiteRepository) ListProviders(ctx context.Context) ([]models.OAuthProviderConfig, error) {
-	query := `SELECT id, provider_name, enabled, COALESCE(client_id, ''), COALESCE(client_secret, ''), COALESCE(redirect_uri, ''), COALESCE(base_url, ''), COALESCE(tenant, ''), created_at, updated_at FROM oauth_providers ORDER BY provider_name ASC`
-	rows, err := r.db.QueryContext(ctx, query)
+	query := `SELECT id, provider_name, enabled, COALESCE(client_id, '') AS client_id, COALESCE(client_secret, '') AS client_secret, COALESCE(redirect_uri, '') AS redirect_uri, COALESCE(base_url, '') AS base_url, COALESCE(tenant, '') AS tenant, created_at, updated_at FROM oauth_providers ORDER BY provider_name ASC`
+	var providers []models.OAuthProviderConfig
+	err := r.db.SelectContext(ctx, &providers, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list oauth providers: %w", err)
 	}
-	defer rows.Close()
-	var providers []models.OAuthProviderConfig
-	for rows.Next() {
-		var p models.OAuthProviderConfig
-		if err := rows.Scan(&p.ID, &p.ProviderName, &p.Enabled, &p.ClientID, &p.ClientSecret, &p.RedirectURI, &p.BaseURL, &p.Tenant, &p.CreatedAt, &p.UpdatedAt); err != nil {
-			return nil, fmt.Errorf("failed scanning oauth provider: %w", err)
-		}
-		providers = append(providers, p)
+	if providers == nil {
+		providers = make([]models.OAuthProviderConfig, 0)
 	}
 	return providers, nil
 }
 
 func (r *OAuthSQLiteRepository) GetProvider(ctx context.Context, idOrName string) (*models.OAuthProviderConfig, error) {
-	query := `SELECT id, provider_name, enabled, COALESCE(client_id, ''), COALESCE(client_secret, ''), COALESCE(redirect_uri, ''), COALESCE(base_url, ''), COALESCE(tenant, ''), created_at, updated_at FROM oauth_providers WHERE id = ? OR provider_name = ?`
-	row := r.db.QueryRowContext(ctx, query, idOrName, idOrName)
+	query := `SELECT id, provider_name, enabled, COALESCE(client_id, '') AS client_id, COALESCE(client_secret, '') AS client_secret, COALESCE(redirect_uri, '') AS redirect_uri, COALESCE(base_url, '') AS base_url, COALESCE(tenant, '') AS tenant, created_at, updated_at FROM oauth_providers WHERE id = ? OR provider_name = ?`
 	var p models.OAuthProviderConfig
-	if err := row.Scan(&p.ID, &p.ProviderName, &p.Enabled, &p.ClientID, &p.ClientSecret, &p.RedirectURI, &p.BaseURL, &p.Tenant, &p.CreatedAt, &p.UpdatedAt); err != nil {
+	err := r.db.GetContext(ctx, &p, query, idOrName, idOrName)
+	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, utils.NewNotFoundError("Provider", idOrName)
 		}

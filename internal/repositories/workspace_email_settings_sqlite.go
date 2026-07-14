@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/jmoiron/sqlx"
+
 	"vessl.dev/vessl/internal/models"
 )
 
@@ -16,13 +18,13 @@ type WorkspaceEmailSettingsRepository interface {
 }
 
 type WorkspaceEmailSettingsSQLiteRepository struct {
-	db    *sql.DB
+	db    *sqlx.DB
 	vault Vault
 }
 
 func NewWorkspaceEmailSettingsSQLiteRepository(db *sql.DB, v Vault) *WorkspaceEmailSettingsSQLiteRepository {
 	return &WorkspaceEmailSettingsSQLiteRepository{
-		db:    db,
+		db:    sqlx.NewDb(db, "sqlite"),
 		vault: v,
 	}
 }

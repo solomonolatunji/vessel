@@ -3,27 +3,27 @@ package models
 import "time"
 
 type WorkspaceAISettings struct {
-	ID          string    `json:"id"`
-	WorkspaceID string    `json:"workspaceId"`
-	Provider    string    `json:"provider"`
-	APIKey      string    `json:"apiKey,omitempty"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
+	ID          string    `json:"id" db:"id"`
+	WorkspaceID string    `json:"workspaceId" db:"workspace_id"`
+	Provider    string    `json:"provider" db:"provider"`
+	APIKey      string    `json:"apiKey,omitempty" db:"-"`
+	CreatedAt   time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt   time.Time `json:"updatedAt" db:"updated_at"`
 }
 
 type WorkspaceEmailSettings struct {
-	ID              string    `json:"id"`
-	WorkspaceID     string    `json:"workspaceId"`
-	SMTPHost        string    `json:"smtpHost,omitempty"`
-	SMTPPort        int       `json:"smtpPort,omitempty"`
-	SMTPUser        string    `json:"smtpUser,omitempty"`
-	SMTPPassword    string    `json:"smtpPassword,omitempty"`
-	SMTPFromName    string    `json:"smtpFromName,omitempty"`
-	SMTPFromAddress string    `json:"smtpFromAddress,omitempty"`
-	ResendAPIKey    string    `json:"resendApiKey,omitempty"`
-	UseResend       bool      `json:"useResend"`
-	CreatedAt       time.Time `json:"createdAt"`
-	UpdatedAt       time.Time `json:"updatedAt"`
+	ID              string    `json:"id" db:"id"`
+	WorkspaceID     string    `json:"workspaceId" db:"workspace_id"`
+	SMTPHost        string    `json:"smtpHost,omitempty" db:"smtp_host"`
+	SMTPPort        int       `json:"smtpPort,omitempty" db:"smtp_port"`
+	SMTPUser        string    `json:"smtpUser,omitempty" db:"smtp_user"`
+	SMTPPassword    string    `json:"smtpPassword,omitempty" db:"-"`
+	SMTPFromName    string    `json:"smtpFromName,omitempty" db:"smtp_from_name"`
+	SMTPFromAddress string    `json:"smtpFromAddress,omitempty" db:"smtp_from_address"`
+	ResendAPIKey    string    `json:"resendApiKey,omitempty" db:"-"`
+	UseResend       bool      `json:"useResend" db:"use_resend"`
+	CreatedAt       time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt       time.Time `json:"updatedAt" db:"updated_at"`
 }
 
 type ServerSettings struct {

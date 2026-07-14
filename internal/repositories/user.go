@@ -10,6 +10,7 @@ import (
 	"vessl.dev/vessl/internal/utils"
 
 	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
 
 	"vessl.dev/vessl/internal/models"
 )
@@ -26,12 +27,12 @@ type UserRepository interface {
 }
 
 type UserSQLiteRepository struct {
-	db *sql.DB
+	db *sqlx.DB
 	mu sync.Mutex
 }
 
 func NewUserSQLiteRepository(db *sql.DB) *UserSQLiteRepository {
-	return &UserSQLiteRepository{db: db}
+	return &UserSQLiteRepository{db: sqlx.NewDb(db, "sqlite")}
 }
 
 func (r *UserSQLiteRepository) CreateUser(ctx context.Context, u *models.User) error {
@@ -52,8 +53,8 @@ func (r *UserSQLiteRepository) GetUserByEmail(ctx context.Context, email string)
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	var u models.User
-	err := r.db.QueryRowContext(ctx, `SELECT id, email, name, password_hash, role, created_at, updated_at
-		FROM users WHERE email = ?`, email).Scan(&u.ID, &u.Email, &u.Name, &u.PasswordHash, &u.Role, &u.CreatedAt, &u.UpdatedAt)
+	err := r.db.GetContext(ctx, &u, `SELECT id, email, name, password_hash, role, created_at, updated_at
+		FROM users WHERE email = ?`, email)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, utils.NewNotFoundError("User", email)
 	}
@@ -67,8 +68,8 @@ func (r *UserSQLiteRepository) GetUserByID(ctx context.Context, id string) (*mod
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	var u models.User
-	err := r.db.QueryRowContext(ctx, `SELECT id, email, name, password_hash, role, created_at, updated_at
-		FROM users WHERE id = ?`, id).Scan(&u.ID, &u.Email, &u.Name, &u.PasswordHash, &u.Role, &u.CreatedAt, &u.UpdatedAt)
+	err := r.db.GetContext(ctx, &u, `SELECT id, email, name, password_hash, role, created_at, updated_at
+		FROM users WHERE id = ?`, id)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, utils.NewNotFoundError("User", id)
 	}
@@ -83,22 +84,17 @@ func (r *UserSQLiteRepository) ListUsers(ctx context.Context, limit, offset int)
 	defer r.mu.Unlock()
 
 	var total int
-	if err := r.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM users`).Scan(&total); err != nil {
+	if err := r.db.GetContext(ctx, &total, `SELECT COUNT(*) FROM users`); err != nil {
 		return nil, 0, err
 	}
 
-	rows, err := r.db.QueryContext(ctx, `SELECT id, email, name, password_hash, role, created_at, updated_at FROM users ORDER BY created_at ASC LIMIT ? OFFSET ?`, limit, offset)
+	var users []models.User
+	err := r.db.SelectContext(ctx, &users, `SELECT id, email, name, password_hash, role, created_at, updated_at FROM users ORDER BY created_at ASC LIMIT ? OFFSET ?`, limit, offset)
 	if err != nil {
 		return nil, 0, err
 	}
-	defer rows.Close()
-	var users []models.User
-	for rows.Next() {
-		var u models.User
-		if err := rows.Scan(&u.ID, &u.Email, &u.Name, &u.PasswordHash, &u.Role, &u.CreatedAt, &u.UpdatedAt); err != nil {
-			return nil, 0, err
-		}
-		users = append(users, u)
+	if users == nil {
+		users = make([]models.User, 0)
 	}
 	return users, total, nil
 }
@@ -136,21 +132,13 @@ func (r *UserSQLiteRepository) CreatePAT(ctx context.Context, pat *models.Person
 func (r *UserSQLiteRepository) ListPATs(ctx context.Context, userID string) ([]*models.PersonalAccessToken, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	rows, err := r.db.QueryContext(ctx, `SELECT id, user_id, name, prefix, expires_at, created_at FROM personal_access_tokens WHERE user_id = ? ORDER BY created_at DESC`, userID)
+	var list []*models.PersonalAccessToken
+	err := r.db.SelectContext(ctx, &list, `SELECT id, user_id, name, prefix, expires_at, created_at FROM personal_access_tokens WHERE user_id = ? ORDER BY created_at DESC`, userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list personal access tokens: %w", err)
 	}
-	defer rows.Close()
-	var list []*models.PersonalAccessToken
-	for rows.Next() {
-		var pat models.PersonalAccessToken
-		var expStr, createdStr string
-		if err := rows.Scan(&pat.ID, &pat.UserID, &pat.Name, &pat.Prefix, &expStr, &createdStr); err != nil {
-			return nil, err
-		}
-		pat.ExpiresAt, _ = time.Parse(time.RFC3339, expStr)
-		pat.CreatedAt, _ = time.Parse(time.RFC3339, createdStr)
-		list = append(list, &pat)
+	if list == nil {
+		list = make([]*models.PersonalAccessToken, 0)
 	}
 	return list, nil
 }

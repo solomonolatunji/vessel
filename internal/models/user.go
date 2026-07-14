@@ -3,15 +3,15 @@ package models
 import "time"
 
 type User struct {
-	ID            string    `json:"id"`
-	Email         string    `json:"email"`
-	Name          string    `json:"name"`
-	PasswordHash  string    `json:"-"`
-	Role          string    `json:"role"`
-	TOTPEnabled   bool      `json:"totpEnabled"`
-	OAuthProvider string    `json:"oauthProvider,omitempty"`
-	CreatedAt     time.Time `json:"createdAt"`
-	UpdatedAt     time.Time `json:"updatedAt"`
+	ID            string    `json:"id" db:"id"`
+	Email         string    `json:"email" db:"email"`
+	Name          string    `json:"name" db:"name"`
+	PasswordHash  string    `json:"-" db:"password_hash"`
+	Role          string    `json:"role" db:"role"`
+	TOTPEnabled   bool      `json:"totpEnabled" db:"totp_enabled"`
+	OAuthProvider string    `json:"oauthProvider,omitempty" db:"oauth_provider"`
+	CreatedAt     time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt     time.Time `json:"updatedAt" db:"updated_at"`
 }
 
 type UserClaims struct {
@@ -22,13 +22,13 @@ type UserClaims struct {
 }
 
 type PersonalAccessToken struct {
-	ID        string    `json:"id"`
-	UserID    string    `json:"userId"`
-	Name      string    `json:"name"`
-	TokenHash string    `json:"-"`
-	Prefix    string    `json:"prefix"`
-	ExpiresAt time.Time `json:"expiresAt"`
-	CreatedAt time.Time `json:"createdAt"`
+	ID        string    `json:"id" db:"id"`
+	UserID    string    `json:"userId" db:"user_id"`
+	Name      string    `json:"name" db:"name"`
+	TokenHash string    `json:"-" db:"token_hash"`
+	Prefix    string    `json:"prefix" db:"prefix"`
+	ExpiresAt time.Time `json:"expiresAt" db:"expires_at"`
+	CreatedAt time.Time `json:"createdAt" db:"created_at"`
 }
 
 type UpdateProfileRequest struct {

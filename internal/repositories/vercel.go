@@ -7,17 +7,18 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/utils"
 )
 
 type VercelRepository struct {
-	db    *sql.DB
+	db    *sqlx.DB
 	vault *utils.Vault
 }
 
 func NewVercelRepository(db *sql.DB, v *utils.Vault) *VercelRepository {
-	return &VercelRepository{db: db, vault: v}
+	return &VercelRepository{db: sqlx.NewDb(db, "sqlite"), vault: v}
 }
 
 func (r *VercelRepository) SaveAccount(ctx context.Context, account *models.UserVercelAccount) error {
