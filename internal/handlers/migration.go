@@ -20,6 +20,15 @@ func NewMigrationHandler(s *services.MigrationService) *MigrationHandler {
 	return &MigrationHandler{service: s}
 }
 
+// @Summary Export server bundle
+// @Description Exports the full server state (SQLite database + all DB container dumps) into an AES-256-GCM encrypted .vessl bundle. Admin only.
+// @Tags System
+// @Produce application/octet-stream
+// @Param passphrase query string true "Passphrase used to encrypt the bundle"
+// @Success 200 {file} binary "Encrypted .vessl bundle file"
+// @Failure 400 {object} map[string]any "Missing passphrase"
+// @Failure 500 {object} map[string]any "Export failed"
+// @Router /system/export [get]
 func (h *MigrationHandler) Export(c echo.Context) error {
 	passphrase := c.QueryParam("passphrase")
 	if passphrase == "" {
@@ -39,6 +48,17 @@ func (h *MigrationHandler) Export(c echo.Context) error {
 	return nil
 }
 
+// @Summary Import server bundle
+// @Description Imports an encrypted .vessl bundle, restoring the SQLite database and all DB container data. Admin only. Triggers a server restart after restore.
+// @Tags System
+// @Accept multipart/form-data
+// @Produce json
+// @Param passphrase query string true "Passphrase used to decrypt the bundle"
+// @Param bundle formData file true "The .vessl bundle file to import"
+// @Success 200 {object} map[string]any "Import completed with manifest details"
+// @Failure 400 {object} map[string]any "Missing passphrase or bundle file"
+// @Failure 422 {object} map[string]any "Decryption or restore failed"
+// @Router /system/import [post]
 func (h *MigrationHandler) Import(c echo.Context) error {
 	passphrase := c.QueryParam("passphrase")
 	if passphrase == "" {

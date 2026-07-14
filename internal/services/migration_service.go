@@ -177,13 +177,23 @@ func (s *MigrationService) dumpDatabase(_ context.Context, db *models.Database) 
 	}
 
 	switch db.Engine {
-	case "postgres":
+	case "postgres", "timescaledb":
 		cmd := exec.Command("docker", "exec", containerName,
 			"pg_dump", "-U", db.Username, db.DatabaseName)
 		return cmd.Output()
 	case "mysql", "mariadb":
 		cmd := exec.Command("docker", "exec", containerName,
 			"mysqldump", "-u", db.Username, fmt.Sprintf("-p%s", db.Password), db.DatabaseName)
+		return cmd.Output()
+	case "mongodb":
+		cmd := exec.Command("docker", "exec", containerName,
+			"mongodump", "--archive", "--authenticationDatabase=admin",
+			fmt.Sprintf("--username=%s", db.Username), fmt.Sprintf("--password=%s", db.Password))
+		return cmd.Output()
+	case "clickhouse":
+		cmd := exec.Command("docker", "exec", containerName,
+			"clickhouse-client", "--user", db.Username, "--password", db.Password,
+			"--query", fmt.Sprintf("SELECT * FROM %s FORMAT Native", db.DatabaseName))
 		return cmd.Output()
 	case "redis":
 		cmd := exec.Command("docker", "exec", containerName,
@@ -204,7 +214,7 @@ func (s *MigrationService) restoreDatabase(_ context.Context, db *models.Databas
 	}
 
 	switch db.Engine {
-	case "postgres":
+	case "postgres", "timescaledb":
 		cmd := exec.Command("docker", "exec", "-i", containerName,
 			"psql", "-U", db.Username, db.DatabaseName)
 		cmd.Stdin = bytes.NewReader(data)
@@ -214,12 +224,17 @@ func (s *MigrationService) restoreDatabase(_ context.Context, db *models.Databas
 			"mysql", "-u", db.Username, fmt.Sprintf("-p%s", db.Password), db.DatabaseName)
 		cmd.Stdin = bytes.NewReader(data)
 		return cmd.Run()
+	case "mongodb":
+		cmd := exec.Command("docker", "exec", "-i", containerName,
+			"mongorestore", "--archive", "--authenticationDatabase=admin",
+			fmt.Sprintf("--username=%s", db.Username), fmt.Sprintf("--password=%s", db.Password))
+		cmd.Stdin = bytes.NewReader(data)
+		return cmd.Run()
 	case "redis":
 		if ext != ".rdb" {
 			return fmt.Errorf("redis restore only supports .rdb format")
 		}
-		tmpFile := fmt.Sprintf("/tmp/vessl-import-%s.rdb", db.Name)
-		copyCmd := exec.Command("docker", "cp", "-", fmt.Sprintf("%s:%s", containerName, tmpFile))
+		copyCmd := exec.Command("docker", "cp", "-", fmt.Sprintf("%s:/tmp/vessl-import.rdb", containerName))
 		copyCmd.Stdin = bytes.NewReader(data)
 		if err := copyCmd.Run(); err != nil {
 			return err

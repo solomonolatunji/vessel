@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    x-vessl:
+      is_database: true
+      connection_string: "postgresql://${db.username}:${db.password}@${host}:${port}/${db.database_name}"
+      backup:
+        command: ["pg_dump", "-U", "${db.username}", "${db.database_name}"]
+        file_extension: ".sql"
+    environment:
+      - POSTGRES_USER=${db.username}
+      - POSTGRES_PASSWORD=${db.password}
+      - POSTGRES_DB=${db.database_name}
+    volumes:
+      - timescaledb-data:/var/lib/postgresql/data

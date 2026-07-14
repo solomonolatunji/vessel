@@ -60,6 +60,22 @@ func (sl *ServiceLinker) GetLinkedEnvironmentVariables(ctx context.Context, proj
 			envMap["MONGO_USER"] = db.Username
 			envMap["MONGO_PASSWORD"] = db.Password
 			envMap["MONGO_DB"] = db.DatabaseName
+		case "clickhouse":
+			envMap["CLICKHOUSE_URL"] = fmt.Sprintf("clickhouse://%s:%s@%s:8123/%s", db.Username, db.Password, db.InternalDNS, db.DatabaseName)
+			envMap["CLICKHOUSE_HOST"] = db.InternalDNS
+			envMap["CLICKHOUSE_PORT"] = "8123"
+			envMap["CLICKHOUSE_USER"] = db.Username
+			envMap["CLICKHOUSE_PASSWORD"] = db.Password
+			envMap["CLICKHOUSE_DB"] = db.DatabaseName
+		case "timescaledb":
+			connStr := fmt.Sprintf("postgresql://%s:%s@%s:5432/%s", db.Username, db.Password, db.InternalDNS, db.DatabaseName)
+			envMap["DATABASE_URL"] = connStr
+			envMap["TIMESCALE_URL"] = connStr
+			envMap["PGHOST"] = db.InternalDNS
+			envMap["PGPORT"] = "5432"
+			envMap["PGUSER"] = db.Username
+			envMap["PGPASSWORD"] = db.Password
+			envMap["PGDATABASE"] = db.DatabaseName
 		}
 	}
 	storages, err := sl.storages.ListByProject(ctx, projectID)
@@ -126,6 +142,22 @@ func (sl *ServiceLinker) GetNamespacedVariables(ctx context.Context, projectID s
 			vars["MONGO_USER"] = db.Username
 			vars["MONGO_PASSWORD"] = db.Password
 			vars["MONGO_DB"] = db.DatabaseName
+		case "clickhouse":
+			vars["CLICKHOUSE_URL"] = fmt.Sprintf("clickhouse://%s:%s@%s:8123/%s", db.Username, db.Password, db.InternalDNS, db.DatabaseName)
+			vars["CLICKHOUSE_HOST"] = db.InternalDNS
+			vars["CLICKHOUSE_PORT"] = "8123"
+			vars["CLICKHOUSE_USER"] = db.Username
+			vars["CLICKHOUSE_PASSWORD"] = db.Password
+			vars["CLICKHOUSE_DB"] = db.DatabaseName
+		case "timescaledb":
+			connStr := fmt.Sprintf("postgresql://%s:%s@%s:5432/%s", db.Username, db.Password, db.InternalDNS, db.DatabaseName)
+			vars["DATABASE_URL"] = connStr
+			vars["TIMESCALE_URL"] = connStr
+			vars["PGHOST"] = db.InternalDNS
+			vars["PGPORT"] = "5432"
+			vars["PGUSER"] = db.Username
+			vars["PGPASSWORD"] = db.Password
+			vars["PGDATABASE"] = db.DatabaseName
 		}
 		if len(vars) > 0 {
 			registry[db.Name] = vars
