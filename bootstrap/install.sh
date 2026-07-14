@@ -153,6 +153,9 @@ VESSL_TLS_EMAIL="${TLS_EMAIL}"
 # Leave empty — apps get myapp.IP.sslip.io (no DNS needed)
 VESSL_WILDCARD_DOMAIN="${WILDCARD_DOMAIN}"
 
+# Magic Domain for local/IP routing (options: sslip.io, traefik.me, nip.io)
+VESSL_MAGIC_DOMAIN="sslip.io"
+
 # Docker
 DOCKER_SOCKET_PATH=/var/run/docker.sock
 

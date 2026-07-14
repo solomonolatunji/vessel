@@ -6,10 +6,11 @@ import (
 	"strings"
 )
 
-func GenerateSslipDomain(projectNameOrID string, hostIP string, wildcardDomain string) string {
+func GenerateAppDomain(projectNameOrID string, hostIP string, wildcardDomain string) string {
 	if wildcardDomain == "" {
 		wildcardDomain = os.Getenv("VESSL_WILDCARD_DOMAIN")
 	}
+
 	if wildcardDomain != "" {
 		cleanName := SanitizeDomainName(projectNameOrID)
 		base := strings.TrimPrefix(wildcardDomain, "*.")
@@ -22,12 +23,19 @@ func GenerateSslipDomain(projectNameOrID string, hostIP string, wildcardDomain s
 	if hostIP == "" {
 		hostIP = os.Getenv("VESSL_HOST_IP")
 	}
+
 	if hostIP == "" {
 		hostIP = "127.0.0.1"
 	}
+
 	cleanIP := strings.ReplaceAll(strings.TrimSpace(hostIP), ".", "-")
 	cleanName := SanitizeDomainName(projectNameOrID)
-	return fmt.Sprintf("http://%s.%s.sslip.io", cleanName, cleanIP)
+	magicDomain := os.Getenv("VESSL_MAGIC_DOMAIN")
+	if magicDomain == "" {
+		magicDomain = "sslip.io"
+	}
+
+	return fmt.Sprintf("http://%s.%s.%s", cleanName, cleanIP, magicDomain)
 }
 
 func parseScheme(url string) string {

@@ -284,7 +284,11 @@ func runDeploy(args []string) {
 		}
 		cleanName := utils.SanitizeDomainName(appName)
 		cleanIP := strings.ReplaceAll(hostIP, ".", "-")
-		fmt.Printf("   URL: http://%s.%s.sslip.io\n", cleanName, cleanIP)
+		magicDomain := os.Getenv("VESSL_MAGIC_DOMAIN")
+		if magicDomain == "" {
+			magicDomain = "sslip.io"
+		}
+		fmt.Printf("   URL: http://%s.%s.%s\n", cleanName, cleanIP, magicDomain)
 	}
 }
 

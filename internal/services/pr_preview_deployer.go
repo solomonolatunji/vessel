@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -47,7 +48,11 @@ func (s *PRPreviewService) DeployPRPreview(ctx context.Context, appID string, pr
 	}
 	previewDomain := fmt.Sprintf("pr-%d.%s", prNumber, app.Domain)
 	if app.Domain == "" {
-		previewDomain = fmt.Sprintf("pr-%d.%s.sslip.io", prNumber, app.Name)
+		magicDomain := os.Getenv("VESSL_MAGIC_DOMAIN")
+		if magicDomain == "" {
+			magicDomain = "sslip.io"
+		}
+		previewDomain = fmt.Sprintf("pr-%d.%s.%s", prNumber, app.Name, magicDomain)
 	}
 	preview := &models.PRPreview{
 		ID:            uuid.NewString(),

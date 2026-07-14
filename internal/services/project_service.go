@@ -88,7 +88,7 @@ func (s *ProjectService) CreateProjectFromRequest(ctx context.Context, req *mode
 				wildcard = settings.DefaultWildcardDomain
 			}
 		}
-		domain = utils.GenerateSslipDomain(req.Name, "", wildcard)
+		domain = utils.GenerateAppDomain(req.Name, "", wildcard)
 	}
 	branch := req.Branch
 	if branch == "" {
