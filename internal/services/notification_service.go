@@ -55,9 +55,6 @@ func (s *NotificationService) TestGlobalNotification(ctx context.Context, provid
 		return errors.New("dispatcher unavailable")
 	}
 	dashboardURL := os.Getenv("VESSL_DASHBOARD_URL")
-	if dashboardURL == "" {
-		dashboardURL = "http://localhost:3000"
-	}
 	return s.dispatcher.Send(&models.NotificationEvent{
 		WorkspaceID: "global_test",
 		EventType:   "test_global_" + provider,
@@ -73,9 +70,6 @@ func (s *NotificationService) TestTeamNotification(ctx context.Context, workspac
 		return errors.New("dispatcher unavailable")
 	}
 	dashboardURL := os.Getenv("VESSL_DASHBOARD_URL")
-	if dashboardURL == "" {
-		dashboardURL = "http://localhost:3000"
-	}
 	return s.dispatcher.Send(&models.NotificationEvent{
 		WorkspaceID: workspaceID,
 		EventType:   "test_channel_" + channelID,

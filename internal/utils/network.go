@@ -8,6 +8,14 @@ import (
 	"github.com/docker/docker/client"
 )
 
+func GetDataDir() string {
+	dir := os.Getenv("VESSL_DATA_DIR")
+	if dir == "" {
+		return "data"
+	}
+	return dir
+}
+
 func GetRuntimeNetwork() string {
 	net := os.Getenv("VESSL_RUNTIME_NETWORK")
 	if net == "" {

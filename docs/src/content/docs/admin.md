@@ -5,6 +5,64 @@ description: Instance management, system updates, license management, and global
 
 Vessl administration covers instance-wide configuration available to instance admins.
 
+## CLI Admin Tool
+
+After installation, `vesslctl` is available at `/usr/local/bin/vesslctl` for managing Vessl from the terminal.
+
+```sh
+vesslctl status           # Show daemon health + running containers
+vesslctl setup            # Interactive admin account wizard
+vesslctl reset-password   # Reset admin password
+vesslctl config           # View current configuration
+vesslctl config <key>=<value>  # Update a setting (site-name, registration, telemetry)
+vesslctl logs -f          # Tail daemon logs
+vesslctl update           # Upgrade to the latest version
+vesslctl downgrade <ver>  # Downgrade to a specific version (with backup + confirmation)
+vesslctl backup           # Create a manual database backup
+vesslctl restart          # Restart the Vessl daemon
+
+# App management
+vesslctl deploy <git-url>           # Deploy an app from a Git URL
+vesslctl apps:list                  # List all apps
+vesslctl apps:show <id>             # Show app details
+vesslctl apps:create <name>         # Create an app
+vesslctl apps:destroy <id>         # Delete an app
+
+# Database management
+vesslctl db:list                    # List all databases
+vesslctl db:show <id>              # Show database details
+vesslctl db:create <name> <engine> # Create a database (postgres, mysql, redis, etc.)
+vesslctl db:destroy <id>           # Delete a database
+```
+
+For development or standalone (non-Docker) mode, the `vessld` binary supports the same subcommands:
+
+```sh
+vessld serve              # Start the daemon (default)
+vessld setup              # Setup wizard
+vessld reset-password     # Reset admin password
+vessld config             # View/update configuration
+vessld deploy <url>       # Deploy from Git URL
+vessld apps:list          # List apps
+vessld db:list            # List databases
+vessld mcp                # Run MCP stdio server
+vessld version            # Show version
+```
+
+### Update with `vesslctl update`
+
+1. Shows current and latest available version.
+2. Creates a pre-upgrade database backup automatically.
+3. Pulls the new Docker image and recreates the container.
+4. Your apps and databases experience zero downtime.
+
+### Downgrade with `vesslctl downgrade`
+
+1. Requires you to type `downgrade` to confirm (safety gate).
+2. Creates a pre-downgrade database backup automatically.
+3. Pulls the specified version and recreates the container.
+4. If something breaks, restore from backup: `cp /vessl/data/backups/vessl-pre-downgrade-*.db /vessl/data/vessl.db`
+
 ## Instance Settings
 
 Access from **Settings** in the dashboard. Only the first registered user (instance admin) can modify these.

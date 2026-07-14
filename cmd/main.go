@@ -11,7 +11,6 @@ package main
 import (
 	"context"
 	"database/sql"
-	"flag"
 	"log"
 	"net/http"
 	"os"
@@ -31,7 +30,7 @@ import (
 	"vessl.dev/vessl/internal/utils"
 )
 
-const vesslVersion = "0.1.0-alpha"
+var vesslVersion = "dev"
 
 type dbDeployerStore struct {
 	db    *sql.DB
@@ -62,9 +61,10 @@ func (a *dbDeployerStore) GetServerlessFunctionCode(serviceID string) (*models.S
 
 func main() {
 	_ = godotenv.Load()
-	isMCP := flag.Bool("mcp", false, "Run local MCP stdio server")
-	flag.Parse()
-	log.Printf(" Booting Vessl Daemon (`vessld`) v%s [%s/%s]...", vesslVersion, runtime.GOOS, runtime.GOARCH)
+	mainCLI()
+}
+
+func initDataDir() (string, *sql.DB, *utils.Vault) {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -85,14 +85,22 @@ func main() {
 	if err != nil {
 		log.Fatalf(" Failed to open SQLite database: %v", err)
 	}
-	defer db.Close()
 	if err := repositories.RunMigrations(db); err != nil {
 		log.Fatalf("failed to run database migrations: %v", err)
 	}
+	return dataDir, db, vlt
+}
+
+func startServer() {
+	log.Printf(" Booting Vessl Daemon (`vessld`) v%s [%s/%s]...", vesslVersion, runtime.GOOS, runtime.GOARCH)
+	_, db, vlt := initDataDir()
+	defer db.Close()
+
 	dockerClient, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		log.Printf(" Docker daemon connection warning: %v (container deployment features disabled)", err)
 	}
+
 	traefikMgr := engine.NewTraefikManager(dockerClient, os.Getenv("VESSL_TLS_EMAIL"))
 	if err := traefikMgr.EnsureTraefikRunning(context.Background()); err != nil {
 		log.Printf(" Warning: Failed to start Traefik proxy: %v", err)
@@ -101,21 +109,32 @@ func main() {
 	services.StartTelemetryReporter(db, vesslVersion)
 
 	host := os.Getenv("HOST")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 	addr := host + ":" + port
 
 	deployer := engine.NewDeployer(dockerClient, &dbDeployerStore{db: db, vault: vlt})
 	apiServer := vesslhttp.NewServer(db, vlt, deployer, traefikMgr, dockerClient)
 
-	if *isMCP {
-		log.Printf("Starting MCP stdio server...")
-		if err := apiServer.StartMCPStdio(); err != nil {
-			log.Fatalf("MCP Server exited: %v", err)
-		}
-		return
-	}
-
 	log.Printf(" Vessl control plane listening on %s", addr)
 	if err := http.ListenAndServe(addr, apiServer.Handler()); err != nil {
 		log.Fatalf(" Server crashed: %v", err)
+	}
+}
+
+func runMCP() {
+	log.Printf("Starting MCP stdio server...")
+	_, db, vlt := initDataDir()
+	defer db.Close()
+
+	dockerClient, _ := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	deployer := engine.NewDeployer(dockerClient, &dbDeployerStore{db: db, vault: vlt})
+	traefikMgr := engine.NewTraefikManager(dockerClient, os.Getenv("VESSL_TLS_EMAIL"))
+	apiServer := vesslhttp.NewServer(db, vlt, deployer, traefikMgr, dockerClient)
+
+	if err := apiServer.StartMCPStdio(); err != nil {
+		log.Fatalf("MCP Server exited: %v", err)
 	}
 }

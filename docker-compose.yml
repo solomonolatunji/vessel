@@ -8,18 +8,17 @@ services:
     restart: unless-stopped
     ports:
       - "8080:8080" # API and Dashboard GUI
-      - "80:80" # Automatic reverse proxy HTTP
-      - "443:443" # Automatic reverse proxy HTTPS / TLS
+      - "80:80"     # Automatic reverse proxy HTTP
+      - "443:443"   # Automatic reverse proxy HTTPS / TLS
     env_file:
       - .env
     environment:
       - PORT=8080
-      - VESSL_DATA_DIR=/var/www/vessl/data
-      - VESSL_STATIC_DIR=/var/www/vessl/dashboard/dist
-      - VESSL_TLS_EMAIL=${VESSL_TLS_EMAIL:-admin@vessl.local}
+      - VESSL_DATA_DIR=/vessl/data
+      - VESSL_DASHBOARD_URL=${VESSL_DASHBOARD_URL:-http://localhost:8080}
     volumes:
-      - vessl_data:/var/www/vessl/data
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - vessl_data:/vessl/data
+      - ${DOCKER_SOCKET_PATH:-/var/run/docker.sock}:/var/run/docker.sock:ro
     networks:
       - vessl-network
 

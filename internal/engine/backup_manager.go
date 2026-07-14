@@ -35,7 +35,7 @@ type BackupManager struct {
 
 func NewBackupManager(dockerClient *client.Client, s BackupManagerStore, backupDir string) *BackupManager {
 	if backupDir == "" {
-		backupDir = filepath.Join("data", "backups")
+		backupDir = filepath.Join(utils.GetDataDir(), "backups")
 	}
 	_ = os.MkdirAll(backupDir, 0o755)
 	return &BackupManager{

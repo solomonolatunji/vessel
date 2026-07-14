@@ -11,6 +11,7 @@ export default defineConfig({
       customCss: ['./src/styles/theme.css'],
       sidebar: [
         { label: 'Getting Started', slug: 'getting-started' },
+        { label: 'Deploy Your First App', slug: 'tutorial' },
         {
           label: 'Deployment',
           collapsed: false,

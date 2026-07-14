@@ -89,7 +89,10 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	projectService := services.NewProjectService(projectSQLiteRepository, environmentSQLiteRepository, appServiceSQLiteRepository, serviceVarSQLiteRepository)
 	appService := services.NewAppService(appServiceSQLiteRepository, serviceVarSQLiteRepository)
 	databaseService := services.NewDatabaseService(databaseSQLiteRepository, databaseDeployer)
-	tokenService := services.NewTokenService()
+	tokenService, err := services.NewTokenService()
+	if err != nil {
+		log.Fatalf(" Failed to initialize token service: %v", err)
+	}
 	settingsService := services.NewSettingsService(settingsSQLiteRepository, notificationSQLiteRepository)
 	projectSettingsService := services.NewProjectSettingsService(projectSettingsSQLiteRepository, userSQLiteRepository)
 	serviceLinker := services.NewServiceLinker(databaseSQLiteRepository, storageSQLiteRepository)

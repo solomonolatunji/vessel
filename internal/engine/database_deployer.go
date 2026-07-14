@@ -116,8 +116,8 @@ func (d *DatabaseDeployer) SpinUp(ctx context.Context, dbConfig *models.Database
 	hostCfg := &container.HostConfig{
 		RestartPolicy: container.RestartPolicy{Name: "always"},
 		Resources: container.Resources{
-			Memory:   utils.MegaBytesToBytes(1024),    // Default 1GB memory limit for DBs
-			NanoCPUs: utils.CPURequestToNanoCPUs(1.0), // Default 1.0 CPU limit for DBs
+			Memory:   utils.MegaBytesToBytes(utils.DefaultDBMemoryMB()),
+			NanoCPUs: utils.CPURequestToNanoCPUs(utils.DefaultDBCPURequest()),
 		},
 		Mounts: []mount.Mount{
 			{

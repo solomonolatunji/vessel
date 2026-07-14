@@ -69,7 +69,7 @@ func (h *WebhookHandler) HandleProjectWebhook(c echo.Context) error {
 	}
 	go func() {
 		ctx := context.Background()
-		sourceDir := filepath.Join("data", "builds", project.ID)
+		sourceDir := filepath.Join(utils.GetDataDir(), "builds", project.ID)
 		_, _ = h.deploymentService.DeployProject(ctx, project.ID, sourceDir, nil)
 	}()
 	return utils.Accepted(c, fmt.Sprintf("triggering background build & deployment for %s", project.Name), nil)

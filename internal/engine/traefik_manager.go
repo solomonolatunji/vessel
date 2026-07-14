@@ -67,8 +67,22 @@ func (m *TraefikManager) ensureNetwork(ctx context.Context) error {
 	return nil
 }
 
+func traefikImage() string {
+	if img := os.Getenv("VESSL_TRAEFIK_IMAGE"); img != "" {
+		return img
+	}
+	return "traefik:v3.0"
+}
+
+func dockerSocketPath() string {
+	if p := os.Getenv("DOCKER_SOCKET_PATH"); p != "" {
+		return p
+	}
+	return "/var/run/docker.sock"
+}
+
 func (m *TraefikManager) createTraefikContainer(ctx context.Context) error {
-	imageRef := "traefik:v3.0"
+	imageRef := traefikImage()
 	out, err := m.dockerClient.ImagePull(ctx, imageRef, types.ImagePullOptions{})
 	if err == nil {
 		defer out.Close()
@@ -129,10 +143,11 @@ func (m *TraefikManager) buildTraefikCmdArgs() []string {
 }
 
 func (m *TraefikManager) buildTraefikMounts() []mount.Mount {
+	sockPath := dockerSocketPath()
 	mounts := []mount.Mount{
 		{
 			Type:   mount.TypeBind,
-			Source: "/var/run/docker.sock",
+			Source: sockPath,
 			Target: "/var/run/docker.sock",
 		},
 	}

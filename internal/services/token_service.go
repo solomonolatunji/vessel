@@ -14,17 +14,17 @@ type TokenService struct {
 	secretKey []byte
 }
 
-func NewTokenService() *TokenService {
+func NewTokenService() (*TokenService, error) {
 	secret := os.Getenv("JWT_SECRET")
 	if secret == "" {
 		secret = os.Getenv("VESSL_JWT_SECRET")
 	}
 	if secret == "" {
-		secret = "vessl-super-secret-jwt-signing-key-change-in-prod"
+		return nil, errors.New("JWT_SECRET or VESSL_JWT_SECRET environment variable is required")
 	}
 	return &TokenService{
 		secretKey: []byte(secret),
-	}
+	}, nil
 }
 
 func (ts *TokenService) GenerateToken(u *models.User) (string, error) {

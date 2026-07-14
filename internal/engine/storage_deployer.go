@@ -22,6 +22,13 @@ type StorageDeployer struct {
 	store        StorageDeployerStore
 }
 
+func minioImage() string {
+	if img := os.Getenv("VESSL_MINIO_IMAGE"); img != "" {
+		return img
+	}
+	return "minio/minio:latest"
+}
+
 func NewStorageDeployer(dockerClient *client.Client, s StorageDeployerStore) *StorageDeployer {
 	return &StorageDeployer{
 		dockerClient: dockerClient,
@@ -35,7 +42,7 @@ func (d *StorageDeployer) SpinUp(ctx context.Context, sc *models.Storage) (strin
 	}
 	containerName := utils.NormalizeContainerName(fmt.Sprintf("vessl-storage-%s", sc.Name))
 	_ = d.dockerClient.ContainerRemove(ctx, containerName, container.RemoveOptions{Force: true})
-	imageName := "minio/minio:latest"
+	imageName := minioImage()
 	envVars := []string{
 		"MINIO_ROOT_USER=" + sc.AccessKey,
 		"MINIO_ROOT_PASSWORD=" + sc.SecretKey,
@@ -46,7 +53,7 @@ func (d *StorageDeployer) SpinUp(ctx context.Context, sc *models.Storage) (strin
 		_, _ = io.Copy(io.Discard, pullResp)
 		_ = pullResp.Close()
 	}
-	hostVolumeDir, err := filepath.Abs(filepath.Join("data", "storage", sc.ID))
+	hostVolumeDir, err := filepath.Abs(filepath.Join(utils.GetDataDir(), "storage", sc.ID))
 	if err != nil {
 		return "", err
 	}

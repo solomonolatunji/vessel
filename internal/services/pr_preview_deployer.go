@@ -17,6 +17,7 @@ import (
 	"vessl.dev/vessl/internal/engine"
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/repositories"
+	"vessl.dev/vessl/internal/utils"
 )
 
 type PRPreviewService struct {
@@ -66,7 +67,7 @@ func (s *PRPreviewService) DeployPRPreview(ctx context.Context, appID string, pr
 	}
 	go func() {
 		bgCtx := context.Background()
-		sourceDir := filepath.Join("data", "builds", "pr-previews", preview.ID)
+		sourceDir := filepath.Join(utils.GetDataDir(), "builds", "pr-previews", preview.ID)
 		clonedApp := *app
 		clonedApp.Branch = branch
 		if err := s.gitService.CloneOrPullAppRepository(bgCtx, &clonedApp, sourceDir, nil); err != nil {

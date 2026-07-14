@@ -33,13 +33,42 @@ Log out and back in for the group change to take effect.
 
 ## Post-Install
 
-After the install script completes, open `http://<your-server-ip>:8080` in your browser.
+After the install script completes, you'll see:
+
+```text
+✅ Vessl vlatest installed successfully!
+  📍 Dashboard:  http://203.0.113.42:8080
+  🛠️  CLI:        vesslctl --help
+```
 
 ### Create Your Account
 
-1. The first user to register becomes the **instance admin**.
-2. Enter your name, email, and password.
-3. You'll be prompted to create your first workspace.
+You have two ways to create the admin account:
+
+**Via the dashboard:** Open `http://<your-server-ip>:8080` in your browser. The first user to register becomes the **instance admin**.
+
+**Via the terminal (no browser needed):**
+
+```sh
+vesslctl setup
+```
+
+This runs an interactive wizard that creates the admin account and optionally sets up Let's Encrypt SSL.
+
+### CLI Admin Tool
+
+The install script places `vesslctl` at `/usr/local/bin/vesslctl`. Use it for day-to-day admin tasks:
+
+```sh
+vesslctl status            # Show daemon health and running containers
+vesslctl logs -f           # Tail daemon logs
+vesslctl reset-password    # Reset admin password
+vesslctl config            # View server configuration
+vesslctl config site-name=MyVessl  # Update a setting
+vesslctl backup            # Create a manual database backup
+vesslctl update            # Upgrade to the latest version
+vesslctl downgrade v0.1.0  # Downgrade to a specific version
+```
 
 ### Configure a Domain (Recommended)
 
@@ -80,7 +109,9 @@ Vessl provisions the container with persistent volumes and injects the connectio
 
 ## What's Next
 
-- [Deploy your first app](/deployment/)
+- [Follow the tutorial → Deploy your first app in 5 minutes](/tutorial/)
+- [Deployment guide](/deployment/) — build strategies, domains, env vars, CI/CD
 - [Add a database](/databases/)
 - [Configure environment variables](/configuration/)
 - [Set up notifications](/configuration/#notifications)
+- [Manage Vessl via CLI](/admin/#cli-admin-tool)

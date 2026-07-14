@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	"github.com/docker/docker/api/types/container"
@@ -41,7 +42,7 @@ func (d *Deployer) Deploy(ctx context.Context, project *models.ProjectConfig, so
 		ID:           project.ID,
 		ProjectID:    project.ID,
 		Name:         project.Name,
-		InternalPort: 3000,
+		InternalPort: defaultAppPort(),
 	}
 	return d.DeployAppService(ctx, syntheticApp, sourceDir, logWriter)
 }
@@ -184,13 +185,40 @@ func (d *Deployer) prepareEnvironmentVariables(app *models.AppService, logWriter
 	return envSlice, nil
 }
 
+func defaultAppPort() int {
+	if p := os.Getenv("VESSL_DEFAULT_APP_PORT"); p != "" {
+		if port, err := strconv.Atoi(p); err == nil && port > 0 {
+			return port
+		}
+	}
+	return 3000
+}
+
+func defaultMemoryMB() int {
+	if m := os.Getenv("VESSL_DEFAULT_MEMORY_MB"); m != "" {
+		if mem, err := strconv.Atoi(m); err == nil && mem > 0 {
+			return mem
+		}
+	}
+	return 512
+}
+
+func defaultCPURequest() float64 {
+	if c := os.Getenv("VESSL_DEFAULT_CPU"); c != "" {
+		if cpu, err := strconv.ParseFloat(c, 64); err == nil && cpu > 0 {
+			return cpu
+		}
+	}
+	return 0.5
+}
+
 func (d *Deployer) startContainer(ctx context.Context, app *models.AppService, containerName, imageTag string, envSlice []string) error {
 	port := app.InternalPort
 	if port <= 0 {
-		port = 3000
+		port = defaultAppPort()
 	}
-	memMB := 512
-	cpuReq := 0.5
+	memMB := defaultMemoryMB()
+	cpuReq := defaultCPURequest()
 	_, err := d.containerManager.CreateAndStart(
 		ctx,
 		containerName,

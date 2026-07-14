@@ -34,14 +34,27 @@ func (r *RailpackBuilder) Build(ctx context.Context, opts BuildOptions, engineNa
 		return "", fmt.Errorf("failed to resolve absolute source dir: %w", err)
 	}
 
+	dockerSock := os.Getenv("DOCKER_SOCKET_PATH")
+	if dockerSock == "" {
+		dockerSock = "/var/run/docker.sock"
+	}
+
 	if engineName == "buildpacks" {
 		if opts.LogWriter != nil {
 			fmt.Fprintf(opts.LogWriter, "⚙️ [Buildpacks] Executing pack builder engine via Docker container...\n")
 		}
+		packImage := os.Getenv("VESSL_PACK_IMAGE")
+		if packImage == "" {
+			packImage = "buildpacksio/pack:latest"
+		}
+		builderImage := os.Getenv("VESSL_BUILDER_IMAGE")
+		if builderImage == "" {
+			builderImage = "paketobuildpacks/builder:base"
+		}
 		cmd := exec.CommandContext(ctx, "docker", "run", "--rm",
-			"-v", "/var/run/docker.sock:/var/run/docker.sock",
+			"-v", fmt.Sprintf("%s:/var/run/docker.sock", dockerSock),
 			"-v", fmt.Sprintf("%s:/app", absSourceDir),
-			"buildpacksio/pack:latest", "build", imageTag, "--path", "/app", "--builder", "paketobuildpacks/builder:base")
+			packImage, "build", imageTag, "--path", "/app", "--builder", builderImage)
 		cmd.Stdout = opts.LogWriter
 		cmd.Stderr = opts.LogWriter
 		if err := cmd.Run(); err == nil {
@@ -55,10 +68,14 @@ func (r *RailpackBuilder) Build(ctx context.Context, opts BuildOptions, engineNa
 		if opts.LogWriter != nil {
 			fmt.Fprintf(opts.LogWriter, "⚙️ [Nixpacks] Executing Nixpacks builder engine via Docker container...\n")
 		}
+		nixpacksImage := os.Getenv("VESSL_NIXPACKS_IMAGE")
+		if nixpacksImage == "" {
+			nixpacksImage = "ghcr.io/railwayapp/nixpacks:latest"
+		}
 		cmd := exec.CommandContext(ctx, "docker", "run", "--rm",
-			"-v", "/var/run/docker.sock:/var/run/docker.sock",
+			"-v", fmt.Sprintf("%s:/var/run/docker.sock", dockerSock),
 			"-v", fmt.Sprintf("%s:/app", absSourceDir),
-			"ghcr.io/railwayapp/nixpacks:latest", "build", "/app", "--name", imageTag)
+			nixpacksImage, "build", "/app", "--name", imageTag)
 		cmd.Stdout = opts.LogWriter
 		cmd.Stderr = opts.LogWriter
 		if err := cmd.Run(); err == nil {
