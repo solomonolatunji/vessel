@@ -161,7 +161,7 @@ func (d *DatabaseDeployer) Stop(ctx context.Context, dbID string) error {
 	}
 	dbConfig, err := d.store.GetDatabase(dbID)
 	if err != nil || dbConfig == nil {
-		return fmt.Errorf("database record not found")
+		return utils.NewNotFoundError("Database", dbID)
 	}
 	containerName := utils.NormalizeContainerName(fmt.Sprintf("vessl-db-%s", dbConfig.Name))
 	_ = d.dockerClient.ContainerRemove(ctx, containerName, container.RemoveOptions{Force: true})

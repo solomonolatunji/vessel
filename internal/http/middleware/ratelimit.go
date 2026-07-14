@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
+
+	"vessl.dev/vessl/internal/utils"
 )
 
 type visitor struct {
@@ -59,7 +61,7 @@ func (rl *RateLimiter) Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 		v.lastSeen = now
 		if v.count > rl.limit {
 			rl.mu.Unlock()
-			return c.JSON(http.StatusTooManyRequests, map[string]string{"error": "rate limit exceeded"})
+			return c.JSON(http.StatusTooManyRequests, utils.RateLimitError{Message: "rate limit exceeded", RetryAfter: int(rl.window.Seconds())})
 		}
 		rl.mu.Unlock()
 		return next(c)

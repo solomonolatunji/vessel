@@ -61,7 +61,7 @@ func (s *UserService) ListUsers(ctx context.Context, limit, offset int) ([]model
 func (s *UserService) ChangePassword(ctx context.Context, userID, oldPassword, newPassword string) error {
 	u, err := s.userRepo.GetUserByID(ctx, userID)
 	if err != nil {
-		return errors.New("user not found")
+		return utils.NewNotFoundError("User", userID)
 	}
 
 	if !utils.CheckPasswordHash(oldPassword, u.PasswordHash) {

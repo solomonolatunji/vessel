@@ -168,7 +168,7 @@ func (a *AuthService) ResetPassword(ctx context.Context, tokenStr, newPassword s
 
 	u, err := a.userRepo.GetUserByEmail(ctx, email)
 	if err != nil || u == nil {
-		return errors.New("user not found")
+		return utils.NewNotFoundError("User", email)
 	}
 
 	hashed, err := utils.HashPassword(newPassword)

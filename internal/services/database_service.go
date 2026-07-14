@@ -11,6 +11,7 @@ import (
 	"vessl.dev/vessl/internal/engine"
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/repositories"
+	"vessl.dev/vessl/internal/utils"
 )
 
 type DatabaseService struct {
@@ -140,7 +141,7 @@ func (s *DatabaseService) StartDatabase(ctx context.Context, id string) (*models
 	}
 	db, err := s.repo.GetByID(ctx, id)
 	if err != nil || db == nil {
-		return nil, errors.New("database not found")
+		return nil, utils.NewNotFoundError("Database", id)
 	}
 	if s.deployer == nil {
 		return nil, errors.New("database deployer unavailable")

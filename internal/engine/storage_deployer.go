@@ -110,7 +110,7 @@ func (d *StorageDeployer) Stop(ctx context.Context, storageID string) error {
 	}
 	sc, err := d.store.GetStorage(storageID)
 	if err != nil || sc == nil {
-		return fmt.Errorf("storage record not found")
+		return utils.NewNotFoundError("Storage", storageID)
 	}
 	containerName := utils.NormalizeContainerName(fmt.Sprintf("vessl-storage-%s", sc.Name))
 	_ = d.dockerClient.ContainerRemove(ctx, containerName, container.RemoveOptions{Force: true})

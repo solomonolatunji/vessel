@@ -164,7 +164,7 @@ func (r *UserSQLiteRepository) DeletePAT(ctx context.Context, id, userID string)
 	}
 	affected, _ := res.RowsAffected()
 	if affected == 0 {
-		return fmt.Errorf("personal access token not found or unauthorized")
+		return utils.NewNotFoundError("PersonalAccessToken", id)
 	}
 	return nil
 }

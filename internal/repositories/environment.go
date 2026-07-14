@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 
 	"vessl.dev/vessl/internal/models"
+	"vessl.dev/vessl/internal/utils"
 )
 
 type EnvironmentRepository interface {
@@ -46,7 +47,7 @@ func (r *EnvironmentSQLiteRepository) Get(_ context.Context, id string) (*models
 	var isDefault int
 	err := row.Scan(&env.ID, &env.ProjectID, &env.Name, &isDefault, &env.CreatedAt, &env.UpdatedAt)
 	if errors.Is(err, sql.ErrNoRows) {
-		return nil, fmt.Errorf("environment not found: %s", id)
+		return nil, utils.NewNotFoundError("Environment", id)
 	}
 	if err != nil {
 		return nil, err

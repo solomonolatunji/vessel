@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 
 	"vessl.dev/vessl/internal/models"
+	"vessl.dev/vessl/internal/utils"
 )
 
 type DeploymentRepository interface {
@@ -65,7 +66,7 @@ func (r *DeploymentSQLiteRepository) GetByID(_ context.Context, id string) (*mod
 		&d.CommitMessage, &d.Branch, &d.Trigger, &d.BuildLogs, &d.ContainerID, &d.CreatedAt, &d.UpdatedAt, &finishedAt,
 	)
 	if errors.Is(err, sql.ErrNoRows) {
-		return nil, fmt.Errorf("deployment not found: %s", id)
+		return nil, utils.NewNotFoundError("Deployment", id)
 	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to scan deployment: %w", err)

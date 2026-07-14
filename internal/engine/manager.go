@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"gopkg.in/yaml.v3"
+
+	"vessl.dev/vessl/internal/utils"
 )
 
 //go:embed compose/*.yaml
@@ -55,7 +57,7 @@ func (m *TemplateManager) walkDir(path string, d fs.DirEntry, err error) error {
 func (m *TemplateManager) GetTemplate(id string) (ComposeTemplate, error) {
 	tmpl, exists := m.templates[id]
 	if !exists {
-		return ComposeTemplate{}, fmt.Errorf("template not found: %s", id)
+		return ComposeTemplate{}, utils.NewNotFoundError("Template", id)
 	}
 	return tmpl, nil
 }

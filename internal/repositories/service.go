@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 
 	"vessl.dev/vessl/internal/models"
+	"vessl.dev/vessl/internal/utils"
 )
 
 type AppServiceRepository interface {
@@ -74,7 +75,7 @@ func (r *AppServiceSQLiteRepository) GetByID(_ context.Context, id string) (*mod
 		&svc.InternalPort, &svc.Domain, &svc.HealthCheckPath, &svc.ContainerID, &svc.Status, &svc.CreatedAt, &svc.UpdatedAt,
 	)
 	if errors.Is(err, sql.ErrNoRows) {
-		return nil, fmt.Errorf("app service not found: %s", id)
+		return nil, utils.NewNotFoundError("AppService", id)
 	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to get app service: %w", err)

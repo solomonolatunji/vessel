@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -44,7 +43,7 @@ func NewPRPreviewService(
 func (s *PRPreviewService) DeployPRPreview(ctx context.Context, appID string, prNumber int, commitHash, branch string) (*models.PRPreview, error) {
 	app, err := s.appService.GetAppService(ctx, appID)
 	if err != nil || app == nil {
-		return nil, errors.New("app service not found")
+		return nil, utils.NewNotFoundError("AppService", appID)
 	}
 	previewDomain := fmt.Sprintf("pr-%d.%s", prNumber, app.Domain)
 	if app.Domain == "" {

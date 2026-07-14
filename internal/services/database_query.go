@@ -12,6 +12,7 @@ import (
 	"github.com/redis/go-redis/v9"
 
 	"vessl.dev/vessl/internal/models"
+	"vessl.dev/vessl/internal/utils"
 )
 
 func (s *DatabaseService) QueryDatabase(ctx context.Context, id string, query string) (*models.DatabaseQueryResponse, error) {
@@ -20,7 +21,7 @@ func (s *DatabaseService) QueryDatabase(ctx context.Context, id string, query st
 	}
 	db, err := s.repo.GetByID(ctx, id)
 	if err != nil || db == nil {
-		return nil, errors.New("database not found")
+		return nil, utils.NewNotFoundError("Database", id)
 	}
 	if query == "" {
 		return nil, errors.New("query cannot be empty")

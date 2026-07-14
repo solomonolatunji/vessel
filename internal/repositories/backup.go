@@ -173,7 +173,7 @@ func (r *BackupSQLiteRepository) DeleteConfig(_ context.Context, id, projectID s
 	}
 	affected, _ := res.RowsAffected()
 	if affected == 0 {
-		return errors.New("backup config not found or unauthorized")
+		return utils.NewNotFoundError("BackupConfig", id)
 	}
 	return nil
 }
@@ -250,7 +250,7 @@ func (r *BackupSQLiteRepository) UpdateRecord(ctx context.Context, rec *models.B
 		return err
 	}
 	if rows == 0 {
-		return errors.New("backup record not found")
+		return utils.NewNotFoundError("BackupRecord", rec.ID)
 	}
 	return nil
 }

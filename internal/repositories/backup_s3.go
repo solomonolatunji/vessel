@@ -93,7 +93,7 @@ func (r *S3DestinationSQLiteRepository) DeleteS3Destination(_ context.Context, i
 	}
 	affected, _ := res.RowsAffected()
 	if affected == 0 {
-		return errors.New("s3 destination not found or unauthorized")
+		return utils.NewNotFoundError("S3Destination", id)
 	}
 	return nil
 }

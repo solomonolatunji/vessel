@@ -10,6 +10,7 @@ import (
 	"vessl.dev/vessl/internal/engine"
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/repositories"
+	"vessl.dev/vessl/internal/utils"
 )
 
 type StorageService struct {
@@ -123,7 +124,7 @@ func (s *StorageService) StartStorage(ctx context.Context, id string) (*models.S
 	}
 	st, err := s.repo.GetByID(ctx, id)
 	if err != nil || st == nil {
-		return nil, errors.New("storage record not found")
+		return nil, utils.NewNotFoundError("Storage", id)
 	}
 	if s.deployer == nil {
 		return nil, errors.New("storage deployer unavailable")
