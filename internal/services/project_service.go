@@ -33,7 +33,7 @@ func NewProjectService(pr repositories.ProjectRepository, er repositories.Enviro
 
 func (s *ProjectService) CreateProject(ctx context.Context, name, description string) (*models.ProjectConfig, error) {
 	if name == "" {
-		return nil, errors.New("project name is required")
+		name = utils.GenerateRandomName()
 	}
 	id := uuid.NewString()
 	now := time.Now()
@@ -52,7 +52,7 @@ func (s *ProjectService) CreateProject(ctx context.Context, name, description st
 
 func (s *ProjectService) CreateProjectFromRequest(ctx context.Context, req *models.CreateProjectRequest) (*models.ProjectConfig, error) {
 	if req.Name == "" {
-		req.Name = fmt.Sprintf("project-%s", uuid.NewString()[:8])
+		req.Name = utils.GenerateRandomName()
 	}
 	id := req.ID
 	if id == "" {

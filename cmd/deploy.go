@@ -158,12 +158,13 @@ func runDeploy(args []string) {
 		}
 
 		if projectID == "" {
-			fmt.Printf("📁 New project name (press Enter to use '%s'): ", appName)
+			defaultName := utils.GenerateRandomName()
+			fmt.Printf("📁 New project name (press Enter to use '%s'): ", defaultName)
 			var newName string
 			fmt.Scanln(&newName)
 			newName = strings.TrimSpace(newName)
 			if newName == "" {
-				newName = appName
+				newName = defaultName
 			}
 			p := &models.ProjectConfig{
 				ID:        uuid.New().String(),
