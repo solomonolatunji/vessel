@@ -1,61 +1,74 @@
 # 🛰️ Vessl
 
-Self-hosted PaaS. Turn any VPS into your own Vercel or Railway in 60 seconds.
+**Self-hosted PaaS. Turn any VPS into your own Vercel or Railway in 60 seconds.**
+
+---
+
+Vessl is a lightweight, open-source Platform-as-a-Service (PaaS) designed to simplify deployments. Whether you're deploying a static site, a full-stack monorepo, or a complex microservice architecture, Vessl provides a frictionless developer experience without the vendor lock-in.
+
+## 🚀 Quick Start
+
+Install Vessl on any fresh Linux server (Ubuntu/Debian recommended):
 
 ```bash
 curl -fsSL https://get.vessl.dev | sh
 ```
 
-Dashboard at `http://your-server-ip:8080`.
+Once installed, your dashboard will be available at `http://your-server-ip:8080`.
 
-## Features
+## ✨ Features
 
-- **Deploy apps** — Docker, Railpack, Nixpacks, Buildpacks, or Serverless
-- **15 databases** — PostgreSQL, MySQL, MariaDB, MongoDB, Redis, Dragonfly, KeyDB, ClickHouse, Kafka, RabbitMQ, NATS, NocoDB, Plausible, WordPress, Gitea
-- **S3 storage** — One-click MinIO buckets, auto-injected credentials
-- **Auto connection strings** — `DATABASE_URL`, `REDIS_URL`, etc. injected automatically
-- **Custom domains** — Let's Encrypt SSL via Traefik v3
-- **Git auto-deploy** — Connect GitHub/GitLab, push to deploy, PR previews
-- **Self-hosted & Multi-tenant** — RBAC, audit logs, SSH keys, trusted domain SSO
-- **Serverless functions** — Node.js, Python, Go in-browser editor
-- **Cron jobs** — Scheduled tasks inside containers
-- **Notifications** — Discord, Slack, Telegram, Pushover, SMTP, Resend, webhooks
-- **AI diagnostics** — Analyze failed builds via OpenAI/Anthropic
-- **Zero-downtime deploys** — Health-checked container swaps with rollback
-- **No lock-in** — Standard Docker containers. Remove Vessl, apps keep running
-- **CLI management** — Full admin from terminal without the dashboard
+Vessl is built to be simple but powerful, giving you everything you need to run production workloads out of the box.
 
-## CLI
+- **Deploy Anything:** Native support for Dockerfiles, Railpack, Nixpacks, and standard Buildpacks.
+- **Managed Databases:** Provision PostgreSQL, MySQL, Redis, MongoDB, and more with a single click.
+- **Smart Environment:** Database credentials (`DATABASE_URL`, `REDIS_URL`) are automatically injected into your linked applications.
+- **Zero-Downtime Deploys:** Seamless container swaps with built-in health checks and instant rollbacks.
+- **Custom Domains & SSL:** Automatic Let's Encrypt certificates managed via Traefik v3.
+- **GitOps Ready:** Connect to GitHub/GitLab for automatic deployments on push and PR preview environments.
+- **Marketplace Templates:** Instantly deploy popular frameworks (Node.js, Go, Python, Ruby, PHP) from our built-in marketplace.
+- **No Lock-in:** Vessl orchestrates standard Docker containers. If you ever remove Vessl, your apps keep running.
+
+## 💻 CLI Operations
+
+Manage your entire infrastructure directly from the terminal.
 
 ```bash
-vesslctl status                # Health + containers
-vesslctl setup                 # Admin wizard
-vesslctl reset-password        # Reset admin password
-vesslctl config                # View config
-vesslctl config site-name=Prod # Update setting
-vesslctl logs -f               # Tail logs
-vesslctl restart               # Restart daemon (applies domain/config changes)
-vesslctl deploy <git-url>                        # Deploy app from Git
-vesslctl deploy --image nginx:latest             # Deploy from Docker image
-vesslctl deploy --compose docker-compose.yml     # Deploy compose file
-vesslctl deploy --archive app.tar.gz             # Deploy from tar archive
-vesslctl apps:list             # List apps
-vesslctl db:create my-db postgres --project <id>  # Create DB
-vesslctl backup                # Backup database
-vesslctl update                # Upgrade Vessl
-vesslctl downgrade v0.1.0      # Downgrade
-vesslctl uninstall             # Remove Vessl, keep apps
+# General Management
+vessld status                # View cluster health and running containers
+vessld setup                 # Run the initial admin configuration wizard
+vessld reset-password        # Reset the dashboard admin password
+vessld logs -f               # Tail global system logs
+
+# Deployments
+vessld deploy --template node-express            # Deploy an official starter template
+vessld deploy https://github.com/user/repo.git   # Deploy any Git repository
+vessld deploy --image nginx:latest               # Deploy a pre-built Docker image
+vessld deploy --compose docker-compose.yml       # Deploy a full Docker Compose stack
+
+# App & Resource Management
+vessld apps:list                                 # List all running applications
+vessld db:create my-db postgres --project <id>   # Provision a managed database
 ```
 
-## Local Dev
+## 🛠️ Local Development
+
+Want to contribute or hack on Vessl locally?
 
 ```bash
+# 1. Clone the repository
+git clone https://github.com/vesslhq/vessl.git
+cd vessl
+
+# 2. Setup your environment
 cp .env.example .env
-go run ./cmd           # Daemon on :8080
+
+# 3. Run the Go daemon locally (Starts on port :8080)
+go run ./cmd
 ```
 
-Requires Go 1.25+, Node.js 22+, Docker.
+**Requirements:** Go 1.25+, Node.js 22+, and Docker.
 
-## Docs
+## 📚 Documentation
 
-[docs.vessl.dev](https://docs.vessl.dev)
+For complete guides, API references, and advanced configuration, please visit our documentation at **[docs.vessl.dev](https://docs.vessl.dev)**.
