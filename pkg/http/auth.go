@@ -4,43 +4,59 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	nethttp "net/http"
+	"net/http"
+
+	"vessl.dev/vessl/internal/models"
 )
 
-// AuthResponse holds the response from the authentication endpoint.
-type AuthResponse struct {
-	Token string `json:"token"`
-	User  struct {
-		ID    string `json:"id"`
-		Email string `json:"email"`
-	} `json:"user"`
+type AuthRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
-// Login authenticates a user with email and password and returns a token.
+type AuthResponse struct {
+	Token string       `json:"token"`
+	User  *models.User `json:"user"`
+}
+
 func (c *Client) Login(email, password string) (*AuthResponse, error) {
-	payload := map[string]string{
-		"email":    email,
-		"password": password,
+	payload := AuthRequest{
+		Email:    email,
+		Password: password,
 	}
 
-	resp, err := c.sendRequest("POST", "/auth/login", payload)
+	resp, err := c.sendRequest("POST", "/auth/signin", payload)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != nethttp.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("login failed (status %d): %s", resp.StatusCode, string(body))
+	if resp.StatusCode != http.StatusOK {
+		respBody, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("login failed: %s", string(respBody))
 	}
 
-	var authResp AuthResponse
-	if err := json.NewDecoder(resp.Body).Decode(&authResp); err != nil {
+	var result struct {
+		Data *AuthResponse `json:"data"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return nil, err
 	}
 
-	// Automatically set the token on the client for future requests
-	c.Token = authResp.Token
+	return result.Data, nil
+}
 
-	return &authResp, nil
+func (c *Client) Logout() error {
+	resp, err := c.sendRequest("POST", "/auth/logout", nil)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		respBody, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("logout failed: %s", string(respBody))
+	}
+
+	return nil
 }
