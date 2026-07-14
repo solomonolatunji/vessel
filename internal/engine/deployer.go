@@ -338,8 +338,18 @@ func (d *Deployer) DeployImage(ctx context.Context, app *models.AppService, logW
 		port = defaultAppPort()
 	}
 
-	containerName := fmt.Sprintf("vessl-app-%s", utils.NormalizeContainerName(app.ID))
+	containerName := fmt.Sprintf("%s-%s", utils.NormalizeContainerName(app.ID), uuid.New().String()[:8])
 	domain := app.Domain
 
-	return d.containerManager.CreateAndStart(ctx, containerName, app.ImageRef, app.ID, domain, port, app.RuntimeMode, nil, defaultMemoryMB(), defaultCPURequest(), app.HealthCheckPath)
+	cid, err := d.containerManager.CreateAndStart(ctx, containerName, app.ImageRef, app.ID, domain, port, app.RuntimeMode, nil, defaultMemoryMB(), defaultCPURequest(), app.HealthCheckPath)
+	if err != nil {
+		return "", err
+	}
+
+	if err := d.verifyHealthCheck(ctx, app, containerName, logWriter); err != nil {
+		return "", err
+	}
+
+	d.scheduleCleanup(app, containerName, logWriter)
+	return cid, nil
 }
