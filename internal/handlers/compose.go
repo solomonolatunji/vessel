@@ -51,7 +51,7 @@ type ComposeDeployRequest struct {
 // @Produce json
 // @Param projectId formData string false "Project ID (optional, uses default if empty)"
 // @Param file formData file true "docker-compose.yml file"
-// @Success 200 {object} utils.BaseResponse{data=object}
+// @Success 200 {object} map[string]any
 // @Router /compose/deploy [post]
 func (h *ComposeHandler) Deploy(c echo.Context) error {
 	user := middleware.GetUserClaimsFromContext(c.Request().Context())

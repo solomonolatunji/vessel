@@ -172,7 +172,8 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	oneClickService := services.NewOneClickService(tmplMgr, databaseDeployer, environmentSQLiteRepository, databaseSQLiteRepository)
 	oneClickHandler := handlers.NewOneClickHandler(oneClickService)
 	serverlessHandler := handlers.NewServerlessHandler(serverlessService)
-	systemHandler := handlers.NewSystemHandler()
+	systemService := services.NewSystemService()
+	systemHandler := handlers.NewSystemHandler(systemService)
 
 	authLimiter := middleware.NewRateLimiter(10, time.Minute)
 

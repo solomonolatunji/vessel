@@ -27,7 +27,7 @@ type oneClickDeployRequest struct {
 // @Description Returns available one-click deployable applications
 // @Tags OneClick
 // @Produce json
-// @Success 200 {object} utils.BaseResponse{data=[]models.OneClickApp}
+// @Success 200 {object} map[string]any
 // @Router /one-click [get]
 func (h *OneClickHandler) List(c echo.Context) error {
 	return utils.Success(c, "Available one-click apps", h.service.ListApps())
@@ -39,7 +39,7 @@ func (h *OneClickHandler) List(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param request body oneClickDeployRequest true "Deployment details"
-// @Success 200 {object} utils.BaseResponse
+// @Success 200 {object} map[string]any
 // @Router /one-click/deploy [post]
 func (h *OneClickHandler) Deploy(c echo.Context) error {
 	var req oneClickDeployRequest

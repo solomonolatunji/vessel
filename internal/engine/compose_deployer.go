@@ -17,24 +17,6 @@ import (
 	"vessl.dev/vessl/internal/utils"
 )
 
-type UserComposeFile struct {
-	Services map[string]UserComposeService `yaml:"services"`
-	Networks map[string]struct {
-		External bool `yaml:"external"`
-	} `yaml:"networks"`
-}
-
-type UserComposeService struct {
-	Image       string            `yaml:"image"`
-	Build       any               `yaml:"build"`
-	Ports       []string          `yaml:"ports"`
-	Environment map[string]string `yaml:"environment"`
-	EnvFile     string            `yaml:"env_file"`
-	Volumes     []string          `yaml:"volumes"`
-	DependsOn   []string          `yaml:"depends_on"`
-	Restart     string            `yaml:"restart"`
-}
-
 type ComposeDeployer struct {
 	dockerClient *client.Client
 }
@@ -62,13 +44,13 @@ func (cd *ComposeDeployer) Deploy(ctx context.Context, composePath string, proje
 	return results, nil
 }
 
-func (cd *ComposeDeployer) parseComposeFile(path string) (*UserComposeFile, error) {
+func (cd *ComposeDeployer) parseComposeFile(path string) (*models.UserComposeFile, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read compose file: %w", err)
 	}
 
-	var compose UserComposeFile
+	var compose models.UserComposeFile
 	if err := yaml.Unmarshal(data, &compose); err != nil {
 		return nil, fmt.Errorf("failed to parse compose file: %w", err)
 	}
@@ -80,7 +62,7 @@ func (cd *ComposeDeployer) parseComposeFile(path string) (*UserComposeFile, erro
 	return &compose, nil
 }
 
-func (cd *ComposeDeployer) deployService(ctx context.Context, name string, svc UserComposeService, projectID string) (*models.AppService, error) {
+func (cd *ComposeDeployer) deployService(ctx context.Context, name string, svc models.UserComposeService, projectID string) (*models.AppService, error) {
 	port := extractPort(svc.Ports)
 	containerName := fmt.Sprintf("vessl-comp-%s-%s", projectID[:8], name)
 	aliasName := fmt.Sprintf("vessl-%s", name)
@@ -106,7 +88,7 @@ func (cd *ComposeDeployer) deployService(ctx context.Context, name string, svc U
 	return app, nil
 }
 
-func (cd *ComposeDeployer) startContainer(ctx context.Context, svc UserComposeService, containerName, aliasName, name string, envVars []string) error {
+func (cd *ComposeDeployer) startContainer(ctx context.Context, svc models.UserComposeService, containerName, aliasName, name string, envVars []string) error {
 	networkName := utils.GetRuntimeNetwork()
 	_ = utils.EnsureVesslNetwork(ctx, cd.dockerClient)
 

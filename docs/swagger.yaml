@@ -1,11 +1,2831 @@
 basePath: /api
+definitions:
+  handlers.AuthRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  handlers.ChangePasswordRequest:
+    properties:
+      newPassword:
+        type: string
+      oldPassword:
+        type: string
+    required:
+    - newPassword
+    - oldPassword
+    type: object
+  handlers.CreatePATRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  handlers.CreateSSHKeyRequest:
+    properties:
+      name:
+        type: string
+      publicKey:
+        type: string
+    type: object
+  handlers.CreateTrustedDomainRequest:
+    properties:
+      domain:
+        type: string
+    type: object
+  handlers.CreateWorkspaceRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  handlers.ForgotPasswordRequest:
+    properties:
+      email:
+        type: string
+    type: object
+  handlers.GitAppsManifestRequest:
+    properties:
+      code:
+        type: string
+      workspaceId:
+        type: string
+    type: object
+  handlers.GithubWebhookPayload:
+    properties:
+      action:
+        type: string
+      number:
+        type: integer
+      pull_request:
+        properties:
+          head:
+            properties:
+              ref:
+                type: string
+              sha:
+                type: string
+            type: object
+        type: object
+    type: object
+  handlers.RegisterRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  handlers.ResetPasswordRequest:
+    properties:
+      newPassword:
+        type: string
+      token:
+        type: string
+    type: object
+  handlers.TestNotificationRequest:
+    properties:
+      channelId:
+        type: string
+      provider:
+        type: string
+      workspaceId:
+        type: string
+    type: object
+  handlers.UpdateProfileRequest:
+    properties:
+      email:
+        type: string
+      role:
+        type: string
+    type: object
+  handlers.Verify2FARequest:
+    properties:
+      passcode:
+        type: string
+    type: object
+  handlers.oneClickDeployRequest:
+    properties:
+      appId:
+        type: string
+      name:
+        type: string
+      projectId:
+        type: string
+    type: object
+  models.AppService:
+    properties:
+      branch:
+        type: string
+      buildCommand:
+        type: string
+      buildEngine:
+        type: string
+      containerId:
+        type: string
+      createdAt:
+        type: string
+      dockerfilePath:
+        type: string
+      domain:
+        type: string
+      environmentId:
+        type: string
+      healthCheckPath:
+        type: string
+      id:
+        type: string
+      imageRef:
+        type: string
+      internalPort:
+        type: integer
+      name:
+        type: string
+      projectId:
+        type: string
+      repositoryUrl:
+        type: string
+      rootDirectory:
+        type: string
+      startCommand:
+        type: string
+      status:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.BackupConfig:
+    properties:
+      createdAt:
+        type: string
+      databaseId:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      projectId:
+        type: string
+      retentionDays:
+        type: integer
+      s3DestinationId:
+        type: string
+      schedule:
+        type: string
+      status:
+        type: string
+      storageId:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.CPUStats:
+    properties:
+      cores:
+        type: integer
+      percent:
+        type: number
+    type: object
+  models.CreateDatabaseRequest:
+    properties:
+      customArgs:
+        type: string
+      databaseName:
+        type: string
+      engine:
+        type: string
+      environmentId:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      port:
+        type: integer
+      projectId:
+        type: string
+      username:
+        type: string
+      version:
+        type: string
+      volumePath:
+        type: string
+    type: object
+  models.CreateProjectRequest:
+    properties:
+      branch:
+        type: string
+      description:
+        type: string
+      domain:
+        type: string
+      id:
+        type: string
+      internal_port:
+        type: integer
+      internalPort:
+        type: integer
+      name:
+        type: string
+      repository_url:
+        type: string
+      repositoryUrl:
+        type: string
+      workspaceId:
+        type: string
+    type: object
+  models.CreateTokenRequest:
+    properties:
+      environmentId:
+        type: string
+      expiresAt:
+        type: string
+      ipAllowlist:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      scopes:
+        items:
+          type: string
+        type: array
+    type: object
+  models.DatabaseQueryRequest:
+    properties:
+      query:
+        type: string
+    type: object
+  models.DiskStats:
+    properties:
+      freeGb:
+        type: integer
+      percent:
+        type: number
+      totalGb:
+        type: integer
+      usedGb:
+        type: integer
+    type: object
+  models.DomainConfig:
+    properties:
+      createdAt:
+        type: string
+      domainName:
+        type: string
+      id:
+        type: string
+      pathPrefix:
+        type: string
+      projectId:
+        type: string
+      redirectTo:
+        type: string
+      sslCertStatus:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.EnvironmentConfig:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      isDefault:
+        type: boolean
+      name:
+        type: string
+      projectId:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.GitConnectRequest:
+    properties:
+      accessToken:
+        type: string
+      accountName:
+        type: string
+      provider:
+        type: string
+    type: object
+  models.Job:
+    properties:
+      command:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+      lastOutput:
+        type: string
+      lastRunAt:
+        type: string
+      name:
+        type: string
+      projectId:
+        type: string
+      schedule:
+        type: string
+      status:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.MemoryStats:
+    properties:
+      freeMb:
+        type: integer
+      percent:
+        type: number
+      totalMb:
+        type: integer
+      usedMb:
+        type: integer
+    type: object
+  models.OAuthProviderConfig:
+    properties:
+      baseUrl:
+        type: string
+      clientId:
+        type: string
+      clientSecret:
+        type: string
+      createdAt:
+        type: string
+      enabled:
+        type: boolean
+      id:
+        type: string
+      providerName:
+        type: string
+      redirectUri:
+        type: string
+      tenant:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.ProjectMember:
+    properties:
+      acceptedAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      invitedAt:
+        type: string
+      permission:
+        type: string
+      projectId:
+        type: string
+      status:
+        type: string
+      userId:
+        type: string
+    type: object
+  models.S3Destination:
+    properties:
+      accessKeyId:
+        type: string
+      bucket:
+        type: string
+      createdAt:
+        type: string
+      endpoint:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      projectId:
+        type: string
+      region:
+        type: string
+      secretAccessKey:
+        type: string
+    type: object
+  models.ServerSettings:
+    properties:
+      autoUpdateEnabled:
+        type: boolean
+      concurrentBuilds:
+        type: integer
+      currentVersion:
+        type: string
+      customDnsResolvers:
+        type: string
+      defaultAnthropicKey:
+        type: string
+      defaultOpenAIKey:
+        type: string
+      defaultWildcardDomain:
+        type: string
+      deploymentTimeout:
+        type: integer
+      disableTwoStepConfirmation:
+        type: boolean
+      discordEnabled:
+        type: boolean
+      discordPingEnabled:
+        type: boolean
+      discordWebhookUrl:
+        type: string
+      diskUsageCron:
+        type: string
+      diskUsageThreshold:
+        type: integer
+      dnsValidationEnabled:
+        type: boolean
+      dockerCleanupCron:
+        type: string
+      genericWebhookEnabled:
+        type: boolean
+      genericWebhookUrl:
+        type: string
+      id:
+        type: string
+      ipAllowlist:
+        type: string
+      lastUpdateCheck:
+        type: string
+      latestVersion:
+        type: string
+      mcpServerEnabled:
+        type: boolean
+      notificationAlerts:
+        type: boolean
+      publicIpv4:
+        type: string
+      publicIpv6:
+        type: string
+      pushoverApiToken:
+        type: string
+      pushoverEnabled:
+        type: boolean
+      pushoverUserKey:
+        type: string
+      registrationDomainAllowlist:
+        type: string
+      registrationEnabled:
+        type: boolean
+      resendApiKey:
+        type: string
+      resendEnabled:
+        type: boolean
+      serverTimezone:
+        type: string
+      showSponsorshipPopup:
+        type: boolean
+      siteName:
+        type: string
+      slackEnabled:
+        type: boolean
+      slackWebhookUrl:
+        type: string
+      smtpEnabled:
+        type: boolean
+      smtpFromAddress:
+        type: string
+      smtpFromName:
+        type: string
+      smtpHost:
+        type: string
+      smtpPassword:
+        type: string
+      smtpPort:
+        type: integer
+      smtpUser:
+        type: string
+      telegramBotToken:
+        type: string
+      telegramChatId:
+        type: string
+      telegramEnabled:
+        type: boolean
+      telemetryEnabled:
+        type: boolean
+      traefikWildcardIp:
+        type: string
+      updateCheckCron:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.Storage:
+    properties:
+      accessKey:
+        type: string
+      apiPort:
+        type: integer
+      bucketName:
+        type: string
+      consolePort:
+        type: integer
+      containerId:
+        type: string
+      createdAt:
+        type: string
+      environmentId:
+        type: string
+      externalDns:
+        type: string
+      id:
+        type: string
+      internalDns:
+        type: string
+      name:
+        type: string
+      projectId:
+        type: string
+      secretKey:
+        type: string
+      status:
+        type: string
+      type:
+        type: string
+      updatedAt:
+        type: string
+      volumePath:
+        type: string
+    type: object
+  models.SystemStats:
+    properties:
+      cpu:
+        $ref: '#/definitions/models.CPUStats'
+      disk:
+        $ref: '#/definitions/models.DiskStats'
+      loadAvg:
+        items:
+          type: number
+        type: array
+      memory:
+        $ref: '#/definitions/models.MemoryStats'
+      processes:
+        type: integer
+      uptimeSeconds:
+        type: integer
+    type: object
+  models.Variable:
+    properties:
+      createdAt:
+        type: string
+      environmentId:
+        type: string
+      id:
+        type: string
+      isSecret:
+        type: boolean
+      key:
+        type: string
+      projectId:
+        type: string
+      serviceId:
+        type: string
+      updatedAt:
+        type: string
+      value:
+        type: string
+    type: object
+  models.Webhook:
+    properties:
+      createdAt:
+        type: string
+      eventTypes:
+        items:
+          type: string
+        type: array
+      id:
+        type: string
+      includePrEnvironments:
+        type: boolean
+      projectId:
+        type: string
+      updatedAt:
+        type: string
+      url:
+        type: string
+    type: object
+  models.Workspace:
+    properties:
+      avatarUrl:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      ownerId:
+        type: string
+      preferredRegion:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.WorkspaceAISettings:
+    properties:
+      apiKey:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+      provider:
+        type: string
+      updatedAt:
+        type: string
+      workspaceId:
+        type: string
+    type: object
+  models.WorkspaceEmailSettings:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      resendApiKey:
+        type: string
+      smtpFromAddress:
+        type: string
+      smtpFromName:
+        type: string
+      smtpHost:
+        type: string
+      smtpPassword:
+        type: string
+      smtpPort:
+        type: integer
+      smtpUser:
+        type: string
+      updatedAt:
+        type: string
+      useResend:
+        type: boolean
+      workspaceId:
+        type: string
+    type: object
+  models.WorkspaceNotificationChannel:
+    type: object
 host: localhost:8080
 info:
   contact: {}
   description: Vessl API Documentation
   title: Vessl API
   version: "1.0"
-paths: {}
+paths:
+  /apps/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete App Service
+      parameters:
+      - description: App ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete App Service
+      tags:
+      - AppServices
+    get:
+      consumes:
+      - application/json
+      description: Get App Service
+      parameters:
+      - description: App ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Get App Service
+      tags:
+      - AppServices
+    put:
+      consumes:
+      - application/json
+      description: Update App Service
+      parameters:
+      - description: App ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.AppService'
+      produces:
+      - application/json
+      responses: {}
+      summary: Update App Service
+      tags:
+      - AppServices
+  /auth/2fa/disable:
+    post:
+      consumes:
+      - application/json
+      description: Disable2FA endpoint
+      produces:
+      - application/json
+      responses: {}
+      summary: Disable2FA endpoint
+      tags:
+      - Auth
+  /auth/2fa/setup:
+    post:
+      consumes:
+      - application/json
+      description: Setup2FA endpoint
+      produces:
+      - application/json
+      responses: {}
+      summary: Setup2FA endpoint
+      tags:
+      - Auth
+  /auth/2fa/verify:
+    post:
+      consumes:
+      - application/json
+      description: Verify2FA endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.Verify2FARequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: Verify2FA endpoint
+      tags:
+      - Auth
+  /auth/forgot-password:
+    post:
+      consumes:
+      - application/json
+      description: Forgot Password endpoint
+      parameters:
+      - description: Forgot password credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.ForgotPasswordRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: Forgot Password endpoint
+      tags:
+      - Auth
+  /auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: Logout endpoint
+      produces:
+      - application/json
+      responses: {}
+      summary: Logout endpoint
+      tags:
+      - Auth
+  /auth/oauth/{provider}:
+    get:
+      consumes:
+      - application/json
+      description: OAuthRedirect endpoint
+      parameters:
+      - description: provider
+        in: path
+        name: provider
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: OAuthRedirect endpoint
+      tags:
+      - Auth
+  /auth/oauth/{provider}/callback:
+    get:
+      consumes:
+      - application/json
+      description: OAuthCallback endpoint
+      parameters:
+      - description: provider
+        in: path
+        name: provider
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: OAuthCallback endpoint
+      tags:
+      - Auth
+  /auth/oauth/providers/enabled:
+    get:
+      consumes:
+      - application/json
+      description: ListEnabledProviders endpoint
+      produces:
+      - application/json
+      responses: {}
+      summary: ListEnabledProviders endpoint
+      tags:
+      - Auth
+  /auth/reset-password:
+    post:
+      consumes:
+      - application/json
+      description: Reset Password endpoint
+      parameters:
+      - description: Reset password credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.ResetPasswordRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: Reset Password endpoint
+      tags:
+      - Auth
+  /auth/signin:
+    post:
+      consumes:
+      - application/json
+      description: Login endpoint
+      parameters:
+      - description: Login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.AuthRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: Login endpoint
+      tags:
+      - Auth
+  /auth/signup:
+    post:
+      consumes:
+      - application/json
+      description: Register endpoint
+      parameters:
+      - description: Registration credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.RegisterRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: Register endpoint
+      tags:
+      - Auth
+  /backups:
+    get:
+      consumes:
+      - application/json
+      description: List Backups
+      produces:
+      - application/json
+      responses: {}
+      summary: List Backups
+      tags:
+      - Backups
+    post:
+      consumes:
+      - application/json
+      description: Create Backup
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.BackupConfig'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create Backup
+      tags:
+      - Backups
+  /backups/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Backup
+      parameters:
+      - description: Backup ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete Backup
+      tags:
+      - Backups
+    get:
+      consumes:
+      - application/json
+      description: Get Backup
+      parameters:
+      - description: Backup ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Get Backup
+      tags:
+      - Backups
+  /backups/{id}/trigger:
+    post:
+      consumes:
+      - application/json
+      description: Trigger endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Trigger endpoint
+      tags:
+      - Backups
+  /compose/deploy:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Parses and deploys all services defined in a docker-compose.yml
+      parameters:
+      - description: Project ID (optional, uses default if empty)
+        in: formData
+        name: projectId
+        type: string
+      - description: docker-compose.yml file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Deploy a docker-compose file
+      tags:
+      - Compose
+  /databases:
+    get:
+      consumes:
+      - application/json
+      description: ListDatabases endpoint
+      produces:
+      - application/json
+      responses: {}
+      summary: ListDatabases endpoint
+      tags:
+      - Databases
+    post:
+      consumes:
+      - application/json
+      description: CreateDatabase endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateDatabaseRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: CreateDatabase endpoint
+      tags:
+      - Databases
+  /databases/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: DeleteDatabase endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: DeleteDatabase endpoint
+      tags:
+      - Databases
+    get:
+      consumes:
+      - application/json
+      description: GetDatabase endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: GetDatabase endpoint
+      tags:
+      - Databases
+  /databases/{id}/query:
+    post:
+      consumes:
+      - application/json
+      description: QueryDatabase endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.DatabaseQueryRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: QueryDatabase endpoint
+      tags:
+      - Databases
+  /databases/{id}/start:
+    post:
+      consumes:
+      - application/json
+      description: StartDatabase endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: StartDatabase endpoint
+      tags:
+      - Databases
+  /databases/{id}/stop:
+    post:
+      consumes:
+      - application/json
+      description: StopDatabase endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: StopDatabase endpoint
+      tags:
+      - Databases
+  /deployments/{id}/diagnostics:
+    post:
+      consumes:
+      - application/json
+      description: Analyze endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Analyze endpoint
+      tags:
+      - Deployments
+  /deployments/{id}/logs:
+    get:
+      consumes:
+      - application/json
+      description: GetLogs endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: GetLogs endpoint
+      tags:
+      - Deployments
+  /deployments/{id}/rollback:
+    post:
+      consumes:
+      - application/json
+      description: Rollback endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Rollback endpoint
+      tags:
+      - Deployments
+  /domains/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Domain
+      parameters:
+      - description: Domain ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete Domain
+      tags:
+      - Projects
+  /environments/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Environment
+      parameters:
+      - description: Environment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete Environment
+      tags:
+      - Environments
+  /environments/{id}/apps:
+    get:
+      consumes:
+      - application/json
+      description: ListByEnvironment endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: ListByEnvironment endpoint
+      tags:
+      - AppServices
+    post:
+      consumes:
+      - application/json
+      description: Create endpoint
+      parameters:
+      - description: Environment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.AppService'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create endpoint
+      tags:
+      - AppServices
+  /environments/{id}/canvas:
+    get:
+      consumes:
+      - application/json
+      description: GetEnvironmentCanvas endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: GetEnvironmentCanvas endpoint
+      tags:
+      - Environments
+  /git/connect:
+    post:
+      consumes:
+      - application/json
+      description: Connect endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.GitConnectRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: Connect endpoint
+      tags:
+      - Git
+  /git/connect/{provider}:
+    delete:
+      consumes:
+      - application/json
+      description: Disconnect endpoint
+      parameters:
+      - description: provider
+        in: path
+        name: provider
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Disconnect endpoint
+      tags:
+      - Git
+  /git/repos:
+    get:
+      consumes:
+      - application/json
+      description: ListRepos endpoint
+      produces:
+      - application/json
+      responses: {}
+      summary: ListRepos endpoint
+      tags:
+      - Git
+  /git/status:
+    get:
+      consumes:
+      - application/json
+      description: Status endpoint
+      produces:
+      - application/json
+      responses: {}
+      summary: Status endpoint
+      tags:
+      - Git
+  /jobs:
+    get:
+      consumes:
+      - application/json
+      description: ListProjectJobs endpoint
+      produces:
+      - application/json
+      responses: {}
+      summary: ListProjectJobs endpoint
+      tags:
+      - Jobs
+    post:
+      consumes:
+      - application/json
+      description: Create endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Job'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create endpoint
+      tags:
+      - Jobs
+  /jobs/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Job
+      parameters:
+      - description: Job ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete Job
+      tags:
+      - Jobs
+    get:
+      consumes:
+      - application/json
+      description: Get Job
+      parameters:
+      - description: Job ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Get Job
+      tags:
+      - Jobs
+  /jobs/{id}/trigger:
+    post:
+      consumes:
+      - application/json
+      description: Run endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Run endpoint
+      tags:
+      - Jobs
+  /oauth/vercel/callback:
+    get:
+      consumes:
+      - application/json
+      description: Callback endpoint
+      produces:
+      - application/json
+      responses: {}
+      summary: Callback endpoint
+      tags:
+      - Auth
+  /one-click:
+    get:
+      description: Returns available one-click deployable applications
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: List one-click apps
+      tags:
+      - OneClick
+  /one-click/deploy:
+    post:
+      consumes:
+      - application/json
+      description: Deploys a pre-configured application from template
+      parameters:
+      - description: Deployment details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.oneClickDeployRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Deploy a one-click app
+      tags:
+      - OneClick
+  /profile:
+    get:
+      consumes:
+      - application/json
+      description: GetProfile endpoint
+      produces:
+      - application/json
+      responses: {}
+      summary: GetProfile endpoint
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: UpdateProfile endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateProfileRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: UpdateProfile endpoint
+      tags:
+      - Users
+  /profile/password:
+    put:
+      consumes:
+      - application/json
+      description: ChangePassword endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.ChangePasswordRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: ChangePassword endpoint
+      tags:
+      - Users
+  /profile/tokens:
+    get:
+      consumes:
+      - application/json
+      description: ListPATs endpoint
+      produces:
+      - application/json
+      responses: {}
+      summary: ListPATs endpoint
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      description: CreatePAT endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreatePATRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: CreatePAT endpoint
+      tags:
+      - Users
+  /profile/tokens/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: DeletePAT endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: DeletePAT endpoint
+      tags:
+      - Users
+  /projects:
+    get:
+      consumes:
+      - application/json
+      description: ListProjects endpoint
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: ListProjects endpoint
+      tags:
+      - Projects
+    post:
+      consumes:
+      - application/json
+      description: CreateProject endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateProjectRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: CreateProject endpoint
+      tags:
+      - Projects
+  /projects/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: DeleteProject endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: DeleteProject endpoint
+      tags:
+      - Projects
+    get:
+      consumes:
+      - application/json
+      description: GetProject endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: GetProject endpoint
+      tags:
+      - Projects
+  /projects/{id}/apps:
+    get:
+      consumes:
+      - application/json
+      description: ListByProject endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: ListByProject endpoint
+      tags:
+      - AppServices
+  /projects/{id}/deploy:
+    post:
+      consumes:
+      - application/json
+      description: DeployProject endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: DeployProject endpoint
+      tags:
+      - Projects
+  /projects/{id}/domains:
+    get:
+      consumes:
+      - application/json
+      description: List domains by project
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: List domains by project
+      tags:
+      - Projects
+    post:
+      consumes:
+      - application/json
+      description: Create domain
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.DomainConfig'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create domain
+      tags:
+      - Projects
+  /projects/{id}/env:
+    get:
+      consumes:
+      - application/json
+      description: GetVars endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: GetVars endpoint
+      tags:
+      - Projects
+    put:
+      consumes:
+      - application/json
+      description: SetVars endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: SetVars endpoint
+      tags:
+      - Projects
+  /projects/{id}/environments:
+    get:
+      consumes:
+      - application/json
+      description: ListByProject endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: ListByProject endpoint
+      tags:
+      - Environments
+    post:
+      consumes:
+      - application/json
+      description: Create endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.EnvironmentConfig'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create endpoint
+      tags:
+      - Environments
+  /projects/{id}/summary:
+    get:
+      consumes:
+      - application/json
+      description: GetCanvasSummary endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: GetCanvasSummary endpoint
+      tags:
+      - Projects
+  /projects/{projectId}/members:
+    get:
+      consumes:
+      - application/json
+      description: ListMembers endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: ListMembers endpoint
+      tags:
+      - Workspaces
+    post:
+      consumes:
+      - application/json
+      description: AddMember endpoint
+      parameters:
+      - description: projectId
+        in: path
+        name: projectId
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.ProjectMember'
+      produces:
+      - application/json
+      responses: {}
+      summary: AddMember endpoint
+      tags:
+      - Projects
+  /projects/{projectId}/members/{id}:
+    delete:
+      consumes:
+      - application/json
+      - application/json
+      description: |-
+        RemoveMember endpoint
+        Remove Project Member
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: userId
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: projectId
+        required: true
+        type: string
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      - application/json
+      responses: {}
+      summary: Remove Project Member
+      tags:
+      - Workspaces
+      - Projects
+  /projects/{projectId}/tokens:
+    get:
+      consumes:
+      - application/json
+      description: ListTokens endpoint
+      parameters:
+      - description: projectId
+        in: path
+        name: projectId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: ListTokens endpoint
+      tags:
+      - Projects
+    post:
+      consumes:
+      - application/json
+      description: CreateToken endpoint
+      parameters:
+      - description: projectId
+        in: path
+        name: projectId
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateTokenRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: CreateToken endpoint
+      tags:
+      - Projects
+  /projects/{projectId}/tokens/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: DeleteToken endpoint
+      parameters:
+      - description: projectId
+        in: path
+        name: projectId
+        required: true
+        type: string
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: DeleteToken endpoint
+      tags:
+      - Projects
+  /projects/{projectId}/webhooks:
+    get:
+      consumes:
+      - application/json
+      description: ListWebhooks endpoint
+      parameters:
+      - description: projectId
+        in: path
+        name: projectId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: ListWebhooks endpoint
+      tags:
+      - Projects
+    post:
+      consumes:
+      - application/json
+      description: CreateWebhook endpoint
+      parameters:
+      - description: projectId
+        in: path
+        name: projectId
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Webhook'
+      produces:
+      - application/json
+      responses: {}
+      summary: CreateWebhook endpoint
+      tags:
+      - Projects
+  /projects/{projectId}/webhooks/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: DeleteWebhook endpoint
+      parameters:
+      - description: projectId
+        in: path
+        name: projectId
+        required: true
+        type: string
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: DeleteWebhook endpoint
+      tags:
+      - Projects
+  /s3-destinations:
+    get:
+      consumes:
+      - application/json
+      description: ListS3Destinations endpoint
+      produces:
+      - application/json
+      responses: {}
+      summary: ListS3Destinations endpoint
+      tags:
+      - Backups
+  /s3-destinations/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: DeleteS3Destination endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: DeleteS3Destination endpoint
+      tags:
+      - Backups
+  /services/{serviceId}/deploy:
+    post:
+      consumes:
+      - application/json
+      description: Trigger Deployment
+      parameters:
+      - description: Service ID
+        in: path
+        name: serviceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Trigger Deployment
+      tags:
+      - Deployments
+  /services/{serviceId}/deployments:
+    get:
+      consumes:
+      - application/json
+      description: ListServiceDeployments endpoint
+      parameters:
+      - description: serviceId
+        in: path
+        name: serviceId
+        required: true
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: ListServiceDeployments endpoint
+      tags:
+      - AppServices
+  /services/{serviceId}/metrics:
+    get:
+      consumes:
+      - application/json
+      description: GetMetrics endpoint
+      parameters:
+      - description: serviceId
+        in: path
+        name: serviceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: GetMetrics endpoint
+      tags:
+      - AppServices
+  /services/{serviceId}/serverless/code:
+    get:
+      consumes:
+      - application/json
+      description: GetCode endpoint
+      parameters:
+      - description: serviceId
+        in: path
+        name: serviceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: GetCode endpoint
+      tags:
+      - AppServices
+    post:
+      consumes:
+      - application/json
+      description: SaveCode endpoint
+      parameters:
+      - description: serviceId
+        in: path
+        name: serviceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: SaveCode endpoint
+      tags:
+      - AppServices
+  /services/{serviceId}/variables:
+    get:
+      consumes:
+      - application/json
+      description: List Service Variables
+      parameters:
+      - description: Service ID
+        in: path
+        name: serviceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: List Service Variables
+      tags:
+      - AppServices
+    post:
+      consumes:
+      - application/json
+      description: Create Service Variable
+      parameters:
+      - description: Service ID
+        in: path
+        name: serviceId
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Variable'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create Service Variable
+      tags:
+      - AppServices
+  /services/{serviceId}/variables/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Service Variable
+      parameters:
+      - description: Service ID
+        in: path
+        name: serviceId
+        required: true
+        type: string
+      - description: Variable ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete Service Variable
+      tags:
+      - AppServices
+    put:
+      consumes:
+      - application/json
+      description: Update Service Variable
+      parameters:
+      - description: Service ID
+        in: path
+        name: serviceId
+        required: true
+        type: string
+      - description: Variable ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Variable'
+      produces:
+      - application/json
+      responses: {}
+      summary: Update Service Variable
+      tags:
+      - AppServices
+  /settings:
+    put:
+      consumes:
+      - application/json
+      description: UpdateSettings endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.ServerSettings'
+      produces:
+      - application/json
+      responses: {}
+      summary: UpdateSettings endpoint
+      tags:
+      - Settings
+  /settings/git_apps/bitbucket/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: DeleteBitbucketApp endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: DeleteBitbucketApp endpoint
+      tags:
+      - Settings
+  /settings/git_apps/github/manifest-callback:
+    post:
+      consumes:
+      - application/json
+      description: ExchangeGithubManifestCode endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.GitAppsManifestRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: ExchangeGithubManifestCode endpoint
+      tags:
+      - Settings
+  /settings/notifications:
+    get:
+      consumes:
+      - application/json
+      description: ListChannels endpoint
+      produces:
+      - application/json
+      responses: {}
+      summary: ListChannels endpoint
+      tags:
+      - Settings
+    put:
+      consumes:
+      - application/json
+      description: SaveChannel endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.WorkspaceNotificationChannel'
+      produces:
+      - application/json
+      responses: {}
+      summary: SaveChannel endpoint
+      tags:
+      - Settings
+  /settings/notifications/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: DeleteChannel endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: DeleteChannel endpoint
+      tags:
+      - Settings
+    get:
+      consumes:
+      - application/json
+      description: GetWorkspaceNotificationChannel endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: GetWorkspaceNotificationChannel endpoint
+      tags:
+      - Settings
+  /settings/notifications/test:
+    post:
+      consumes:
+      - application/json
+      description: TestNotification endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.TestNotificationRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: TestNotification endpoint
+      tags:
+      - Settings
+  /settings/oauth/providers:
+    get:
+      consumes:
+      - application/json
+      description: ListProviders endpoint
+      produces:
+      - application/json
+      responses: {}
+      summary: ListProviders endpoint
+      tags:
+      - Settings
+    put:
+      consumes:
+      - application/json
+      description: SaveProvider endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.OAuthProviderConfig'
+      produces:
+      - application/json
+      responses: {}
+      summary: SaveProvider endpoint
+      tags:
+      - Settings
+  /settings/updates/deploy:
+    post:
+      consumes:
+      - application/json
+      description: DeployUpdate endpoint
+      produces:
+      - application/json
+      responses: {}
+      summary: DeployUpdate endpoint
+      tags:
+      - Settings
+  /storage:
+    post:
+      consumes:
+      - application/json
+      description: CreateStorage endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Storage'
+      produces:
+      - application/json
+      responses: {}
+      summary: CreateStorage endpoint
+      tags:
+      - Storage
+  /storage/{id}:
+    get:
+      consumes:
+      - application/json
+      description: GetStorage endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: GetStorage endpoint
+      tags:
+      - Storage
+  /storage/{id}/start:
+    post:
+      consumes:
+      - application/json
+      description: StartStorage endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: StartStorage endpoint
+      tags:
+      - Storage
+  /storage/{id}/stop:
+    post:
+      consumes:
+      - application/json
+      description: StopStorage endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: StopStorage endpoint
+      tags:
+      - Storage
+  /system/public:
+    get:
+      consumes:
+      - application/json
+      description: Get public settings for the frontend (e.g., if registration is
+        enabled)
+      produces:
+      - application/json
+      responses: {}
+      summary: GetPublicSettings endpoint
+      tags:
+      - Settings
+  /system/restart:
+    post:
+      description: Triggers a restart of the Vessl daemon (admin only)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Restart the Vessl daemon
+      tags:
+      - System
+  /system/stats:
+    get:
+      description: Returns CPU, memory, disk usage, and uptime for the host server
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SystemStats'
+      summary: Get system stats
+      tags:
+      - System
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: ListUsers endpoint
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: ListUsers endpoint
+      tags:
+      - Users
+  /vercel/projects:
+    get:
+      consumes:
+      - application/json
+      description: ListProjects endpoint
+      produces:
+      - application/json
+      responses: {}
+      summary: ListProjects endpoint
+      tags:
+      - Projects
+  /vercel/projects/{id}/env:
+    get:
+      consumes:
+      - application/json
+      description: GetProjectEnv endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: GetProjectEnv endpoint
+      tags:
+      - Projects
+  /webhooks/git/{projectId}:
+    post:
+      consumes:
+      - application/json
+      description: HandleProjectWebhook endpoint
+      parameters:
+      - description: projectId
+        in: path
+        name: projectId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: HandleProjectWebhook endpoint
+      tags:
+      - Webhooks
+  /webhooks/git/services/{serviceId}:
+    post:
+      consumes:
+      - application/json
+      description: HandleServiceWebhook endpoint
+      parameters:
+      - description: serviceId
+        in: path
+        name: serviceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: HandleServiceWebhook endpoint
+      tags:
+      - Webhooks
+  /webhooks/github/services/{serviceId}:
+    post:
+      consumes:
+      - application/json
+      description: HandleGitHubWebhook endpoint
+      parameters:
+      - description: serviceId
+        in: path
+        name: serviceId
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.GithubWebhookPayload'
+      produces:
+      - application/json
+      responses: {}
+      summary: HandleGitHubWebhook endpoint
+      tags:
+      - Webhooks
+  /workspaces:
+    post:
+      consumes:
+      - application/json
+      description: Create endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateWorkspaceRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create endpoint
+      tags:
+      - Workspaces
+  /workspaces/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete endpoint
+      tags:
+      - Workspaces
+    get:
+      consumes:
+      - application/json
+      description: Get endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Get endpoint
+      tags:
+      - Workspaces
+    put:
+      consumes:
+      - application/json
+      description: Update endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Workspace'
+      produces:
+      - application/json
+      responses: {}
+      summary: Update endpoint
+      tags:
+      - Workspaces
+  /workspaces/{workspaceId}/ai_settings:
+    get:
+      consumes:
+      - application/json
+      description: Get endpoint
+      parameters:
+      - description: workspaceId
+        in: path
+        name: workspaceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Get endpoint
+      tags:
+      - Workspaces
+    put:
+      consumes:
+      - application/json
+      description: Save endpoint
+      parameters:
+      - description: workspaceId
+        in: path
+        name: workspaceId
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.WorkspaceAISettings'
+      produces:
+      - application/json
+      responses: {}
+      summary: Save endpoint
+      tags:
+      - Workspaces
+  /workspaces/{workspaceId}/audit-logs:
+    get:
+      consumes:
+      - application/json
+      description: ListAuditLogs endpoint
+      parameters:
+      - description: workspaceId
+        in: path
+        name: workspaceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: ListAuditLogs endpoint
+      tags:
+      - Workspaces
+  /workspaces/{workspaceId}/email_settings:
+    get:
+      consumes:
+      - application/json
+      description: Get Team Email Settings
+      parameters:
+      - description: Team ID
+        in: path
+        name: workspaceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Get Team Email Settings
+      tags:
+      - Settings
+    put:
+      consumes:
+      - application/json
+      description: Save Team Email Settings
+      parameters:
+      - description: Team ID
+        in: path
+        name: workspaceId
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.WorkspaceEmailSettings'
+      produces:
+      - application/json
+      responses: {}
+      summary: Save Team Email Settings
+      tags:
+      - Settings
+  /workspaces/{workspaceId}/ssh-keys:
+    get:
+      consumes:
+      - application/json
+      description: ListSSHKeys endpoint
+      parameters:
+      - description: workspaceId
+        in: path
+        name: workspaceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: ListSSHKeys endpoint
+      tags:
+      - Workspaces
+    post:
+      consumes:
+      - application/json
+      description: CreateSSHKey endpoint
+      parameters:
+      - description: workspaceId
+        in: path
+        name: workspaceId
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateSSHKeyRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: CreateSSHKey endpoint
+      tags:
+      - Workspaces
+  /workspaces/{workspaceId}/trusted-domains:
+    get:
+      consumes:
+      - application/json
+      description: ListTrustedDomains endpoint
+      parameters:
+      - description: workspaceId
+        in: path
+        name: workspaceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: ListTrustedDomains endpoint
+      tags:
+      - Workspaces
+    post:
+      consumes:
+      - application/json
+      description: CreateTrustedDomain endpoint
+      parameters:
+      - description: workspaceId
+        in: path
+        name: workspaceId
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateTrustedDomainRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: CreateTrustedDomain endpoint
+      tags:
+      - Workspaces
+  /ws/services/{id}/terminal:
+    get:
+      description: Upgrade connection to WebSocket and attach to container terminal
+      parameters:
+      - description: Service ID or Container ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses: {}
+      summary: Handle Terminal WebSocket
+      tags:
+      - Terminal
+  /ws/terminal/{id}:
+    get:
+      description: Upgrade connection to WebSocket and attach to container terminal
+      parameters:
+      - description: Service ID or Container ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses: {}
+      summary: Handle Terminal WebSocket
+      tags:
+      - Terminal
 securityDefinitions:
   BearerAuth:
     in: header
