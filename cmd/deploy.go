@@ -153,7 +153,7 @@ func runDeploy(args []string) {
 			UpdatedAt:     time.Now(),
 		}
 		if imageRef != "" {
-			svc.RepositoryURL = imageRef
+			svc.ImageRef = imageRef
 		}
 		if err := appRepo.Create(context.Background(), svc); err != nil {
 			exitError("Failed to create app: %v", err)
@@ -188,23 +188,11 @@ func runDeploy(args []string) {
 		}
 		fmt.Printf("\n✅ Deployed! Container: %s\n", containerID)
 	} else {
-		fmt.Printf("🐳 Pulling image %s...\n", imageRef)
-		cm := engine.NewContainerManager(dockerClient, &dbDeployerStore{db: db, vault: vlt})
-		containerName := fmt.Sprintf("vessl-app-%s", svc.ID[:8])
-		containerID, err := cm.CreateAndStart(
-			context.Background(),
-			containerName,
-			imageRef,
-			svc.ID,
-			"",
-			port,
-			[]string{},
-			512,
-			0.5,
-			"",
-		)
+		fmt.Printf("🐳 Deploying image %s...\n", imageRef)
+		deployer := engine.NewDeployer(dockerClient, &dbDeployerStore{db: db, vault: vlt})
+		containerID, err := deployer.DeployImage(context.Background(), svc, os.Stdout)
 		if err != nil {
-			exitError("Failed to start container: %v", err)
+			exitError("Image deploy failed: %v", err)
 		}
 		slog.Info("container started from image", "image", imageRef, "containerID", containerID)
 		fmt.Printf("\n✅ Deployed! Container: %s\n", containerID)
