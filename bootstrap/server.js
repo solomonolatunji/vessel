@@ -3,7 +3,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const PORT = process.env.PORT || 80;
-const SCRIPTS = new Set(["/install.sh", "/upgrade.sh"]);
+const SCRIPTS = new Set(["/install.sh", "/upgrade.sh", "/cli"]);
 
 const server = http.createServer((req, res) => {
   if (req.url === "/version") {
@@ -12,13 +12,14 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  const file = path.join(
-    __dirname,
-    req.url === "/" ? "install.sh" : path.basename(req.url),
-  );
-  const name = path.basename(file);
+  let filename = path.basename(req.url);
+  if (req.url === "/") filename = "install.sh";
+  if (req.url === "/cli") filename = "install-cli.sh";
 
-  if (!SCRIPTS.has("/" + name) || !fs.existsSync(file)) {
+  const file = path.join(__dirname, filename);
+  const name = path.basename(req.url === "/" ? "/install.sh" : req.url);
+
+  if (!SCRIPTS.has(req.url === "/" ? "/install.sh" : req.url) || !fs.existsSync(file)) {
     res.writeHead(404);
     res.end("Not found");
     return;
