@@ -132,12 +132,42 @@ func runDeploy(args []string) {
 	if projectID == "" {
 		projects, _, _ := projectRepo.List(context.Background(), 1000, 0)
 		if len(projects) > 0 {
-			projectID = projects[0].ID
-			fmt.Printf("📁 Using project: %s (%s)\n", projects[0].Name, projectID[:8])
-		} else {
+			fmt.Println("📁 Select a project for this deployment:")
+			fmt.Println("  [0] Create a new project")
+			for i, p := range projects {
+				fmt.Printf("  [%d] %s (%s)\n", i+1, p.Name, p.ID[:8])
+			}
+			for {
+				fmt.Printf("Enter choice [0-%d]: ", len(projects))
+				var choice int
+				_, err := fmt.Scanln(&choice)
+				if err != nil || choice < 0 || choice > len(projects) {
+					// Handle enter without input or invalid
+					fmt.Println("Invalid choice.")
+					// Consume remainder of line if any
+					continue
+				}
+				if choice > 0 {
+					projectID = projects[choice-1].ID
+					fmt.Printf("📁 Using project: %s (%s)\n", projects[choice-1].Name, projectID[:8])
+					break
+				} else {
+					break // choice == 0
+				}
+			}
+		}
+
+		if projectID == "" {
+			fmt.Printf("📁 New project name (press Enter to use '%s'): ", appName)
+			var newName string
+			fmt.Scanln(&newName)
+			newName = strings.TrimSpace(newName)
+			if newName == "" {
+				newName = appName
+			}
 			p := &models.ProjectConfig{
 				ID:        uuid.New().String(),
-				Name:      appName,
+				Name:      newName,
 				CreatedAt: time.Now(),
 				UpdatedAt: time.Now(),
 			}
