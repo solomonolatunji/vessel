@@ -30,6 +30,10 @@ export default defineConfig({
         { label: 'No Lock-In', slug: 'adopt' },
         { label: 'API Reference', slug: 'api' },
       ],
+      components: {
+        SiteTitle: "./src/components/docs-site-title.astro",
+        ThemeSelect: "./src/components/docs-theme-select.astro",
+      },
     }),
   ],
 });
