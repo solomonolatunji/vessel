@@ -45,7 +45,6 @@ var loginCmd = &cobra.Command{
 
 		fmt.Println("Authenticating...")
 
-		// Initialize client without token just to login
 		client := http.NewClient(serverURL, "")
 
 		authResp, err := client.Login(email, password)
@@ -54,14 +53,11 @@ var loginCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		// Save configuration
-		cfg := &config.Config{
+		if err := config.Save(&config.Config{
 			ServerURL: serverURL,
 			Token:     authResp.Token,
 			Email:     authResp.User.Email,
-		}
-
-		if err := config.Save(cfg); err != nil {
+		}); err != nil {
 			fmt.Printf("❌ Failed to save configuration: %v\n", err)
 			os.Exit(1)
 		}
