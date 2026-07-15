@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/_auth')({
+export const Route = createFileRoute('/_dashboard/settings/git-apps')({
   component: () => <div>Route Component</div>,
 });

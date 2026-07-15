@@ -102,7 +102,7 @@ export const useResetPassword = () => {
       authService.resetPassword(token, newPassword),
     onSuccess: async () => {
       toast.success('Password successfully reset. You can now sign in.');
-      await router.navigate({ to: '/login' });
+      await router.navigate({ to: '/signin' });
     },
     onError: (error: Error) => {
       toast.error(error?.message || 'Failed to reset password. The link might be expired.');
@@ -119,12 +119,12 @@ export const useLogout = () => {
     onSuccess: async () => {
       authActions.logout();
       queryClient.clear();
-      await router.navigate({ to: '/login' });
+      await router.navigate({ to: '/signin' });
     },
     onError: () => {
       authActions.logout();
       queryClient.clear();
-      router.navigate({ to: '/login' });
+      router.navigate({ to: '/signin' });
     },
   });
 };

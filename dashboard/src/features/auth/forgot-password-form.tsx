@@ -29,7 +29,7 @@ export const ForgotPasswordForm = () => {
           If an account with that email exists, we've sent you instructions to reset your password.
         </p>
         <div className="mt-8">
-          <Link to="/login" className="font-medium text-primary text-sm hover:underline">
+          <Link to="/signin" className="font-medium text-primary text-sm hover:underline">
             Back to sign in
           </Link>
         </div>
@@ -72,7 +72,7 @@ export const ForgotPasswordForm = () => {
 
       <div className="mt-8 text-center text-sm">
         <span className="text-muted-foreground">Remember your password? </span>
-        <Link to="/login" className="font-medium text-primary hover:underline">
+        <Link to="/signin" className="font-medium text-primary hover:underline">
           Sign in
         </Link>
       </div>

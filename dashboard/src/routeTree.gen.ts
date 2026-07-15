@@ -9,49 +9,49 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ShellRouteImport } from './routes/_shell'
+import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as SplatRouteImport } from './routes/$'
-import { Route as ShellIndexRouteImport } from './routes/_shell/index'
-import { Route as ShellProjectsRouteImport } from './routes/_shell/projects'
-import { Route as ShellMarketplaceRouteImport } from './routes/_shell/marketplace'
-import { Route as ShellDatabasesRouteImport } from './routes/_shell/databases'
-import { Route as AuthSetupRouteImport } from './routes/_auth/setup'
-import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
-import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
-import { Route as AuthLoginRouteImport } from './routes/_auth/login'
-import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
-import { Route as ShellSettingsIndexRouteImport } from './routes/_shell/settings/index'
-import { Route as ShellProfileIndexRouteImport } from './routes/_shell/profile/index'
-import { Route as ShellSettingsUsersRouteImport } from './routes/_shell/settings/users'
-import { Route as ShellSettingsUpdatesRouteImport } from './routes/_shell/settings/updates'
-import { Route as ShellSettingsOauthRouteImport } from './routes/_shell/settings/oauth'
-import { Route as ShellSettingsMigrationRouteImport } from './routes/_shell/settings/migration'
-import { Route as ShellSettingsMaintenanceRouteImport } from './routes/_shell/settings/maintenance'
-import { Route as ShellSettingsGitAppsRouteImport } from './routes/_shell/settings/git-apps'
-import { Route as ShellSettingsDnsRouteImport } from './routes/_shell/settings/dns'
-import { Route as ShellSettingsBackupsRouteImport } from './routes/_shell/settings/backups'
-import { Route as ShellImportVercelRouteImport } from './routes/_shell/import/vercel'
-import { Route as ShellImportRailwayRouteImport } from './routes/_shell/import/railway'
-import { Route as ShellProjectsProjectIdIndexRouteImport } from './routes/_shell/projects/$projectId/index'
-import { Route as ShellProjectsProjectIdSettingsRouteImport } from './routes/_shell/projects/$projectId/settings'
-import { Route as ShellProjectsProjectIdJobsRouteImport } from './routes/_shell/projects/$projectId/jobs'
-import { Route as ShellProjectsProjectIdComposeRouteImport } from './routes/_shell/projects/$projectId/compose'
-import { Route as ShellProjectsProjectIdCanvasRouteImport } from './routes/_shell/projects/$projectId/canvas'
-import { Route as ShellProjectsProjectIdServicesServiceIdIndexRouteImport } from './routes/_shell/projects/$projectId/services/$serviceId/index'
-import { Route as ShellProjectsProjectIdDatabasesDbIdIndexRouteImport } from './routes/_shell/projects/$projectId/databases/$dbId/index'
-import { Route as ShellProjectsProjectIdServicesServiceIdVariablesRouteImport } from './routes/_shell/projects/$projectId/services/$serviceId/variables'
-import { Route as ShellProjectsProjectIdServicesServiceIdTerminalRouteImport } from './routes/_shell/projects/$projectId/services/$serviceId/terminal'
-import { Route as ShellProjectsProjectIdServicesServiceIdServerlessRouteImport } from './routes/_shell/projects/$projectId/services/$serviceId/serverless'
-import { Route as ShellProjectsProjectIdServicesServiceIdDomainsRouteImport } from './routes/_shell/projects/$projectId/services/$serviceId/domains'
-import { Route as ShellProjectsProjectIdServicesServiceIdDeploymentsRouteImport } from './routes/_shell/projects/$projectId/services/$serviceId/deployments'
-import { Route as ShellProjectsProjectIdServicesServiceIdBuildRouteImport } from './routes/_shell/projects/$projectId/services/$serviceId/build'
-import { Route as ShellProjectsProjectIdDatabasesDbIdQueryRouteImport } from './routes/_shell/projects/$projectId/databases/$dbId/query'
-import { Route as ShellProjectsProjectIdDatabasesDbIdDataRouteImport } from './routes/_shell/projects/$projectId/databases/$dbId/data'
-import { Route as ShellProjectsProjectIdDatabasesDbIdBackupsRouteImport } from './routes/_shell/projects/$projectId/databases/$dbId/backups'
+import { Route as DashboardIndexRouteImport } from './routes/_dashboard.index'
+import { Route as DashboardProjectsRouteImport } from './routes/_dashboard.projects'
+import { Route as DashboardMarketplaceRouteImport } from './routes/_dashboard.marketplace'
+import { Route as DashboardDatabasesRouteImport } from './routes/_dashboard.databases'
+import { Route as AuthSignupRouteImport } from './routes/_auth.signup'
+import { Route as AuthSigninRouteImport } from './routes/_auth.signin'
+import { Route as AuthSetupRouteImport } from './routes/_auth.setup'
+import { Route as AuthResetPasswordRouteImport } from './routes/_auth.reset-password'
+import { Route as AuthForgotPasswordRouteImport } from './routes/_auth.forgot-password'
+import { Route as DashboardSettingsIndexRouteImport } from './routes/_dashboard.settings/index'
+import { Route as DashboardProfileIndexRouteImport } from './routes/_dashboard.profile/index'
+import { Route as DashboardSettingsUsersRouteImport } from './routes/_dashboard.settings/users'
+import { Route as DashboardSettingsUpdatesRouteImport } from './routes/_dashboard.settings/updates'
+import { Route as DashboardSettingsOauthRouteImport } from './routes/_dashboard.settings/oauth'
+import { Route as DashboardSettingsMigrationRouteImport } from './routes/_dashboard.settings/migration'
+import { Route as DashboardSettingsMaintenanceRouteImport } from './routes/_dashboard.settings/maintenance'
+import { Route as DashboardSettingsGitAppsRouteImport } from './routes/_dashboard.settings/git-apps'
+import { Route as DashboardSettingsDnsRouteImport } from './routes/_dashboard.settings/dns'
+import { Route as DashboardSettingsBackupsRouteImport } from './routes/_dashboard.settings/backups'
+import { Route as DashboardImportsVercelRouteImport } from './routes/_dashboard.imports/vercel'
+import { Route as DashboardImportsRailwayRouteImport } from './routes/_dashboard.imports/railway'
+import { Route as DashboardServicesServiceIdIndexRouteImport } from './routes/_dashboard.services/$serviceId.index'
+import { Route as DashboardProjectsProjectIdIndexRouteImport } from './routes/_dashboard.projects/$projectId.index'
+import { Route as DashboardDatabasesDbIdIndexRouteImport } from './routes/_dashboard.databases/$dbId.index'
+import { Route as DashboardServicesServiceIdVariablesRouteImport } from './routes/_dashboard.services/$serviceId.variables'
+import { Route as DashboardServicesServiceIdTerminalRouteImport } from './routes/_dashboard.services/$serviceId.terminal'
+import { Route as DashboardServicesServiceIdServerlessRouteImport } from './routes/_dashboard.services/$serviceId.serverless'
+import { Route as DashboardServicesServiceIdDomainsRouteImport } from './routes/_dashboard.services/$serviceId.domains'
+import { Route as DashboardServicesServiceIdDeploymentsRouteImport } from './routes/_dashboard.services/$serviceId.deployments'
+import { Route as DashboardServicesServiceIdBuildRouteImport } from './routes/_dashboard.services/$serviceId.build'
+import { Route as DashboardProjectsProjectIdSettingsRouteImport } from './routes/_dashboard.projects/$projectId.settings'
+import { Route as DashboardProjectsProjectIdJobsRouteImport } from './routes/_dashboard.projects/$projectId.jobs'
+import { Route as DashboardProjectsProjectIdComposeRouteImport } from './routes/_dashboard.projects/$projectId.compose'
+import { Route as DashboardProjectsProjectIdCanvasRouteImport } from './routes/_dashboard.projects/$projectId.canvas'
+import { Route as DashboardDatabasesDbIdQueryRouteImport } from './routes/_dashboard.databases/$dbId.query'
+import { Route as DashboardDatabasesDbIdDataRouteImport } from './routes/_dashboard.databases/$dbId.data'
+import { Route as DashboardDatabasesDbIdBackupsRouteImport } from './routes/_dashboard.databases/$dbId.backups'
 
-const ShellRoute = ShellRouteImport.update({
-  id: '/_shell',
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/_dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -63,25 +63,35 @@ const SplatRoute = SplatRouteImport.update({
   path: '/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ShellIndexRoute = ShellIndexRouteImport.update({
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => ShellRoute,
+  getParentRoute: () => DashboardRoute,
 } as any)
-const ShellProjectsRoute = ShellProjectsRouteImport.update({
+const DashboardProjectsRoute = DashboardProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
-  getParentRoute: () => ShellRoute,
+  getParentRoute: () => DashboardRoute,
 } as any)
-const ShellMarketplaceRoute = ShellMarketplaceRouteImport.update({
+const DashboardMarketplaceRoute = DashboardMarketplaceRouteImport.update({
   id: '/marketplace',
   path: '/marketplace',
-  getParentRoute: () => ShellRoute,
+  getParentRoute: () => DashboardRoute,
 } as any)
-const ShellDatabasesRoute = ShellDatabasesRouteImport.update({
+const DashboardDatabasesRoute = DashboardDatabasesRouteImport.update({
   id: '/databases',
   path: '/databases',
-  getParentRoute: () => ShellRoute,
+  getParentRoute: () => DashboardRoute,
+} as any)
+const AuthSignupRoute = AuthSignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthSigninRoute = AuthSigninRouteImport.update({
+  id: '/signin',
+  path: '/signin',
+  getParentRoute: () => AuthRoute,
 } as any)
 const AuthSetupRoute = AuthSetupRouteImport.update({
   id: '/setup',
@@ -93,301 +103,295 @@ const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => AuthRoute,
 } as any)
-const AuthRegisterRoute = AuthRegisterRouteImport.update({
-  id: '/register',
-  path: '/register',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthLoginRoute = AuthLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => AuthRoute,
-} as any)
 const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
   getParentRoute: () => AuthRoute,
 } as any)
-const ShellSettingsIndexRoute = ShellSettingsIndexRouteImport.update({
+const DashboardSettingsIndexRoute = DashboardSettingsIndexRouteImport.update({
   id: '/settings/',
   path: '/settings/',
-  getParentRoute: () => ShellRoute,
+  getParentRoute: () => DashboardRoute,
 } as any)
-const ShellProfileIndexRoute = ShellProfileIndexRouteImport.update({
+const DashboardProfileIndexRoute = DashboardProfileIndexRouteImport.update({
   id: '/profile/',
   path: '/profile/',
-  getParentRoute: () => ShellRoute,
+  getParentRoute: () => DashboardRoute,
 } as any)
-const ShellSettingsUsersRoute = ShellSettingsUsersRouteImport.update({
+const DashboardSettingsUsersRoute = DashboardSettingsUsersRouteImport.update({
   id: '/settings/users',
   path: '/settings/users',
-  getParentRoute: () => ShellRoute,
+  getParentRoute: () => DashboardRoute,
 } as any)
-const ShellSettingsUpdatesRoute = ShellSettingsUpdatesRouteImport.update({
-  id: '/settings/updates',
-  path: '/settings/updates',
-  getParentRoute: () => ShellRoute,
-} as any)
-const ShellSettingsOauthRoute = ShellSettingsOauthRouteImport.update({
+const DashboardSettingsUpdatesRoute =
+  DashboardSettingsUpdatesRouteImport.update({
+    id: '/settings/updates',
+    path: '/settings/updates',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardSettingsOauthRoute = DashboardSettingsOauthRouteImport.update({
   id: '/settings/oauth',
   path: '/settings/oauth',
-  getParentRoute: () => ShellRoute,
+  getParentRoute: () => DashboardRoute,
 } as any)
-const ShellSettingsMigrationRoute = ShellSettingsMigrationRouteImport.update({
-  id: '/settings/migration',
-  path: '/settings/migration',
-  getParentRoute: () => ShellRoute,
-} as any)
-const ShellSettingsMaintenanceRoute =
-  ShellSettingsMaintenanceRouteImport.update({
+const DashboardSettingsMigrationRoute =
+  DashboardSettingsMigrationRouteImport.update({
+    id: '/settings/migration',
+    path: '/settings/migration',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardSettingsMaintenanceRoute =
+  DashboardSettingsMaintenanceRouteImport.update({
     id: '/settings/maintenance',
     path: '/settings/maintenance',
-    getParentRoute: () => ShellRoute,
+    getParentRoute: () => DashboardRoute,
   } as any)
-const ShellSettingsGitAppsRoute = ShellSettingsGitAppsRouteImport.update({
-  id: '/settings/git-apps',
-  path: '/settings/git-apps',
-  getParentRoute: () => ShellRoute,
-} as any)
-const ShellSettingsDnsRoute = ShellSettingsDnsRouteImport.update({
+const DashboardSettingsGitAppsRoute =
+  DashboardSettingsGitAppsRouteImport.update({
+    id: '/settings/git-apps',
+    path: '/settings/git-apps',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardSettingsDnsRoute = DashboardSettingsDnsRouteImport.update({
   id: '/settings/dns',
   path: '/settings/dns',
-  getParentRoute: () => ShellRoute,
+  getParentRoute: () => DashboardRoute,
 } as any)
-const ShellSettingsBackupsRoute = ShellSettingsBackupsRouteImport.update({
-  id: '/settings/backups',
-  path: '/settings/backups',
-  getParentRoute: () => ShellRoute,
+const DashboardSettingsBackupsRoute =
+  DashboardSettingsBackupsRouteImport.update({
+    id: '/settings/backups',
+    path: '/settings/backups',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardImportsVercelRoute = DashboardImportsVercelRouteImport.update({
+  id: '/imports/vercel',
+  path: '/imports/vercel',
+  getParentRoute: () => DashboardRoute,
 } as any)
-const ShellImportVercelRoute = ShellImportVercelRouteImport.update({
-  id: '/import/vercel',
-  path: '/import/vercel',
-  getParentRoute: () => ShellRoute,
+const DashboardImportsRailwayRoute = DashboardImportsRailwayRouteImport.update({
+  id: '/imports/railway',
+  path: '/imports/railway',
+  getParentRoute: () => DashboardRoute,
 } as any)
-const ShellImportRailwayRoute = ShellImportRailwayRouteImport.update({
-  id: '/import/railway',
-  path: '/import/railway',
-  getParentRoute: () => ShellRoute,
-} as any)
-const ShellProjectsProjectIdIndexRoute =
-  ShellProjectsProjectIdIndexRouteImport.update({
+const DashboardServicesServiceIdIndexRoute =
+  DashboardServicesServiceIdIndexRouteImport.update({
+    id: '/services/$serviceId/',
+    path: '/services/$serviceId/',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardProjectsProjectIdIndexRoute =
+  DashboardProjectsProjectIdIndexRouteImport.update({
     id: '/$projectId/',
     path: '/$projectId/',
-    getParentRoute: () => ShellProjectsRoute,
+    getParentRoute: () => DashboardProjectsRoute,
   } as any)
-const ShellProjectsProjectIdSettingsRoute =
-  ShellProjectsProjectIdSettingsRouteImport.update({
+const DashboardDatabasesDbIdIndexRoute =
+  DashboardDatabasesDbIdIndexRouteImport.update({
+    id: '/$dbId/',
+    path: '/$dbId/',
+    getParentRoute: () => DashboardDatabasesRoute,
+  } as any)
+const DashboardServicesServiceIdVariablesRoute =
+  DashboardServicesServiceIdVariablesRouteImport.update({
+    id: '/services/$serviceId/variables',
+    path: '/services/$serviceId/variables',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardServicesServiceIdTerminalRoute =
+  DashboardServicesServiceIdTerminalRouteImport.update({
+    id: '/services/$serviceId/terminal',
+    path: '/services/$serviceId/terminal',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardServicesServiceIdServerlessRoute =
+  DashboardServicesServiceIdServerlessRouteImport.update({
+    id: '/services/$serviceId/serverless',
+    path: '/services/$serviceId/serverless',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardServicesServiceIdDomainsRoute =
+  DashboardServicesServiceIdDomainsRouteImport.update({
+    id: '/services/$serviceId/domains',
+    path: '/services/$serviceId/domains',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardServicesServiceIdDeploymentsRoute =
+  DashboardServicesServiceIdDeploymentsRouteImport.update({
+    id: '/services/$serviceId/deployments',
+    path: '/services/$serviceId/deployments',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardServicesServiceIdBuildRoute =
+  DashboardServicesServiceIdBuildRouteImport.update({
+    id: '/services/$serviceId/build',
+    path: '/services/$serviceId/build',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardProjectsProjectIdSettingsRoute =
+  DashboardProjectsProjectIdSettingsRouteImport.update({
     id: '/$projectId/settings',
     path: '/$projectId/settings',
-    getParentRoute: () => ShellProjectsRoute,
+    getParentRoute: () => DashboardProjectsRoute,
   } as any)
-const ShellProjectsProjectIdJobsRoute =
-  ShellProjectsProjectIdJobsRouteImport.update({
+const DashboardProjectsProjectIdJobsRoute =
+  DashboardProjectsProjectIdJobsRouteImport.update({
     id: '/$projectId/jobs',
     path: '/$projectId/jobs',
-    getParentRoute: () => ShellProjectsRoute,
+    getParentRoute: () => DashboardProjectsRoute,
   } as any)
-const ShellProjectsProjectIdComposeRoute =
-  ShellProjectsProjectIdComposeRouteImport.update({
+const DashboardProjectsProjectIdComposeRoute =
+  DashboardProjectsProjectIdComposeRouteImport.update({
     id: '/$projectId/compose',
     path: '/$projectId/compose',
-    getParentRoute: () => ShellProjectsRoute,
+    getParentRoute: () => DashboardProjectsRoute,
   } as any)
-const ShellProjectsProjectIdCanvasRoute =
-  ShellProjectsProjectIdCanvasRouteImport.update({
+const DashboardProjectsProjectIdCanvasRoute =
+  DashboardProjectsProjectIdCanvasRouteImport.update({
     id: '/$projectId/canvas',
     path: '/$projectId/canvas',
-    getParentRoute: () => ShellProjectsRoute,
+    getParentRoute: () => DashboardProjectsRoute,
   } as any)
-const ShellProjectsProjectIdServicesServiceIdIndexRoute =
-  ShellProjectsProjectIdServicesServiceIdIndexRouteImport.update({
-    id: '/$projectId/services/$serviceId/',
-    path: '/$projectId/services/$serviceId/',
-    getParentRoute: () => ShellProjectsRoute,
+const DashboardDatabasesDbIdQueryRoute =
+  DashboardDatabasesDbIdQueryRouteImport.update({
+    id: '/$dbId/query',
+    path: '/$dbId/query',
+    getParentRoute: () => DashboardDatabasesRoute,
   } as any)
-const ShellProjectsProjectIdDatabasesDbIdIndexRoute =
-  ShellProjectsProjectIdDatabasesDbIdIndexRouteImport.update({
-    id: '/$projectId/databases/$dbId/',
-    path: '/$projectId/databases/$dbId/',
-    getParentRoute: () => ShellProjectsRoute,
+const DashboardDatabasesDbIdDataRoute =
+  DashboardDatabasesDbIdDataRouteImport.update({
+    id: '/$dbId/data',
+    path: '/$dbId/data',
+    getParentRoute: () => DashboardDatabasesRoute,
   } as any)
-const ShellProjectsProjectIdServicesServiceIdVariablesRoute =
-  ShellProjectsProjectIdServicesServiceIdVariablesRouteImport.update({
-    id: '/$projectId/services/$serviceId/variables',
-    path: '/$projectId/services/$serviceId/variables',
-    getParentRoute: () => ShellProjectsRoute,
-  } as any)
-const ShellProjectsProjectIdServicesServiceIdTerminalRoute =
-  ShellProjectsProjectIdServicesServiceIdTerminalRouteImport.update({
-    id: '/$projectId/services/$serviceId/terminal',
-    path: '/$projectId/services/$serviceId/terminal',
-    getParentRoute: () => ShellProjectsRoute,
-  } as any)
-const ShellProjectsProjectIdServicesServiceIdServerlessRoute =
-  ShellProjectsProjectIdServicesServiceIdServerlessRouteImport.update({
-    id: '/$projectId/services/$serviceId/serverless',
-    path: '/$projectId/services/$serviceId/serverless',
-    getParentRoute: () => ShellProjectsRoute,
-  } as any)
-const ShellProjectsProjectIdServicesServiceIdDomainsRoute =
-  ShellProjectsProjectIdServicesServiceIdDomainsRouteImport.update({
-    id: '/$projectId/services/$serviceId/domains',
-    path: '/$projectId/services/$serviceId/domains',
-    getParentRoute: () => ShellProjectsRoute,
-  } as any)
-const ShellProjectsProjectIdServicesServiceIdDeploymentsRoute =
-  ShellProjectsProjectIdServicesServiceIdDeploymentsRouteImport.update({
-    id: '/$projectId/services/$serviceId/deployments',
-    path: '/$projectId/services/$serviceId/deployments',
-    getParentRoute: () => ShellProjectsRoute,
-  } as any)
-const ShellProjectsProjectIdServicesServiceIdBuildRoute =
-  ShellProjectsProjectIdServicesServiceIdBuildRouteImport.update({
-    id: '/$projectId/services/$serviceId/build',
-    path: '/$projectId/services/$serviceId/build',
-    getParentRoute: () => ShellProjectsRoute,
-  } as any)
-const ShellProjectsProjectIdDatabasesDbIdQueryRoute =
-  ShellProjectsProjectIdDatabasesDbIdQueryRouteImport.update({
-    id: '/$projectId/databases/$dbId/query',
-    path: '/$projectId/databases/$dbId/query',
-    getParentRoute: () => ShellProjectsRoute,
-  } as any)
-const ShellProjectsProjectIdDatabasesDbIdDataRoute =
-  ShellProjectsProjectIdDatabasesDbIdDataRouteImport.update({
-    id: '/$projectId/databases/$dbId/data',
-    path: '/$projectId/databases/$dbId/data',
-    getParentRoute: () => ShellProjectsRoute,
-  } as any)
-const ShellProjectsProjectIdDatabasesDbIdBackupsRoute =
-  ShellProjectsProjectIdDatabasesDbIdBackupsRouteImport.update({
-    id: '/$projectId/databases/$dbId/backups',
-    path: '/$projectId/databases/$dbId/backups',
-    getParentRoute: () => ShellProjectsRoute,
+const DashboardDatabasesDbIdBackupsRoute =
+  DashboardDatabasesDbIdBackupsRouteImport.update({
+    id: '/$dbId/backups',
+    path: '/$dbId/backups',
+    getParentRoute: () => DashboardDatabasesRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/$': typeof SplatRoute
-  '/': typeof ShellIndexRoute
+  '/': typeof DashboardIndexRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
-  '/login': typeof AuthLoginRoute
-  '/register': typeof AuthRegisterRoute
   '/reset-password': typeof AuthResetPasswordRoute
   '/setup': typeof AuthSetupRoute
-  '/databases': typeof ShellDatabasesRoute
-  '/marketplace': typeof ShellMarketplaceRoute
-  '/projects': typeof ShellProjectsRouteWithChildren
-  '/import/railway': typeof ShellImportRailwayRoute
-  '/import/vercel': typeof ShellImportVercelRoute
-  '/settings/backups': typeof ShellSettingsBackupsRoute
-  '/settings/dns': typeof ShellSettingsDnsRoute
-  '/settings/git-apps': typeof ShellSettingsGitAppsRoute
-  '/settings/maintenance': typeof ShellSettingsMaintenanceRoute
-  '/settings/migration': typeof ShellSettingsMigrationRoute
-  '/settings/oauth': typeof ShellSettingsOauthRoute
-  '/settings/updates': typeof ShellSettingsUpdatesRoute
-  '/settings/users': typeof ShellSettingsUsersRoute
-  '/profile/': typeof ShellProfileIndexRoute
-  '/settings/': typeof ShellSettingsIndexRoute
-  '/projects/$projectId/canvas': typeof ShellProjectsProjectIdCanvasRoute
-  '/projects/$projectId/compose': typeof ShellProjectsProjectIdComposeRoute
-  '/projects/$projectId/jobs': typeof ShellProjectsProjectIdJobsRoute
-  '/projects/$projectId/settings': typeof ShellProjectsProjectIdSettingsRoute
-  '/projects/$projectId/': typeof ShellProjectsProjectIdIndexRoute
-  '/projects/$projectId/databases/$dbId/backups': typeof ShellProjectsProjectIdDatabasesDbIdBackupsRoute
-  '/projects/$projectId/databases/$dbId/data': typeof ShellProjectsProjectIdDatabasesDbIdDataRoute
-  '/projects/$projectId/databases/$dbId/query': typeof ShellProjectsProjectIdDatabasesDbIdQueryRoute
-  '/projects/$projectId/services/$serviceId/build': typeof ShellProjectsProjectIdServicesServiceIdBuildRoute
-  '/projects/$projectId/services/$serviceId/deployments': typeof ShellProjectsProjectIdServicesServiceIdDeploymentsRoute
-  '/projects/$projectId/services/$serviceId/domains': typeof ShellProjectsProjectIdServicesServiceIdDomainsRoute
-  '/projects/$projectId/services/$serviceId/serverless': typeof ShellProjectsProjectIdServicesServiceIdServerlessRoute
-  '/projects/$projectId/services/$serviceId/terminal': typeof ShellProjectsProjectIdServicesServiceIdTerminalRoute
-  '/projects/$projectId/services/$serviceId/variables': typeof ShellProjectsProjectIdServicesServiceIdVariablesRoute
-  '/projects/$projectId/databases/$dbId/': typeof ShellProjectsProjectIdDatabasesDbIdIndexRoute
-  '/projects/$projectId/services/$serviceId/': typeof ShellProjectsProjectIdServicesServiceIdIndexRoute
+  '/signin': typeof AuthSigninRoute
+  '/signup': typeof AuthSignupRoute
+  '/databases': typeof DashboardDatabasesRouteWithChildren
+  '/marketplace': typeof DashboardMarketplaceRoute
+  '/projects': typeof DashboardProjectsRouteWithChildren
+  '/imports/railway': typeof DashboardImportsRailwayRoute
+  '/imports/vercel': typeof DashboardImportsVercelRoute
+  '/settings/backups': typeof DashboardSettingsBackupsRoute
+  '/settings/dns': typeof DashboardSettingsDnsRoute
+  '/settings/git-apps': typeof DashboardSettingsGitAppsRoute
+  '/settings/maintenance': typeof DashboardSettingsMaintenanceRoute
+  '/settings/migration': typeof DashboardSettingsMigrationRoute
+  '/settings/oauth': typeof DashboardSettingsOauthRoute
+  '/settings/updates': typeof DashboardSettingsUpdatesRoute
+  '/settings/users': typeof DashboardSettingsUsersRoute
+  '/profile/': typeof DashboardProfileIndexRoute
+  '/settings/': typeof DashboardSettingsIndexRoute
+  '/databases/$dbId/backups': typeof DashboardDatabasesDbIdBackupsRoute
+  '/databases/$dbId/data': typeof DashboardDatabasesDbIdDataRoute
+  '/databases/$dbId/query': typeof DashboardDatabasesDbIdQueryRoute
+  '/projects/$projectId/canvas': typeof DashboardProjectsProjectIdCanvasRoute
+  '/projects/$projectId/compose': typeof DashboardProjectsProjectIdComposeRoute
+  '/projects/$projectId/jobs': typeof DashboardProjectsProjectIdJobsRoute
+  '/projects/$projectId/settings': typeof DashboardProjectsProjectIdSettingsRoute
+  '/services/$serviceId/build': typeof DashboardServicesServiceIdBuildRoute
+  '/services/$serviceId/deployments': typeof DashboardServicesServiceIdDeploymentsRoute
+  '/services/$serviceId/domains': typeof DashboardServicesServiceIdDomainsRoute
+  '/services/$serviceId/serverless': typeof DashboardServicesServiceIdServerlessRoute
+  '/services/$serviceId/terminal': typeof DashboardServicesServiceIdTerminalRoute
+  '/services/$serviceId/variables': typeof DashboardServicesServiceIdVariablesRoute
+  '/databases/$dbId/': typeof DashboardDatabasesDbIdIndexRoute
+  '/projects/$projectId/': typeof DashboardProjectsProjectIdIndexRoute
+  '/services/$serviceId/': typeof DashboardServicesServiceIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/$': typeof SplatRoute
-  '/': typeof ShellIndexRoute
+  '/': typeof DashboardIndexRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
-  '/login': typeof AuthLoginRoute
-  '/register': typeof AuthRegisterRoute
   '/reset-password': typeof AuthResetPasswordRoute
   '/setup': typeof AuthSetupRoute
-  '/databases': typeof ShellDatabasesRoute
-  '/marketplace': typeof ShellMarketplaceRoute
-  '/projects': typeof ShellProjectsRouteWithChildren
-  '/import/railway': typeof ShellImportRailwayRoute
-  '/import/vercel': typeof ShellImportVercelRoute
-  '/settings/backups': typeof ShellSettingsBackupsRoute
-  '/settings/dns': typeof ShellSettingsDnsRoute
-  '/settings/git-apps': typeof ShellSettingsGitAppsRoute
-  '/settings/maintenance': typeof ShellSettingsMaintenanceRoute
-  '/settings/migration': typeof ShellSettingsMigrationRoute
-  '/settings/oauth': typeof ShellSettingsOauthRoute
-  '/settings/updates': typeof ShellSettingsUpdatesRoute
-  '/settings/users': typeof ShellSettingsUsersRoute
-  '/profile': typeof ShellProfileIndexRoute
-  '/settings': typeof ShellSettingsIndexRoute
-  '/projects/$projectId/canvas': typeof ShellProjectsProjectIdCanvasRoute
-  '/projects/$projectId/compose': typeof ShellProjectsProjectIdComposeRoute
-  '/projects/$projectId/jobs': typeof ShellProjectsProjectIdJobsRoute
-  '/projects/$projectId/settings': typeof ShellProjectsProjectIdSettingsRoute
-  '/projects/$projectId': typeof ShellProjectsProjectIdIndexRoute
-  '/projects/$projectId/databases/$dbId/backups': typeof ShellProjectsProjectIdDatabasesDbIdBackupsRoute
-  '/projects/$projectId/databases/$dbId/data': typeof ShellProjectsProjectIdDatabasesDbIdDataRoute
-  '/projects/$projectId/databases/$dbId/query': typeof ShellProjectsProjectIdDatabasesDbIdQueryRoute
-  '/projects/$projectId/services/$serviceId/build': typeof ShellProjectsProjectIdServicesServiceIdBuildRoute
-  '/projects/$projectId/services/$serviceId/deployments': typeof ShellProjectsProjectIdServicesServiceIdDeploymentsRoute
-  '/projects/$projectId/services/$serviceId/domains': typeof ShellProjectsProjectIdServicesServiceIdDomainsRoute
-  '/projects/$projectId/services/$serviceId/serverless': typeof ShellProjectsProjectIdServicesServiceIdServerlessRoute
-  '/projects/$projectId/services/$serviceId/terminal': typeof ShellProjectsProjectIdServicesServiceIdTerminalRoute
-  '/projects/$projectId/services/$serviceId/variables': typeof ShellProjectsProjectIdServicesServiceIdVariablesRoute
-  '/projects/$projectId/databases/$dbId': typeof ShellProjectsProjectIdDatabasesDbIdIndexRoute
-  '/projects/$projectId/services/$serviceId': typeof ShellProjectsProjectIdServicesServiceIdIndexRoute
+  '/signin': typeof AuthSigninRoute
+  '/signup': typeof AuthSignupRoute
+  '/databases': typeof DashboardDatabasesRouteWithChildren
+  '/marketplace': typeof DashboardMarketplaceRoute
+  '/projects': typeof DashboardProjectsRouteWithChildren
+  '/imports/railway': typeof DashboardImportsRailwayRoute
+  '/imports/vercel': typeof DashboardImportsVercelRoute
+  '/settings/backups': typeof DashboardSettingsBackupsRoute
+  '/settings/dns': typeof DashboardSettingsDnsRoute
+  '/settings/git-apps': typeof DashboardSettingsGitAppsRoute
+  '/settings/maintenance': typeof DashboardSettingsMaintenanceRoute
+  '/settings/migration': typeof DashboardSettingsMigrationRoute
+  '/settings/oauth': typeof DashboardSettingsOauthRoute
+  '/settings/updates': typeof DashboardSettingsUpdatesRoute
+  '/settings/users': typeof DashboardSettingsUsersRoute
+  '/profile': typeof DashboardProfileIndexRoute
+  '/settings': typeof DashboardSettingsIndexRoute
+  '/databases/$dbId/backups': typeof DashboardDatabasesDbIdBackupsRoute
+  '/databases/$dbId/data': typeof DashboardDatabasesDbIdDataRoute
+  '/databases/$dbId/query': typeof DashboardDatabasesDbIdQueryRoute
+  '/projects/$projectId/canvas': typeof DashboardProjectsProjectIdCanvasRoute
+  '/projects/$projectId/compose': typeof DashboardProjectsProjectIdComposeRoute
+  '/projects/$projectId/jobs': typeof DashboardProjectsProjectIdJobsRoute
+  '/projects/$projectId/settings': typeof DashboardProjectsProjectIdSettingsRoute
+  '/services/$serviceId/build': typeof DashboardServicesServiceIdBuildRoute
+  '/services/$serviceId/deployments': typeof DashboardServicesServiceIdDeploymentsRoute
+  '/services/$serviceId/domains': typeof DashboardServicesServiceIdDomainsRoute
+  '/services/$serviceId/serverless': typeof DashboardServicesServiceIdServerlessRoute
+  '/services/$serviceId/terminal': typeof DashboardServicesServiceIdTerminalRoute
+  '/services/$serviceId/variables': typeof DashboardServicesServiceIdVariablesRoute
+  '/databases/$dbId': typeof DashboardDatabasesDbIdIndexRoute
+  '/projects/$projectId': typeof DashboardProjectsProjectIdIndexRoute
+  '/services/$serviceId': typeof DashboardServicesServiceIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/$': typeof SplatRoute
   '/_auth': typeof AuthRouteWithChildren
-  '/_shell': typeof ShellRouteWithChildren
+  '/_dashboard': typeof DashboardRouteWithChildren
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute
-  '/_auth/login': typeof AuthLoginRoute
-  '/_auth/register': typeof AuthRegisterRoute
   '/_auth/reset-password': typeof AuthResetPasswordRoute
   '/_auth/setup': typeof AuthSetupRoute
-  '/_shell/databases': typeof ShellDatabasesRoute
-  '/_shell/marketplace': typeof ShellMarketplaceRoute
-  '/_shell/projects': typeof ShellProjectsRouteWithChildren
-  '/_shell/': typeof ShellIndexRoute
-  '/_shell/import/railway': typeof ShellImportRailwayRoute
-  '/_shell/import/vercel': typeof ShellImportVercelRoute
-  '/_shell/settings/backups': typeof ShellSettingsBackupsRoute
-  '/_shell/settings/dns': typeof ShellSettingsDnsRoute
-  '/_shell/settings/git-apps': typeof ShellSettingsGitAppsRoute
-  '/_shell/settings/maintenance': typeof ShellSettingsMaintenanceRoute
-  '/_shell/settings/migration': typeof ShellSettingsMigrationRoute
-  '/_shell/settings/oauth': typeof ShellSettingsOauthRoute
-  '/_shell/settings/updates': typeof ShellSettingsUpdatesRoute
-  '/_shell/settings/users': typeof ShellSettingsUsersRoute
-  '/_shell/profile/': typeof ShellProfileIndexRoute
-  '/_shell/settings/': typeof ShellSettingsIndexRoute
-  '/_shell/projects/$projectId/canvas': typeof ShellProjectsProjectIdCanvasRoute
-  '/_shell/projects/$projectId/compose': typeof ShellProjectsProjectIdComposeRoute
-  '/_shell/projects/$projectId/jobs': typeof ShellProjectsProjectIdJobsRoute
-  '/_shell/projects/$projectId/settings': typeof ShellProjectsProjectIdSettingsRoute
-  '/_shell/projects/$projectId/': typeof ShellProjectsProjectIdIndexRoute
-  '/_shell/projects/$projectId/databases/$dbId/backups': typeof ShellProjectsProjectIdDatabasesDbIdBackupsRoute
-  '/_shell/projects/$projectId/databases/$dbId/data': typeof ShellProjectsProjectIdDatabasesDbIdDataRoute
-  '/_shell/projects/$projectId/databases/$dbId/query': typeof ShellProjectsProjectIdDatabasesDbIdQueryRoute
-  '/_shell/projects/$projectId/services/$serviceId/build': typeof ShellProjectsProjectIdServicesServiceIdBuildRoute
-  '/_shell/projects/$projectId/services/$serviceId/deployments': typeof ShellProjectsProjectIdServicesServiceIdDeploymentsRoute
-  '/_shell/projects/$projectId/services/$serviceId/domains': typeof ShellProjectsProjectIdServicesServiceIdDomainsRoute
-  '/_shell/projects/$projectId/services/$serviceId/serverless': typeof ShellProjectsProjectIdServicesServiceIdServerlessRoute
-  '/_shell/projects/$projectId/services/$serviceId/terminal': typeof ShellProjectsProjectIdServicesServiceIdTerminalRoute
-  '/_shell/projects/$projectId/services/$serviceId/variables': typeof ShellProjectsProjectIdServicesServiceIdVariablesRoute
-  '/_shell/projects/$projectId/databases/$dbId/': typeof ShellProjectsProjectIdDatabasesDbIdIndexRoute
-  '/_shell/projects/$projectId/services/$serviceId/': typeof ShellProjectsProjectIdServicesServiceIdIndexRoute
+  '/_auth/signin': typeof AuthSigninRoute
+  '/_auth/signup': typeof AuthSignupRoute
+  '/_dashboard/databases': typeof DashboardDatabasesRouteWithChildren
+  '/_dashboard/marketplace': typeof DashboardMarketplaceRoute
+  '/_dashboard/projects': typeof DashboardProjectsRouteWithChildren
+  '/_dashboard/': typeof DashboardIndexRoute
+  '/_dashboard/imports/railway': typeof DashboardImportsRailwayRoute
+  '/_dashboard/imports/vercel': typeof DashboardImportsVercelRoute
+  '/_dashboard/settings/backups': typeof DashboardSettingsBackupsRoute
+  '/_dashboard/settings/dns': typeof DashboardSettingsDnsRoute
+  '/_dashboard/settings/git-apps': typeof DashboardSettingsGitAppsRoute
+  '/_dashboard/settings/maintenance': typeof DashboardSettingsMaintenanceRoute
+  '/_dashboard/settings/migration': typeof DashboardSettingsMigrationRoute
+  '/_dashboard/settings/oauth': typeof DashboardSettingsOauthRoute
+  '/_dashboard/settings/updates': typeof DashboardSettingsUpdatesRoute
+  '/_dashboard/settings/users': typeof DashboardSettingsUsersRoute
+  '/_dashboard/profile/': typeof DashboardProfileIndexRoute
+  '/_dashboard/settings/': typeof DashboardSettingsIndexRoute
+  '/_dashboard/databases/$dbId/backups': typeof DashboardDatabasesDbIdBackupsRoute
+  '/_dashboard/databases/$dbId/data': typeof DashboardDatabasesDbIdDataRoute
+  '/_dashboard/databases/$dbId/query': typeof DashboardDatabasesDbIdQueryRoute
+  '/_dashboard/projects/$projectId/canvas': typeof DashboardProjectsProjectIdCanvasRoute
+  '/_dashboard/projects/$projectId/compose': typeof DashboardProjectsProjectIdComposeRoute
+  '/_dashboard/projects/$projectId/jobs': typeof DashboardProjectsProjectIdJobsRoute
+  '/_dashboard/projects/$projectId/settings': typeof DashboardProjectsProjectIdSettingsRoute
+  '/_dashboard/services/$serviceId/build': typeof DashboardServicesServiceIdBuildRoute
+  '/_dashboard/services/$serviceId/deployments': typeof DashboardServicesServiceIdDeploymentsRoute
+  '/_dashboard/services/$serviceId/domains': typeof DashboardServicesServiceIdDomainsRoute
+  '/_dashboard/services/$serviceId/serverless': typeof DashboardServicesServiceIdServerlessRoute
+  '/_dashboard/services/$serviceId/terminal': typeof DashboardServicesServiceIdTerminalRoute
+  '/_dashboard/services/$serviceId/variables': typeof DashboardServicesServiceIdVariablesRoute
+  '/_dashboard/databases/$dbId/': typeof DashboardDatabasesDbIdIndexRoute
+  '/_dashboard/projects/$projectId/': typeof DashboardProjectsProjectIdIndexRoute
+  '/_dashboard/services/$serviceId/': typeof DashboardServicesServiceIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -395,15 +399,15 @@ export interface FileRouteTypes {
     | '/$'
     | '/'
     | '/forgot-password'
-    | '/login'
-    | '/register'
     | '/reset-password'
     | '/setup'
+    | '/signin'
+    | '/signup'
     | '/databases'
     | '/marketplace'
     | '/projects'
-    | '/import/railway'
-    | '/import/vercel'
+    | '/imports/railway'
+    | '/imports/vercel'
     | '/settings/backups'
     | '/settings/dns'
     | '/settings/git-apps'
@@ -414,36 +418,36 @@ export interface FileRouteTypes {
     | '/settings/users'
     | '/profile/'
     | '/settings/'
+    | '/databases/$dbId/backups'
+    | '/databases/$dbId/data'
+    | '/databases/$dbId/query'
     | '/projects/$projectId/canvas'
     | '/projects/$projectId/compose'
     | '/projects/$projectId/jobs'
     | '/projects/$projectId/settings'
+    | '/services/$serviceId/build'
+    | '/services/$serviceId/deployments'
+    | '/services/$serviceId/domains'
+    | '/services/$serviceId/serverless'
+    | '/services/$serviceId/terminal'
+    | '/services/$serviceId/variables'
+    | '/databases/$dbId/'
     | '/projects/$projectId/'
-    | '/projects/$projectId/databases/$dbId/backups'
-    | '/projects/$projectId/databases/$dbId/data'
-    | '/projects/$projectId/databases/$dbId/query'
-    | '/projects/$projectId/services/$serviceId/build'
-    | '/projects/$projectId/services/$serviceId/deployments'
-    | '/projects/$projectId/services/$serviceId/domains'
-    | '/projects/$projectId/services/$serviceId/serverless'
-    | '/projects/$projectId/services/$serviceId/terminal'
-    | '/projects/$projectId/services/$serviceId/variables'
-    | '/projects/$projectId/databases/$dbId/'
-    | '/projects/$projectId/services/$serviceId/'
+    | '/services/$serviceId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/$'
     | '/'
     | '/forgot-password'
-    | '/login'
-    | '/register'
     | '/reset-password'
     | '/setup'
+    | '/signin'
+    | '/signup'
     | '/databases'
     | '/marketplace'
     | '/projects'
-    | '/import/railway'
-    | '/import/vercel'
+    | '/imports/railway'
+    | '/imports/vercel'
     | '/settings/backups'
     | '/settings/dns'
     | '/settings/git-apps'
@@ -454,79 +458,79 @@ export interface FileRouteTypes {
     | '/settings/users'
     | '/profile'
     | '/settings'
+    | '/databases/$dbId/backups'
+    | '/databases/$dbId/data'
+    | '/databases/$dbId/query'
     | '/projects/$projectId/canvas'
     | '/projects/$projectId/compose'
     | '/projects/$projectId/jobs'
     | '/projects/$projectId/settings'
+    | '/services/$serviceId/build'
+    | '/services/$serviceId/deployments'
+    | '/services/$serviceId/domains'
+    | '/services/$serviceId/serverless'
+    | '/services/$serviceId/terminal'
+    | '/services/$serviceId/variables'
+    | '/databases/$dbId'
     | '/projects/$projectId'
-    | '/projects/$projectId/databases/$dbId/backups'
-    | '/projects/$projectId/databases/$dbId/data'
-    | '/projects/$projectId/databases/$dbId/query'
-    | '/projects/$projectId/services/$serviceId/build'
-    | '/projects/$projectId/services/$serviceId/deployments'
-    | '/projects/$projectId/services/$serviceId/domains'
-    | '/projects/$projectId/services/$serviceId/serverless'
-    | '/projects/$projectId/services/$serviceId/terminal'
-    | '/projects/$projectId/services/$serviceId/variables'
-    | '/projects/$projectId/databases/$dbId'
-    | '/projects/$projectId/services/$serviceId'
+    | '/services/$serviceId'
   id:
     | '__root__'
     | '/$'
     | '/_auth'
-    | '/_shell'
+    | '/_dashboard'
     | '/_auth/forgot-password'
-    | '/_auth/login'
-    | '/_auth/register'
     | '/_auth/reset-password'
     | '/_auth/setup'
-    | '/_shell/databases'
-    | '/_shell/marketplace'
-    | '/_shell/projects'
-    | '/_shell/'
-    | '/_shell/import/railway'
-    | '/_shell/import/vercel'
-    | '/_shell/settings/backups'
-    | '/_shell/settings/dns'
-    | '/_shell/settings/git-apps'
-    | '/_shell/settings/maintenance'
-    | '/_shell/settings/migration'
-    | '/_shell/settings/oauth'
-    | '/_shell/settings/updates'
-    | '/_shell/settings/users'
-    | '/_shell/profile/'
-    | '/_shell/settings/'
-    | '/_shell/projects/$projectId/canvas'
-    | '/_shell/projects/$projectId/compose'
-    | '/_shell/projects/$projectId/jobs'
-    | '/_shell/projects/$projectId/settings'
-    | '/_shell/projects/$projectId/'
-    | '/_shell/projects/$projectId/databases/$dbId/backups'
-    | '/_shell/projects/$projectId/databases/$dbId/data'
-    | '/_shell/projects/$projectId/databases/$dbId/query'
-    | '/_shell/projects/$projectId/services/$serviceId/build'
-    | '/_shell/projects/$projectId/services/$serviceId/deployments'
-    | '/_shell/projects/$projectId/services/$serviceId/domains'
-    | '/_shell/projects/$projectId/services/$serviceId/serverless'
-    | '/_shell/projects/$projectId/services/$serviceId/terminal'
-    | '/_shell/projects/$projectId/services/$serviceId/variables'
-    | '/_shell/projects/$projectId/databases/$dbId/'
-    | '/_shell/projects/$projectId/services/$serviceId/'
+    | '/_auth/signin'
+    | '/_auth/signup'
+    | '/_dashboard/databases'
+    | '/_dashboard/marketplace'
+    | '/_dashboard/projects'
+    | '/_dashboard/'
+    | '/_dashboard/imports/railway'
+    | '/_dashboard/imports/vercel'
+    | '/_dashboard/settings/backups'
+    | '/_dashboard/settings/dns'
+    | '/_dashboard/settings/git-apps'
+    | '/_dashboard/settings/maintenance'
+    | '/_dashboard/settings/migration'
+    | '/_dashboard/settings/oauth'
+    | '/_dashboard/settings/updates'
+    | '/_dashboard/settings/users'
+    | '/_dashboard/profile/'
+    | '/_dashboard/settings/'
+    | '/_dashboard/databases/$dbId/backups'
+    | '/_dashboard/databases/$dbId/data'
+    | '/_dashboard/databases/$dbId/query'
+    | '/_dashboard/projects/$projectId/canvas'
+    | '/_dashboard/projects/$projectId/compose'
+    | '/_dashboard/projects/$projectId/jobs'
+    | '/_dashboard/projects/$projectId/settings'
+    | '/_dashboard/services/$serviceId/build'
+    | '/_dashboard/services/$serviceId/deployments'
+    | '/_dashboard/services/$serviceId/domains'
+    | '/_dashboard/services/$serviceId/serverless'
+    | '/_dashboard/services/$serviceId/terminal'
+    | '/_dashboard/services/$serviceId/variables'
+    | '/_dashboard/databases/$dbId/'
+    | '/_dashboard/projects/$projectId/'
+    | '/_dashboard/services/$serviceId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   SplatRoute: typeof SplatRoute
   AuthRoute: typeof AuthRouteWithChildren
-  ShellRoute: typeof ShellRouteWithChildren
+  DashboardRoute: typeof DashboardRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_shell': {
-      id: '/_shell'
+    '/_dashboard': {
+      id: '/_dashboard'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof ShellRouteImport
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth': {
@@ -543,33 +547,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_shell/': {
-      id: '/_shell/'
+    '/_dashboard/': {
+      id: '/_dashboard/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof ShellIndexRouteImport
-      parentRoute: typeof ShellRoute
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRoute
     }
-    '/_shell/projects': {
-      id: '/_shell/projects'
+    '/_dashboard/projects': {
+      id: '/_dashboard/projects'
       path: '/projects'
       fullPath: '/projects'
-      preLoaderRoute: typeof ShellProjectsRouteImport
-      parentRoute: typeof ShellRoute
+      preLoaderRoute: typeof DashboardProjectsRouteImport
+      parentRoute: typeof DashboardRoute
     }
-    '/_shell/marketplace': {
-      id: '/_shell/marketplace'
+    '/_dashboard/marketplace': {
+      id: '/_dashboard/marketplace'
       path: '/marketplace'
       fullPath: '/marketplace'
-      preLoaderRoute: typeof ShellMarketplaceRouteImport
-      parentRoute: typeof ShellRoute
+      preLoaderRoute: typeof DashboardMarketplaceRouteImport
+      parentRoute: typeof DashboardRoute
     }
-    '/_shell/databases': {
-      id: '/_shell/databases'
+    '/_dashboard/databases': {
+      id: '/_dashboard/databases'
       path: '/databases'
       fullPath: '/databases'
-      preLoaderRoute: typeof ShellDatabasesRouteImport
-      parentRoute: typeof ShellRoute
+      preLoaderRoute: typeof DashboardDatabasesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_auth/signup': {
+      id: '/_auth/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof AuthSignupRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/signin': {
+      id: '/_auth/signin'
+      path: '/signin'
+      fullPath: '/signin'
+      preLoaderRoute: typeof AuthSigninRouteImport
+      parentRoute: typeof AuthRoute
     }
     '/_auth/setup': {
       id: '/_auth/setup'
@@ -585,20 +603,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthResetPasswordRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_auth/register': {
-      id: '/_auth/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof AuthRegisterRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/_auth/login': {
-      id: '/_auth/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof AuthLoginRouteImport
-      parentRoute: typeof AuthRoute
-    }
     '/_auth/forgot-password': {
       id: '/_auth/forgot-password'
       path: '/forgot-password'
@@ -606,320 +610,326 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthForgotPasswordRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_shell/settings/': {
-      id: '/_shell/settings/'
+    '/_dashboard/settings/': {
+      id: '/_dashboard/settings/'
       path: '/settings'
       fullPath: '/settings/'
-      preLoaderRoute: typeof ShellSettingsIndexRouteImport
-      parentRoute: typeof ShellRoute
+      preLoaderRoute: typeof DashboardSettingsIndexRouteImport
+      parentRoute: typeof DashboardRoute
     }
-    '/_shell/profile/': {
-      id: '/_shell/profile/'
+    '/_dashboard/profile/': {
+      id: '/_dashboard/profile/'
       path: '/profile'
       fullPath: '/profile/'
-      preLoaderRoute: typeof ShellProfileIndexRouteImport
-      parentRoute: typeof ShellRoute
+      preLoaderRoute: typeof DashboardProfileIndexRouteImport
+      parentRoute: typeof DashboardRoute
     }
-    '/_shell/settings/users': {
-      id: '/_shell/settings/users'
+    '/_dashboard/settings/users': {
+      id: '/_dashboard/settings/users'
       path: '/settings/users'
       fullPath: '/settings/users'
-      preLoaderRoute: typeof ShellSettingsUsersRouteImport
-      parentRoute: typeof ShellRoute
+      preLoaderRoute: typeof DashboardSettingsUsersRouteImport
+      parentRoute: typeof DashboardRoute
     }
-    '/_shell/settings/updates': {
-      id: '/_shell/settings/updates'
+    '/_dashboard/settings/updates': {
+      id: '/_dashboard/settings/updates'
       path: '/settings/updates'
       fullPath: '/settings/updates'
-      preLoaderRoute: typeof ShellSettingsUpdatesRouteImport
-      parentRoute: typeof ShellRoute
+      preLoaderRoute: typeof DashboardSettingsUpdatesRouteImport
+      parentRoute: typeof DashboardRoute
     }
-    '/_shell/settings/oauth': {
-      id: '/_shell/settings/oauth'
+    '/_dashboard/settings/oauth': {
+      id: '/_dashboard/settings/oauth'
       path: '/settings/oauth'
       fullPath: '/settings/oauth'
-      preLoaderRoute: typeof ShellSettingsOauthRouteImport
-      parentRoute: typeof ShellRoute
+      preLoaderRoute: typeof DashboardSettingsOauthRouteImport
+      parentRoute: typeof DashboardRoute
     }
-    '/_shell/settings/migration': {
-      id: '/_shell/settings/migration'
+    '/_dashboard/settings/migration': {
+      id: '/_dashboard/settings/migration'
       path: '/settings/migration'
       fullPath: '/settings/migration'
-      preLoaderRoute: typeof ShellSettingsMigrationRouteImport
-      parentRoute: typeof ShellRoute
+      preLoaderRoute: typeof DashboardSettingsMigrationRouteImport
+      parentRoute: typeof DashboardRoute
     }
-    '/_shell/settings/maintenance': {
-      id: '/_shell/settings/maintenance'
+    '/_dashboard/settings/maintenance': {
+      id: '/_dashboard/settings/maintenance'
       path: '/settings/maintenance'
       fullPath: '/settings/maintenance'
-      preLoaderRoute: typeof ShellSettingsMaintenanceRouteImport
-      parentRoute: typeof ShellRoute
+      preLoaderRoute: typeof DashboardSettingsMaintenanceRouteImport
+      parentRoute: typeof DashboardRoute
     }
-    '/_shell/settings/git-apps': {
-      id: '/_shell/settings/git-apps'
+    '/_dashboard/settings/git-apps': {
+      id: '/_dashboard/settings/git-apps'
       path: '/settings/git-apps'
       fullPath: '/settings/git-apps'
-      preLoaderRoute: typeof ShellSettingsGitAppsRouteImport
-      parentRoute: typeof ShellRoute
+      preLoaderRoute: typeof DashboardSettingsGitAppsRouteImport
+      parentRoute: typeof DashboardRoute
     }
-    '/_shell/settings/dns': {
-      id: '/_shell/settings/dns'
+    '/_dashboard/settings/dns': {
+      id: '/_dashboard/settings/dns'
       path: '/settings/dns'
       fullPath: '/settings/dns'
-      preLoaderRoute: typeof ShellSettingsDnsRouteImport
-      parentRoute: typeof ShellRoute
+      preLoaderRoute: typeof DashboardSettingsDnsRouteImport
+      parentRoute: typeof DashboardRoute
     }
-    '/_shell/settings/backups': {
-      id: '/_shell/settings/backups'
+    '/_dashboard/settings/backups': {
+      id: '/_dashboard/settings/backups'
       path: '/settings/backups'
       fullPath: '/settings/backups'
-      preLoaderRoute: typeof ShellSettingsBackupsRouteImport
-      parentRoute: typeof ShellRoute
+      preLoaderRoute: typeof DashboardSettingsBackupsRouteImport
+      parentRoute: typeof DashboardRoute
     }
-    '/_shell/import/vercel': {
-      id: '/_shell/import/vercel'
-      path: '/import/vercel'
-      fullPath: '/import/vercel'
-      preLoaderRoute: typeof ShellImportVercelRouteImport
-      parentRoute: typeof ShellRoute
+    '/_dashboard/imports/vercel': {
+      id: '/_dashboard/imports/vercel'
+      path: '/imports/vercel'
+      fullPath: '/imports/vercel'
+      preLoaderRoute: typeof DashboardImportsVercelRouteImport
+      parentRoute: typeof DashboardRoute
     }
-    '/_shell/import/railway': {
-      id: '/_shell/import/railway'
-      path: '/import/railway'
-      fullPath: '/import/railway'
-      preLoaderRoute: typeof ShellImportRailwayRouteImport
-      parentRoute: typeof ShellRoute
+    '/_dashboard/imports/railway': {
+      id: '/_dashboard/imports/railway'
+      path: '/imports/railway'
+      fullPath: '/imports/railway'
+      preLoaderRoute: typeof DashboardImportsRailwayRouteImport
+      parentRoute: typeof DashboardRoute
     }
-    '/_shell/projects/$projectId/': {
-      id: '/_shell/projects/$projectId/'
+    '/_dashboard/services/$serviceId/': {
+      id: '/_dashboard/services/$serviceId/'
+      path: '/services/$serviceId'
+      fullPath: '/services/$serviceId/'
+      preLoaderRoute: typeof DashboardServicesServiceIdIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/projects/$projectId/': {
+      id: '/_dashboard/projects/$projectId/'
       path: '/$projectId'
       fullPath: '/projects/$projectId/'
-      preLoaderRoute: typeof ShellProjectsProjectIdIndexRouteImport
-      parentRoute: typeof ShellProjectsRoute
+      preLoaderRoute: typeof DashboardProjectsProjectIdIndexRouteImport
+      parentRoute: typeof DashboardProjectsRoute
     }
-    '/_shell/projects/$projectId/settings': {
-      id: '/_shell/projects/$projectId/settings'
+    '/_dashboard/databases/$dbId/': {
+      id: '/_dashboard/databases/$dbId/'
+      path: '/$dbId'
+      fullPath: '/databases/$dbId/'
+      preLoaderRoute: typeof DashboardDatabasesDbIdIndexRouteImport
+      parentRoute: typeof DashboardDatabasesRoute
+    }
+    '/_dashboard/services/$serviceId/variables': {
+      id: '/_dashboard/services/$serviceId/variables'
+      path: '/services/$serviceId/variables'
+      fullPath: '/services/$serviceId/variables'
+      preLoaderRoute: typeof DashboardServicesServiceIdVariablesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/services/$serviceId/terminal': {
+      id: '/_dashboard/services/$serviceId/terminal'
+      path: '/services/$serviceId/terminal'
+      fullPath: '/services/$serviceId/terminal'
+      preLoaderRoute: typeof DashboardServicesServiceIdTerminalRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/services/$serviceId/serverless': {
+      id: '/_dashboard/services/$serviceId/serverless'
+      path: '/services/$serviceId/serverless'
+      fullPath: '/services/$serviceId/serverless'
+      preLoaderRoute: typeof DashboardServicesServiceIdServerlessRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/services/$serviceId/domains': {
+      id: '/_dashboard/services/$serviceId/domains'
+      path: '/services/$serviceId/domains'
+      fullPath: '/services/$serviceId/domains'
+      preLoaderRoute: typeof DashboardServicesServiceIdDomainsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/services/$serviceId/deployments': {
+      id: '/_dashboard/services/$serviceId/deployments'
+      path: '/services/$serviceId/deployments'
+      fullPath: '/services/$serviceId/deployments'
+      preLoaderRoute: typeof DashboardServicesServiceIdDeploymentsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/services/$serviceId/build': {
+      id: '/_dashboard/services/$serviceId/build'
+      path: '/services/$serviceId/build'
+      fullPath: '/services/$serviceId/build'
+      preLoaderRoute: typeof DashboardServicesServiceIdBuildRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/projects/$projectId/settings': {
+      id: '/_dashboard/projects/$projectId/settings'
       path: '/$projectId/settings'
       fullPath: '/projects/$projectId/settings'
-      preLoaderRoute: typeof ShellProjectsProjectIdSettingsRouteImport
-      parentRoute: typeof ShellProjectsRoute
+      preLoaderRoute: typeof DashboardProjectsProjectIdSettingsRouteImport
+      parentRoute: typeof DashboardProjectsRoute
     }
-    '/_shell/projects/$projectId/jobs': {
-      id: '/_shell/projects/$projectId/jobs'
+    '/_dashboard/projects/$projectId/jobs': {
+      id: '/_dashboard/projects/$projectId/jobs'
       path: '/$projectId/jobs'
       fullPath: '/projects/$projectId/jobs'
-      preLoaderRoute: typeof ShellProjectsProjectIdJobsRouteImport
-      parentRoute: typeof ShellProjectsRoute
+      preLoaderRoute: typeof DashboardProjectsProjectIdJobsRouteImport
+      parentRoute: typeof DashboardProjectsRoute
     }
-    '/_shell/projects/$projectId/compose': {
-      id: '/_shell/projects/$projectId/compose'
+    '/_dashboard/projects/$projectId/compose': {
+      id: '/_dashboard/projects/$projectId/compose'
       path: '/$projectId/compose'
       fullPath: '/projects/$projectId/compose'
-      preLoaderRoute: typeof ShellProjectsProjectIdComposeRouteImport
-      parentRoute: typeof ShellProjectsRoute
+      preLoaderRoute: typeof DashboardProjectsProjectIdComposeRouteImport
+      parentRoute: typeof DashboardProjectsRoute
     }
-    '/_shell/projects/$projectId/canvas': {
-      id: '/_shell/projects/$projectId/canvas'
+    '/_dashboard/projects/$projectId/canvas': {
+      id: '/_dashboard/projects/$projectId/canvas'
       path: '/$projectId/canvas'
       fullPath: '/projects/$projectId/canvas'
-      preLoaderRoute: typeof ShellProjectsProjectIdCanvasRouteImport
-      parentRoute: typeof ShellProjectsRoute
+      preLoaderRoute: typeof DashboardProjectsProjectIdCanvasRouteImport
+      parentRoute: typeof DashboardProjectsRoute
     }
-    '/_shell/projects/$projectId/services/$serviceId/': {
-      id: '/_shell/projects/$projectId/services/$serviceId/'
-      path: '/$projectId/services/$serviceId'
-      fullPath: '/projects/$projectId/services/$serviceId/'
-      preLoaderRoute: typeof ShellProjectsProjectIdServicesServiceIdIndexRouteImport
-      parentRoute: typeof ShellProjectsRoute
+    '/_dashboard/databases/$dbId/query': {
+      id: '/_dashboard/databases/$dbId/query'
+      path: '/$dbId/query'
+      fullPath: '/databases/$dbId/query'
+      preLoaderRoute: typeof DashboardDatabasesDbIdQueryRouteImport
+      parentRoute: typeof DashboardDatabasesRoute
     }
-    '/_shell/projects/$projectId/databases/$dbId/': {
-      id: '/_shell/projects/$projectId/databases/$dbId/'
-      path: '/$projectId/databases/$dbId'
-      fullPath: '/projects/$projectId/databases/$dbId/'
-      preLoaderRoute: typeof ShellProjectsProjectIdDatabasesDbIdIndexRouteImport
-      parentRoute: typeof ShellProjectsRoute
+    '/_dashboard/databases/$dbId/data': {
+      id: '/_dashboard/databases/$dbId/data'
+      path: '/$dbId/data'
+      fullPath: '/databases/$dbId/data'
+      preLoaderRoute: typeof DashboardDatabasesDbIdDataRouteImport
+      parentRoute: typeof DashboardDatabasesRoute
     }
-    '/_shell/projects/$projectId/services/$serviceId/variables': {
-      id: '/_shell/projects/$projectId/services/$serviceId/variables'
-      path: '/$projectId/services/$serviceId/variables'
-      fullPath: '/projects/$projectId/services/$serviceId/variables'
-      preLoaderRoute: typeof ShellProjectsProjectIdServicesServiceIdVariablesRouteImport
-      parentRoute: typeof ShellProjectsRoute
-    }
-    '/_shell/projects/$projectId/services/$serviceId/terminal': {
-      id: '/_shell/projects/$projectId/services/$serviceId/terminal'
-      path: '/$projectId/services/$serviceId/terminal'
-      fullPath: '/projects/$projectId/services/$serviceId/terminal'
-      preLoaderRoute: typeof ShellProjectsProjectIdServicesServiceIdTerminalRouteImport
-      parentRoute: typeof ShellProjectsRoute
-    }
-    '/_shell/projects/$projectId/services/$serviceId/serverless': {
-      id: '/_shell/projects/$projectId/services/$serviceId/serverless'
-      path: '/$projectId/services/$serviceId/serverless'
-      fullPath: '/projects/$projectId/services/$serviceId/serverless'
-      preLoaderRoute: typeof ShellProjectsProjectIdServicesServiceIdServerlessRouteImport
-      parentRoute: typeof ShellProjectsRoute
-    }
-    '/_shell/projects/$projectId/services/$serviceId/domains': {
-      id: '/_shell/projects/$projectId/services/$serviceId/domains'
-      path: '/$projectId/services/$serviceId/domains'
-      fullPath: '/projects/$projectId/services/$serviceId/domains'
-      preLoaderRoute: typeof ShellProjectsProjectIdServicesServiceIdDomainsRouteImport
-      parentRoute: typeof ShellProjectsRoute
-    }
-    '/_shell/projects/$projectId/services/$serviceId/deployments': {
-      id: '/_shell/projects/$projectId/services/$serviceId/deployments'
-      path: '/$projectId/services/$serviceId/deployments'
-      fullPath: '/projects/$projectId/services/$serviceId/deployments'
-      preLoaderRoute: typeof ShellProjectsProjectIdServicesServiceIdDeploymentsRouteImport
-      parentRoute: typeof ShellProjectsRoute
-    }
-    '/_shell/projects/$projectId/services/$serviceId/build': {
-      id: '/_shell/projects/$projectId/services/$serviceId/build'
-      path: '/$projectId/services/$serviceId/build'
-      fullPath: '/projects/$projectId/services/$serviceId/build'
-      preLoaderRoute: typeof ShellProjectsProjectIdServicesServiceIdBuildRouteImport
-      parentRoute: typeof ShellProjectsRoute
-    }
-    '/_shell/projects/$projectId/databases/$dbId/query': {
-      id: '/_shell/projects/$projectId/databases/$dbId/query'
-      path: '/$projectId/databases/$dbId/query'
-      fullPath: '/projects/$projectId/databases/$dbId/query'
-      preLoaderRoute: typeof ShellProjectsProjectIdDatabasesDbIdQueryRouteImport
-      parentRoute: typeof ShellProjectsRoute
-    }
-    '/_shell/projects/$projectId/databases/$dbId/data': {
-      id: '/_shell/projects/$projectId/databases/$dbId/data'
-      path: '/$projectId/databases/$dbId/data'
-      fullPath: '/projects/$projectId/databases/$dbId/data'
-      preLoaderRoute: typeof ShellProjectsProjectIdDatabasesDbIdDataRouteImport
-      parentRoute: typeof ShellProjectsRoute
-    }
-    '/_shell/projects/$projectId/databases/$dbId/backups': {
-      id: '/_shell/projects/$projectId/databases/$dbId/backups'
-      path: '/$projectId/databases/$dbId/backups'
-      fullPath: '/projects/$projectId/databases/$dbId/backups'
-      preLoaderRoute: typeof ShellProjectsProjectIdDatabasesDbIdBackupsRouteImport
-      parentRoute: typeof ShellProjectsRoute
+    '/_dashboard/databases/$dbId/backups': {
+      id: '/_dashboard/databases/$dbId/backups'
+      path: '/$dbId/backups'
+      fullPath: '/databases/$dbId/backups'
+      preLoaderRoute: typeof DashboardDatabasesDbIdBackupsRouteImport
+      parentRoute: typeof DashboardDatabasesRoute
     }
   }
 }
 
 interface AuthRouteChildren {
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
-  AuthLoginRoute: typeof AuthLoginRoute
-  AuthRegisterRoute: typeof AuthRegisterRoute
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   AuthSetupRoute: typeof AuthSetupRoute
+  AuthSigninRoute: typeof AuthSigninRoute
+  AuthSignupRoute: typeof AuthSignupRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
-  AuthLoginRoute: AuthLoginRoute,
-  AuthRegisterRoute: AuthRegisterRoute,
   AuthResetPasswordRoute: AuthResetPasswordRoute,
   AuthSetupRoute: AuthSetupRoute,
+  AuthSigninRoute: AuthSigninRoute,
+  AuthSignupRoute: AuthSignupRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
-interface ShellProjectsRouteChildren {
-  ShellProjectsProjectIdCanvasRoute: typeof ShellProjectsProjectIdCanvasRoute
-  ShellProjectsProjectIdComposeRoute: typeof ShellProjectsProjectIdComposeRoute
-  ShellProjectsProjectIdJobsRoute: typeof ShellProjectsProjectIdJobsRoute
-  ShellProjectsProjectIdSettingsRoute: typeof ShellProjectsProjectIdSettingsRoute
-  ShellProjectsProjectIdIndexRoute: typeof ShellProjectsProjectIdIndexRoute
-  ShellProjectsProjectIdDatabasesDbIdBackupsRoute: typeof ShellProjectsProjectIdDatabasesDbIdBackupsRoute
-  ShellProjectsProjectIdDatabasesDbIdDataRoute: typeof ShellProjectsProjectIdDatabasesDbIdDataRoute
-  ShellProjectsProjectIdDatabasesDbIdQueryRoute: typeof ShellProjectsProjectIdDatabasesDbIdQueryRoute
-  ShellProjectsProjectIdServicesServiceIdBuildRoute: typeof ShellProjectsProjectIdServicesServiceIdBuildRoute
-  ShellProjectsProjectIdServicesServiceIdDeploymentsRoute: typeof ShellProjectsProjectIdServicesServiceIdDeploymentsRoute
-  ShellProjectsProjectIdServicesServiceIdDomainsRoute: typeof ShellProjectsProjectIdServicesServiceIdDomainsRoute
-  ShellProjectsProjectIdServicesServiceIdServerlessRoute: typeof ShellProjectsProjectIdServicesServiceIdServerlessRoute
-  ShellProjectsProjectIdServicesServiceIdTerminalRoute: typeof ShellProjectsProjectIdServicesServiceIdTerminalRoute
-  ShellProjectsProjectIdServicesServiceIdVariablesRoute: typeof ShellProjectsProjectIdServicesServiceIdVariablesRoute
-  ShellProjectsProjectIdDatabasesDbIdIndexRoute: typeof ShellProjectsProjectIdDatabasesDbIdIndexRoute
-  ShellProjectsProjectIdServicesServiceIdIndexRoute: typeof ShellProjectsProjectIdServicesServiceIdIndexRoute
+interface DashboardDatabasesRouteChildren {
+  DashboardDatabasesDbIdBackupsRoute: typeof DashboardDatabasesDbIdBackupsRoute
+  DashboardDatabasesDbIdDataRoute: typeof DashboardDatabasesDbIdDataRoute
+  DashboardDatabasesDbIdQueryRoute: typeof DashboardDatabasesDbIdQueryRoute
+  DashboardDatabasesDbIdIndexRoute: typeof DashboardDatabasesDbIdIndexRoute
 }
 
-const ShellProjectsRouteChildren: ShellProjectsRouteChildren = {
-  ShellProjectsProjectIdCanvasRoute: ShellProjectsProjectIdCanvasRoute,
-  ShellProjectsProjectIdComposeRoute: ShellProjectsProjectIdComposeRoute,
-  ShellProjectsProjectIdJobsRoute: ShellProjectsProjectIdJobsRoute,
-  ShellProjectsProjectIdSettingsRoute: ShellProjectsProjectIdSettingsRoute,
-  ShellProjectsProjectIdIndexRoute: ShellProjectsProjectIdIndexRoute,
-  ShellProjectsProjectIdDatabasesDbIdBackupsRoute:
-    ShellProjectsProjectIdDatabasesDbIdBackupsRoute,
-  ShellProjectsProjectIdDatabasesDbIdDataRoute:
-    ShellProjectsProjectIdDatabasesDbIdDataRoute,
-  ShellProjectsProjectIdDatabasesDbIdQueryRoute:
-    ShellProjectsProjectIdDatabasesDbIdQueryRoute,
-  ShellProjectsProjectIdServicesServiceIdBuildRoute:
-    ShellProjectsProjectIdServicesServiceIdBuildRoute,
-  ShellProjectsProjectIdServicesServiceIdDeploymentsRoute:
-    ShellProjectsProjectIdServicesServiceIdDeploymentsRoute,
-  ShellProjectsProjectIdServicesServiceIdDomainsRoute:
-    ShellProjectsProjectIdServicesServiceIdDomainsRoute,
-  ShellProjectsProjectIdServicesServiceIdServerlessRoute:
-    ShellProjectsProjectIdServicesServiceIdServerlessRoute,
-  ShellProjectsProjectIdServicesServiceIdTerminalRoute:
-    ShellProjectsProjectIdServicesServiceIdTerminalRoute,
-  ShellProjectsProjectIdServicesServiceIdVariablesRoute:
-    ShellProjectsProjectIdServicesServiceIdVariablesRoute,
-  ShellProjectsProjectIdDatabasesDbIdIndexRoute:
-    ShellProjectsProjectIdDatabasesDbIdIndexRoute,
-  ShellProjectsProjectIdServicesServiceIdIndexRoute:
-    ShellProjectsProjectIdServicesServiceIdIndexRoute,
+const DashboardDatabasesRouteChildren: DashboardDatabasesRouteChildren = {
+  DashboardDatabasesDbIdBackupsRoute: DashboardDatabasesDbIdBackupsRoute,
+  DashboardDatabasesDbIdDataRoute: DashboardDatabasesDbIdDataRoute,
+  DashboardDatabasesDbIdQueryRoute: DashboardDatabasesDbIdQueryRoute,
+  DashboardDatabasesDbIdIndexRoute: DashboardDatabasesDbIdIndexRoute,
 }
 
-const ShellProjectsRouteWithChildren = ShellProjectsRoute._addFileChildren(
-  ShellProjectsRouteChildren,
+const DashboardDatabasesRouteWithChildren =
+  DashboardDatabasesRoute._addFileChildren(DashboardDatabasesRouteChildren)
+
+interface DashboardProjectsRouteChildren {
+  DashboardProjectsProjectIdCanvasRoute: typeof DashboardProjectsProjectIdCanvasRoute
+  DashboardProjectsProjectIdComposeRoute: typeof DashboardProjectsProjectIdComposeRoute
+  DashboardProjectsProjectIdJobsRoute: typeof DashboardProjectsProjectIdJobsRoute
+  DashboardProjectsProjectIdSettingsRoute: typeof DashboardProjectsProjectIdSettingsRoute
+  DashboardProjectsProjectIdIndexRoute: typeof DashboardProjectsProjectIdIndexRoute
+}
+
+const DashboardProjectsRouteChildren: DashboardProjectsRouteChildren = {
+  DashboardProjectsProjectIdCanvasRoute: DashboardProjectsProjectIdCanvasRoute,
+  DashboardProjectsProjectIdComposeRoute:
+    DashboardProjectsProjectIdComposeRoute,
+  DashboardProjectsProjectIdJobsRoute: DashboardProjectsProjectIdJobsRoute,
+  DashboardProjectsProjectIdSettingsRoute:
+    DashboardProjectsProjectIdSettingsRoute,
+  DashboardProjectsProjectIdIndexRoute: DashboardProjectsProjectIdIndexRoute,
+}
+
+const DashboardProjectsRouteWithChildren =
+  DashboardProjectsRoute._addFileChildren(DashboardProjectsRouteChildren)
+
+interface DashboardRouteChildren {
+  DashboardDatabasesRoute: typeof DashboardDatabasesRouteWithChildren
+  DashboardMarketplaceRoute: typeof DashboardMarketplaceRoute
+  DashboardProjectsRoute: typeof DashboardProjectsRouteWithChildren
+  DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardImportsRailwayRoute: typeof DashboardImportsRailwayRoute
+  DashboardImportsVercelRoute: typeof DashboardImportsVercelRoute
+  DashboardSettingsBackupsRoute: typeof DashboardSettingsBackupsRoute
+  DashboardSettingsDnsRoute: typeof DashboardSettingsDnsRoute
+  DashboardSettingsGitAppsRoute: typeof DashboardSettingsGitAppsRoute
+  DashboardSettingsMaintenanceRoute: typeof DashboardSettingsMaintenanceRoute
+  DashboardSettingsMigrationRoute: typeof DashboardSettingsMigrationRoute
+  DashboardSettingsOauthRoute: typeof DashboardSettingsOauthRoute
+  DashboardSettingsUpdatesRoute: typeof DashboardSettingsUpdatesRoute
+  DashboardSettingsUsersRoute: typeof DashboardSettingsUsersRoute
+  DashboardProfileIndexRoute: typeof DashboardProfileIndexRoute
+  DashboardSettingsIndexRoute: typeof DashboardSettingsIndexRoute
+  DashboardServicesServiceIdBuildRoute: typeof DashboardServicesServiceIdBuildRoute
+  DashboardServicesServiceIdDeploymentsRoute: typeof DashboardServicesServiceIdDeploymentsRoute
+  DashboardServicesServiceIdDomainsRoute: typeof DashboardServicesServiceIdDomainsRoute
+  DashboardServicesServiceIdServerlessRoute: typeof DashboardServicesServiceIdServerlessRoute
+  DashboardServicesServiceIdTerminalRoute: typeof DashboardServicesServiceIdTerminalRoute
+  DashboardServicesServiceIdVariablesRoute: typeof DashboardServicesServiceIdVariablesRoute
+  DashboardServicesServiceIdIndexRoute: typeof DashboardServicesServiceIdIndexRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardDatabasesRoute: DashboardDatabasesRouteWithChildren,
+  DashboardMarketplaceRoute: DashboardMarketplaceRoute,
+  DashboardProjectsRoute: DashboardProjectsRouteWithChildren,
+  DashboardIndexRoute: DashboardIndexRoute,
+  DashboardImportsRailwayRoute: DashboardImportsRailwayRoute,
+  DashboardImportsVercelRoute: DashboardImportsVercelRoute,
+  DashboardSettingsBackupsRoute: DashboardSettingsBackupsRoute,
+  DashboardSettingsDnsRoute: DashboardSettingsDnsRoute,
+  DashboardSettingsGitAppsRoute: DashboardSettingsGitAppsRoute,
+  DashboardSettingsMaintenanceRoute: DashboardSettingsMaintenanceRoute,
+  DashboardSettingsMigrationRoute: DashboardSettingsMigrationRoute,
+  DashboardSettingsOauthRoute: DashboardSettingsOauthRoute,
+  DashboardSettingsUpdatesRoute: DashboardSettingsUpdatesRoute,
+  DashboardSettingsUsersRoute: DashboardSettingsUsersRoute,
+  DashboardProfileIndexRoute: DashboardProfileIndexRoute,
+  DashboardSettingsIndexRoute: DashboardSettingsIndexRoute,
+  DashboardServicesServiceIdBuildRoute: DashboardServicesServiceIdBuildRoute,
+  DashboardServicesServiceIdDeploymentsRoute:
+    DashboardServicesServiceIdDeploymentsRoute,
+  DashboardServicesServiceIdDomainsRoute:
+    DashboardServicesServiceIdDomainsRoute,
+  DashboardServicesServiceIdServerlessRoute:
+    DashboardServicesServiceIdServerlessRoute,
+  DashboardServicesServiceIdTerminalRoute:
+    DashboardServicesServiceIdTerminalRoute,
+  DashboardServicesServiceIdVariablesRoute:
+    DashboardServicesServiceIdVariablesRoute,
+  DashboardServicesServiceIdIndexRoute: DashboardServicesServiceIdIndexRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
 )
-
-interface ShellRouteChildren {
-  ShellDatabasesRoute: typeof ShellDatabasesRoute
-  ShellMarketplaceRoute: typeof ShellMarketplaceRoute
-  ShellProjectsRoute: typeof ShellProjectsRouteWithChildren
-  ShellIndexRoute: typeof ShellIndexRoute
-  ShellImportRailwayRoute: typeof ShellImportRailwayRoute
-  ShellImportVercelRoute: typeof ShellImportVercelRoute
-  ShellSettingsBackupsRoute: typeof ShellSettingsBackupsRoute
-  ShellSettingsDnsRoute: typeof ShellSettingsDnsRoute
-  ShellSettingsGitAppsRoute: typeof ShellSettingsGitAppsRoute
-  ShellSettingsMaintenanceRoute: typeof ShellSettingsMaintenanceRoute
-  ShellSettingsMigrationRoute: typeof ShellSettingsMigrationRoute
-  ShellSettingsOauthRoute: typeof ShellSettingsOauthRoute
-  ShellSettingsUpdatesRoute: typeof ShellSettingsUpdatesRoute
-  ShellSettingsUsersRoute: typeof ShellSettingsUsersRoute
-  ShellProfileIndexRoute: typeof ShellProfileIndexRoute
-  ShellSettingsIndexRoute: typeof ShellSettingsIndexRoute
-}
-
-const ShellRouteChildren: ShellRouteChildren = {
-  ShellDatabasesRoute: ShellDatabasesRoute,
-  ShellMarketplaceRoute: ShellMarketplaceRoute,
-  ShellProjectsRoute: ShellProjectsRouteWithChildren,
-  ShellIndexRoute: ShellIndexRoute,
-  ShellImportRailwayRoute: ShellImportRailwayRoute,
-  ShellImportVercelRoute: ShellImportVercelRoute,
-  ShellSettingsBackupsRoute: ShellSettingsBackupsRoute,
-  ShellSettingsDnsRoute: ShellSettingsDnsRoute,
-  ShellSettingsGitAppsRoute: ShellSettingsGitAppsRoute,
-  ShellSettingsMaintenanceRoute: ShellSettingsMaintenanceRoute,
-  ShellSettingsMigrationRoute: ShellSettingsMigrationRoute,
-  ShellSettingsOauthRoute: ShellSettingsOauthRoute,
-  ShellSettingsUpdatesRoute: ShellSettingsUpdatesRoute,
-  ShellSettingsUsersRoute: ShellSettingsUsersRoute,
-  ShellProfileIndexRoute: ShellProfileIndexRoute,
-  ShellSettingsIndexRoute: ShellSettingsIndexRoute,
-}
-
-const ShellRouteWithChildren = ShellRoute._addFileChildren(ShellRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   SplatRoute: SplatRoute,
   AuthRoute: AuthRouteWithChildren,
-  ShellRoute: ShellRouteWithChildren,
+  DashboardRoute: DashboardRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
