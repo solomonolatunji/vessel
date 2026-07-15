@@ -32,6 +32,8 @@ func (s *Server) registerRoutes() {
 	apiGroup.POST("/system/maintenance/cleanup", s.systemHandler.Cleanup, s.authGuard.RequireRole("admin"))
 	apiGroup.GET("/system/export", s.migrationHandler.Export, s.authGuard.RequireRole("admin"))
 	apiGroup.POST("/system/import", s.migrationHandler.Import, s.authGuard.RequireRole("admin"))
+	apiGroup.GET("/system/migration/railway/projects", s.railwayHandler.GetProjects, s.authGuard.RequireRole("admin"))
+	apiGroup.POST("/system/migration/railway/import", s.railwayHandler.ImportProject, s.authGuard.RequireRole("admin"))
 	authGroup.POST("/compose/deploy", s.composeHandler.Deploy)
 	authGroup.POST("/deploy/archive", s.archiveHandler.DeployArchive)
 	authGroup.GET("/one-click", s.oneClickHandler.List)
