@@ -86,13 +86,13 @@ func (s *OneClickService) DeployApp(ctx context.Context, appID, projectID, name 
 
 	containerID, err := s.dbDeployer.SpinUp(ctx, db)
 	if err != nil {
-		db.Status = "error"
+		db.Status = models.DatabaseStatusError
 		_ = s.databaseRepo.Update(ctx, db)
 		return nil, err
 	}
 
 	db.ContainerID = containerID
-	db.Status = "running"
+	db.Status = models.DatabaseStatusRunning
 	_ = s.databaseRepo.Update(ctx, db)
 	return db, nil
 }
@@ -153,9 +153,9 @@ func buildDatabaseRecord(projectID, envID, engineID, name string, port int) *mod
 		ProjectID:     projectID,
 		EnvironmentID: envID,
 		Name:          name,
-		Engine:        engineID,
+		Engine:        models.DatabaseEngine(engineID),
 		Port:          port,
-		Status:        "created",
+		Status:        models.DatabaseStatusCreated,
 		Username:      "vessl",
 		DatabaseName:  "vessl",
 		CreatedAt:     time.Now(),

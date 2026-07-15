@@ -1,6 +1,6 @@
 import type { BaseResponse } from './base';
 
-export type UserRole = 'admin' | 'member';
+export type UserRole = 'admin' | 'member' | 'viewer';
 
 export interface User {
   id: string;

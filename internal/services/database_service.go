@@ -34,7 +34,7 @@ func (s *DatabaseService) CreateDatabase(ctx context.Context, db *models.Databas
 		db.ID = uuid.New().String()
 	}
 	if db.Status == "" {
-		db.Status = "stopped"
+		db.Status = models.DatabaseStatusStopped
 	}
 	now := time.Now()
 	if db.CreatedAt.IsZero() {
@@ -48,10 +48,10 @@ func (s *DatabaseService) CreateDatabase(ctx context.Context, db *models.Databas
 		containerID, err := s.deployer.SpinUp(ctx, db)
 		if err == nil && containerID != "" {
 			db.ContainerID = containerID
-			db.Status = "running"
+			db.Status = models.DatabaseStatusRunning
 			_ = s.repo.Update(ctx, db)
 		} else if err != nil {
-			db.Status = "error"
+			db.Status = models.DatabaseStatusError
 			_ = s.repo.Update(ctx, db)
 		}
 	}
@@ -63,7 +63,7 @@ func (s *DatabaseService) CreateDatabaseFromRequest(ctx context.Context, req *mo
 		return nil, errors.New("name and engine fields are required")
 	}
 	if req.Port <= 0 {
-		switch strings.ToLower(req.Engine) {
+		switch strings.ToLower(string(req.Engine)) {
 		case "postgres", "postgresql":
 			req.Port = 5432
 		case "mysql":
@@ -76,7 +76,7 @@ func (s *DatabaseService) CreateDatabaseFromRequest(ctx context.Context, req *mo
 			req.Port = 5432
 		}
 	}
-	if req.Username == "" && strings.ToLower(req.Engine) != "redis" {
+	if req.Username == "" && strings.ToLower(string(req.Engine)) != "redis" {
 		req.Username = "vessladmin"
 	}
 	if req.DatabaseName == "" {
@@ -95,7 +95,7 @@ func (s *DatabaseService) CreateDatabaseFromRequest(ctx context.Context, req *mo
 		VolumePath:         req.VolumePath,
 		CustomArgs:         req.CustomArgs,
 		LogicalReplication: req.LogicalReplication,
-		Status:             "stopped",
+		Status:             models.DatabaseStatusStopped,
 	}
 	return s.CreateDatabase(ctx, db)
 }
@@ -149,14 +149,14 @@ func (s *DatabaseService) StartDatabase(ctx context.Context, id string) (*models
 	}
 	containerID, err := s.deployer.SpinUp(ctx, db)
 	if err != nil {
-		db.Status = "error"
+		db.Status = models.DatabaseStatusError
 		_ = s.repo.Update(ctx, db)
 		return nil, err
 	}
 	if containerID != "" {
 		db.ContainerID = containerID
 	}
-	db.Status = "running"
+	db.Status = models.DatabaseStatusRunning
 	db.UpdatedAt = time.Now()
 	_ = s.repo.Update(ctx, db)
 	return db, nil
@@ -173,7 +173,7 @@ func (s *DatabaseService) StopDatabase(ctx context.Context, id string) error {
 	if s.deployer != nil {
 		_ = s.deployer.Stop(ctx, id)
 	}
-	db.Status = "stopped"
+	db.Status = models.DatabaseStatusStopped
 	db.UpdatedAt = time.Now()
 	return s.repo.Update(ctx, db)
 }

@@ -56,7 +56,7 @@ var dbCreateCmd = &cobra.Command{
 			ProjectID:     projectID,
 			EnvironmentID: envID,
 			Name:          name,
-			Engine:        engine,
+			Engine:        models.DatabaseEngine(engine),
 		}
 
 		created, err := client.CreateDatabase(req)

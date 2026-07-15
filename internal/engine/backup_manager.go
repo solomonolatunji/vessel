@@ -175,12 +175,12 @@ func (bm *BackupManager) buildDumpCommand(cfg *models.BackupConfig) (string, []s
 			return "", nil, "", fmt.Errorf("failed to init template manager: %v", err)
 		}
 
-		composeFile, err := tmplMgr.GetTemplate(strings.ToLower(db.Engine))
+		composeFile, err := tmplMgr.GetTemplate(strings.ToLower(string(db.Engine)))
 		if err != nil {
 			return "", nil, "", fmt.Errorf("unsupported database engine %s: %v", db.Engine, err)
 		}
 
-		tmplService, exists := composeFile.Services[strings.ToLower(db.Engine)]
+		tmplService, exists := composeFile.Services[strings.ToLower(string(db.Engine))]
 		if !exists {
 			for _, s := range composeFile.Services {
 				tmplService = s

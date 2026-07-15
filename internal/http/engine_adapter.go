@@ -75,7 +75,7 @@ func (a *engineAdapter) UpdateDatabaseStatus(id string, status string, container
 	if err != nil {
 		return err
 	}
-	db.Status = status
+	db.Status = models.DatabaseStatus(status)
 	db.ContainerID = containerID
 	return a.databaseRepo.Update(context.Background(), db)
 }
@@ -89,7 +89,7 @@ func (a *engineAdapter) UpdateStorageStatus(id string, status string, containerI
 	if err != nil {
 		return err
 	}
-	st.Status = status
+	st.Status = models.StorageStatus(status)
 	st.ContainerID = containerID
 	return a.storageRepo.Update(context.Background(), st)
 }

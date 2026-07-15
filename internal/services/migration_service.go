@@ -246,9 +246,9 @@ func (s *MigrationService) restoreDatabase(_ context.Context, db *models.Databas
 	}
 }
 
-func dumpExtension(engine string) string {
+func dumpExtension(engine models.DatabaseEngine) string {
 	switch engine {
-	case "redis":
+	case models.DatabaseEngineRedis:
 		return ".rdb"
 	default:
 		return ".sql"

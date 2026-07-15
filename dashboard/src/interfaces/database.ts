@@ -1,7 +1,8 @@
 import type { BaseResponse } from './base';
 
 export type DatabaseEngine = 'postgres' | 'mysql' | 'redis' | 'mongodb' | 'mariadb';
-export type DatabaseStatus = 'running' | 'stopped' | 'error';
+export type DatabaseStatus = 'created' | 'running' | 'stopped' | 'error';
+export type StorageType = 'minio' | 's3';
 export type StorageStatus = 'running' | 'stopped' | 'error';
 
 export interface Database {
@@ -52,7 +53,7 @@ export interface Storage {
   projectId: string;
   environmentId: string;
   name: string;
-  type: string;
+  type: StorageType;
   apiPort: number;
   consolePort: number;
   accessKey: string;

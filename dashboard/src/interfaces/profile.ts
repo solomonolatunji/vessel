@@ -1,10 +1,11 @@
 import type { BaseResponse } from './base';
+import type { UserRole } from './users';
 
 export interface UserProfile {
   id: string;
   email: string;
   name: string;
-  role: string;
+  role: UserRole;
   avatarUrl?: string;
   totpEnabled: boolean;
   createdAt: string;

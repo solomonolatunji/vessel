@@ -45,12 +45,12 @@ func (d *DatabaseDeployer) SpinUp(ctx context.Context, dbConfig *models.Database
 		return "", fmt.Errorf("failed to initialize template manager: %w", err)
 	}
 
-	composeFile, err := tmplMgr.GetTemplate(strings.ToLower(dbConfig.Engine))
+	composeFile, err := tmplMgr.GetTemplate(strings.ToLower(string(dbConfig.Engine)))
 	if err != nil {
 		return "", fmt.Errorf("unsupported database engine %s: %w", dbConfig.Engine, err)
 	}
 
-	tmplService, exists := composeFile.Services[strings.ToLower(dbConfig.Engine)]
+	tmplService, exists := composeFile.Services[strings.ToLower(string(dbConfig.Engine))]
 	if !exists {
 		for _, s := range composeFile.Services {
 			tmplService = s
@@ -191,7 +191,7 @@ func (d *DatabaseDeployer) ImportData(ctx context.Context, dbConfig *models.Data
 
 	containerName := utils.NormalizeContainerName(fmt.Sprintf("vessl-db-%s", dbConfig.Name))
 
-	switch strings.ToLower(dbConfig.Engine) {
+	switch strings.ToLower(string(dbConfig.Engine)) {
 	case "postgres":
 		cmd := fmt.Sprintf("pg_dump -Fc \"%s\" | pg_restore -U %s -d %s -1", sourceURL, dbConfig.Username, dbConfig.DatabaseName)
 		execConfig := container.ExecOptions{

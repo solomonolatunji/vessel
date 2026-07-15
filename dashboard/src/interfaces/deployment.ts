@@ -1,7 +1,13 @@
 import type { BaseResponse, PaginatedData } from './base';
 
 export type RuntimeMode = 'web' | 'worker';
-export type BuildEngine = 'nixpacks' | 'dockerfile' | 'buildpacks' | 'static';
+export type BuildEngine =
+  | 'nixpacks'
+  | 'dockerfile'
+  | 'buildpacks'
+  | 'static'
+  | 'railpack'
+  | 'serverless';
 export type ServiceStatus = 'created' | 'building' | 'running' | 'stopped' | 'error';
 export type DeploymentStatus =
   | 'pending'

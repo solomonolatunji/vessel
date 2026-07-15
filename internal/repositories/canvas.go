@@ -106,16 +106,16 @@ func (r *CanvasSQLiteRepository) ListCanvasSummaries(ctx context.Context) ([]mod
 			summary.ServiceIcons = append(summary.ServiceIcons, "github")
 		}
 		for _, db := range dbs {
-			if db.Status == "running" {
+			if db.Status == models.DatabaseStatusRunning {
 				onlineCount++
 			}
-			summary.ServiceIcons = append(summary.ServiceIcons, db.Engine)
+			summary.ServiceIcons = append(summary.ServiceIcons, string(db.Engine))
 		}
 		for _, st := range storageItems {
-			if st.Status == "running" {
+			if st.Status == models.StorageStatusRunning {
 				onlineCount++
 			}
-			summary.ServiceIcons = append(summary.ServiceIcons, st.Type)
+			summary.ServiceIcons = append(summary.ServiceIcons, string(st.Type))
 		}
 		summary.OnlineServices = onlineCount
 		summaries = append(summaries, summary)
@@ -169,16 +169,16 @@ func (r *CanvasSQLiteRepository) GetCanvasSummary(ctx context.Context, id string
 		summary.ServiceIcons = append(summary.ServiceIcons, "github")
 	}
 	for _, db := range dbs {
-		if db.Status == "running" {
+		if db.Status == models.DatabaseStatusRunning {
 			onlineCount++
 		}
-		summary.ServiceIcons = append(summary.ServiceIcons, db.Engine)
+		summary.ServiceIcons = append(summary.ServiceIcons, string(db.Engine))
 	}
 	for _, st := range storageItems {
-		if st.Status == "running" {
+		if st.Status == models.StorageStatusRunning {
 			onlineCount++
 		}
-		summary.ServiceIcons = append(summary.ServiceIcons, st.Type)
+		summary.ServiceIcons = append(summary.ServiceIcons, string(st.Type))
 	}
 	summary.OnlineServices = onlineCount
 	return summary, nil

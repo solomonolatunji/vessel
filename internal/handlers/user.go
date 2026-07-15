@@ -21,8 +21,8 @@ func NewUserHandler(s *services.UserService) *UserHandler {
 }
 
 type UpdateProfileRequest struct {
-	Email string `json:"email"`
-	Role  string `json:"role"`
+	Email string          `json:"email"`
+	Role  models.UserRole `json:"role"`
 }
 
 type CreatePATRequest struct {

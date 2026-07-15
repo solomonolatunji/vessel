@@ -179,7 +179,7 @@ func (s *RailwayService) importService(ctx context.Context, projectID, envID str
 			ProjectID:     projectID,
 			EnvironmentID: envID,
 			Name:          svcNode.Name,
-			Engine:        engine,
+			Engine:        models.DatabaseEngine(engine),
 			Version:       "latest",
 		}
 		_, err := s.dbService.CreateDatabase(ctx, db)

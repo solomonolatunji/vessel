@@ -95,7 +95,7 @@ func (g *AuthGuard) validateJWT(c echo.Context, tokenStr string) (*models.UserCl
 	return &models.UserClaims{
 		UserID:      fmt.Sprintf("%v", claimsMap["sub"]),
 		Email:       fmt.Sprintf("%v", claimsMap["email"]),
-		Role:        fmt.Sprintf("%v", claimsMap["role"]),
+		Role:        models.UserRole(fmt.Sprintf("%v", claimsMap["role"])),
 		TOTPEnabled: totpEnabled,
 	}, nil
 }
@@ -195,14 +195,14 @@ func (g *AuthGuard) RequireScope(requiredScope string) echo.MiddlewareFunc {
 	}
 }
 
-func (g *AuthGuard) RequireRole(requiredRole string) echo.MiddlewareFunc {
+func (g *AuthGuard) RequireRole(requiredRole models.UserRole) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			userClaims, err := g.baseAuth(c, true)
 			if err != nil {
 				return err
 			}
-			if userClaims.Role != requiredRole && userClaims.Role != "admin" {
+			if userClaims.Role != requiredRole && userClaims.Role != models.UserRoleAdmin {
 				return utils.Error(c, http.StatusForbidden, "insufficient permissions")
 			}
 			c.Set("user", userClaims)

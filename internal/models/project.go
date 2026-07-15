@@ -10,15 +10,38 @@ type ProjectConfig struct {
 	UpdatedAt   time.Time `json:"updatedAt" db:"updated_at"`
 }
 
+type SSLCertStatus string
+
+const (
+	SSLCertStatusPending SSLCertStatus = "pending"
+	SSLCertStatusIssued  SSLCertStatus = "issued"
+	SSLCertStatusFailed  SSLCertStatus = "failed"
+)
+
+type MemberPermission string
+
+const (
+	MemberPermissionAdmin  MemberPermission = "admin"
+	MemberPermissionMember MemberPermission = "member"
+	MemberPermissionViewer MemberPermission = "viewer"
+)
+
+type MemberStatus string
+
+const (
+	MemberStatusPending  MemberStatus = "pending"
+	MemberStatusAccepted MemberStatus = "accepted"
+)
+
 type DomainConfig struct {
-	ID            string    `json:"id" db:"id"`
-	ProjectID     string    `json:"projectId" db:"project_id"`
-	DomainName    string    `json:"domainName" db:"domain_name"`
-	RedirectTo    string    `json:"redirectTo,omitempty" db:"redirect_to"`
-	SSLCertStatus string    `json:"sslCertStatus" db:"ssl_cert_status"`
-	PathPrefix    string    `json:"pathPrefix" db:"path_prefix"`
-	CreatedAt     time.Time `json:"createdAt" db:"created_at"`
-	UpdatedAt     time.Time `json:"updatedAt" db:"updated_at"`
+	ID            string        `json:"id" db:"id"`
+	ProjectID     string        `json:"projectId" db:"project_id"`
+	DomainName    string        `json:"domainName" db:"domain_name"`
+	RedirectTo    string        `json:"redirectTo,omitempty" db:"redirect_to"`
+	SSLCertStatus SSLCertStatus `json:"sslCertStatus" db:"ssl_cert_status"`
+	PathPrefix    string        `json:"pathPrefix" db:"path_prefix"`
+	CreatedAt     time.Time     `json:"createdAt" db:"created_at"`
+	UpdatedAt     time.Time     `json:"updatedAt" db:"updated_at"`
 }
 
 type ServerlessFunctionCode struct {
@@ -101,14 +124,14 @@ type ProjectToken struct {
 }
 
 type ProjectMember struct {
-	ID         string    `json:"id" db:"id"`
-	ProjectID  string    `json:"projectId" db:"project_id"`
-	UserID     string    `json:"userId,omitempty" db:"user_id"`
-	Email      string    `json:"email" db:"email"`
-	Permission string    `json:"permission" db:"permission"`
-	Status     string    `json:"status" db:"status"`
-	InvitedAt  time.Time `json:"invitedAt" db:"invited_at"`
-	AcceptedAt time.Time `json:"acceptedAt,omitempty" db:"accepted_at"`
+	ID         string           `json:"id" db:"id"`
+	ProjectID  string           `json:"projectId" db:"project_id"`
+	UserID     string           `json:"userId,omitempty" db:"user_id"`
+	Email      string           `json:"email" db:"email"`
+	Permission MemberPermission `json:"permission" db:"permission"`
+	Status     MemberStatus     `json:"status" db:"status"`
+	InvitedAt  time.Time        `json:"invitedAt" db:"invited_at"`
+	AcceptedAt time.Time        `json:"acceptedAt,omitempty" db:"accepted_at"`
 }
 
 type CreateWebhookRequest struct {
@@ -126,6 +149,6 @@ type CreateTokenRequest struct {
 }
 
 type AddMemberRequest struct {
-	Email      string `json:"email"`
-	Permission string `json:"permission"`
+	Email      string           `json:"email"`
+	Permission MemberPermission `json:"permission"`
 }

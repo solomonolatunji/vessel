@@ -2,12 +2,20 @@ package models
 
 import "time"
 
+type UserRole string
+
+const (
+	UserRoleAdmin  UserRole = "admin"
+	UserRoleMember UserRole = "member"
+	UserRoleViewer UserRole = "viewer"
+)
+
 type User struct {
 	ID            string    `json:"id" db:"id"`
 	Email         string    `json:"email" db:"email"`
 	Name          string    `json:"name" db:"name"`
 	PasswordHash  string    `json:"-" db:"password_hash"`
-	Role          string    `json:"role" db:"role"`
+	Role          UserRole  `json:"role" db:"role"`
 	TOTPEnabled   bool      `json:"totpEnabled" db:"totp_enabled"`
 	OAuthProvider string    `json:"oauthProvider,omitempty" db:"oauth_provider"`
 	CreatedAt     time.Time `json:"createdAt" db:"created_at"`
@@ -15,10 +23,10 @@ type User struct {
 }
 
 type UserClaims struct {
-	UserID      string `json:"sub"`
-	Email       string `json:"email"`
-	Role        string `json:"role"`
-	TOTPEnabled bool   `json:"totpEnabled"`
+	UserID      string   `json:"sub"`
+	Email       string   `json:"email"`
+	Role        UserRole `json:"role"`
+	TOTPEnabled bool     `json:"totpEnabled"`
 }
 
 type PersonalAccessToken struct {

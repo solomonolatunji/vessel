@@ -64,9 +64,9 @@ func (a *AuthService) Register(ctx context.Context, name, email, password string
 	if err != nil {
 		return nil, "", err
 	}
-	role := "member"
+	role := models.UserRoleMember
 	if isInitial {
-		role = "admin"
+		role = models.UserRoleAdmin
 	}
 	u := &models.User{
 		ID:           uuid.New().String(),
