@@ -17,6 +17,13 @@ func NewRailwayHandler(s *services.RailwayService) *RailwayHandler {
 	return &RailwayHandler{service: s}
 }
 
+// @Summary List Railway Projects
+// @Description Fetches projects from Railway API
+// @Tags System
+// @Produce json
+// @Param token query string true "Railway Personal API Token"
+// @Success 200 {object} map[string]any
+// @Router /system/migration/railway/projects [get]
 func (h *RailwayHandler) GetProjects(c echo.Context) error {
 	token := c.QueryParam("token")
 	if token == "" {
@@ -39,6 +46,14 @@ type railwayImportRequest struct {
 	ImportData         bool   `json:"importData"`
 }
 
+// @Summary Import Railway Project
+// @Description Imports a project from Railway
+// @Tags System
+// @Accept json
+// @Produce json
+// @Param req body railwayImportRequest true "Import request"
+// @Success 200 {object} map[string]any
+// @Router /system/migration/railway/import [post]
 func (h *RailwayHandler) ImportProject(c echo.Context) error {
 	var req railwayImportRequest
 	if err := c.Bind(&req); err != nil {
