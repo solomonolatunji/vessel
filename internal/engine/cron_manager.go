@@ -120,7 +120,7 @@ func (cm *CronManager) ExecuteJob(ctx context.Context, jobID string) (string, er
 	if err != nil || !inspectResp.State.Running {
 		errMsg := fmt.Sprintf("cannot run job: project container %s (%s) is stopped or not found", project.Name, containerName)
 		now := time.Now()
-		_ = cm.store.UpdateJobStatusAndOutput(jobID, "error", &now, errMsg)
+		_ = cm.store.UpdateJobStatusAndOutput(jobID, models.JobStatusError, &now, errMsg)
 		return errMsg, errors.New(errMsg)
 	}
 	execConfig := container.ExecOptions{
@@ -131,13 +131,13 @@ func (cm *CronManager) ExecuteJob(ctx context.Context, jobID string) (string, er
 	execCreateResp, err := cm.dockerClient.ContainerExecCreate(ctx, inspectResp.ID, execConfig)
 	if err != nil {
 		now := time.Now()
-		_ = cm.store.UpdateJobStatusAndOutput(jobID, "error", &now, err.Error())
+		_ = cm.store.UpdateJobStatusAndOutput(jobID, models.JobStatusError, &now, err.Error())
 		return "", fmt.Errorf("failed to create container exec for job %s: %w", j.Name, err)
 	}
 	attachResp, err := cm.dockerClient.ContainerExecAttach(ctx, execCreateResp.ID, container.ExecAttachOptions{})
 	if err != nil {
 		now := time.Now()
-		_ = cm.store.UpdateJobStatusAndOutput(jobID, "error", &now, err.Error())
+		_ = cm.store.UpdateJobStatusAndOutput(jobID, models.JobStatusError, &now, err.Error())
 		return "", fmt.Errorf("failed to attach to container exec for job %s: %w", j.Name, err)
 	}
 	defer attachResp.Close()
@@ -153,7 +153,7 @@ func (cm *CronManager) ExecuteJob(ctx context.Context, jobID string) (string, er
 		output += stderrBuf.String()
 	}
 	now := time.Now()
-	_ = cm.store.UpdateJobStatusAndOutput(jobID, "active", &now, output)
+	_ = cm.store.UpdateJobStatusAndOutput(jobID, models.JobStatusActive, &now, output)
 	return output, nil
 }
 

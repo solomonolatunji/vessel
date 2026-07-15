@@ -1,6 +1,20 @@
 import type { BaseResponse } from './base';
 
-export type DatabaseEngine = 'postgres' | 'mysql' | 'redis' | 'mongodb' | 'mariadb';
+export type DatabaseEngine =
+  | 'postgres'
+  | 'postgresql'
+  | 'mysql'
+  | 'redis'
+  | 'mongodb'
+  | 'mongo'
+  | 'mariadb'
+  | 'clickhouse'
+  | 'kafka'
+  | 'rabbitmq'
+  | 'nats'
+  | 'dragonfly'
+  | 'keydb'
+  | 'timescaledb';
 export type DatabaseStatus = 'created' | 'running' | 'stopped' | 'error';
 export type StorageType = 'minio' | 's3';
 export type StorageStatus = 'running' | 'stopped' | 'error';
@@ -66,6 +80,30 @@ export interface Storage {
   externalDns: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface CreateStorageRequest {
+  projectId: string;
+  environmentId: string;
+  name: string;
+  type: StorageType;
+  apiPort: number;
+  consolePort: number;
+  accessKey: string;
+  secretKey?: string;
+  bucketName: string;
+  volumePath: string;
+}
+
+export interface UpdateStorageRequest {
+  externalDns?: string;
+}
+
+export interface OneClickApp {
+  id: string;
+  name: string;
+  description: string;
+  port: number;
 }
 
 export interface DatabaseQueryRequest {

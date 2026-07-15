@@ -16,13 +16,13 @@ type DeployerStore interface {
 
 type DatabaseDeployerStore interface {
 	GetServerSettings() (*models.ServerSettings, error)
-	UpdateDatabaseStatus(id string, status string, containerID string) error
+	UpdateDatabaseStatus(id string, status models.DatabaseStatus, containerID string) error
 	GetDatabase(id string) (*models.Database, error)
 }
 
 type StorageDeployerStore interface {
 	GetServerSettings() (*models.ServerSettings, error)
-	UpdateStorageStatus(id string, status string, containerID string) error
+	UpdateStorageStatus(id string, status models.StorageStatus, containerID string) error
 	GetStorage(id string) (*models.Storage, error)
 }
 
@@ -30,7 +30,7 @@ type CronManagerStore interface {
 	ListJobs() ([]models.Job, error)
 	GetJob(id string) (*models.Job, error)
 	GetProject(id string) (*models.ProjectConfig, error)
-	UpdateJobStatusAndOutput(id string, status string, lastRunAt *time.Time, output string) error
+	UpdateJobStatusAndOutput(id string, status models.JobStatus, lastRunAt *time.Time, output string) error
 }
 
 type BackupManagerStore interface {
@@ -38,7 +38,7 @@ type BackupManagerStore interface {
 	GetBackupConfig(id string) (*models.BackupConfig, error)
 	CreateBackupRecord(rec *models.BackupRecord) error
 	GetDatabase(id string) (*models.Database, error)
-	UpdateBackupRecord(id, status, filePath, s3URL, logs string, fileSizeBytes int64, completedAt string) error
+	UpdateBackupRecord(id string, status models.BackupRecordStatus, filePath, s3URL, logs string, fileSizeBytes int64, completedAt string) error
 	GetS3Destination(id string) (*models.S3Destination, error)
 	GetBackupRecord(id string) (*models.BackupRecord, error)
 	ListBackupRecords(backupConfigID string) ([]*models.BackupRecord, error)

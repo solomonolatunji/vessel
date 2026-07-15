@@ -30,12 +30,21 @@ type memoryStats struct {
 	Stats map[string]float64 `json:"stats"`
 }
 
+type ContainerHealthStatus string
+
+const (
+	ContainerHealthStatusRunning     ContainerHealthStatus = "running"
+	ContainerHealthStatusStopped     ContainerHealthStatus = "stopped"
+	ContainerHealthStatusOffline     ContainerHealthStatus = "offline"
+	ContainerHealthStatusNotDeployed ContainerHealthStatus = "not_deployed"
+)
+
 type ContainerHealth struct {
-	Status             string  `json:"status"`
-	CPUUsagePercentage float64 `json:"cpuUsagePercentage"`
-	MemoryUsageBytes   int64   `json:"memoryUsageBytes"`
-	MemoryLimitBytes   int64   `json:"memoryLimitBytes"`
-	UptimeSeconds      int64   `json:"uptimeSeconds"`
+	Status             ContainerHealthStatus `json:"status"`
+	CPUUsagePercentage float64               `json:"cpuUsagePercentage"`
+	MemoryUsageBytes   int64                 `json:"memoryUsageBytes"`
+	MemoryLimitBytes   int64                 `json:"memoryLimitBytes"`
+	UptimeSeconds      int64                 `json:"uptimeSeconds"`
 }
 
 type StatsMonitor struct {
@@ -49,10 +58,10 @@ func NewStatsMonitor(dockerClient *client.Client) *StatsMonitor {
 func (s *StatsMonitor) GetHealth(ctx context.Context, containerIDOrName string) (*ContainerHealth, error) {
 	inspectResp, err := s.dockerClient.ContainerInspect(ctx, containerIDOrName)
 	if err != nil {
-		return &ContainerHealth{Status: "offline"}, utils.NewEngineError("ContainerInspect", err)
+		return &ContainerHealth{Status: ContainerHealthStatusOffline}, utils.NewEngineError("ContainerInspect", err)
 	}
 	if !inspectResp.State.Running {
-		return &ContainerHealth{Status: "stopped"}, nil
+		return &ContainerHealth{Status: ContainerHealthStatusStopped}, nil
 	}
 	statsResp, err := s.dockerClient.ContainerStatsOneShot(ctx, containerIDOrName)
 	if err != nil {
@@ -74,7 +83,7 @@ func (s *StatsMonitor) GetHealth(ctx context.Context, containerIDOrName string) 
 		uptimeSeconds = 0
 	}
 	return &ContainerHealth{
-		Status:             "running",
+		Status:             ContainerHealthStatusRunning,
 		CPUUsagePercentage: cpuPercent,
 		MemoryUsageBytes:   int64(memoryUsage),
 		MemoryLimitBytes:   int64(stats.MemoryStats.Limit),

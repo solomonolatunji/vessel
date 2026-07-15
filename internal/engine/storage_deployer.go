@@ -97,9 +97,9 @@ func (d *StorageDeployer) SpinUp(ctx context.Context, sc *models.Storage) (strin
 		return "", fmt.Errorf("failed to start object storage container: %w", err)
 	}
 	internalDNS := fmt.Sprintf("%s:%d", containerName, sc.APIPort)
-	_ = d.store.UpdateStorageStatus(sc.ID, "running", created.ID)
+	_ = d.store.UpdateStorageStatus(sc.ID, models.StorageStatusRunning, created.ID)
 	sc.ContainerID = created.ID
-	sc.Status = "running"
+	sc.Status = models.StorageStatusRunning
 	sc.InternalDNS = internalDNS
 	return created.ID, nil
 }
@@ -114,5 +114,5 @@ func (d *StorageDeployer) Stop(ctx context.Context, storageID string) error {
 	}
 	containerName := utils.NormalizeContainerName(fmt.Sprintf("vessl-storage-%s", sc.Name))
 	_ = d.dockerClient.ContainerRemove(ctx, containerName, container.RemoveOptions{Force: true})
-	return d.store.UpdateStorageStatus(storageID, "stopped", "")
+	return d.store.UpdateStorageStatus(storageID, models.StorageStatusStopped, "")
 }

@@ -21,7 +21,7 @@ type JobRepository interface {
 	ListByProject(ctx context.Context, projectID string) ([]models.Job, error)
 	Update(ctx context.Context, j *models.Job) error
 	Delete(ctx context.Context, id string) error
-	UpdateStatus(ctx context.Context, id, status string, lastRunAt *time.Time, output string) error
+	UpdateStatus(ctx context.Context, id string, status models.JobStatus, lastRunAt *time.Time, output string) error
 }
 
 type JobSQLiteRepository struct {
@@ -104,7 +104,7 @@ func (r *JobSQLiteRepository) Delete(_ context.Context, id string) error {
 	return err
 }
 
-func (r *JobSQLiteRepository) UpdateStatus(_ context.Context, id, status string, lastRunAt *time.Time, output string) error {
+func (r *JobSQLiteRepository) UpdateStatus(_ context.Context, id string, status models.JobStatus, lastRunAt *time.Time, output string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	now := time.Now()

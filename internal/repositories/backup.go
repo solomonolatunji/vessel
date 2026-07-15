@@ -175,7 +175,7 @@ func (r *BackupSQLiteRepository) CreateRecord(ctx context.Context, rec *models.B
 		rec.StartedAt = time.Now().UTC().Format(time.RFC3339)
 	}
 	if rec.Status == "" {
-		rec.Status = "running"
+		rec.Status = models.BackupRecordStatusRunning
 	}
 	r.mu.Lock()
 	defer r.mu.Unlock()

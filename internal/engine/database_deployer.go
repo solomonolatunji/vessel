@@ -164,9 +164,9 @@ func (d *DatabaseDeployer) SpinUp(ctx context.Context, dbConfig *models.Database
 		return "", fmt.Errorf("failed to start database container: %w", err)
 	}
 	internalDNS := fmt.Sprintf("%s:%d", containerName, dbConfig.Port)
-	_ = d.store.UpdateDatabaseStatus(dbConfig.ID, "running", created.ID)
+	_ = d.store.UpdateDatabaseStatus(dbConfig.ID, models.DatabaseStatusRunning, created.ID)
 	dbConfig.ContainerID = created.ID
-	dbConfig.Status = "running"
+	dbConfig.Status = models.DatabaseStatusRunning
 	dbConfig.InternalDNS = internalDNS
 	return created.ID, nil
 }
@@ -181,7 +181,7 @@ func (d *DatabaseDeployer) Stop(ctx context.Context, dbID string) error {
 	}
 	containerName := utils.NormalizeContainerName(fmt.Sprintf("vessl-db-%s", dbConfig.Name))
 	_ = d.dockerClient.ContainerRemove(ctx, containerName, container.RemoveOptions{Force: true})
-	return d.store.UpdateDatabaseStatus(dbID, "stopped", "")
+	return d.store.UpdateDatabaseStatus(dbID, models.DatabaseStatusStopped, "")
 }
 
 func (d *DatabaseDeployer) ImportData(ctx context.Context, dbConfig *models.Database, sourceURL string) error {

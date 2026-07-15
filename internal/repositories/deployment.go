@@ -20,7 +20,7 @@ type DeploymentRepository interface {
 	GetByID(ctx context.Context, id string) (*models.Deployment, error)
 	ListByService(ctx context.Context, serviceID string, limit, offset int) ([]*models.Deployment, int, error)
 	Update(ctx context.Context, d *models.Deployment) error
-	UpdateStatus(ctx context.Context, id, status, buildLogs, containerID string) error
+	UpdateStatus(ctx context.Context, id string, status models.DeploymentStatus, buildLogs, containerID string) error
 }
 
 type DeploymentSQLiteRepository struct {
@@ -99,11 +99,11 @@ func (r *DeploymentSQLiteRepository) Update(_ context.Context, d *models.Deploym
 	return err
 }
 
-func (r *DeploymentSQLiteRepository) UpdateStatus(_ context.Context, id, status, buildLogs, containerID string) error {
+func (r *DeploymentSQLiteRepository) UpdateStatus(_ context.Context, id string, status models.DeploymentStatus, buildLogs, containerID string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	now := time.Now().UTC()
-	if status == "ACTIVE" || status == "FAILED" || status == "REMOVED" || status == "SLEPT" {
+	if status == models.DeploymentStatusActive || status == models.DeploymentStatusFailed || status == models.DeploymentStatusRemoved || status == models.DeploymentStatusSlept {
 		_, err := r.db.Exec(`UPDATE deployments SET status = ?, build_logs = ?, container_id = ?, updated_at = ?, finished_at = ? WHERE id = ?`,
 			status, buildLogs, containerID, now, now, id)
 		return err

@@ -100,7 +100,7 @@ func (r *CanvasSQLiteRepository) ListCanvasSummaries(ctx context.Context) ([]mod
 		}
 		onlineCount := 0
 		for _, app := range apps {
-			if app.Status == "running" {
+			if app.Status == models.AppServiceStatusRunning {
 				onlineCount++
 			}
 			summary.ServiceIcons = append(summary.ServiceIcons, "github")
@@ -163,7 +163,7 @@ func (r *CanvasSQLiteRepository) GetCanvasSummary(ctx context.Context, id string
 	}
 	onlineCount := 0
 	for _, app := range apps {
-		if app.Status == "running" {
+		if app.Status == models.AppServiceStatusRunning {
 			onlineCount++
 		}
 		summary.ServiceIcons = append(summary.ServiceIcons, "github")

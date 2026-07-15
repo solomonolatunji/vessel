@@ -49,7 +49,7 @@ func (s *DeploymentService) CreateDeployment(ctx context.Context, d *models.Depl
 		d.ID = uuid.New().String()
 	}
 	if d.Status == "" {
-		d.Status = "pending"
+		d.Status = models.DeploymentStatusPending
 	}
 	now := time.Now()
 	if d.CreatedAt.IsZero() {
@@ -84,7 +84,7 @@ func (s *DeploymentService) UpdateDeployment(ctx context.Context, d *models.Depl
 	return s.repo.Update(ctx, d)
 }
 
-func (s *DeploymentService) UpdateStatus(ctx context.Context, id, status, buildLogs, containerID string) error {
+func (s *DeploymentService) UpdateStatus(ctx context.Context, id string, status models.DeploymentStatus, buildLogs, containerID string) error {
 	if id == "" {
 		return errors.New("deployment id required")
 	}
@@ -95,27 +95,27 @@ func (s *DeploymentService) ExecuteDeploymentAsync(d *models.Deployment) {
 	go func() {
 		bgCtx := context.Background()
 		if s.deployer == nil || s.appRepo == nil || s.gitService == nil {
-			s.UpdateStatus(bgCtx, d.ID, "FAILED", "Deployment dependencies missing\n", "")
+			_ = s.UpdateStatus(bgCtx, d.ID, models.DeploymentStatusFailed, "Deployment dependencies missing\n", "")
 			return
 		}
 
 		app, err := s.appRepo.GetByID(bgCtx, d.ServiceID)
 		if err != nil {
-			s.UpdateStatus(bgCtx, d.ID, "FAILED", fmt.Sprintf("Failed to get app service: %v\n", err), "")
+			_ = s.UpdateStatus(bgCtx, d.ID, models.DeploymentStatusFailed, fmt.Sprintf("Failed to get app service: %v\n", err), "")
 			return
 		}
 
 		if app.ImageRef != "" {
-			d.Status = "PULLING"
+			d.Status = models.DeploymentStatusPulling
 			_ = s.repo.Update(bgCtx, d)
 
 			containerID, err := s.deployer.DeployImage(bgCtx, app, nil)
 			if err != nil {
-				s.UpdateStatus(bgCtx, d.ID, "FAILED", fmt.Sprintf("Image deploy failed: %v\n", err), "")
+				_ = s.UpdateStatus(bgCtx, d.ID, models.DeploymentStatusFailed, fmt.Sprintf("Image deploy failed: %v\n", err), "")
 				return
 			}
 
-			s.UpdateStatus(bgCtx, d.ID, "READY", "Deployment succeeded.\n", containerID)
+			_ = s.UpdateStatus(bgCtx, d.ID, models.DeploymentStatusReady, "Deployment succeeded.\n", containerID)
 			app.ContainerID = containerID
 			_ = s.appRepo.Update(bgCtx, app)
 			return
@@ -123,24 +123,24 @@ func (s *DeploymentService) ExecuteDeploymentAsync(d *models.Deployment) {
 
 		sourceDir := fmt.Sprintf("data/builds/%s/%s", app.ID, d.ID)
 
-		d.Status = "CLONING"
+		d.Status = models.DeploymentStatusCloning
 		_ = s.repo.Update(bgCtx, d)
 
 		if err := s.gitService.CloneOrPullAppRepository(bgCtx, app, sourceDir, nil); err != nil {
-			s.UpdateStatus(bgCtx, d.ID, "FAILED", fmt.Sprintf("Git clone failed: %v\n", err), "")
+			_ = s.UpdateStatus(bgCtx, d.ID, models.DeploymentStatusFailed, fmt.Sprintf("Git clone failed: %v\n", err), "")
 			return
 		}
 
-		d.Status = "BUILDING"
+		d.Status = models.DeploymentStatusBuilding
 		_ = s.repo.Update(bgCtx, d)
 
 		containerID, err := s.deployer.DeployAppService(bgCtx, app, sourceDir, nil)
 		if err != nil {
-			s.UpdateStatus(bgCtx, d.ID, "FAILED", fmt.Sprintf("Deployment failed: %v\n", err), "")
+			_ = s.UpdateStatus(bgCtx, d.ID, models.DeploymentStatusFailed, fmt.Sprintf("Deployment failed: %v\n", err), "")
 			return
 		}
 
-		s.UpdateStatus(bgCtx, d.ID, "READY", "Deployment succeeded.\n", containerID)
+		_ = s.UpdateStatus(bgCtx, d.ID, models.DeploymentStatusReady, "Deployment succeeded.\n", containerID)
 
 		app.ContainerID = containerID
 		_ = s.appRepo.Update(bgCtx, app)
@@ -188,7 +188,7 @@ func (s *DeploymentService) GetMetrics(ctx context.Context, appID string) (*engi
 		return nil, err
 	}
 	if app.ContainerID == "" {
-		return &engine.ContainerHealth{Status: "not_deployed"}, nil
+		return &engine.ContainerHealth{Status: engine.ContainerHealthStatusNotDeployed}, nil
 	}
 	if s.statsMonitor == nil {
 		return nil, errors.New("stats monitor not available")

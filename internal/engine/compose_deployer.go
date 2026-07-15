@@ -72,7 +72,7 @@ func (cd *ComposeDeployer) deployService(ctx context.Context, name string, svc m
 		ProjectID:    projectID,
 		Name:         name,
 		InternalPort: port,
-		Status:       "running",
+		Status:       models.AppServiceStatusRunning,
 		ImageRef:     svc.Image,
 	}
 

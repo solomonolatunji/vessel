@@ -15,8 +15,7 @@ export function getRouter() {
     defaultPreloadGcTime: 10_000,
   });
 
-  // biome-ignore lint/suspicious/noExplicitAny: required for router SSR query integration compatibility
-  setupRouterSsrQueryIntegration({ router: router as any, queryClient: context.queryClient });
+  setupRouterSsrQueryIntegration({ router, queryClient: context.queryClient });
 
   return router;
 }

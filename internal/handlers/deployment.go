@@ -149,7 +149,7 @@ func (h *DeploymentHandler) GetLogs(c echo.Context) error {
 	return utils.Success(c, "Logs fetched successfully", map[string]string{
 		"id":        dep.ID,
 		"buildLogs": dep.BuildLogs,
-		"status":    dep.Status,
+		"status":    string(dep.Status),
 	})
 }
 

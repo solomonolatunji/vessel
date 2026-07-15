@@ -33,7 +33,7 @@ func (s *StorageService) CreateStorage(ctx context.Context, st *models.Storage) 
 		st.ID = uuid.New().String()
 	}
 	if st.Status == "" {
-		st.Status = "stopped"
+		st.Status = models.StorageStatusStopped
 	}
 	now := time.Now()
 	if st.CreatedAt.IsZero() {
@@ -47,10 +47,10 @@ func (s *StorageService) CreateStorage(ctx context.Context, st *models.Storage) 
 		containerID, err := s.deployer.SpinUp(ctx, st)
 		if err == nil && containerID != "" {
 			st.ContainerID = containerID
-			st.Status = "running"
+			st.Status = models.StorageStatusRunning
 			_ = s.repo.Update(ctx, st)
 		} else if err != nil {
-			st.Status = "error"
+			st.Status = models.StorageStatusError
 			_ = s.repo.Update(ctx, st)
 		}
 	}
@@ -113,7 +113,7 @@ func (s *StorageService) CreateStorageWithDefaults(ctx context.Context, st *mode
 		st.BucketName = "vessl-backups"
 	}
 	if st.Type == "" {
-		st.Type = "minio"
+		st.Type = models.StorageTypeMinIO
 	}
 	return s.CreateStorage(ctx, st)
 }
@@ -131,14 +131,14 @@ func (s *StorageService) StartStorage(ctx context.Context, id string) (*models.S
 	}
 	containerID, err := s.deployer.SpinUp(ctx, st)
 	if err != nil {
-		st.Status = "error"
+		st.Status = models.StorageStatusError
 		_ = s.repo.Update(ctx, st)
 		return nil, err
 	}
 	if containerID != "" {
 		st.ContainerID = containerID
 	}
-	st.Status = "running"
+	st.Status = models.StorageStatusRunning
 	st.UpdatedAt = time.Now()
 	_ = s.repo.Update(ctx, st)
 	return st, nil
@@ -155,7 +155,7 @@ func (s *StorageService) StopStorage(ctx context.Context, id string) error {
 	if s.deployer != nil {
 		_ = s.deployer.Stop(ctx, id)
 	}
-	st.Status = "stopped"
+	st.Status = models.StorageStatusStopped
 	st.UpdatedAt = time.Now()
 	return s.repo.Update(ctx, st)
 }

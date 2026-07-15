@@ -35,7 +35,7 @@ func (s *JobService) CreateJob(ctx context.Context, j *models.Job) (*models.Job,
 		j.Schedule = "0 0 * * *"
 	}
 	if j.Status == "" {
-		j.Status = "active"
+		j.Status = models.JobStatusActive
 	}
 	now := time.Now()
 	j.CreatedAt = now
@@ -43,7 +43,7 @@ func (s *JobService) CreateJob(ctx context.Context, j *models.Job) (*models.Job,
 	if err := s.repo.Create(ctx, j); err != nil {
 		return nil, err
 	}
-	if s.manager != nil && j.Status == "active" {
+	if s.manager != nil && j.Status == models.JobStatusActive {
 		_ = s.manager.RegisterJob(j)
 	}
 	return j, nil
@@ -77,7 +77,7 @@ func (s *JobService) UpdateJob(ctx context.Context, j *models.Job) error {
 	}
 	if s.manager != nil {
 		s.manager.UnregisterJob(j.ID)
-		if j.Status == "active" {
+		if j.Status == models.JobStatusActive {
 			_ = s.manager.RegisterJob(j)
 		}
 	}

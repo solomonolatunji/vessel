@@ -101,7 +101,7 @@ func (d *Deployer) DeployAppService(ctx context.Context, app *models.AppService,
 }
 
 func (d *Deployer) prepareServerlessCode(app *models.AppService, sourceDir string, logWriter io.Writer) error {
-	if app.BuildEngine != string(StrategyServerless) {
+	if app.BuildEngine != models.BuildEngineServerless {
 		return nil
 	}
 

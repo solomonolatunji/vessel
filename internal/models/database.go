@@ -5,11 +5,20 @@ import "time"
 type DatabaseEngine string
 
 const (
-	DatabaseEnginePostgres DatabaseEngine = "postgres"
-	DatabaseEngineMySQL    DatabaseEngine = "mysql"
-	DatabaseEngineRedis    DatabaseEngine = "redis"
-	DatabaseEngineMongoDB  DatabaseEngine = "mongodb"
-	DatabaseEngineMariaDB  DatabaseEngine = "mariadb"
+	DatabaseEnginePostgres    DatabaseEngine = "postgres"
+	DatabaseEnginePostgreSQL  DatabaseEngine = "postgresql"
+	DatabaseEngineMySQL       DatabaseEngine = "mysql"
+	DatabaseEngineRedis       DatabaseEngine = "redis"
+	DatabaseEngineMongoDB     DatabaseEngine = "mongodb"
+	DatabaseEngineMongo       DatabaseEngine = "mongo"
+	DatabaseEngineMariaDB     DatabaseEngine = "mariadb"
+	DatabaseEngineClickhouse  DatabaseEngine = "clickhouse"
+	DatabaseEngineKafka       DatabaseEngine = "kafka"
+	DatabaseEngineRabbitMQ    DatabaseEngine = "rabbitmq"
+	DatabaseEngineNats        DatabaseEngine = "nats"
+	DatabaseEngineDragonfly   DatabaseEngine = "dragonfly"
+	DatabaseEngineKeyDB       DatabaseEngine = "keydb"
+	DatabaseEngineTimescaleDB DatabaseEngine = "timescaledb"
 )
 
 type DatabaseStatus string

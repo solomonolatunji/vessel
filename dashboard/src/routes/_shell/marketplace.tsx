@@ -1,9 +1,19 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { Box, Database, Globe, Server, Star } from 'lucide-react';
+import type { DatabaseEngine } from '../../interfaces/database';
 
 export const Route = createFileRoute('/_shell/marketplace')({
   component: MarketplacePage,
 });
+
+interface ManagedResource {
+  id: DatabaseEngine;
+  name: string;
+  description: string;
+  category: string;
+  icon: React.ReactNode;
+  isManaged: boolean;
+}
 
 const TEMPLATES = [
   {
@@ -58,7 +68,7 @@ const TEMPLATES = [
   },
 ];
 
-const MANAGED_RESOURCES = [
+const MANAGED_RESOURCES: ManagedResource[] = [
   {
     id: 'redis',
     name: 'Managed Redis',

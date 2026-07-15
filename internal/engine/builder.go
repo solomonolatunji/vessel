@@ -99,7 +99,7 @@ func (b *EngineBuilder) Build(ctx context.Context, opts BuildOptions) (string, e
 }
 
 func (b *EngineBuilder) DetectStrategy(sourceDir, dockerfilePath string, app *models.AppService) BuildStrategy {
-	if app != nil && app.BuildEngine == string(StrategyServerless) {
+	if app != nil && app.BuildEngine == models.BuildEngineServerless {
 		return StrategyServerless
 	}
 
@@ -112,7 +112,7 @@ func (b *EngineBuilder) DetectStrategy(sourceDir, dockerfilePath string, app *mo
 		return StrategyDockerfile
 	}
 
-	if app != nil && app.BuildEngine != "" && app.BuildEngine != "auto" {
+	if app != nil && app.BuildEngine != "" && app.BuildEngine != models.BuildEngineAuto {
 		return BuildStrategy(app.BuildEngine)
 	}
 

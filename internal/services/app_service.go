@@ -31,7 +31,7 @@ func (s *AppService) CreateAppService(ctx context.Context, svc *models.AppServic
 		svc.ID = uuid.New().String()
 	}
 	if svc.Status == "" {
-		svc.Status = "created"
+		svc.Status = models.AppServiceStatusCreated
 	}
 	now := time.Now()
 	if svc.CreatedAt.IsZero() {

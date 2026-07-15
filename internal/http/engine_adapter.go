@@ -70,12 +70,12 @@ func (a *engineAdapter) GetServerlessFunctionCode(serviceID string) (*models.Ser
 	return a.serverlessRepo.GetCodeByServiceID(context.Background(), serviceID)
 }
 
-func (a *engineAdapter) UpdateDatabaseStatus(id string, status string, containerID string) error {
+func (a *engineAdapter) UpdateDatabaseStatus(id string, status models.DatabaseStatus, containerID string) error {
 	db, err := a.databaseRepo.GetByID(context.Background(), id)
 	if err != nil {
 		return err
 	}
-	db.Status = models.DatabaseStatus(status)
+	db.Status = status
 	db.ContainerID = containerID
 	return a.databaseRepo.Update(context.Background(), db)
 }
@@ -84,12 +84,12 @@ func (a *engineAdapter) GetDatabase(id string) (*models.Database, error) {
 	return a.databaseRepo.GetByID(context.Background(), id)
 }
 
-func (a *engineAdapter) UpdateStorageStatus(id string, status string, containerID string) error {
+func (a *engineAdapter) UpdateStorageStatus(id string, status models.StorageStatus, containerID string) error {
 	st, err := a.storageRepo.GetByID(context.Background(), id)
 	if err != nil {
 		return err
 	}
-	st.Status = models.StorageStatus(status)
+	st.Status = status
 	st.ContainerID = containerID
 	return a.storageRepo.Update(context.Background(), st)
 }
@@ -110,7 +110,7 @@ func (a *engineAdapter) GetProject(id string) (*models.ProjectConfig, error) {
 	return a.projectRepo.Get(context.Background(), id)
 }
 
-func (a *engineAdapter) UpdateJobStatusAndOutput(id string, status string, lastRunAt *time.Time, output string) error {
+func (a *engineAdapter) UpdateJobStatusAndOutput(id string, status models.JobStatus, lastRunAt *time.Time, output string) error {
 	return a.jobRepo.UpdateStatus(context.Background(), id, status, lastRunAt, output)
 }
 
@@ -126,7 +126,7 @@ func (a *engineAdapter) CreateBackupRecord(rec *models.BackupRecord) error {
 	return a.backupRepo.CreateRecord(context.Background(), rec)
 }
 
-func (a *engineAdapter) UpdateBackupRecord(id, status, filePath, s3URL, logs string, fileSizeBytes int64, completedAt string) error {
+func (a *engineAdapter) UpdateBackupRecord(id string, status models.BackupRecordStatus, filePath, s3URL, logs string, fileSizeBytes int64, completedAt string) error {
 	rec, err := a.backupRepo.GetRecordByID(context.Background(), id)
 	if err != nil {
 		return err

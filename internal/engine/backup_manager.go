@@ -17,6 +17,7 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
+	"github.com/google/uuid"
 	"github.com/robfig/cron/v3"
 
 	"vessl.dev/vessl/internal/models"
@@ -111,7 +112,7 @@ func (bm *BackupManager) UnregisterBackup(backupConfigID string) {
 }
 
 func (bm *BackupManager) failBackupRecord(recID, errStr string) (*models.BackupRecord, error) {
-	_ = bm.store.UpdateBackupRecord(recID, "failed", "", "", errStr, 0, time.Now().UTC().Format(time.RFC3339))
+	_ = bm.store.UpdateBackupRecord(recID, models.BackupRecordStatusFailed, "", "", errStr, 0, time.Now().UTC().Format(time.RFC3339))
 	return nil, errors.New(errStr)
 }
 
@@ -120,11 +121,13 @@ func (bm *BackupManager) TriggerBackup(ctx context.Context, backupConfigID strin
 	if err != nil || cfg == nil {
 		return nil, fmt.Errorf("backup config %s not found: %w", backupConfigID, err)
 	}
+
 	rec := &models.BackupRecord{
+		ID:             uuid.New().String(),
 		BackupConfigID: cfg.ID,
 		ProjectID:      cfg.ProjectID,
 		DatabaseID:     cfg.DatabaseID,
-		Status:         "running",
+		Status:         models.BackupRecordStatusRunning,
 		Logs:           fmt.Sprintf("Initiating automated backup '%s' at %s...\n", cfg.Name, time.Now().UTC().Format(time.RFC3339)),
 	}
 	if err := bm.store.CreateBackupRecord(rec); err != nil {
@@ -260,9 +263,9 @@ func (bm *BackupManager) handleS3Upload(ctx context.Context, cfg *models.BackupC
 func (bm *BackupManager) finalizeBackupRecord(rec *models.BackupRecord, filePath string, s3URL string, execLogs string, sizeBytes int64) (*models.BackupRecord, error) {
 	nowStr := time.Now().UTC().Format(time.RFC3339)
 	finalLogs := rec.Logs + execLogs + "\nBackup run completed successfully."
-	_ = bm.store.UpdateBackupRecord(rec.ID, "completed", filePath, s3URL, finalLogs, sizeBytes, nowStr)
+	_ = bm.store.UpdateBackupRecord(rec.ID, models.BackupRecordStatusCompleted, filePath, s3URL, finalLogs, sizeBytes, nowStr)
 
-	rec.Status = "completed"
+	rec.Status = models.BackupRecordStatusCompleted
 	rec.FilePath = filePath
 	rec.FileSizeBytes = sizeBytes
 	rec.S3URL = s3URL
@@ -304,11 +307,11 @@ func (bm *BackupManager) enforceRetentionPolicy(cfg *models.BackupConfig) {
 		return
 	}
 	for _, rec := range records {
-		if rec.Status == "completed" && rec.FilePath != "" {
+		if rec.Status == models.BackupRecordStatusCompleted && rec.FilePath != "" {
 			started, err := time.Parse(time.RFC3339, rec.StartedAt)
 			if err == nil && started.Before(cutoff) {
 				_ = os.Remove(rec.FilePath)
-				_ = bm.store.UpdateBackupRecord(rec.ID, "expired", "", rec.S3URL, rec.Logs+"\nFile pruned by retention policy.", 0, time.Now().UTC().Format(time.RFC3339))
+				_ = bm.store.UpdateBackupRecord(rec.ID, models.BackupRecordStatusExpired, "", rec.S3URL, rec.Logs+"\nFile pruned by retention policy.", 0, time.Now().UTC().Format(time.RFC3339))
 			}
 		}
 	}
