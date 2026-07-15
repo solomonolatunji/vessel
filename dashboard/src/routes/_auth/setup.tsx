@@ -1,5 +1,5 @@
 import { createFileRoute, Navigate } from '@tanstack/react-router';
-import { SetupForm } from '#/features/auth';
+import { SetupForm } from '#/features/auth/setup-form';
 import { useGetSetupStatus } from '#/hooks/useSettings';
 
 export const Route = createFileRoute('/_auth/setup')({

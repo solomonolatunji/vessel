@@ -59,7 +59,7 @@ Every single feature from the **Aeroplane vs. Vessl Feature Gap Analysis** maps 
 
 |   #    | Feature                            | Target Route / Component                                                                      | UI Specification & User Flow                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | :----: | :--------------------------------- | :-------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **1**  | **Browser Onboarding Wizard**      | `/routes/onboarding.tsx`<br>`src/features/onboarding/*`                                       | **First-Run Interception:** If `GET /system/onboarding/status` indicates no owner account exists, redirect all traffic to `/onboarding`.<br>**Wizard Steps:**<br>1. **Owner Account:** Email and password setup.<br>2. **Control Plane Domain:** Configure `pilot.example.com` or fallback to `http://IP:8080`.<br>3. **GitHub App Setup:** Client ID, Secret, App ID, and Webhook (`/api/github/app/webhook`).<br>4. **Wildcard Root Domain:** Set `*.pilot.example.com` for auto-generated hostnames.<br>5. **Backup & R2 Storage:** Connect Cloudflare R2 bucket credentials.<br>6. **Bundle Import (Optional):** Dropzone to upload and decrypt `.vessl` server state.<br>_System Settings also includes a "Restart Onboarding" action._ |
+| **1**  | **Browser Onboarding Wizard**      | `src/routes/_auth/setup.tsx`<br>`src/features/auth/setup-form.tsx`                                       | **First-Run Interception:** If `GET /system/setup-status` indicates no owner account exists, redirect all traffic to `/setup`.<br>**Wizard Steps:**<br>1. **Owner Account:** Email and password setup.<br>2. **Control Plane Domain:** Configure `pilot.example.com` or fallback to `http://IP:8080`.<br>3. **GitHub App Setup:** Client ID, Secret, App ID, and Webhook (`/api/github/app/webhook`).<br>4. **Wildcard Root Domain:** Set `*.pilot.example.com` for auto-generated hostnames.<br>5. **Backup & R2 Storage:** Connect Cloudflare R2 bucket credentials.<br>6. **Bundle Import (Optional):** Dropzone to upload and decrypt `.vessl` server state.<br>_System Settings also includes a "Restart Onboarding" action._ |
 | **2**  | **One-Line Installer**             | `/routes/getting-started.tsx`                                                                 | Show highlighted command (`curl -fsSL https://get.vessl.dev \| sh`) and system readiness checklist.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | **3**  | **Service Runtime Modes**          | `src/features/services/service-settings.tsx`                                                  | **Web vs. Worker Switcher:** Radio card selector when creating/editing an `AppService`.<br>- **Web:** Internal port input, public route generator, HTTP health checks (`/healthz`).<br>- **Background Worker:** No internal port, no public route, process uptime check badge (`runtimeMode === 'worker'`).                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | **4**  | **Static Site Deployments**        | `src/features/services/build-settings.tsx`                                                    | **Static Output Input:** Text field for `Static output directory` (e.g., `dist`, `build`, `.output/public`). When set, UI displays badge indicating the service runs inside an optimized `nginx:alpine` wrapper on internal port 80.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -89,9 +89,10 @@ src/routes/
 ├── __root.tsx                               # Global QueryProvider, ThemeProvider, Toast, CommandMenu
 ├── _auth/                                   # Unauthenticated layout (centered card, no sidebar)
 │   ├── login.tsx                            # GET /auth/login
-│   └── register.tsx                         # GET /auth/register
-│
-├── onboarding.tsx                           # First-run browser onboarding wizard (/onboarding)
+│   ├── register.tsx                         # GET /auth/register
+│   ├── forgot-password.tsx                  # POST /auth/forgot-password
+│   ├── reset-password.tsx                   # POST /auth/reset-password
+│   └── setup.tsx                            # First-run browser onboarding wizard (/setup)
 │
 ├── _shell/                                  # Authenticated layout (Topbar + Contextual Sidebar)
 │   ├── index.tsx                            # Global Overview / Dashboard Home
@@ -109,13 +110,21 @@ src/routes/
 │   │   ├── maintenance.tsx                  # Garbage Collection & Disk Usage Alerts
 │   │   ├── updates.tsx                      # Control Plane Version & Auto-Update Toggles
 │   │   ├── migration.tsx                    # AES-256 `.vessl` Bundle Export/Import
-│   │   └── users.tsx                        # Instance-Wide User Management
+│   │   ├── users.tsx                        # Instance-Wide User Management
+│   │   ├── oauth.tsx                        # Global OAuth Providers (GitHub, Google)
+│   │   ├── git-apps.tsx                     # Global Git App Integrations (GitHub/GitLab/Bitbucket)
+│   │   └── backups.tsx                      # S3 Backup Destinations
+│   │
+│   ├── profile/                             # Current User Profile (`/profile`)
+│   │   ├── index.tsx                        # 2FA, Personal Access Tokens, Change Password
 │   │
 │   └── projects/                            # Project Context Routing (`/projects/$projectId/*`)
 │       └── $projectId/
 │           ├── index.tsx                    # Project Overview & Quick Stats
 │           ├── canvas.tsx                   # Railway-Style React Flow Node Graph
 │           ├── settings.tsx                 # Project RBAC, Webhooks, and Global Secrets
+│           ├── jobs.tsx                     # Background Jobs & Cron Tasks
+│           ├── compose.tsx                  # Docker Compose Deployments
 │           │
 │           ├── services/
 │           │   └── $serviceId/
@@ -146,16 +155,16 @@ src/features/
 ├── auth/
 │   ├── login-form.tsx
 │   ├── register-form.tsx
+│   ├── forgot-password-form.tsx
+│   ├── reset-password-form.tsx
+│   ├── o-auth-buttons.tsx
+│   ├── setup-form.tsx
 │   └── use-auth.ts
 │
-├── onboarding/
-│   ├── onboarding-wizard.tsx
-│   ├── step-owner-account.tsx
-│   ├── step-control-plane-domain.tsx
-│   ├── step-github-app.tsx
-│   ├── step-wildcard-domain.tsx
-│   ├── step-backup-storage.tsx
-│   └── step-bundle-import.tsx
+├── profile/
+│   ├── user-profile-form.tsx
+│   ├── security-2fa-setup.tsx
+│   └── access-tokens-list.tsx
 │
 ├── projects/
 │   ├── project-list.tsx
@@ -163,7 +172,9 @@ src/features/
 │   ├── create-project-modal.tsx
 │   ├── project-domains.tsx
 │   ├── railway-importer.tsx
-│   └── vercel-importer.tsx
+│   ├── vercel-importer.tsx
+│   ├── compose-deploy-form.tsx
+│   └── jobs-list.tsx
 │
 ├── canvas/
 │   ├── environment-canvas.tsx
@@ -200,7 +211,10 @@ src/features/
     ├── dns-settings.tsx
     ├── maintenance-settings.tsx
     ├── update-settings.tsx
-    └── migration-settings.tsx
+    ├── migration-settings.tsx
+    ├── oauth-providers-list.tsx
+    ├── git-apps-manager.tsx
+    └── s3-destinations-list.tsx
 ```
 
 ---
@@ -226,8 +240,8 @@ src/features/
 1. **Phase 1: Router & API Client Verification**
    - Flesh out `src/lib/api-client.ts` and verify TanStack Query defaults (`staleTime`, retry behavior).
    - Register all expanded routes (`onboarding.tsx`, `settings/*`, `import/*`, `databases/*`) inside `src/routes/` and run `npm run generate-routes`.
-2. **Phase 2: First-Run Onboarding Wizard (`/onboarding`)**
-   - Build `src/features/onboarding/onboarding-wizard.tsx` and all step components to handle fresh server installations cleanly.
+2. **Phase 2: First-Run Setup Wizard (`/setup`)**
+   - Build out the existing `src/features/auth/setup-form.tsx` to handle fresh server installations cleanly.
 3. **Phase 3: Service Deep-Dive & Build Overrides**
    - Upgrade `AppService` components to support `RuntimeMode` (`web`/`worker`), `StaticOutput`, and command overrides (`--install-cmd`, `--build-cmd`, `--start-cmd`).
 4. **Phase 4: Database Suite & SQL Studio**
