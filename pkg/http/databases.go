@@ -97,3 +97,19 @@ func (c *Client) DeleteDatabase(id string) error {
 
 	return nil
 }
+
+// ImportDatabase triggers a data import from a source URL into the database.
+func (c *Client) ImportDatabase(id string, req *models.ImportDatabaseRequest) error {
+	resp, err := c.sendRequest("POST", fmt.Sprintf("/databases/%s/import", id), req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != nethttp.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("failed to import database (status %d): %s", resp.StatusCode, string(body))
+	}
+
+	return nil
+}

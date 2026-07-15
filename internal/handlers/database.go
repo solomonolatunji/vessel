@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"net/http"
 	"strconv"
 
@@ -210,6 +211,38 @@ func (h *DatabaseHandler) StopDatabase(c echo.Context) error {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return utils.Success(c, "Operation successful", map[string]string{"status": "stopped"})
+}
+
+// @Summary ImportData endpoint
+// @Description ImportData endpoint
+// @Tags Databases
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Param request body models.ImportDatabaseRequest true "Payload"
+// @Router /databases/{id}/import [post]
+func (h *DatabaseHandler) ImportData(c echo.Context) error {
+	id := c.Param("id")
+	if id == "" {
+		return utils.Error(c, http.StatusBadRequest, "missing database id parameter")
+	}
+	db, err := h.databaseService.GetDatabase(c.Request().Context(), id)
+	if err != nil || db == nil {
+		return utils.Error(c, http.StatusNotFound, "database not found")
+	}
+	if err := h.verifyProjectOwnership(c, db.ProjectID); err != nil {
+		return err
+	}
+	var req models.ImportDatabaseRequest
+	if err := c.Bind(&req); err != nil {
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
+	}
+	// Run import as background task or sync? Import can take long, but we'll do it sync for simplicity
+	// Alternatively, we should probably run it async and return immediately
+	go func() {
+		_ = h.databaseService.ImportData(context.Background(), id, req.SourceURL)
+	}()
+	return utils.Success(c, "Import started", nil)
 }
 
 // @Summary QueryDatabase endpoint

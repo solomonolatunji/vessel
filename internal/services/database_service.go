@@ -177,3 +177,17 @@ func (s *DatabaseService) StopDatabase(ctx context.Context, id string) error {
 	db.UpdatedAt = time.Now()
 	return s.repo.Update(ctx, db)
 }
+
+func (s *DatabaseService) ImportData(ctx context.Context, id string, sourceURL string) error {
+	if id == "" || sourceURL == "" {
+		return errors.New("id and sourceURL are required")
+	}
+	db, err := s.repo.GetByID(ctx, id)
+	if err != nil || db == nil {
+		return errors.New("database not found")
+	}
+	if s.deployer == nil {
+		return errors.New("database deployer unavailable")
+	}
+	return s.deployer.ImportData(ctx, db, sourceURL)
+}

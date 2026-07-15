@@ -82,6 +82,27 @@ var dbDestroyCmd = &cobra.Command{
 	},
 }
 
+var dbImportCmd = &cobra.Command{
+	Use:   "import [id]",
+	Short: "Import database data from a remote URL",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		sourceURL, _ := cmd.Flags().GetString("source")
+		if sourceURL == "" {
+			fmt.Println("Error: --source flag is required")
+			os.Exit(1)
+		}
+
+		client := getClient()
+		req := &models.ImportDatabaseRequest{SourceURL: sourceURL}
+		if err := client.ImportDatabase(args[0], req); err != nil {
+			fmt.Printf("Error importing database data: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("Data import initiated for database %s\n", args[0])
+	},
+}
+
 func init() {
 	dbListCmd.Flags().StringP("project", "p", "", "Project ID (optional)")
 
@@ -90,6 +111,8 @@ func init() {
 	dbCreateCmd.Flags().StringP("name", "n", "", "Database name (required)")
 	dbCreateCmd.Flags().String("engine", "postgres", "Database engine (e.g. postgres, mysql)")
 
-	dbCmd.AddCommand(dbListCmd, dbCreateCmd, dbDestroyCmd)
+	dbImportCmd.Flags().StringP("source", "s", "", "Source public connection URL (required)")
+
+	dbCmd.AddCommand(dbListCmd, dbCreateCmd, dbDestroyCmd, dbImportCmd)
 	rootCmd.AddCommand(dbCmd)
 }

@@ -46,6 +46,10 @@ type UpdateDatabaseRequest struct {
 	LogicalReplication bool   `json:"logicalReplication"`
 }
 
+type ImportDatabaseRequest struct {
+	SourceURL string `json:"sourceUrl"`
+}
+
 type Storage struct {
 	ID            string    `json:"id"`
 	ProjectID     string    `json:"projectId"`
