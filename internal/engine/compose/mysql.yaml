@@ -9,6 +9,9 @@ services:
         command:
           ["mysqldump", "-u", "root", "-p${db.password}", "${db.database_name}"]
         file_extension: ".sql"
+      restore:
+        command:
+          ["mysql", "-u", "root", "-p${db.password}", "${db.database_name}"]
     environment:
       - MYSQL_ROOT_PASSWORD=${db.password}
       - MYSQL_USER=${db.username}

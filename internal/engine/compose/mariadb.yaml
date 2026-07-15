@@ -15,6 +15,15 @@ services:
             "${db.database_name}",
           ]
         file_extension: ".sql"
+      restore:
+        command:
+          [
+            "mariadb",
+            "-u",
+            "root",
+            "-p${db.password}",
+            "${db.database_name}",
+          ]
     environment:
       - MARIADB_ROOT_PASSWORD=${db.password}
       - MARIADB_USER=${db.username}

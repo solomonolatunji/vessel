@@ -8,6 +8,8 @@ services:
       backup:
         command: ["pg_dump", "-U", "${db.username}", "${db.database_name}"]
         file_extension: ".sql"
+      restore:
+        command: ["psql", "-U", "${db.username}", "-d", "${db.database_name}"]
     environment:
       - POSTGRES_USER=${db.username}
       - POSTGRES_PASSWORD=${db.password}

@@ -140,6 +140,10 @@ func (a *engineAdapter) UpdateBackupRecord(id, status, filePath, s3URL, logs str
 	return a.backupRepo.UpdateRecord(context.Background(), rec)
 }
 
+func (a *engineAdapter) GetBackupRecord(id string) (*models.BackupRecord, error) {
+	return a.backupRepo.GetRecordByID(context.Background(), id)
+}
+
 func (a *engineAdapter) GetS3Destination(id string) (*models.S3Destination, error) {
 	return a.s3Repo.GetS3Destination(context.Background(), id)
 }

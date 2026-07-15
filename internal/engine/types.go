@@ -17,15 +17,20 @@ type ComposeService struct {
 }
 
 type VesslMetadata struct {
-	IsDatabase       bool                 `yaml:"is_database,omitempty"`
-	IsOneClick       bool                 `yaml:"is_one_click,omitempty"`
-	Name             string               `yaml:"name,omitempty"`
-	Description      string               `yaml:"description,omitempty"`
-	ConnectionString string               `yaml:"connection_string,omitempty"`
-	Backup           *VesslBackupMetadata `yaml:"backup,omitempty"`
+	IsDatabase       bool                  `yaml:"is_database,omitempty"`
+	IsOneClick       bool                  `yaml:"is_one_click,omitempty"`
+	Name             string                `yaml:"name,omitempty"`
+	Description      string                `yaml:"description,omitempty"`
+	ConnectionString string                `yaml:"connection_string,omitempty"`
+	Backup           *VesslBackupMetadata  `yaml:"backup,omitempty"`
+	Restore          *VesslRestoreMetadata `yaml:"restore,omitempty"`
 }
 
 type VesslBackupMetadata struct {
 	Command       []string `yaml:"command,omitempty"`
 	FileExtension string   `yaml:"file_extension,omitempty"`
+}
+
+type VesslRestoreMetadata struct {
+	Command []string `yaml:"command,omitempty"`
 }

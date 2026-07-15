@@ -112,3 +112,10 @@ func (s *BackupService) ListRecordsByConfig(ctx context.Context, configID string
 	}
 	return s.backupRepo.ListRecordsByConfig(ctx, configID)
 }
+
+func (s *BackupService) RestoreBackup(ctx context.Context, recordID string) error {
+	if s.manager == nil {
+		return errors.New("backup manager not available")
+	}
+	return s.manager.RestoreBackup(ctx, recordID)
+}

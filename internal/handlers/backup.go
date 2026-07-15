@@ -130,6 +130,25 @@ func (h *BackupHandler) ListRecords(c echo.Context) error {
 	return utils.Success(c, "Operation successful", recs)
 }
 
+// @Summary Restore endpoint
+// @Description Restore endpoint
+// @Tags Backups
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Router /backups/{id}/restore [post]
+func (h *BackupHandler) Restore(c echo.Context) error {
+	id := c.Param("id")
+	if id == "" {
+		return utils.Error(c, http.StatusBadRequest, "missing record id parameter")
+	}
+	err := h.backupService.RestoreBackup(c.Request().Context(), id)
+	if err != nil {
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
+	}
+	return utils.Success(c, "Backup successfully restored", nil)
+}
+
 // @Summary ListS3Destinations endpoint
 // @Description ListS3Destinations endpoint
 // @Tags Backups

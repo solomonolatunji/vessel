@@ -8,6 +8,8 @@ services:
       backup:
         command: ["mongodump", "--archive"]
         file_extension: ".archive"
+      restore:
+        command: ["mongorestore", "--archive"]
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${db.username}
       - MONGO_INITDB_ROOT_PASSWORD=${db.password}
