@@ -69,7 +69,7 @@ build: build-dashboard build-daemon
 build-daemon:
 	@echo "⚙️  Building Go daemon binary ($(BINARY_NAME))..."
 	mkdir -p $(BUILD_DIR)
-	go build -ldflags "-s -w" -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd
+	go build -ldflags "-s -w" -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/vessld
 
 build-dashboard:
 	@echo "💻 Building TanStack + Vite Dashboard GUI..."
@@ -81,7 +81,7 @@ dev:
 
 dev-daemon:
 	@echo "🚀 Running Go daemon in dev mode..."
-	go run ./cmd
+	go run ./cmd/vessld
 
 dev-dashboard:
 	@echo "💻 Running Dashboard dev server on port 3000..."
