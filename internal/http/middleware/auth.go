@@ -171,7 +171,7 @@ func (g *AuthGuard) RequireScope(requiredScope string) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			userClaims, ok := c.Get("user").(*models.UserClaims)
-			if !ok {
+			if !ok || userClaims == nil {
 				return utils.Error(c, http.StatusUnauthorized, "unauthorized")
 			}
 			if userClaims.Role == "api" {
