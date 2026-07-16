@@ -3,9 +3,9 @@
  * Designed to be used seamlessly with TanStack Query.
  */
 
+import { toast } from 'sonner';
 import { env } from '#/env';
 import { authActions, authStore } from '#/stores/authStore';
-import { toast } from 'sonner';
 
 const API_BASE_URL = env.VITE_API_URL;
 
