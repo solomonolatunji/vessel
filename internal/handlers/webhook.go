@@ -173,6 +173,19 @@ func (h *WebhookHandler) HandleGitHubWebhook(c echo.Context) error {
 		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 
+	if event == "push" {
+		appSvc, err := h.appService.GetAppService(c.Request().Context(), serviceID)
+		if err != nil || appSvc == nil {
+			return utils.Error(c, http.StatusNotFound, "service not found")
+		}
+		expectedRef := "refs/heads/" + appSvc.Branch
+		if payload.Ref == expectedRef {
+			h.deployServiceAsync(appSvc)
+			return utils.Accepted(c, fmt.Sprintf("triggering background build for branch %s", appSvc.Branch), nil)
+		}
+		return utils.Success(c, "Push event ignored (branch mismatch)", nil)
+	}
+
 	if event == "pull_request" {
 		switch payload.Action {
 		case "opened", "synchronize", "reopened":
