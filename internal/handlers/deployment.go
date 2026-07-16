@@ -17,12 +17,14 @@ import (
 type DeploymentHandler struct {
 	deploymentService *services.DeploymentService
 	appService        *services.AppService
+	auditService      *services.AuditService
 }
 
-func NewDeploymentHandler(ds *services.DeploymentService, as *services.AppService) *DeploymentHandler {
+func NewDeploymentHandler(ds *services.DeploymentService, as *services.AppService, audit *services.AuditService) *DeploymentHandler {
 	return &DeploymentHandler{
 		deploymentService: ds,
 		appService:        as,
+		auditService:      audit,
 	}
 }
 
@@ -90,6 +92,10 @@ func (h *DeploymentHandler) Trigger(c echo.Context) error {
 
 	h.deploymentService.ExecuteDeploymentAsync(created)
 
+	h.auditService.LogAction(c.Request().Context(), "system", "deployment.trigger", serviceID, c.RealIP(), map[string]string{
+		"deploymentId": created.ID,
+	})
+
 	return utils.Accepted(c, "Deployment created", created)
 }
 
@@ -126,6 +132,10 @@ func (h *DeploymentHandler) Rollback(c echo.Context) error {
 	}
 
 	h.deploymentService.ExecuteDeploymentAsync(created)
+
+	h.auditService.LogAction(c.Request().Context(), "system", "deployment.rollback", newDep.ServiceID, c.RealIP(), map[string]string{
+		"deploymentId": created.ID,
+	})
 
 	return utils.Accepted(c, "Rollback created", created)
 }
@@ -207,6 +217,11 @@ func (h *DeploymentHandler) DeployProject(c echo.Context) error {
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
+
+	h.auditService.LogAction(c.Request().Context(), "system", "deployment.trigger", id, c.RealIP(), map[string]string{
+		"projectId": id,
+	})
+
 	return utils.Success(c, "Project deployed successfully", map[string]string{
 		"status":       "deployed",
 		"container_id": containerID,

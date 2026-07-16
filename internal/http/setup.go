@@ -78,8 +78,9 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	prPreviewRepository := repositories.NewPRPreviewRepository(db)
 	domainSQLiteRepository := repositories.NewDomainSQLiteRepository(db)
 	gitAppSQLiteRepository := repositories.NewGitAppSQLiteRepository(db, v)
-	vercelRepository := repositories.NewVercelRepository(db, v)
 	dnsSQLiteRepository := repositories.NewDNSSQLiteRepository(db)
+	auditLogRepository := repositories.NewAuditLogSQLiteRepository(db)
+	vercelRepository := repositories.NewVercelRepository(db, v)
 
 	httpEngineAdapter := newEngineAdapter(settingsSQLiteRepository, appServiceSQLiteRepository, envSQLiteRepository, databaseSQLiteRepository, storageSQLiteRepository, projectSQLiteRepository, jobSQLiteRepository, backupSQLiteRepository, s3DestinationSQLiteRepository, serviceVarSQLiteRepository, serverlessRepository)
 	databaseDeployer := engine.NewDatabaseDeployer(dockerClient, httpEngineAdapter)
@@ -135,6 +136,7 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	dnsService := services.NewDNSService(dnsSQLiteRepository, dnsProviderService)
 	metricsService := services.NewMetricsService()
 	logService := services.NewLogService()
+	auditService := services.NewAuditService(auditLogRepository)
 
 	updaterService := services.NewUpdaterService(settingsSQLiteRepository)
 	updaterService.Start(context.Background())
@@ -149,8 +151,8 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	jobHandler := handlers.NewJobHandler(jobService)
 	canvasHandler := handlers.NewCanvasHandler(canvasService)
 	terminalHandler := handlers.NewTerminalHandler(dockerClient, tokenService, appService)
-	deploymentHandler := handlers.NewDeploymentHandler(deploymentService, appService)
-	serviceVarHandler := handlers.NewServiceVarHandler(appService)
+	deploymentHandler := handlers.NewDeploymentHandler(deploymentService, appService, auditService)
+	serviceVarHandler := handlers.NewServiceVarHandler(appService, auditService)
 	projectSettingsHandler := handlers.NewProjectSettingsHandler(projectSettingsService)
 	backupHandler := handlers.NewBackupHandler(backupService)
 	settingsHandler := handlers.NewSettingsHandler(settingsService)
@@ -185,6 +187,7 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	dnsHandler := handlers.NewDNSHandler(dnsService)
 	metricsHandler := handlers.NewMetricsHandler(metricsService)
 	logHandler := handlers.NewLogHandler(logService)
+	auditLogHandler := handlers.NewAuditLogHandler(auditService)
 	authLimiter := middleware.NewRateLimiter(10, time.Minute)
 
 	srv := &Server{
@@ -234,6 +237,7 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 		dnsHandler:             dnsHandler,
 		metricsHandler:         metricsHandler,
 		logHandler:             logHandler,
+		auditLogHandler:        auditLogHandler,
 	}
 
 	if srv.deployer != nil {

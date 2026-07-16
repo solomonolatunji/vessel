@@ -12,11 +12,12 @@ import (
 )
 
 type ServiceVarHandler struct {
-	appService *services.AppService
+	appService   *services.AppService
+	auditService *services.AuditService
 }
 
-func NewServiceVarHandler(s *services.AppService) *ServiceVarHandler {
-	return &ServiceVarHandler{appService: s}
+func NewServiceVarHandler(s *services.AppService, audit *services.AuditService) *ServiceVarHandler {
+	return &ServiceVarHandler{appService: s, auditService: audit}
 }
 
 // @Summary List Service Variables
@@ -60,6 +61,12 @@ func (h *ServiceVarHandler) Create(c echo.Context) error {
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
+
+	h.auditService.LogAction(c.Request().Context(), "system", "service_var.create", serviceID, c.RealIP(), map[string]string{
+		"variableId": created.ID,
+		"key":        created.Key,
+	})
+
 	return utils.Created(c, "Created successfully", created)
 }
 
@@ -84,6 +91,12 @@ func (h *ServiceVarHandler) Update(c echo.Context) error {
 	if err := h.appService.UpdateVariable(c.Request().Context(), &req); err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
+
+	h.auditService.LogAction(c.Request().Context(), "system", "service_var.update", serviceID, c.RealIP(), map[string]string{
+		"variableId": id,
+		"key":        req.Key,
+	})
+
 	return utils.Success(c, "Operation successful", req)
 }
 
@@ -100,5 +113,8 @@ func (h *ServiceVarHandler) Delete(c echo.Context) error {
 	if err := h.appService.DeleteVariable(c.Request().Context(), id); err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
+
+	h.auditService.LogAction(c.Request().Context(), "system", "service_var.delete", id, c.RealIP(), nil)
+
 	return c.NoContent(http.StatusNoContent)
 }

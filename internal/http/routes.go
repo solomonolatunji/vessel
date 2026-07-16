@@ -112,6 +112,7 @@ func (s *Server) registerRoutes() {
 	authGroup.POST("/services/:serviceId/variables", s.serviceVarHandler.Create)
 	authGroup.PUT("/services/:serviceId/variables/:id", s.serviceVarHandler.Update)
 	authGroup.DELETE("/services/:serviceId/variables/:id", s.serviceVarHandler.Delete)
+	authGroup.GET("/audit-logs", s.auditLogHandler.List)
 	authGroup.GET("/services/:serviceId/serverless/code", s.serverlessHandler.GetCode)
 	authGroup.POST("/services/:serviceId/serverless/code", s.serverlessHandler.SaveCode)
 	authGroup.GET("/projects/:projectId/webhooks", s.projectSettingsHandler.ListWebhooks)
