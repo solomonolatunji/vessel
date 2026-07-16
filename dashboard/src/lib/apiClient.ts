@@ -55,7 +55,7 @@ export const apiClient = {
 
     if (response.status === 401) {
       authActions.logout();
-      window.location.href = '/login';
+      window.location.href = '/signin';
       throw new ApiError(401, 'Session expired. Please log in again.');
     }
 
@@ -100,7 +100,7 @@ export const apiClient = {
 
     if (response.status === 401) {
       authActions.logout();
-      window.location.href = '/login';
+      window.location.href = '/signin';
       throw new ApiError(401, 'Session expired. Please log in again.');
     }
 

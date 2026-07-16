@@ -11,7 +11,6 @@
   ],
   "scripts": {
     "dev:dashboard": "npm --workspace=dashboard run dev",
-    "dev:dashboard-cloud": "npm --workspace=dashboard run dev:cloud",
     "dev:web": "npm --workspace=web run dev",
     "dev:docs": "npm --workspace=docs run dev",
     "generate:api-docs": "go run github.com/swaggo/swag/cmd/swag@latest init -g cmd/vessld/main.go -o ./docs",
