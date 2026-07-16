@@ -18,10 +18,18 @@ func NewAuditService(repo repositories.AuditLogRepository) *AuditService {
 	return &AuditService{repo: repo}
 }
 
-func (s *AuditService) LogAction(ctx context.Context, userID, action, resource, ipAddress string, details any) {
+type AuditActionOpts struct {
+	UserID    string
+	Action    string
+	Resource  string
+	IPAddress string
+	Details   any
+}
+
+func (s *AuditService) LogAction(ctx context.Context, opts AuditActionOpts) {
 	var detailsStr string
-	if details != nil {
-		b, err := json.Marshal(details)
+	if opts.Details != nil {
+		b, err := json.Marshal(opts.Details)
 		if err == nil {
 			detailsStr = string(b)
 		}
@@ -29,18 +37,18 @@ func (s *AuditService) LogAction(ctx context.Context, userID, action, resource, 
 
 	log := &models.AuditLog{
 		ID:        uuid.New().String(),
-		UserID:    userID,
-		Action:    action,
-		Resource:  resource,
+		UserID:    opts.UserID,
+		Action:    opts.Action,
+		Resource:  opts.Resource,
 		Details:   detailsStr,
-		IPAddress: ipAddress,
+		IPAddress: opts.IPAddress,
 	}
 
 	// We log asynchronously so we don't block the caller
 	go func() {
 		err := s.repo.Create(context.Background(), log)
 		if err != nil {
-			slog.Error("failed to write audit log", "err", err, "action", action)
+			slog.Error("failed to write audit log", "err", err, "action", opts.Action)
 		}
 	}()
 }

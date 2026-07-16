@@ -38,7 +38,7 @@ type BackupManagerStore interface {
 	GetBackupConfig(id string) (*models.BackupConfig, error)
 	CreateBackupRecord(rec *models.BackupRecord) error
 	GetDatabase(id string) (*models.Database, error)
-	UpdateBackupRecord(id string, status models.BackupRecordStatus, filePath, s3URL, logs string, fileSizeBytes int64, completedAt string) error
+	UpdateBackupRecord(opts models.UpdateBackupRecordOpts) error
 	GetS3Destination(id string) (*models.S3Destination, error)
 	GetBackupRecord(id string) (*models.BackupRecord, error)
 	ListBackupRecords(backupConfigID string) ([]*models.BackupRecord, error)

@@ -112,7 +112,12 @@ func (bm *BackupManager) UnregisterBackup(backupConfigID string) {
 }
 
 func (bm *BackupManager) failBackupRecord(recID, errStr string) (*models.BackupRecord, error) {
-	_ = bm.store.UpdateBackupRecord(recID, models.BackupRecordStatusFailed, "", "", errStr, 0, time.Now().UTC().Format(time.RFC3339))
+	_ = bm.store.UpdateBackupRecord(models.UpdateBackupRecordOpts{
+		ID:          recID,
+		Status:      models.BackupRecordStatusFailed,
+		Logs:        errStr,
+		CompletedAt: time.Now().UTC().Format(time.RFC3339),
+	})
 	return nil, errors.New(errStr)
 }
 
@@ -163,7 +168,13 @@ func (bm *BackupManager) TriggerBackup(ctx context.Context, backupConfigID strin
 
 	bm.enforceRetentionPolicy(cfg)
 
-	return bm.finalizeBackupRecord(rec, filePath, s3URL, execLogs, sizeBytes)
+	return bm.finalizeBackupRecord(FinalizeBackupOpts{
+		Record:    rec,
+		FilePath:  filePath,
+		S3URL:     s3URL,
+		ExecLogs:  execLogs,
+		SizeBytes: sizeBytes,
+	})
 }
 
 func (bm *BackupManager) buildDumpCommand(cfg *models.BackupConfig) (string, []string, string, error) {
@@ -260,18 +271,34 @@ func (bm *BackupManager) handleS3Upload(ctx context.Context, cfg *models.BackupC
 	return s3URL, execLogs
 }
 
-func (bm *BackupManager) finalizeBackupRecord(rec *models.BackupRecord, filePath string, s3URL string, execLogs string, sizeBytes int64) (*models.BackupRecord, error) {
-	nowStr := time.Now().UTC().Format(time.RFC3339)
-	finalLogs := rec.Logs + execLogs + "\nBackup run completed successfully."
-	_ = bm.store.UpdateBackupRecord(rec.ID, models.BackupRecordStatusCompleted, filePath, s3URL, finalLogs, sizeBytes, nowStr)
+type FinalizeBackupOpts struct {
+	Record    *models.BackupRecord
+	FilePath  string
+	S3URL     string
+	ExecLogs  string
+	SizeBytes int64
+}
 
-	rec.Status = models.BackupRecordStatusCompleted
-	rec.FilePath = filePath
-	rec.FileSizeBytes = sizeBytes
-	rec.S3URL = s3URL
-	rec.Logs = finalLogs
-	rec.CompletedAt = nowStr
-	return rec, nil
+func (bm *BackupManager) finalizeBackupRecord(opts FinalizeBackupOpts) (*models.BackupRecord, error) {
+	nowStr := time.Now().UTC().Format(time.RFC3339)
+	finalLogs := opts.Record.Logs + opts.ExecLogs + "\nBackup run completed successfully."
+	_ = bm.store.UpdateBackupRecord(models.UpdateBackupRecordOpts{
+		ID:            opts.Record.ID,
+		Status:        models.BackupRecordStatusCompleted,
+		FilePath:      opts.FilePath,
+		S3URL:         opts.S3URL,
+		Logs:          finalLogs,
+		FileSizeBytes: opts.SizeBytes,
+		CompletedAt:   nowStr,
+	})
+
+	opts.Record.Status = models.BackupRecordStatusCompleted
+	opts.Record.FilePath = opts.FilePath
+	opts.Record.FileSizeBytes = opts.SizeBytes
+	opts.Record.S3URL = opts.S3URL
+	opts.Record.Logs = finalLogs
+	opts.Record.CompletedAt = nowStr
+	return opts.Record, nil
 }
 
 func (bm *BackupManager) uploadToS3(ctx context.Context, dest *models.S3Destination, fileName string, data []byte) (string, error) {
@@ -311,7 +338,13 @@ func (bm *BackupManager) enforceRetentionPolicy(cfg *models.BackupConfig) {
 			started, err := time.Parse(time.RFC3339, rec.StartedAt)
 			if err == nil && started.Before(cutoff) {
 				_ = os.Remove(rec.FilePath)
-				_ = bm.store.UpdateBackupRecord(rec.ID, models.BackupRecordStatusExpired, "", rec.S3URL, rec.Logs+"\nFile pruned by retention policy.", 0, time.Now().UTC().Format(time.RFC3339))
+				_ = bm.store.UpdateBackupRecord(models.UpdateBackupRecordOpts{
+					ID:          rec.ID,
+					Status:      models.BackupRecordStatusExpired,
+					S3URL:       rec.S3URL,
+					Logs:        rec.Logs + "\nFile pruned by retention policy.",
+					CompletedAt: time.Now().UTC().Format(time.RFC3339),
+				})
 			}
 		}
 	}

@@ -69,7 +69,12 @@ func (d *Deployer) DeployAppService(ctx context.Context, app *models.AppService,
 		return "", err
 	}
 
-	imageTag, err := d.buildImage(ctx, app, sourceDir, envVarsMap, logWriter)
+	imageTag, err := d.buildImage(ctx, BuildImageOpts{
+		App:        app,
+		SourceDir:  sourceDir,
+		EnvVarsMap: envVarsMap,
+		LogWriter:  logWriter,
+	})
 	if err != nil {
 		return "", err
 	}
@@ -84,7 +89,12 @@ func (d *Deployer) DeployAppService(ctx context.Context, app *models.AppService,
 		fmt.Fprintf(logWriter, "🔄 [Deployer] Rolling out container %s with %d encrypted environment variables...\n", newContainerName, len(envSlice))
 	}
 
-	if err := d.startContainer(ctx, app, newContainerName, imageTag, envSlice); err != nil {
+	if err := d.startContainer(ctx, StartContainerOpts{
+		App:           app,
+		ContainerName: newContainerName,
+		ImageTag:      imageTag,
+		EnvSlice:      envSlice,
+	}); err != nil {
 		return "", err
 	}
 
@@ -138,48 +148,62 @@ func (d *Deployer) prepareServerlessCode(app *models.AppService, sourceDir strin
 	return nil
 }
 
-func (d *Deployer) buildImage(ctx context.Context, app *models.AppService, sourceDir string, envVarsMap map[string]string, logWriter io.Writer) (string, error) {
+type BuildImageOpts struct {
+	App        *models.AppService
+	SourceDir  string
+	EnvVarsMap map[string]string
+	LogWriter  io.Writer
+}
+
+func (d *Deployer) buildImage(ctx context.Context, opts BuildImageOpts) (string, error) {
 	buildOpts := BuildOptions{
-		ProjectID: app.ProjectID,
-		ServiceID: app.ID,
-		SourceDir: sourceDir,
-		LogWriter: logWriter,
-		AppConfig: app,
-		EnvVars:   envVarsMap,
+		ProjectID: opts.App.ProjectID,
+		ServiceID: opts.App.ID,
+		SourceDir: opts.SourceDir,
+		LogWriter: opts.LogWriter,
+		AppConfig: opts.App,
+		EnvVars:   opts.EnvVarsMap,
 	}
 	imageTag, err := d.builder.Build(ctx, buildOpts)
 	if err != nil {
 		return "", fmt.Errorf("build phase failed: %w", err)
 	}
-	if logWriter != nil {
-		fmt.Fprintf(logWriter, "✅ [Deployer] Successfully built OCI image: %s\n", imageTag)
+	if opts.LogWriter != nil {
+		fmt.Fprintf(opts.LogWriter, "✅ [Deployer] Successfully built OCI image: %s\n", imageTag)
 	}
 	return imageTag, nil
 }
 
-func (d *Deployer) startContainer(ctx context.Context, app *models.AppService, containerName, imageTag string, envSlice []string) error {
-	port := app.InternalPort
+type StartContainerOpts struct {
+	App           *models.AppService
+	ContainerName string
+	ImageTag      string
+	EnvSlice      []string
+}
+
+func (d *Deployer) startContainer(ctx context.Context, opts StartContainerOpts) error {
+	port := opts.App.InternalPort
 	if port <= 0 {
 		port = defaultAppPort()
 	}
-	if app.StaticOutput != "" {
+	if opts.App.StaticOutput != "" {
 		port = 80 // NGINX alpine default port
 	}
 
-	opts := ContainerRunOptions{
-		Name:            containerName,
-		ImageTag:        imageTag,
-		ServiceID:       app.ID,
-		Domain:          app.Domain,
+	containerOpts := ContainerRunOptions{
+		Name:            opts.ContainerName,
+		ImageTag:        opts.ImageTag,
+		ServiceID:       opts.App.ID,
+		Domain:          opts.App.Domain,
 		InternalPort:    port,
-		RuntimeMode:     app.RuntimeMode,
-		Envs:            envSlice,
+		RuntimeMode:     opts.App.RuntimeMode,
+		Envs:            opts.EnvSlice,
 		MemoryLimitMB:   defaultMemoryMB(),
 		CPURequest:      defaultCPURequest(),
-		HealthCheckPath: app.HealthCheckPath,
+		HealthCheckPath: opts.App.HealthCheckPath,
 	}
 
-	_, err := d.containerManager.CreateAndStart(ctx, opts)
+	_, err := d.containerManager.CreateAndStart(ctx, containerOpts)
 	if err != nil {
 		return fmt.Errorf("container rollout failed: %w", err)
 	}

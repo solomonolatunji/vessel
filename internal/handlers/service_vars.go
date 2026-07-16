@@ -62,9 +62,15 @@ func (h *ServiceVarHandler) Create(c echo.Context) error {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 
-	h.auditService.LogAction(c.Request().Context(), "system", "service_var.create", serviceID, c.RealIP(), map[string]string{
-		"variableId": created.ID,
-		"key":        created.Key,
+	h.auditService.LogAction(c.Request().Context(), services.AuditActionOpts{
+		UserID:    "system",
+		Action:    "service_var.create",
+		Resource:  serviceID,
+		IPAddress: c.RealIP(),
+		Details: map[string]string{
+			"variableId": created.ID,
+			"key":        created.Key,
+		},
 	})
 
 	return utils.Created(c, "Created successfully", created)
@@ -92,9 +98,15 @@ func (h *ServiceVarHandler) Update(c echo.Context) error {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 
-	h.auditService.LogAction(c.Request().Context(), "system", "service_var.update", serviceID, c.RealIP(), map[string]string{
-		"variableId": id,
-		"key":        req.Key,
+	h.auditService.LogAction(c.Request().Context(), services.AuditActionOpts{
+		UserID:    "system",
+		Action:    "service_var.update",
+		Resource:  serviceID,
+		IPAddress: c.RealIP(),
+		Details: map[string]string{
+			"variableId": id,
+			"key":        req.Key,
+		},
 	})
 
 	return utils.Success(c, "Operation successful", req)
@@ -114,7 +126,13 @@ func (h *ServiceVarHandler) Delete(c echo.Context) error {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 
-	h.auditService.LogAction(c.Request().Context(), "system", "service_var.delete", id, c.RealIP(), nil)
+	h.auditService.LogAction(c.Request().Context(), services.AuditActionOpts{
+		UserID:    "system",
+		Action:    "service_var.delete",
+		Resource:  id,
+		IPAddress: c.RealIP(),
+		Details:   nil,
+	})
 
 	return c.NoContent(http.StatusNoContent)
 }

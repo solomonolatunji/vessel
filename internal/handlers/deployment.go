@@ -92,8 +92,14 @@ func (h *DeploymentHandler) Trigger(c echo.Context) error {
 
 	h.deploymentService.ExecuteDeploymentAsync(created)
 
-	h.auditService.LogAction(c.Request().Context(), "system", "deployment.trigger", serviceID, c.RealIP(), map[string]string{
-		"deploymentId": created.ID,
+	h.auditService.LogAction(c.Request().Context(), services.AuditActionOpts{
+		UserID:    "system",
+		Action:    "deployment.trigger",
+		Resource:  serviceID,
+		IPAddress: c.RealIP(),
+		Details: map[string]string{
+			"deploymentId": created.ID,
+		},
 	})
 
 	return utils.Accepted(c, "Deployment created", created)
@@ -133,8 +139,14 @@ func (h *DeploymentHandler) Rollback(c echo.Context) error {
 
 	h.deploymentService.ExecuteDeploymentAsync(created)
 
-	h.auditService.LogAction(c.Request().Context(), "system", "deployment.rollback", newDep.ServiceID, c.RealIP(), map[string]string{
-		"deploymentId": created.ID,
+	h.auditService.LogAction(c.Request().Context(), services.AuditActionOpts{
+		UserID:    "system",
+		Action:    "deployment.rollback",
+		Resource:  newDep.ServiceID,
+		IPAddress: c.RealIP(),
+		Details: map[string]string{
+			"deploymentId": created.ID,
+		},
 	})
 
 	return utils.Accepted(c, "Rollback created", created)
@@ -218,8 +230,14 @@ func (h *DeploymentHandler) DeployProject(c echo.Context) error {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 
-	h.auditService.LogAction(c.Request().Context(), "system", "deployment.trigger", id, c.RealIP(), map[string]string{
-		"projectId": id,
+	h.auditService.LogAction(c.Request().Context(), services.AuditActionOpts{
+		UserID:    "system",
+		Action:    "deployment.trigger",
+		Resource:  id,
+		IPAddress: c.RealIP(),
+		Details: map[string]string{
+			"projectId": id,
+		},
 	})
 
 	return utils.Success(c, "Project deployed successfully", map[string]string{

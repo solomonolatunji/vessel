@@ -249,6 +249,16 @@ type BackupRecord struct {
 	CompletedAt    string             `json:"completedAt" db:"completed_at"`
 }
 
+type UpdateBackupRecordOpts struct {
+	ID            string
+	Status        BackupRecordStatus
+	FilePath      string
+	S3URL         string
+	Logs          string
+	FileSizeBytes int64
+	CompletedAt   string
+}
+
 type S3Destination struct {
 	ID              string `json:"id" db:"id"`
 	ProjectID       string `json:"projectId" db:"project_id"`

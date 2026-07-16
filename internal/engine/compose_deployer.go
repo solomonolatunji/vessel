@@ -81,42 +81,56 @@ func (cd *ComposeDeployer) deployService(ctx context.Context, name string, svc m
 	}
 
 	envVars := buildEnvSlice(svc.Environment)
-	if err := cd.startContainer(ctx, svc, containerName, aliasName, name, envVars); err != nil {
+	if err := cd.startContainer(ctx, ComposeStartContainerOpts{
+		Service:       svc,
+		ContainerName: containerName,
+		AliasName:     aliasName,
+		Name:          name,
+		EnvVars:       envVars,
+	}); err != nil {
 		return nil, err
 	}
 
 	return app, nil
 }
 
-func (cd *ComposeDeployer) startContainer(ctx context.Context, svc models.UserComposeService, containerName, aliasName, name string, envVars []string) error {
+type ComposeStartContainerOpts struct {
+	Service       models.UserComposeService
+	ContainerName string
+	AliasName     string
+	Name          string
+	EnvVars       []string
+}
+
+func (cd *ComposeDeployer) startContainer(ctx context.Context, opts ComposeStartContainerOpts) error {
 	networkName := utils.GetRuntimeNetwork()
 	_ = utils.EnsureVesslNetwork(ctx, cd.dockerClient)
 
 	containerCfg := &container.Config{
-		Image: svc.Image,
-		Env:   envVars,
+		Image: opts.Service.Image,
+		Env:   opts.EnvVars,
 	}
 
 	hostCfg := &container.HostConfig{
 		RestartPolicy: container.RestartPolicy{Name: "unless-stopped"},
 	}
-	applyVolumes(svc.Volumes, hostCfg)
+	applyVolumes(ctx, opts, hostCfg)
 
 	netCfg := &network.NetworkingConfig{
 		EndpointsConfig: map[string]*network.EndpointSettings{
 			networkName: {
-				Aliases: []string{containerName, aliasName, name},
+				Aliases: []string{opts.ContainerName, opts.AliasName, opts.Name},
 			},
 		},
 	}
 
-	created, err := cd.dockerClient.ContainerCreate(ctx, containerCfg, hostCfg, netCfg, nil, containerName)
+	resp, err := cd.dockerClient.ContainerCreate(ctx, containerCfg, hostCfg, netCfg, nil, opts.ContainerName)
 	if err != nil {
-		return fmt.Errorf("failed to create container: %w", err)
+		return fmt.Errorf("failed to create compose service container: %w", err)
 	}
 
-	if err := cd.dockerClient.ContainerStart(ctx, created.ID, container.StartOptions{}); err != nil {
-		return fmt.Errorf("failed to start container: %w", err)
+	if err := cd.dockerClient.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
+		return fmt.Errorf("failed to start compose service container: %w", err)
 	}
 
 	return nil
@@ -144,21 +158,27 @@ func extractPort(ports []string) int {
 	return p
 }
 
-func applyVolumes(volumes []string, hostCfg *container.HostConfig) {
-	for _, vol := range volumes {
-		parts := strings.SplitN(vol, ":", 2)
-		if len(parts) != 2 {
-			continue
+func applyVolumes(ctx context.Context, opts ComposeStartContainerOpts, hostCfg *container.HostConfig) {
+	if len(opts.Service.Volumes) > 0 {
+		for _, vol := range opts.Service.Volumes {
+			parts := strings.Split(vol, ":")
+			if len(parts) == 2 {
+				source := parts[0]
+				dest := parts[1]
+
+				isNamed := !strings.HasPrefix(source, "/") && !strings.HasPrefix(source, "./")
+				if isNamed {
+					source = fmt.Sprintf("vessl_compose_%s_%s", opts.Name, source)
+				} else {
+					source, _ = filepath.Abs(source)
+				}
+				hostCfg.Mounts = append(hostCfg.Mounts, mount.Mount{
+					Type:   mount.TypeBind,
+					Source: source,
+					Target: dest,
+				})
+			}
 		}
-		absPath, err := filepath.Abs(parts[0])
-		if err != nil {
-			continue
-		}
-		hostCfg.Mounts = append(hostCfg.Mounts, mount.Mount{
-			Type:   mount.TypeBind,
-			Source: absPath,
-			Target: parts[1],
-		})
 	}
 }
 

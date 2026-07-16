@@ -126,17 +126,17 @@ func (a *engineAdapter) CreateBackupRecord(rec *models.BackupRecord) error {
 	return a.backupRepo.CreateRecord(context.Background(), rec)
 }
 
-func (a *engineAdapter) UpdateBackupRecord(id string, status models.BackupRecordStatus, filePath, s3URL, logs string, fileSizeBytes int64, completedAt string) error {
-	rec, err := a.backupRepo.GetRecordByID(context.Background(), id)
+func (a *engineAdapter) UpdateBackupRecord(opts models.UpdateBackupRecordOpts) error {
+	rec, err := a.backupRepo.GetRecordByID(context.Background(), opts.ID)
 	if err != nil {
 		return err
 	}
-	rec.Status = status
-	rec.FilePath = filePath
-	rec.S3URL = s3URL
-	rec.Logs = logs
-	rec.FileSizeBytes = fileSizeBytes
-	rec.CompletedAt = completedAt
+	rec.Status = opts.Status
+	rec.FilePath = opts.FilePath
+	rec.S3URL = opts.S3URL
+	rec.Logs = opts.Logs
+	rec.FileSizeBytes = opts.FileSizeBytes
+	rec.CompletedAt = opts.CompletedAt
 	return a.backupRepo.UpdateRecord(context.Background(), rec)
 }
 
