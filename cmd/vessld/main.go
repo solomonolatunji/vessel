@@ -114,8 +114,16 @@ func startServer() {
 		slog.Warn("failed to start TSDB", "err", err)
 	}
 
+	lokiMgr := engine.NewLokiManager(dockerClient)
+	if err := lokiMgr.EnsureLokiRunning(context.Background()); err != nil {
+		slog.Warn("failed to start Loki", "err", err)
+	}
+
 	metricsWorker := engine.NewMetricsWorker(dockerClient)
 	metricsWorker.Start()
+
+	logWorker := engine.NewLogWorker(dockerClient)
+	logWorker.Start(context.Background())
 
 	services.StartTelemetryReporter(db, vesslVersion)
 

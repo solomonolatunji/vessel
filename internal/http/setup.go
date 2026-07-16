@@ -134,6 +134,7 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	serverlessService := services.NewServerlessService(serverlessRepository)
 	dnsService := services.NewDNSService(dnsSQLiteRepository, dnsProviderService)
 	metricsService := services.NewMetricsService()
+	logService := services.NewLogService()
 
 	updaterService := services.NewUpdaterService(settingsSQLiteRepository)
 	updaterService.Start(context.Background())
@@ -183,6 +184,7 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	railwayHandler := handlers.NewRailwayHandler(railwayService)
 	dnsHandler := handlers.NewDNSHandler(dnsService)
 	metricsHandler := handlers.NewMetricsHandler(metricsService)
+	logHandler := handlers.NewLogHandler(logService)
 	authLimiter := middleware.NewRateLimiter(10, time.Minute)
 
 	srv := &Server{
@@ -231,6 +233,7 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 		railwayHandler:         railwayHandler,
 		dnsHandler:             dnsHandler,
 		metricsHandler:         metricsHandler,
+		logHandler:             logHandler,
 	}
 
 	if srv.deployer != nil {

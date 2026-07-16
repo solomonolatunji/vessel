@@ -62,6 +62,7 @@ type Server struct {
 	railwayHandler         *handlers.RailwayHandler
 	dnsHandler             *handlers.DNSHandler
 	metricsHandler         *handlers.MetricsHandler
+	logHandler             *handlers.LogHandler
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
