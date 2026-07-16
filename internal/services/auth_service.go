@@ -18,18 +18,26 @@ type Mailer interface {
 }
 
 type AuthService struct {
-	userRepo     repositories.UserRepository
-	settingsRepo repositories.SettingsRepository
-	tokenService *TokenService
-	mailer       Mailer
+	userRepo        repositories.UserRepository
+	settingsRepo    repositories.SettingsRepository
+	projectSettings repositories.ProjectSettingsRepository
+	tokenService    *TokenService
+	mailer          Mailer
 }
 
-func NewAuthService(ur repositories.UserRepository, sr repositories.SettingsRepository, ts *TokenService, m Mailer) *AuthService {
+func NewAuthService(
+	ur repositories.UserRepository,
+	sr repositories.SettingsRepository,
+	psr repositories.ProjectSettingsRepository,
+	ts *TokenService,
+	mailer Mailer,
+) *AuthService {
 	return &AuthService{
-		userRepo:     ur,
-		settingsRepo: sr,
-		tokenService: ts,
-		mailer:       m,
+		userRepo:        ur,
+		settingsRepo:    sr,
+		projectSettings: psr,
+		tokenService:    ts,
+		mailer:          mailer,
 	}
 }
 
@@ -172,5 +180,36 @@ func (a *AuthService) ResetPassword(ctx context.Context, tokenStr, newPassword s
 		return err
 	}
 
+	// Accept any pending project invites for this user since they successfully set their password
+	_ = a.projectSettings.AcceptAllInvitesForUser(ctx, u.ID)
+
 	return nil
+}
+
+func (a *AuthService) InviteUser(ctx context.Context, email string, originUrl string) (*models.User, error) {
+	if email == "" {
+		return nil, errors.New("email is required")
+	}
+	existing, _ := a.userRepo.GetUserByEmail(ctx, email)
+	if existing != nil {
+		return existing, nil
+	}
+	u := &models.User{
+		ID:           uuid.New().String(),
+		Email:        email,
+		Name:         strings.Split(email, "@")[0],
+		PasswordHash: "INVITED_NO_LOGIN_ALLOWED_MUST_RESET",
+		Role:         models.UserRoleMember,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
+	}
+	if err := a.userRepo.CreateUser(ctx, u); err != nil {
+		return nil, err
+	}
+
+	// Trigger forgot password flow so the invited user can set their password.
+	// We ignore errors here so the invite still succeeds even if email fails.
+	_ = a.ForgotPassword(ctx, u.Email, originUrl)
+
+	return u, nil
 }

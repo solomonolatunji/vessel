@@ -15,14 +15,16 @@ import (
 )
 
 type ProjectSettingsService struct {
-	repo     repositories.ProjectSettingsRepository
-	userRepo repositories.UserRepository
+	repo        repositories.ProjectSettingsRepository
+	userRepo    repositories.UserRepository
+	authService *AuthService
 }
 
-func NewProjectSettingsService(r repositories.ProjectSettingsRepository, ur repositories.UserRepository) *ProjectSettingsService {
+func NewProjectSettingsService(r repositories.ProjectSettingsRepository, ur repositories.UserRepository, authService *AuthService) *ProjectSettingsService {
 	return &ProjectSettingsService{
-		repo:     r,
-		userRepo: ur,
+		repo:        r,
+		userRepo:    ur,
+		authService: authService,
 	}
 }
 
@@ -100,17 +102,26 @@ func (s *ProjectSettingsService) DeleteToken(ctx context.Context, id, projectID 
 	return s.repo.DeleteToken(ctx, id, projectID)
 }
 
-func (s *ProjectSettingsService) AddMember(ctx context.Context, m *models.ProjectMember) (*models.ProjectMember, error) {
-	if m == nil || m.ProjectID == "" || m.UserID == "" {
-		return nil, errors.New("valid member with projectId and userId required")
+func (s *ProjectSettingsService) AddMemberByEmail(ctx context.Context, projectID, email string, permission models.MemberPermission, originUrl string) (*models.ProjectMember, error) {
+	if projectID == "" || email == "" {
+		return nil, errors.New("valid member with projectId and email required")
 	}
-	if m.ID == "" {
-		m.ID = uuid.New().String()
+
+	u, err := s.authService.InviteUser(ctx, email, originUrl)
+	if err != nil {
+		return nil, err
 	}
-	if m.Permission == "" {
-		m.Permission = "read"
+
+	m := &models.ProjectMember{
+		ID:         uuid.New().String(),
+		ProjectID:  projectID,
+		UserID:     u.ID,
+		Email:      email,
+		Permission: permission,
+		Status:     models.MemberStatusPending,
+		InvitedAt:  time.Now(),
 	}
-	m.InvitedAt = time.Now()
+
 	if err := s.repo.AddMember(ctx, m); err != nil {
 		return nil, err
 	}

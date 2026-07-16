@@ -28,6 +28,7 @@ type ProjectSettingsRepository interface {
 	AddMember(ctx context.Context, m *models.ProjectMember) error
 	ListMembers(ctx context.Context, projectID string) ([]*models.ProjectMember, error)
 	RemoveMember(ctx context.Context, id, projectID string) error
+	AcceptAllInvitesForUser(ctx context.Context, userID string) error
 }
 
 type ProjectSettingsSQLiteRepository struct {
@@ -264,4 +265,12 @@ func (r *ProjectSettingsSQLiteRepository) ListMembers(ctx context.Context, proje
 
 func (r *ProjectSettingsSQLiteRepository) RemoveMember(ctx context.Context, id, projectID string) error {
 	return r.deleteByIDAndProject(ctx, "project_members", id, projectID, "member")
+}
+
+func (r *ProjectSettingsSQLiteRepository) AcceptAllInvitesForUser(ctx context.Context, userID string) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	now := time.Now().Format(time.RFC3339)
+	_, err := r.db.ExecContext(ctx, "UPDATE project_members SET status = 'accepted', accepted_at = ? WHERE user_id = ? AND status = 'pending'", now, userID)
+	return err
 }

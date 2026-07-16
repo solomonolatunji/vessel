@@ -17,101 +17,112 @@ func (s *DatabaseService) GetSchemas(ctx context.Context, id string) ([]models.T
 		return nil, errors.New("database not found")
 	}
 
-	host := "localhost"
-	var schemas []models.TableSchema
-
 	switch db.Engine {
 	case "postgresql", "postgres":
-		dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-			host, db.Port, db.Username, db.Password, db.DatabaseName)
-		conn, err := sql.Open("pgx", dsn)
-		if err != nil {
-			return nil, err
-		}
-		defer conn.Close()
-
-		rows, err := conn.Query("SELECT table_name FROM information_schema.tables WHERE table_schema='public'")
-		if err != nil {
-			return nil, err
-		}
-		defer rows.Close()
-
-		var tableNames []string
-		for rows.Next() {
-			var t string
-			if err := rows.Scan(&t); err == nil {
-				tableNames = append(tableNames, t)
-			}
-		}
-
-		for _, t := range tableNames {
-			colRows, err := conn.Query("SELECT column_name, data_type, is_nullable FROM information_schema.columns WHERE table_schema='public' AND table_name=$1", t)
-			if err != nil {
-				continue
-			}
-			var columns []models.ColumnSchema
-			for colRows.Next() {
-				var cName, cType, cNullable string
-				if err := colRows.Scan(&cName, &cType, &cNullable); err == nil {
-					columns = append(columns, models.ColumnSchema{
-						Name:       cName,
-						Type:       cType,
-						IsNullable: cNullable == "YES",
-						IsPrimary:  false, // Keeping it simple for v1
-					})
-				}
-			}
-			colRows.Close()
-			schemas = append(schemas, models.TableSchema{Name: t, Columns: columns})
-		}
-
+		return getPostgresSchemas(db)
 	case "mysql", "mariadb":
-		dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", db.Username, db.Password, host, db.Port, db.DatabaseName)
-		conn, err := sql.Open("mysql", dsn)
-		if err != nil {
-			return nil, err
-		}
-		defer conn.Close()
-
-		rows, err := conn.Query("SHOW TABLES")
-		if err != nil {
-			return nil, err
-		}
-		defer rows.Close()
-
-		var tableNames []string
-		for rows.Next() {
-			var t string
-			if err := rows.Scan(&t); err == nil {
-				tableNames = append(tableNames, t)
-			}
-		}
-
-		for _, t := range tableNames {
-			colRows, err := conn.Query(fmt.Sprintf("SHOW COLUMNS FROM `%s`", t))
-			if err != nil {
-				continue
-			}
-			var columns []models.ColumnSchema
-			for colRows.Next() {
-				var cField, cType, cNull, cKey string
-				var cDefault, cExtra sql.NullString
-				if err := colRows.Scan(&cField, &cType, &cNull, &cKey, &cDefault, &cExtra); err == nil {
-					columns = append(columns, models.ColumnSchema{
-						Name:       cField,
-						Type:       cType,
-						IsNullable: cNull == "YES",
-						IsPrimary:  cKey == "PRI",
-					})
-				}
-			}
-			colRows.Close()
-			schemas = append(schemas, models.TableSchema{Name: t, Columns: columns})
-		}
+		return getMySQLSchemas(db)
 	default:
 		return nil, fmt.Errorf("schema introspection not supported for engine: %s", db.Engine)
 	}
+}
 
+func getPostgresSchemas(db *models.Database) ([]models.TableSchema, error) {
+	host := "localhost"
+	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		host, db.Port, db.Username, db.Password, db.DatabaseName)
+	conn, err := sql.Open("pgx", dsn)
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+
+	rows, err := conn.Query("SELECT table_name FROM information_schema.tables WHERE table_schema='public'")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tableNames []string
+	for rows.Next() {
+		var t string
+		if err := rows.Scan(&t); err == nil {
+			tableNames = append(tableNames, t)
+		}
+	}
+
+	var schemas []models.TableSchema
+	for _, t := range tableNames {
+		colRows, err := conn.Query("SELECT column_name, data_type, is_nullable FROM information_schema.columns WHERE table_schema='public' AND table_name=$1", t)
+		if err != nil {
+			continue
+		}
+		var columns []models.ColumnSchema
+		for colRows.Next() {
+			var cName, cType, cNullable string
+			if err := colRows.Scan(&cName, &cType, &cNullable); err == nil {
+				columns = append(columns, models.ColumnSchema{
+					Name:       cName,
+					Type:       cType,
+					IsNullable: cNullable == "YES",
+					IsPrimary:  false, // Keeping it simple for v1
+				})
+			}
+		}
+		colRows.Close()
+		schemas = append(schemas, models.TableSchema{Name: t, Columns: columns})
+	}
+	if schemas == nil {
+		schemas = []models.TableSchema{}
+	}
+	return schemas, nil
+}
+
+func getMySQLSchemas(db *models.Database) ([]models.TableSchema, error) {
+	host := "localhost"
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", db.Username, db.Password, host, db.Port, db.DatabaseName)
+	conn, err := sql.Open("mysql", dsn)
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+
+	rows, err := conn.Query("SHOW TABLES")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tableNames []string
+	for rows.Next() {
+		var t string
+		if err := rows.Scan(&t); err == nil {
+			tableNames = append(tableNames, t)
+		}
+	}
+
+	var schemas []models.TableSchema
+	for _, t := range tableNames {
+		colRows, err := conn.Query(fmt.Sprintf("SHOW COLUMNS FROM `%s`", t))
+		if err != nil {
+			continue
+		}
+		var columns []models.ColumnSchema
+		for colRows.Next() {
+			var cField, cType, cNull, cKey string
+			var cDefault, cExtra sql.NullString
+			if err := colRows.Scan(&cField, &cType, &cNull, &cKey, &cDefault, &cExtra); err == nil {
+				columns = append(columns, models.ColumnSchema{
+					Name:       cField,
+					Type:       cType,
+					IsNullable: cNull == "YES",
+					IsPrimary:  cKey == "PRI",
+				})
+			}
+		}
+		colRows.Close()
+		schemas = append(schemas, models.TableSchema{Name: t, Columns: columns})
+	}
 	if schemas == nil {
 		schemas = []models.TableSchema{}
 	}

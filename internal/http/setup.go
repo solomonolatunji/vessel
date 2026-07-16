@@ -109,12 +109,13 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 		return nil, fmt.Errorf("token service: %w", err)
 	}
 	settingsService := services.NewSettingsService(settingsSQLiteRepository)
-	projectSettingsService := services.NewProjectSettingsService(projectSettingsSQLiteRepository, userSQLiteRepository)
 	serviceLinker := services.NewServiceLinker(databaseSQLiteRepository, storageSQLiteRepository)
 	mailerService, err := notifications.NewMailerService(settingsService)
 	if err != nil {
 		return nil, fmt.Errorf("mailer service: %w", err)
 	}
+	authService := services.NewAuthService(userSQLiteRepository, settingsSQLiteRepository, projectSettingsSQLiteRepository, tokenService, mailerService)
+	projectSettingsService := services.NewProjectSettingsService(projectSettingsSQLiteRepository, userSQLiteRepository, authService)
 	dispatcherService := core.NewDispatcherService(settingsSQLiteRepository, userSQLiteRepository, mailerService)
 	storageService := services.NewStorageService(storageSQLiteRepository, storageDeployer)
 	jobService := services.NewJobService(jobSQLiteRepository, cronManager)
@@ -124,7 +125,6 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	deploymentService := services.NewDeploymentService(deploymentSQLiteRepository, appServiceSQLiteRepository, projectSQLiteRepository, deployer, gitService, statsMonitor)
 	backupService := services.NewBackupService(backupSQLiteRepository, s3DestinationSQLiteRepository, backupManager)
 	userService := services.NewUserService(userSQLiteRepository)
-	authService := services.NewAuthService(userSQLiteRepository, settingsSQLiteRepository, tokenService, mailerService)
 	oAuthService := services.NewOAuthService(oAuthSQLiteRepository, userSQLiteRepository, tokenService)
 	prPreviewService := services.NewPRPreviewService(prPreviewRepository, appService, gitService, deployer)
 	dnsProviderService := services.NewDNSProviderService(settingsSQLiteRepository)

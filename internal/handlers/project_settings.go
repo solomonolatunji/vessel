@@ -187,19 +187,28 @@ func (h *ProjectSettingsHandler) ListMembers(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param projectId path string true "projectId"
-// @Param request body models.ProjectMember true "Payload"
+// @Param request body models.AddMemberRequest true "Payload"
 // @Router /projects/{projectId}/members [post]
 func (h *ProjectSettingsHandler) AddMember(c echo.Context) error {
 	projectID := c.Param("projectId")
 	if projectID == "" {
 		return utils.Error(c, http.StatusBadRequest, "missing projectId")
 	}
-	var req models.ProjectMember
+	var req models.AddMemberRequest
 	if err := c.Bind(&req); err != nil {
 		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
-	req.ProjectID = projectID
-	added, err := h.settingsService.AddMember(c.Request().Context(), &req)
+	if req.Permission == "" {
+		req.Permission = models.MemberPermissionViewer
+	}
+
+	scheme := "http"
+	if c.Request().TLS != nil || c.Request().Header.Get("X-Forwarded-Proto") == "https" {
+		scheme = "https"
+	}
+	originUrl := scheme + "://" + c.Request().Host
+
+	added, err := h.settingsService.AddMemberByEmail(c.Request().Context(), projectID, req.Email, req.Permission, originUrl)
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
