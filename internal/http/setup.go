@@ -36,6 +36,9 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 		},
 	}))
 	e.Use(echomiddleware.Recover())
+	e.Use(echomiddleware.GzipWithConfig(echomiddleware.GzipConfig{
+		Level: 5,
+	}))
 
 	allowOrigins := []string{"http://localhost:3000", "http://localhost:8080"}
 	if dashboardURL := os.Getenv("VESSL_DASHBOARD_URL"); dashboardURL != "" {

@@ -5,6 +5,7 @@
 
 import { env } from '#/env';
 import { authActions, authStore } from '#/stores/authStore';
+import { toast } from 'sonner';
 
 const API_BASE_URL = env.VITE_API_URL;
 
@@ -68,7 +69,7 @@ export const apiClient = {
     if (!response.ok) {
       const errorMessage =
         data?.message || data?.error || response.statusText || 'An error occurred';
-      import('sonner').then(({ toast }) => toast.error(errorMessage));
+      toast.error(errorMessage);
       throw new ApiError(response.status, errorMessage, data);
     }
 
@@ -108,7 +109,7 @@ export const apiClient = {
       const data = isJson ? await response.json() : await response.text();
       const errorMessage =
         data?.message || data?.error || response.statusText || 'An error occurred';
-      import('sonner').then(({ toast }) => toast.error(errorMessage));
+      toast.error(errorMessage);
       throw new ApiError(response.status, errorMessage, data);
     }
     return response.blob();

@@ -1,36 +1,62 @@
 package dashboard
 
 import (
+	"mime"
 	"net/http"
 	"path/filepath"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
 
+const (
+	errDashboardNotBuilt = "Dashboard not built. Please run 'npm run build' in the dashboard."
+	headerCacheControl   = "Cache-Control"
+	cacheNoStore         = "no-cache, no-store, must-revalidate"
+	cacheImmutable       = "public, max-age=31536000, immutable"
+	cacheStandard        = "public, max-age=3600"
+)
+
+func init() {
+	mime.AddExtensionType(".js", "application/javascript")
+	mime.AddExtensionType(".css", "text/css")
+	mime.AddExtensionType(".svg", "image/svg+xml")
+}
+
 func RegisterHandlers(e *echo.Echo) {
-	e.GET("/*", func(c echo.Context) error {
-		reqPath := filepath.Clean(c.Request().URL.Path)
-		if reqPath == "/" || reqPath == "." {
-			reqPath = "index.html"
-		}
+	e.GET("/*", handleStaticFS)
+}
 
-		content, err := DistFS.ReadFile("dist/" + reqPath)
+func handleStaticFS(c echo.Context) error {
+	reqPath := filepath.Clean(c.Request().URL.Path)
+	reqPath = strings.TrimPrefix(reqPath, "/")
+	if reqPath == "" || reqPath == "." {
+		reqPath = "index.html"
+	}
+
+	content, err := DistFS.ReadFile("dist/" + reqPath)
+	if err != nil {
+		indexContent, err := DistFS.ReadFile("dist/index.html")
+
 		if err != nil {
-			indexContent, err := DistFS.ReadFile("dist/index.html")
-			if err != nil {
-				return c.String(http.StatusNotFound, "Dashboard not built. Please run 'npm run build' in the dashboard directory.")
-			}
-			return c.HTMLBlob(http.StatusOK, indexContent)
+			return c.String(http.StatusNotFound, errDashboardNotBuilt)
 		}
 
-		contentType := http.DetectContentType(content)
-		if filepath.Ext(reqPath) == ".css" {
-			contentType = "text/css"
-		} else if filepath.Ext(reqPath) == ".js" {
-			contentType = "application/javascript"
-		} else if filepath.Ext(reqPath) == ".svg" {
-			contentType = "image/svg+xml"
-		}
-		return c.Blob(http.StatusOK, contentType, content)
-	})
+		c.Response().Header().Set(headerCacheControl, cacheNoStore)
+		return c.HTMLBlob(http.StatusOK, indexContent)
+	}
+
+	contentType := mime.TypeByExtension(filepath.Ext(reqPath))
+
+	if contentType == "" {
+		contentType = http.DetectContentType(content)
+	}
+
+	if strings.HasPrefix(reqPath, "assets/") {
+		c.Response().Header().Set(headerCacheControl, cacheImmutable)
+	} else {
+		c.Response().Header().Set(headerCacheControl, cacheStandard)
+	}
+
+	return c.Blob(http.StatusOK, contentType, content)
 }
