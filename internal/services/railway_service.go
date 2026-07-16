@@ -30,7 +30,7 @@ func NewRailwayService(ps *ProjectService, es *EnvironmentService, as *AppServic
 	}
 }
 
-func (s *RailwayService) doGraphQL(ctx context.Context, token, query string, variables map[string]interface{}) ([]byte, error) {
+func (s *RailwayService) doGraphQL(ctx context.Context, token, query string, variables map[string]any) ([]byte, error) {
 	payload := map[string]interface{}{
 		"query":     query,
 		"variables": variables,
@@ -124,8 +124,16 @@ func (s *RailwayService) GetProjectDetails(ctx context.Context, token, projectID
 	return &res.Data.Project, nil
 }
 
-func (s *RailwayService) ImportProject(ctx context.Context, token, projectID string, excludeRailwayVars, recreateDatabases, importData bool) error {
-	details, err := s.GetProjectDetails(ctx, token, projectID)
+type RailwayImportOptions struct {
+	Token              string
+	ProjectID          string
+	ExcludeRailwayVars bool
+	RecreateDatabases  bool
+	ImportData         bool
+}
+
+func (s *RailwayService) ImportProject(ctx context.Context, opts RailwayImportOptions) error {
+	details, err := s.GetProjectDetails(ctx, opts.Token, opts.ProjectID)
 	if err != nil {
 		return err
 	}

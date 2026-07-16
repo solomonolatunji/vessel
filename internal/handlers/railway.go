@@ -56,8 +56,15 @@ func (h *RailwayHandler) ImportProject(c echo.Context) error {
 	if req.Token == "" || req.ProjectID == "" {
 		return utils.Error(c, http.StatusBadRequest, "token and projectId are required")
 	}
+	opts := services.RailwayImportOptions{
+		Token:              req.Token,
+		ProjectID:          req.ProjectID,
+		ExcludeRailwayVars: req.ExcludeRailwayVars,
+		RecreateDatabases:  req.RecreateDatabases,
+		ImportData:         req.ImportData,
+	}
 
-	err := h.service.ImportProject(c.Request().Context(), req.Token, req.ProjectID, req.ExcludeRailwayVars, req.RecreateDatabases, req.ImportData)
+	err := h.service.ImportProject(c.Request().Context(), opts)
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
