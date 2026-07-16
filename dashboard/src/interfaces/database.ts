@@ -16,8 +16,6 @@ export type DatabaseEngine =
   | 'keydb'
   | 'timescaledb';
 export type DatabaseStatus = 'created' | 'running' | 'stopped' | 'error';
-export type StorageType = 'minio' | 's3';
-export type StorageStatus = 'running' | 'stopped' | 'error';
 
 export interface Database {
   id: string;
@@ -62,45 +60,6 @@ export interface UpdateDatabaseRequest {
   logicalReplication: boolean;
 }
 
-export interface DatabaseStorage {
-  id: string;
-  projectId: string;
-  environmentId: string;
-  name: string;
-  type: StorageType;
-  apiPort: number;
-  consolePort: number;
-  accessKey: string;
-  secretKey?: string;
-  bucketName: string;
-  volumePath: string;
-  containerId: string;
-  status: StorageStatus;
-  internalDns: string;
-  externalDns: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export type Storage = DatabaseStorage;
-
-export interface CreateDatabaseStorageRequest {
-  projectId: string;
-  environmentId: string;
-  name: string;
-  type: StorageType;
-  apiPort: number;
-  consolePort: number;
-  accessKey: string;
-  secretKey?: string;
-  bucketName: string;
-  volumePath: string;
-}
-
-export interface UpdateDatabaseStorageRequest {
-  externalDns?: string;
-}
-
 export interface OneClickApp {
   id: string;
   name: string;
@@ -143,5 +102,3 @@ export type DatabaseQueryResponseType = BaseResponse<DatabaseQueryResponse>;
 export type ListTablesResponse = BaseResponse<TableSchema[]>;
 export type ImportDatabaseResponse = BaseResponse<void>;
 export type DeleteDatabaseResponse = BaseResponse<void>;
-export type GetStoragesResponse = BaseResponse<DatabaseStorage[]>;
-export type GetDatabaseStorageResponse = BaseResponse<DatabaseStorage>;

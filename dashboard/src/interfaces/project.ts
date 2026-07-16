@@ -1,6 +1,7 @@
 import type { BaseResponse, PaginatedData } from './base';
-import type { Database, Storage } from './database';
+import type { Database } from './database';
 import type { AppService } from './deployment';
+import type { Storage } from './storage';
 
 export type MemberPermission = 'admin' | 'member' | 'viewer';
 export type MemberStatus = 'pending' | 'accepted';
