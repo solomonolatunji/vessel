@@ -22,6 +22,7 @@ type UserRepository interface {
 	ListUsers(ctx context.Context, limit, offset int) ([]models.User, int, error)
 	CountUsers(ctx context.Context) (int, error)
 	UpdateUser(ctx context.Context, u *models.User) error
+	DeleteUser(ctx context.Context, id string) error
 	CreatePAT(ctx context.Context, pat *models.PersonalAccessToken) error
 	ListPATs(ctx context.Context, userID string) ([]*models.PersonalAccessToken, error)
 	DeletePAT(ctx context.Context, id, userID string) error
@@ -160,6 +161,20 @@ func (r *UserRepo) DeletePAT(ctx context.Context, id, userID string) error {
 	affected, _ := res.RowsAffected()
 	if affected == 0 {
 		return utils.NewNotFoundError("PersonalAccessToken", id)
+	}
+	return nil
+}
+
+func (r *UserRepo) DeleteUser(ctx context.Context, id string) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	res, err := r.db.ExecContext(ctx, `DELETE FROM users WHERE id = ?`, id)
+	if err != nil {
+		return fmt.Errorf("delete user: %w", err)
+	}
+	affected, _ := res.RowsAffected()
+	if affected == 0 {
+		return utils.NewNotFoundError("User", id)
 	}
 	return nil
 }

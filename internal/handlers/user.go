@@ -60,6 +60,17 @@ func (h *UserHandler) ListUsers(c echo.Context) error {
 	return utils.Paginated(c, "Users retrieved", out, total, page, limit)
 }
 
+func (h *UserHandler) DeleteUser(c echo.Context) error {
+	id := c.Param("id")
+	if id == "" {
+		return utils.Error(c, http.StatusBadRequest, "user id required")
+	}
+	if err := h.userService.DeleteUser(c.Request().Context(), id); err != nil {
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
+	}
+	return utils.Success(c, "User deleted", nil)
+}
+
 type ChangePasswordRequest struct {
 	OldPassword string `json:"oldPassword" validate:"required"`
 	NewPassword string `json:"newPassword" validate:"required"`

@@ -55,6 +55,7 @@ export interface ServerSettings {
   ipAllowlist: string;
   mcpServerEnabled: boolean;
   defaultWildcardDomain?: string;
+  dashboardDomain?: string;
   siteName?: string;
   publicIpv4?: string;
   publicIpv6?: string;

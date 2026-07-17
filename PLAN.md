@@ -445,13 +445,13 @@ We will build the dashboard in distinct phases to ensure stability, proper data-
 **Phase 4: Integrations & AI**
 
 - [ ] Map out the `GitHub` integration screens (`/settings/github`), handling OAuth flows and repository syncing (`/git/repos`).
-- [ ] Develop the `Domains` & `DNS` system (`/domains`, `/settings/dns`), syncing custom domains automatically.
+- [x] Develop the `Domains` & `DNS` system (`/domains`, `/settings/dns`), syncing custom domains automatically.
 - [ ] Build the `AI Assistant` interface (`/ai`) connected to Vessl's backend knowledge base for auto-generating Compose files and config.
 
 **Phase 5: Super Admin & Maintenance**
 
-- [ ] Create `Users` management (`/settings/users`) and API Tokens (`/settings/api`).
-- [ ] Build the `Maintenance` and `Updates` dashboards (`docker system prune`, `vessld` auto-updates).
+- [x] Create `Users` management (`/settings/users`) and API Tokens (`/settings/api`).
+- [x] Build the `Maintenance` and `Updates` dashboards (`docker system prune`, `vessld` auto-updates).
 - [x] Finalize the `Migration` bundle logic (`.vessl` export/import functionality).
 
 **Phase 6: Polish & Verification**
@@ -459,3 +459,4 @@ We will build the dashboard in distinct phases to ensure stability, proper data-
 - [ ] Strict Biome formatting (`npm run format:fix`) and type-checking across all components.
 - [ ] Audit all inputs and buttons to ensure minimalist "plain" design (no weird autofill backgrounds, sharp padding/margins).
 - [ ] Ensure all components are under 350 lines and correctly modularized in `src/features/`.
+      export TEST_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNvbG9tb25AdmVzc2wuZGV2IiwiZXhwIjoxNzg0NTQ2OTgyLCJpYXQiOjE3ODQyODc3ODIsImlzcyI6InZlc3NsLWF1dGgiLCJyb2xlIjoiYWRtaW4iLCJzdWIiOiIxZWExYmVmOC03MWFkLTRmZjQtYmY2MS0wOWUyMDk5YmNmY2UiLCJ0b3RwRW5hYmxlZCI6ZmFsc2V9.R3tTK7SpCmCgpHSmTNkmusBXiYA7f3q5LyO2nNTHtu8"

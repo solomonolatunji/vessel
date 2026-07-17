@@ -138,3 +138,32 @@ func (h *AuthHandler) Logout(c echo.Context) error {
 	ClearAuthCookie(c)
 	return utils.Success(c, "Logged out successfully", nil)
 }
+
+type AdminInviteUserRequest struct {
+	Email string `json:"email"`
+}
+
+func (h *AuthHandler) AdminInviteUser(c echo.Context) error {
+	var req AdminInviteUserRequest
+	if err := c.Bind(&req); err != nil {
+		return utils.Error(c, http.StatusBadRequest, "invalid request")
+	}
+	if req.Email == "" {
+		return utils.Error(c, http.StatusBadRequest, "email is required")
+	}
+
+	origin := c.Request().Header.Get("Origin")
+	if origin == "" {
+		origin = c.Request().Header.Get("Referer")
+	}
+	if origin == "" {
+		origin = "http://localhost:3000" // Fallback
+	}
+
+	u, err := h.authService.InviteUser(c.Request().Context(), req.Email, origin)
+	if err != nil {
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
+	}
+	u.PasswordHash = ""
+	return utils.Created(c, "User invited", u)
+}

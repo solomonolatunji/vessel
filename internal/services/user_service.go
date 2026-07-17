@@ -62,6 +62,10 @@ func (s *UserService) ListUsers(ctx context.Context, limit, offset int) ([]model
 	return s.userRepo.ListUsers(ctx, limit, offset)
 }
 
+func (s *UserService) DeleteUser(ctx context.Context, id string) error {
+	return s.userRepo.DeleteUser(ctx, id)
+}
+
 func (s *UserService) ChangePassword(ctx context.Context, userID, oldPassword, newPassword string) error {
 	u, err := s.userRepo.GetUserByID(ctx, userID)
 	if err != nil {
