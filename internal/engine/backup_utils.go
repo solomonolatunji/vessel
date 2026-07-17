@@ -1,37 +1,20 @@
 package engine
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"vessl.dev/vessl/internal/models"
 )
 
 func (bm *BackupManager) uploadToS3(ctx context.Context, dest *models.S3Destination, fileName string, data []byte) (string, error) {
-	url := fmt.Sprintf("https://%s/%s/%s", dest.Endpoint, dest.Bucket, fileName)
-	if strings.HasPrefix(dest.Endpoint, "http://") || strings.HasPrefix(dest.Endpoint, "https://") {
-		url = fmt.Sprintf("%s/%s/%s", strings.TrimRight(dest.Endpoint, "/"), dest.Bucket, fileName)
-	} else if strings.HasPrefix(dest.Endpoint, "localhost") || strings.HasPrefix(dest.Endpoint, "127.0.0.1") {
-		url = fmt.Sprintf("http://%s/%s/%s", dest.Endpoint, dest.Bucket, fileName)
-	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, url, bytes.NewReader(data))
+	resp, err := signedS3Request(ctx, dest, "PUT", fileName, data, "application/octet-stream")
 	if err != nil {
 		return "", err
 	}
-	req.ContentLength = int64(len(data))
-	req.Header.Set("Content-Type", "application/octet-stream")
-	req.Header.Set("X-Vessl-S3-Access-Key", dest.AccessKeyID)
-	client := &http.Client{Timeout: 5 * time.Second}
-	resp, err := client.Do(req)
-	if err != nil {
-		return fmt.Sprintf("s3://%s/%s", dest.Bucket, fileName), nil
-	}
-	defer resp.Body.Close()
+	resp.Body.Close()
 	return fmt.Sprintf("s3://%s/%s", dest.Bucket, fileName), nil
 }
 

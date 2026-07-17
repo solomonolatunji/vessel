@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -82,6 +83,11 @@ func (s *BackupService) CreateS3Destination(ctx context.Context, dest *models.S3
 		dest.ID = uuid.New().String()
 	}
 	dest.CreatedAt = time.Now().UTC().Format(time.RFC3339)
+
+	if err := engine.EnsureS3Bucket(ctx, dest); err != nil {
+		return fmt.Errorf("failed to verify or create bucket: %w", err)
+	}
+
 	return s.s3Repo.CreateS3Destination(ctx, dest)
 }
 

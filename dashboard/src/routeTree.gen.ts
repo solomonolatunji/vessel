@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as SplatRouteImport } from './routes/$'
@@ -23,7 +24,6 @@ import { Route as DashboardDatabasesRouteImport } from './routes/_dashboard.data
 import { Route as DashboardAuditLogsRouteImport } from './routes/_dashboard.audit-logs'
 import { Route as AuthSignupRouteImport } from './routes/_auth.signup'
 import { Route as AuthSigninRouteImport } from './routes/_auth.signin'
-import { Route as AuthSetupRouteImport } from './routes/_auth.setup'
 import { Route as AuthResetPasswordRouteImport } from './routes/_auth.reset-password'
 import { Route as AuthForgotPasswordRouteImport } from './routes/_auth.forgot-password'
 import { Route as DashboardSettingsIndexRouteImport } from './routes/_dashboard.settings/index'
@@ -54,6 +54,11 @@ import { Route as DashboardDatabasesDbIdQueryRouteImport } from './routes/_dashb
 import { Route as DashboardDatabasesDbIdDataRouteImport } from './routes/_dashboard.databases/$dbId.data'
 import { Route as DashboardDatabasesDbIdBackupsRouteImport } from './routes/_dashboard.databases/$dbId.backups'
 
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/_dashboard',
   getParentRoute: () => rootRouteImport,
@@ -120,11 +125,6 @@ const AuthSignupRoute = AuthSignupRouteImport.update({
 const AuthSigninRoute = AuthSigninRouteImport.update({
   id: '/signin',
   path: '/signin',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthSetupRoute = AuthSetupRouteImport.update({
-  id: '/setup',
-  path: '/setup',
   getParentRoute: () => AuthRoute,
 } as any)
 const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
@@ -296,9 +296,9 @@ const DashboardDatabasesDbIdBackupsRoute =
 export interface FileRoutesByFullPath {
   '/$': typeof SplatRoute
   '/': typeof DashboardIndexRoute
+  '/onboarding': typeof OnboardingRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/reset-password': typeof AuthResetPasswordRoute
-  '/setup': typeof AuthSetupRoute
   '/signin': typeof AuthSigninRoute
   '/signup': typeof AuthSignupRoute
   '/audit-logs': typeof DashboardAuditLogsRoute
@@ -340,9 +340,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/$': typeof SplatRoute
   '/': typeof DashboardIndexRoute
+  '/onboarding': typeof OnboardingRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/reset-password': typeof AuthResetPasswordRoute
-  '/setup': typeof AuthSetupRoute
   '/signin': typeof AuthSigninRoute
   '/signup': typeof AuthSignupRoute
   '/audit-logs': typeof DashboardAuditLogsRoute
@@ -386,9 +386,9 @@ export interface FileRoutesById {
   '/$': typeof SplatRoute
   '/_auth': typeof AuthRouteWithChildren
   '/_dashboard': typeof DashboardRouteWithChildren
+  '/onboarding': typeof OnboardingRoute
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute
   '/_auth/reset-password': typeof AuthResetPasswordRoute
-  '/_auth/setup': typeof AuthSetupRoute
   '/_auth/signin': typeof AuthSigninRoute
   '/_auth/signup': typeof AuthSignupRoute
   '/_dashboard/audit-logs': typeof DashboardAuditLogsRoute
@@ -433,9 +433,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/$'
     | '/'
+    | '/onboarding'
     | '/forgot-password'
     | '/reset-password'
-    | '/setup'
     | '/signin'
     | '/signup'
     | '/audit-logs'
@@ -477,9 +477,9 @@ export interface FileRouteTypes {
   to:
     | '/$'
     | '/'
+    | '/onboarding'
     | '/forgot-password'
     | '/reset-password'
-    | '/setup'
     | '/signin'
     | '/signup'
     | '/audit-logs'
@@ -522,9 +522,9 @@ export interface FileRouteTypes {
     | '/$'
     | '/_auth'
     | '/_dashboard'
+    | '/onboarding'
     | '/_auth/forgot-password'
     | '/_auth/reset-password'
-    | '/_auth/setup'
     | '/_auth/signin'
     | '/_auth/signup'
     | '/_dashboard/audit-logs'
@@ -569,10 +569,18 @@ export interface RootRouteChildren {
   SplatRoute: typeof SplatRoute
   AuthRoute: typeof AuthRouteWithChildren
   DashboardRoute: typeof DashboardRouteWithChildren
+  OnboardingRoute: typeof OnboardingRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_dashboard': {
       id: '/_dashboard'
       path: ''
@@ -669,13 +677,6 @@ declare module '@tanstack/react-router' {
       path: '/signin'
       fullPath: '/signin'
       preLoaderRoute: typeof AuthSigninRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/_auth/setup': {
-      id: '/_auth/setup'
-      path: '/setup'
-      fullPath: '/setup'
-      preLoaderRoute: typeof AuthSetupRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_auth/reset-password': {
@@ -887,7 +888,6 @@ declare module '@tanstack/react-router' {
 interface AuthRouteChildren {
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
-  AuthSetupRoute: typeof AuthSetupRoute
   AuthSigninRoute: typeof AuthSigninRoute
   AuthSignupRoute: typeof AuthSignupRoute
 }
@@ -895,7 +895,6 @@ interface AuthRouteChildren {
 const AuthRouteChildren: AuthRouteChildren = {
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthResetPasswordRoute: AuthResetPasswordRoute,
-  AuthSetupRoute: AuthSetupRoute,
   AuthSigninRoute: AuthSigninRoute,
   AuthSignupRoute: AuthSignupRoute,
 }
@@ -1013,6 +1012,7 @@ const rootRouteChildren: RootRouteChildren = {
   SplatRoute: SplatRoute,
   AuthRoute: AuthRouteWithChildren,
   DashboardRoute: DashboardRouteWithChildren,
+  OnboardingRoute: OnboardingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -96,42 +96,10 @@ if [ ! -f "$VESSL_DIR/.env" ]; then
 
   JWT_SECRET=$(head -c 32 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9' | head -c 32)
 
-  # Prompt for Let's Encrypt email
   TLS_EMAIL=""
-  echo ""
-  echo -e "📧 ${BOLD}Optional:${NC} Enter your email for automatic Let's Encrypt SSL."
-  echo "   (Press Enter to skip)"
-  read -r -p "   Email: " TLS_EMAIL_INPUT </dev/tty
-  if [ -n "$TLS_EMAIL_INPUT" ]; then
-    TLS_EMAIL="$TLS_EMAIL_INPUT"
-  fi
 
-  # Prompt for wildcard domain (app subdomains)
   WILDCARD_DOMAIN=""
-  echo ""
-  echo -e "${BOLD}🌐 Domain setup (optional)${NC}"
-  echo ""
-  echo "   Enter your domain so apps get subdomains like myapp.yourdomain.com."
-  echo "   Press Enter to skip — apps get myapp.${SERVER_IP}.sslip.io (no DNS)."
-  echo ""
-  read -r -p "   Domain for apps (e.g. example.com): " DOMAIN_INPUT </dev/tty
-  if [ -n "$DOMAIN_INPUT" ]; then
-    WILDCARD_DOMAIN="$DOMAIN_INPUT"
-    echo ""
-    echo -e "  ${YELLOW}⚠️  DNS: *.${WILDCARD_DOMAIN}  A  ${SERVER_IP}${NC}"
-  fi
-
-  # Prompt for dashboard URL
   DASHBOARD_URL=""
-  echo ""
-  echo -e "   Enter the full URL where the dashboard is accessed (for notifications/redirects)."
-  echo "   If using a domain, include the protocol: https://dashboard.yourdomain.com"
-  echo "   Press Enter to use http://${SERVER_IP}:8080."
-  echo ""
-  read -r -p "   Dashboard URL (e.g. https://dashboard.example.com): " URL_INPUT </dev/tty
-  if [ -n "$URL_INPUT" ]; then
-    DASHBOARD_URL="$URL_INPUT"
-  fi
 
   cat > "$VESSL_DIR/.env" <<ENV
 # Vessl Environment Configuration
@@ -246,24 +214,10 @@ TOTAL_RAM_MB=$(free -m | awk '/^Mem:/{print $2}')
 echo -e "  ${DIM}📊 System:     ${TOTAL_RAM_MB}MB RAM, $(nproc) CPU cores${NC}"
 echo ""
 echo -e "  ${BOLD}Next steps:${NC}"
-echo -e "  1. Open the dashboard and create your admin account."
-echo -e "  2. Or run: ${BOLD}vessld setup${NC} to create an admin from the terminal."
+echo -e "  1. Open the dashboard and follow the setup wizard."
 echo ""
 echo -e "  ${DIM}Run 'vessld status' to check daemon health.${NC}"
 echo -e "  ${DIM}Run 'vessld logs -f' to follow daemon logs.${NC}"
 echo ""
-
-# --- Offer to run setup ---
-echo -e "📋 Would you like to create an admin account now? (y/N)"
-read -r -p "   " RUN_SETUP </dev/tty
-if [ "$RUN_SETUP" = "y" ] || [ "$RUN_SETUP" = "Y" ]; then
-  echo ""
-  vessld setup
-  echo ""
-  echo -e "${GREEN}✅ Admin account created. You can now log in at http://${SERVER_IP}:8080${NC}"
-  echo ""
-  echo -e "  ${DIM}Install the remote CLI on your laptop to manage this server remotely:${NC}"
-  echo -e "  ${DIM}  curl -fsSL https://get.vessl.dev/cli | sh${NC}"
-fi
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

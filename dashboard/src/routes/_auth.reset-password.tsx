@@ -38,9 +38,9 @@ function ResetPasswordPage() {
   }
 
   return (
-    <div className="fade-in slide-in-from-bottom-4 animate-in space-y-8 duration-700">
-      <div className="relative rounded-2xl border border-border/80 bg-card/70 p-6 shadow-2xl shadow-black/10 backdrop-blur-xl dark:shadow-black/40">
-        <div className="mb-5 flex items-center gap-3">
+    <div className="fade-in slide-in-from-bottom-4 animate-in space-y-6 duration-700">
+      <div className="relative rounded-2xl border border-border/80 bg-card/70 p-5 shadow-2xl shadow-black/10 backdrop-blur-xl sm:p-6 dark:shadow-black/40">
+        <div className="mb-4 flex items-center gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-primary via-purple-600 to-violet-600 shadow-md shadow-primary/25">
             <span className="font-bold text-base text-white tracking-tighter">V</span>
           </div>

@@ -188,7 +188,7 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	systemHandler := handlers.NewSystemHandler(systemService)
 	migrationService := services.NewMigrationService(dbRepo, dataDir)
 	migrationHandler := handlers.NewMigrationHandler(migrationService)
-	onboardingHandler := handlers.NewOnboardingHandler(userService, authService, settingsService)
+	onboardingHandler := handlers.NewOnboardingHandler(userService, authService, settingsService, gitAppsService, backupService)
 	railwayService := services.NewRailwayService(projectService, environmentService, appService, databaseService)
 	railwayHandler := handlers.NewRailwayHandler(railwayService)
 	dnsHandler := handlers.NewDNSHandler(dnsService)

@@ -60,7 +60,7 @@ export const apiClient = {
         !window.location.pathname.startsWith('/signup') &&
         !window.location.pathname.startsWith('/forgot-password') &&
         !window.location.pathname.startsWith('/reset-password') &&
-        !window.location.pathname.startsWith('/setup')
+        !window.location.pathname.startsWith('/onboarding')
       ) {
         window.location.href = '/signin';
       }
