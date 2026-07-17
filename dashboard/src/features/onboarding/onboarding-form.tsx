@@ -24,7 +24,7 @@ import {
   setupSchema,
 } from '.';
 
-export const OnboardingForm = () => {
+export const OnboardingForm = ({ cwd }: { cwd?: string }) => {
   const { mutateAsync: setupUser, isPending } = useSetup();
   const [currentStep, setCurrentStep] = useState(1);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
@@ -38,7 +38,7 @@ export const OnboardingForm = () => {
       confirmPassword: '',
       env: {
         jwtSecret: '',
-        dataDir: './data',
+        dataDir: cwd ? `${cwd}/data` : './data',
         dashboardUrl: 'http://localhost:3000',
         port: 8080,
       },

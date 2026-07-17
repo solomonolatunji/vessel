@@ -63,7 +63,8 @@ func (a *dbDeployerStore) GetServerlessFunctionCode(serviceID string) (*models.S
 }
 
 func main() {
-	_ = godotenv.Load(".env.local", ".env")
+	_ = godotenv.Load(".env.local")
+	_ = godotenv.Load(".env")
 	mainCLI()
 }
 

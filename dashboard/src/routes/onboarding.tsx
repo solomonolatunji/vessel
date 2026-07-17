@@ -15,7 +15,9 @@ export const Route = createFileRoute('/onboarding')({
 function OnboardingPage() {
   const { data: setupStatus, isLoading } = useGetSetupStatus();
 
-  if (!isLoading && !setupStatus?.data?.setupRequired) {
+  if (isLoading) return null;
+
+  if (!setupStatus?.data?.setupRequired) {
     return <Navigate to="/signin" replace />;
   }
 
@@ -23,7 +25,7 @@ function OnboardingPage() {
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-12">
       <BackgroundPattern />
       <div className="fade-in slide-in-from-bottom-4 relative z-10 w-full animate-in duration-700">
-        <OnboardingForm />
+        <OnboardingForm cwd={setupStatus?.data?.cwd} />
       </div>
     </div>
   );

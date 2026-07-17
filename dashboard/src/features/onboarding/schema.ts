@@ -8,7 +8,12 @@ export const setupSchema = z
     confirmPassword: z.string(),
 
     env: z.object({
-      jwtSecret: z.string().min(32, 'Secret must be at least 32 characters'),
+      jwtSecret: z
+        .string()
+        .refine((val) => !val || val.length >= 32, {
+          message: 'Secret must be at least 32 characters if provided',
+        })
+        .optional(),
       dataDir: z.string().min(1, 'Data directory is required'),
       dashboardUrl: z.string().url('Must be a valid URL'),
       port: z.number().min(1).max(65535),

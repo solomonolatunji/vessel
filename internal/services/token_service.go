@@ -15,12 +15,9 @@ type TokenService struct {
 }
 
 func NewTokenService() (*TokenService, error) {
-	secret := os.Getenv("JWT_SECRET")
+	secret := os.Getenv("VESSL_JWT_SECRET")
 	if secret == "" {
-		secret = os.Getenv("VESSL_JWT_SECRET")
-	}
-	if secret == "" {
-		return nil, errors.New("JWT_SECRET or VESSL_JWT_SECRET environment variable is required")
+		return nil, errors.New("VESSL_JWT_SECRET environment variable is required")
 	}
 	return &TokenService{
 		secretKey: []byte(secret),

@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"os"
 
@@ -46,8 +48,10 @@ func (h *OnboardingHandler) SetupStatus(c echo.Context) error {
 	if err != nil {
 		return utils.Error(c, 500, "failed to check user count")
 	}
-	return utils.Success(c, "Setup status", map[string]bool{
+	cwd, _ := os.Getwd()
+	return utils.Success(c, "Setup status", map[string]any{
 		"setupRequired": count == 0,
+		"cwd":           cwd,
 	})
 }
 
@@ -102,6 +106,12 @@ func (h *OnboardingHandler) Setup(c echo.Context) error {
 	u, token, err := h.authService.Register(ctx, req.Name, req.Email, req.Password)
 	if err != nil {
 		return utils.Error(c, 400, err.Error())
+	}
+
+	if req.Env.JWTSecret == "" {
+		b := make([]byte, 16)
+		_, _ = rand.Read(b)
+		req.Env.JWTSecret = hex.EncodeToString(b)
 	}
 
 	envContent := fmt.Sprintf("VESSL_JWT_SECRET=%s\nVESSL_DATA_DIR=%s\nVESSL_DASHBOARD_URL=%s\nPORT=%d\n",

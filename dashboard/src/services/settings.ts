@@ -33,9 +33,11 @@ export const settingsService = {
     }
   },
 
-  getSetupStatus: async (): Promise<BaseResponse<{ setupRequired: boolean }>> => {
+  getSetupStatus: async (): Promise<BaseResponse<{ setupRequired: boolean; cwd?: string }>> => {
     try {
-      return await apiClient.get<BaseResponse<{ setupRequired: boolean }>>('/system/setup-status');
+      return await apiClient.get<BaseResponse<{ setupRequired: boolean; cwd?: string }>>(
+        '/system/setup-status'
+      );
     } catch (error) {
       throw handleApiError(error);
     }

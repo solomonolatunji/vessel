@@ -57,35 +57,207 @@ The dashboard uses a **Contextual Shell** (`_shell.tsx`) with a global **Topbar*
 
 Every single feature from the **Aeroplane vs. Vessl Feature Gap Analysis** maps directly to a dedicated UI experience:
 
-|   #    | Feature                            | Target Route / Component                                                                      | UI Specification & User Flow                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| :----: | :--------------------------------- | :-------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **1**  | **Browser Onboarding Wizard**      | `src/routes/_auth/setup.tsx`<br>`src/features/auth/setup-form.tsx`                            | **First-Run Interception:** If `GET /system/setup-status` indicates no owner account exists, redirect all traffic to `/setup`.<br>**Wizard Steps:**<br>1. **Owner Account:** Email and password setup.<br>2. **Runtime Environment:** Configure `DATA_DIR`, `PORT`, `PUBLIC_URL` which writes to `.env.local`.<br>3. **Domains & Hostnames:** Freedom to configure Control Plane Domain (`pilot.example.com` or IP) and Wildcard Root Domain for generated apps.<br>4. **Backup & Object Storage:** Connect S3/R2 bucket credentials.<br>5. **Restore Instance (Optional):** Dropzone to upload `.vessl` server state bundle.<br>_Note: GitHub is NOT configured here (it's a simple 1-click install button in the dashboard)._ |
-| **2**  | **One-Line Installer**             | `/routes/getting-started.tsx`                                                                 | Show highlighted command (`curl -fsSL https://get.vessl.dev \| sh`) and system readiness checklist.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| **3**  | **Service Runtime Modes**          | `src/features/services/service-settings.tsx`                                                  | **Web vs. Worker Switcher:** Radio card selector when creating/editing an `AppService`.<br>- **Web:** Internal port input, public route generator, HTTP health checks (`/healthz`).<br>- **Background Worker:** No internal port, no public route, process uptime check badge (`runtimeMode === 'worker'`).                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| **4**  | **Static Site Deployments**        | `src/features/services/build-settings.tsx`                                                    | **Static Output Input:** Text field for `Static output directory` (e.g., `dist`, `build`, `.output/public`). When set, UI displays badge indicating the service runs inside an optimized `nginx:alpine` wrapper on internal port 80.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| **5**  | **Zero-Downtime Hot Swaps**        | `src/features/services/service-deployments.tsx`                                               | **Live Transition UI:** During `deploying` status, display both the active `running` container (`UUID-A`) and the probing `starting` container (`UUID-B`). Show real-time Traefik health check status before old container cleanup.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| **6**  | **Build Overrides**                | `src/features/services/build-settings.tsx`                                                    | **Command Override Inputs:** Expandable accordion under Railpack/Nixpacks settings:<br>- **Install Command:** (`--install-cmd`) e.g., `npm ci`<br>- **Build Command:** (`--build-cmd`) e.g., `npm run build`<br>- **Start Command:** (`--start-cmd`) e.g., `npm start`                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| **7**  | **Intelligent Env Var Linking**    | `src/features/services/service-variables.tsx`                                                 | **Smart Variable Drawer:** When editing service `.env` secrets, a side-drawer suggests auto-linked variables (`${postgres-db.POSTGRES_URL}`, `${timescaledb-db.TIMESCALE_URL}`). Includes `.env.example` parser pills to quickly autofill required keys.                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| **8**  | **Database Data Imports**          | `src/features/databases/database-import-modal.tsx`                                            | **Import Data Modal (`POST /databases/:id/import`):**<br>- **URL Import:** Input for `postgres://` or `redis://` schemes with immediate syntax validation.<br>- **Railway Sync:** Auto-detects public DB URLs from imported Railway variables.<br>- **TimescaleDB Check:** Displays source/target extension compatibility warning badge.<br>- **History Table:** Live streaming progress of `pg_dump` / `redis-cli --rdb` jobs.                                                                                                                                                                                                                                                                                                    |
-| **9**  | **Server Migration Bundles**       | `src/features/instance/migration-settings.tsx`<br>`/routes/_shell/settings/migration.tsx`     | **Bundle Manager (`/settings/migration`):**<br>- **Export Card:** Passphrase input + `Export Server Bundle` button (`GET /system/export`).<br>- **Import Card:** File upload dropzone (`.vessl`) + Passphrase + `Restore Server State` destructive action modal (`POST /system/import`).                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| **10** | **Database Provisioning Engines**  | `src/features/databases/create-database-modal.tsx`                                            | **Engine Selection Grid:** Organized categorizations with custom icon badges:<br>- **Relational:** PostgreSQL (`16-alpine`), **TimescaleDB (`latest`)**, MySQL (`8.0`), MariaDB (`11`), ClickHouse (`latest`)<br>- **NoSQL:** MongoDB (`7.0`), Redis (`7-alpine`), Dragonfly (`latest`), KeyDB (`latest`)<br>- **Brokers:** Kafka (`9092`), RabbitMQ (`5672`), NATS (`4222`)<br>- **One-Click:** NocoDB, Plausible, WordPress, Gitea                                                                                                                                                                                                                                                                                               |
-| **11** | **Data Browser & Row Editing**     | `src/features/databases/data-browser.tsx`<br>`/routes/_shell/databases/$dbId/data.tsx`        | **Relational Table Grid (`GET /databases/:id/data/:table`):**<br>- Table switcher (`GET /databases/:id/schemas`), filtering (`=`, `contains`, `>`), server-side pagination.<br>- **Inline Row Editing:** Double-click cells to edit or click `+ Add Row` (`POST /databases/:id/data/:table`).<br>**Redis Key Browser:** Specialized grid showing key names, types (`string`, `hash`, `list`, `set`), values, and interactive TTL editor.                                                                                                                                                                                                                                                                                           |
-| **12** | **Public Database Access & TLS**   | `src/features/databases/database-networking.tsx`                                              | **Public Hostname Controller (`PUT /databases/:id`):**<br>- Toggle for **Public Access (`ExternalDNS`)**.<br>- Displays generated TCP endpoint: `postgres-db.pilot.example.com:5432`.<br>- TLS Status badge (`Let's Encrypt TCP SNI enabled`) + one-click copy buttons for external clients.                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| **13** | **Logical Replication (CDC)**      | `src/features/databases/database-settings.tsx`                                                | **CDC Toggle Switch:** In Postgres & TimescaleDB configuration, toggle `Logical Replication (`wal*level=logical`)`. Displays warning badge: *"Enables max*replication_slots=10 and WAL retention for Change Data Capture tools."*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| **14** | **Database Restore & Download**    | `src/features/databases/backup-manager.tsx`                                                   | **Backup Action Table (`/databases/:id/backups`):**<br>- **Download:** Button to stream `.sql` or `.rdb` directly from disk/R2 (`GET /backups/:id/download`).<br>- **Destructive Restore:** Red warning modal asking user to type database name before piping backup (`pg_restore --clean`, `mysql <`, `mongorestore`) into running container (`POST /backups/:id/restore`).                                                                                                                                                                                                                                                                                                                                                       |
-| **15** | **DNS Provider Automation**        | `src/features/instance/dns-settings.tsx`<br>`src/features/projects/project-domains.tsx`       | **Provider Credentials (`/settings/dns`):** Forms to save API keys for Cloudflare, Namecheap, and Spaceship.<br>**1-Click A-Record Sync:** On any service custom domain card (`/projects/:id/domains`), a `Sync A Record via DNS Provider` button that automatically writes the `1800` TTL record targeting the server IP.                                                                                                                                                                                                                                                                                                                                                                                                         |
-| **16** | **System Maintenance & Cleanup**   | `src/features/instance/maintenance-settings.tsx`<br>`/routes/_shell/settings/maintenance.tsx` | **Maintenance Dashboard (`/settings/maintenance`):**<br>- **Storage Gauges:** Root FS disk %, Docker storage reclaimable MBs, Backup volume size.<br>- **Garbage Collection:** `Run Docker Cleanup Now` button (`POST /system/maintenance/cleanup`) running `docker system prune -af --volumes`.<br>- **Cron Config:** Schedule selector for automated background pruning (`Docker Cleanup Cron`).                                                                                                                                                                                                                                                                                                                                 |
-| **17** | **Railway Importer Specification** | `src/features/projects/railway-importer.tsx`<br>`/routes/_shell/import/railway.tsx`           | **Multi-Step Railway Import Wizard (`POST /import/railway`):**<br>1. **Token & Discovery:** Paste Railway Personal API Token (`Bearer <token>`), query GraphQL v2, select project.<br>2. **Service Classification Table:** Displays detected Git repos, Docker images, and database engines (Postgres, TimescaleDB, Redis, Mongo, ClickHouse).<br>3. **Configuration Checkboxes:** `Exclude RAILWAY_* variables` (default ON), `Recreate database engines` (creates local Vessl DBs), `Auto-deploy services`, and `Import database data` (runs automated `pg_dump`/`redis-cli` from public Railway URLs).                                                                                                                          |
-| **18** | **Control Plane Auto-Updates**     | `src/features/instance/update-settings.tsx`<br>`/routes/_shell/settings/updates.tsx`          | **Version Controller (`/settings/updates`):**<br>- **Version Card:** Shows `Current Version`, `Latest Version` (`GET /settings/updates/check`), and release notes.<br>- **Auto-Update Toggle:** Switch for `Auto Update Enabled` + `Update Check Cron` selector.<br>- **Manual Trigger:** `Deploy Update Now` button (`POST /settings/updates/deploy`) triggering `scripts/upgrade.sh` and graceful `vessld` container restart.                                                                                                                                                                                                                                                                                                    |
-| **19** | **Global Domain Management**       | `src/features/domains/domain-list.tsx`<br>`/routes/_shell/domains.tsx`                        | **Domains (`/domains`):** Centralized view of all custom domains mapped across services (`GET /domains`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| **20** | **Storage & S3 Buckets**           | `src/features/storage/storage-list.tsx`<br>`/routes/_shell/storage.tsx`                       | **Storage (`/storage`):** List all active storage buckets, view status, and manage their lifecycles (`GET /storage`, `POST /storage/:id/start`, `POST /storage/:id/stop`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| **21** | **Global Deployments View**        | `src/features/deployments/deployments-list.tsx`<br>`/routes/_shell/deployments.tsx`           | **Global Deployments (`/deployments`):** A centralized view of all active and historical builds across all projects and services.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| **22** | **Background Jobs**                | `src/features/jobs/jobs-list.tsx`<br>`/routes/_shell/jobs.tsx`                                | **Jobs (`/jobs`):** View all background jobs and cron tasks across the platform (`GET /jobs`, `POST /jobs/:id/trigger`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| **23** | **Git Sources Integration**        | `src/features/instance/git-apps.tsx`<br>`/routes/_shell/sources.tsx`                          | **Sources (`/sources`):** Connect and manage Git providers (GitHub, GitLab, Bitbucket), OAuth, and webhooks (`/git/connect`, `/git/repos`, `/webhooks/*`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| **24** | **API Access (Tokens)**            | `src/features/profile/access-tokens.tsx`<br>`/routes/_shell/settings/api.tsx`                 | **Tokens (`/settings/api`):** Manage Personal Access Tokens (`/profile/tokens`) and Project-level Tokens (`/projects/:id/tokens`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| **25** | **AI Assistant (MCP)**             | `src/features/ai/ai-chat.tsx`<br>`/routes/_shell/ai.tsx`                                      | **AI (`/ai`):** Copilot interface powered by MCP for querying logs, managing infrastructure, and generating configurations (`/mcp/sse`, `/mcp/messages`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| **26** | **Templates & One-Click Apps**     | `src/features/templates/template-list.tsx`<br>`/routes/_shell/templates.tsx`                  | **Templates (`/templates`):** Discover and deploy one-click apps from predefined templates (`/one-click`, `/one-click/deploy`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| **28** | **Serverless Code Editor**         | `src/features/services/serverless-editor.tsx`                                                 | **Serverless (`/projects/:id/services/:serviceId/serverless`):** Integrated code editor for serverless functions (`GET/POST /services/:serviceId/serverless/code`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+### 1. Browser Onboarding Wizard
+
+- **Target Route / Component:** `src/routes/_auth/setup.tsx`, `src/features/auth/setup-form.tsx`
+- **UI Specification & User Flow:**
+  - **First-Run Interception:** If `GET /system/setup-status` indicates no owner account exists, redirect all traffic to `/setup`.
+  - **Wizard Steps:**
+    1. **Owner Account:** Email and password setup.
+    2. **Runtime Environment:** Configure `DATA_DIR`, `PORT`, `PUBLIC_URL` which writes to `.env.local`.
+    3. **Domains & Hostnames:** Freedom to configure Control Plane Domain (`pilot.example.com` or IP) and Wildcard Root Domain for generated apps.
+    4. **Backup & Object Storage:** Connect S3/R2 bucket credentials.
+    5. **Restore Instance (Optional):** Dropzone to upload `.vessl` server state bundle.
+  - _Note: GitHub is NOT configured here (it's a simple 1-click install button in the dashboard)._
+
+### 2. One-Line Installer
+
+- **Target Route / Component:** `/routes/getting-started.tsx`
+- **UI Specification & User Flow:**
+  - Show highlighted command (`curl -fsSL https://get.vessl.dev | sh`) and system readiness checklist.
+
+### 3. Service Runtime Modes
+
+- **Target Route / Component:** `src/features/services/service-settings.tsx`
+- **UI Specification & User Flow:**
+  - **Web vs. Worker Switcher:** Radio card selector when creating/editing an `AppService`.
+  - **Web:** Internal port input, public route generator, HTTP health checks (`/healthz`).
+  - **Background Worker:** No internal port, no public route, process uptime check badge (`runtimeMode === 'worker'`).
+
+### 4. Static Site Deployments
+
+- **Target Route / Component:** `src/features/services/build-settings.tsx`
+- **UI Specification & User Flow:**
+  - **Static Output Input:** Text field for `Static output directory` (e.g., `dist`, `build`, `.output/public`). When set, UI displays badge indicating the service runs inside an optimized `nginx:alpine` wrapper on internal port 80.
+
+### 5. Zero-Downtime Hot Swaps
+
+- **Target Route / Component:** `src/features/services/service-deployments.tsx`
+- **UI Specification & User Flow:**
+  - **Live Transition UI:** During `deploying` status, display both the active `running` container (`UUID-A`) and the probing `starting` container (`UUID-B`). Show real-time Traefik health check status before old container cleanup.
+
+### 6. Build Overrides
+
+- **Target Route / Component:** `src/features/services/build-settings.tsx`
+- **UI Specification & User Flow:**
+  - **Command Override Inputs:** Expandable accordion under Railpack/Nixpacks settings:
+    - **Install Command:** (`--install-cmd`) e.g., `npm ci`
+    - **Build Command:** (`--build-cmd`) e.g., `npm run build`
+    - **Start Command:** (`--start-cmd`) e.g., `npm start`
+
+### 7. Intelligent Env Var Linking
+
+- **Target Route / Component:** `src/features/services/service-variables.tsx`
+- **UI Specification & User Flow:**
+  - **Smart Variable Drawer:** When editing service `.env` secrets, a side-drawer suggests auto-linked variables (`${postgres-db.POSTGRES_URL}`, `${timescaledb-db.TIMESCALE_URL}`). Includes `.env.example` parser pills to quickly autofill required keys.
+
+### 8. Database Data Imports
+
+- **Target Route / Component:** `src/features/databases/database-import-modal.tsx`
+- **UI Specification & User Flow:**
+  - **Import Data Modal (`POST /databases/:id/import`):**
+    - **URL Import:** Input for `postgres://` or `redis://` schemes with immediate syntax validation.
+    - **Railway Sync:** Auto-detects public DB URLs from imported Railway variables.
+    - **TimescaleDB Check:** Displays source/target extension compatibility warning badge.
+    - **History Table:** Live streaming progress of `pg_dump` / `redis-cli --rdb` jobs.
+
+### 9. Server Migration Bundles
+
+- **Target Route / Component:** `src/features/instance/migration-settings.tsx`, `/routes/_shell/settings/migration.tsx`
+- **UI Specification & User Flow:**
+  - **Bundle Manager (`/settings/migration`):**
+    - **Export Card:** Passphrase input + `Export Server Bundle` button (`GET /system/export`).
+    - **Import Card:** File upload dropzone (`.vessl`) + Passphrase + `Restore Server State` destructive action modal (`POST /system/import`).
+
+### 10. Database Provisioning Engines
+
+- **Target Route / Component:** `src/features/databases/create-database-modal.tsx`
+- **UI Specification & User Flow:**
+  - **Engine Selection Grid:** Organized categorizations with custom icon badges:
+    - **Relational:** PostgreSQL (`16-alpine`), **TimescaleDB (`latest`)**, MySQL (`8.0`), MariaDB (`11`), ClickHouse (`latest`)
+    - **NoSQL:** MongoDB (`7.0`), Redis (`7-alpine`), Dragonfly (`latest`), KeyDB (`latest`)
+    - **Brokers:** Kafka (`9092`), RabbitMQ (`5672`), NATS (`4222`)
+    - **One-Click:** NocoDB, Plausible, WordPress, Gitea
+
+### 11. Data Browser & Row Editing
+
+- **Target Route / Component:** `src/features/databases/data-browser.tsx`, `/routes/_shell/databases/$dbId/data.tsx`
+- **UI Specification & User Flow:**
+  - **Relational Table Grid (`GET /databases/:id/data/:table`):**
+    - Table switcher (`GET /databases/:id/schemas`), filtering (`=`, `contains`, `>`), server-side pagination.
+    - **Inline Row Editing:** Double-click cells to edit or click `+ Add Row` (`POST /databases/:id/data/:table`).
+  - **Redis Key Browser:** Specialized grid showing key names, types (`string`, `hash`, `list`, `set`), values, and interactive TTL editor.
+
+### 12. Public Database Access & TLS
+
+- **Target Route / Component:** `src/features/databases/database-networking.tsx`
+- **UI Specification & User Flow:**
+  - **Public Hostname Controller (`PUT /databases/:id`):**
+    - Toggle for **Public Access (`ExternalDNS`)**.
+    - Displays generated TCP endpoint: `postgres-db.pilot.example.com:5432`.
+    - TLS Status badge (`Let's Encrypt TCP SNI enabled`) + one-click copy buttons for external clients.
+
+### 13. Logical Replication (CDC)
+
+- **Target Route / Component:** `src/features/databases/database-settings.tsx`
+- **UI Specification & User Flow:**
+  - **CDC Toggle Switch:** In Postgres & TimescaleDB configuration, toggle `Logical Replication (wal_level=logical)`. Displays warning badge: _"Enables max_replication_slots=10 and WAL retention for Change Data Capture tools."_
+
+### 14. Database Restore & Download
+
+- **Target Route / Component:** `src/features/databases/backup-manager.tsx`
+- **UI Specification & User Flow:**
+  - **Backup Action Table (`/databases/:id/backups`):**
+    - **Download:** Button to stream `.sql` or `.rdb` directly from disk/R2 (`GET /backups/:id/download`).
+    - **Destructive Restore:** Red warning modal asking user to type database name before piping backup (`pg_restore --clean`, `mysql <`, `mongorestore`) into running container (`POST /backups/:id/restore`).
+
+### 15. DNS Provider Automation
+
+- **Target Route / Component:** `src/features/instance/dns-settings.tsx`, `src/features/projects/project-domains.tsx`
+- **UI Specification & User Flow:**
+  - **Provider Credentials (`/settings/dns`):** Forms to save API keys for Cloudflare, Namecheap, and Spaceship.
+  - **1-Click A-Record Sync:** On any service custom domain card (`/projects/:id/domains`), a `Sync A Record via DNS Provider` button that automatically writes the `1800` TTL record targeting the server IP.
+
+### 16. System Maintenance & Cleanup
+
+- **Target Route / Component:** `src/features/instance/maintenance-settings.tsx`, `/routes/_shell/settings/maintenance.tsx`
+- **UI Specification & User Flow:**
+  - **Maintenance Dashboard (`/settings/maintenance`):**
+    - **Storage Gauges:** Root FS disk %, Docker storage reclaimable MBs, Backup volume size.
+    - **Garbage Collection:** `Run Docker Cleanup Now` button (`POST /system/maintenance/cleanup`) running `docker system prune -af --volumes`.
+    - **Cron Config:** Schedule selector for automated background pruning (`Docker Cleanup Cron`).
+
+### 17. Railway Importer Specification
+
+- **Target Route / Component:** `src/features/projects/railway-importer.tsx`, `/routes/_shell/import/railway.tsx`
+- **UI Specification & User Flow:**
+  - **Multi-Step Railway Import Wizard (`POST /import/railway`):**
+    1. **Token & Discovery:** Paste Railway Personal API Token (`Bearer <token>`), query GraphQL v2, select project.
+    2. **Service Classification Table:** Displays detected Git repos, Docker images, and database engines (Postgres, TimescaleDB, Redis, Mongo, ClickHouse).
+    3. **Configuration Checkboxes:** `Exclude RAILWAY_* variables` (default ON), `Recreate database engines` (creates local Vessl DBs), `Auto-deploy services`, and `Import database data` (runs automated `pg_dump`/`redis-cli` from public Railway URLs).
+
+### 18. Control Plane Auto-Updates
+
+- **Target Route / Component:** `src/features/instance/update-settings.tsx`, `/routes/_shell/settings/updates.tsx`
+- **UI Specification & User Flow:**
+  - **Version Controller (`/settings/updates`):**
+    - **Version Card:** Shows `Current Version`, `Latest Version` (`GET /settings/updates/check`), and release notes.
+    - **Auto-Update Toggle:** Switch for `Auto Update Enabled` + `Update Check Cron` selector.
+    - **Manual Trigger:** `Deploy Update Now` button (`POST /settings/updates/deploy`) triggering `scripts/upgrade.sh` and graceful `vessld` container restart.
+
+### 19. Global Domain Management
+
+- **Target Route / Component:** `src/features/domains/domain-list.tsx`, `/routes/_shell/domains.tsx`
+- **UI Specification & User Flow:**
+  - **Domains (`/domains`):** Centralized view of all custom domains mapped across services (`GET /domains`).
+
+### 20. Storage & S3 Buckets
+
+- **Target Route / Component:** `src/features/storage/storage-list.tsx`, `/routes/_shell/storage.tsx`
+- **UI Specification & User Flow:**
+  - **Storage (`/storage`):** List all active storage buckets, view status, and manage their lifecycles (`GET /storage`, `POST /storage/:id/start`, `POST /storage/:id/stop`).
+
+### 21. Global Deployments View
+
+- **Target Route / Component:** `src/features/deployments/deployments-list.tsx`, `/routes/_shell/deployments.tsx`
+- **UI Specification & User Flow:**
+  - **Global Deployments (`/deployments`):** A centralized view of all active and historical builds across all projects and services.
+
+### 22. Background Jobs
+
+- **Target Route / Component:** `src/features/jobs/jobs-list.tsx`, `/routes/_shell/jobs.tsx`
+- **UI Specification & User Flow:**
+  - **Jobs (`/jobs`):** View all background jobs and cron tasks across the platform (`GET /jobs`, `POST /jobs/:id/trigger`).
+
+### 23. Git Sources Integration
+
+- **Target Route / Component:** `src/features/instance/git-apps.tsx`, `/routes/_shell/sources.tsx`
+- **UI Specification & User Flow:**
+  - **Sources (`/sources`):** Connect and manage Git providers (GitHub, GitLab, Bitbucket), OAuth, and webhooks (`/git/connect`, `/git/repos`, `/webhooks/*`).
+
+### 24. API Access (Tokens)
+
+- **Target Route / Component:** `src/features/profile/access-tokens.tsx`, `/routes/_shell/settings/api.tsx`
+- **UI Specification & User Flow:**
+  - **Tokens (`/settings/api`):** Manage Personal Access Tokens (`/profile/tokens`) and Project-level Tokens (`/projects/:id/tokens`).
+
+### 25. AI Assistant (MCP)
+
+- **Target Route / Component:** `src/features/ai/ai-chat.tsx`, `/routes/_shell/ai.tsx`
+- **UI Specification & User Flow:**
+  - **AI (`/ai`):** Copilot interface powered by MCP for querying logs, managing infrastructure, and generating configurations (`/mcp/sse`, `/mcp/messages`).
+
+### 26. Templates & One-Click Apps
+
+- **Target Route / Component:** `src/features/templates/template-list.tsx`, `/routes/_shell/templates.tsx`
+- **UI Specification & User Flow:**
+  - **Templates (`/templates`):** Discover and deploy one-click apps from predefined templates (`/one-click`, `/one-click/deploy`).
+
+### 27. Serverless Code Editor
+
+- **Target Route / Component:** `src/features/services/serverless-editor.tsx`
+- **UI Specification & User Flow:**
+  - **Serverless (`/projects/:id/services/:serviceId/serverless`):** Integrated code editor for serverless functions (`GET/POST /services/:serviceId/serverless/code`).
 
 ---
 
@@ -253,37 +425,37 @@ We will build the dashboard in distinct phases to ensure stability, proper data-
 
 **Phase 1: Core Foundation & Shell (Routing & Layout)**
 
-- Scaffold the new `AppSidebar` and `Topbar` adhering to the new group structures (Overview, Resources, System & Settings).
-- Establish the `TanStack Router` configuration (`src/routes/`) to reflect the new layout (e.g. `/domains`, `/ai`, `/settings/dns`).
-- Setup the core `api-client.ts` to seamlessly intercept 401s and standardize JSON parsing.
-- Build the `Auth` & `Setup Wizard` views (`/login`, `/setup`).
+- [x] Scaffold the new `AppSidebar` and `Topbar` adhering to the new group structures (Overview, Resources, System & Settings).
+- [x] Establish the `TanStack Router` configuration (`src/routes/`) to reflect the new layout (e.g. `/domains`, `/ai`, `/settings/dns`).
+- [x] Setup the core `api-client.ts` to seamlessly intercept 401s and standardize JSON parsing.
+- [x] Build the `Auth` & `Setup Wizard` views (`/login`, `/setup`).
 
 **Phase 2: Project & Service Management (The Bread & Butter)**
 
-- Implement the `Projects` overview and environment grid (`/projects`).
-- Build the `Services` domain (`/services/$serviceId/*`): metrics, build overrides, variables (`.env`), and deployment history.
-- Map the new `/deployments` global view to track all system-wide builds in real-time using `EventSource` (SSE).
+- [ ] Implement the `Projects` overview and environment grid (`/projects`).
+- [ ] Build the `Services` domain (`/services/$serviceId/*`): metrics, build overrides, variables (`.env`), and deployment history.
+- [ ] Map the new `/deployments` global view to track all system-wide builds in real-time using `EventSource` (SSE).
 
 **Phase 3: Database & Storage Provisioning**
 
-- Create the Database Engine Selection UI (`Postgres`, `Redis`, `Mongo`, etc.).
-- Build out the DB dashboards (`/databases/$dbId/*`): connection strings, public networking (`ExternalDNS`), and data/table browser.
-- Implement `Storage` bucket management (`/storage`), fetching and controlling bucket lifecycle.
+- [ ] Create the Database Engine Selection UI (`Postgres`, `Redis`, `Mongo`, etc.).
+- [ ] Build out the DB dashboards (`/databases/$dbId/*`): connection strings, public networking (`ExternalDNS`), and data/table browser.
+- [ ] Implement `Storage` bucket management (`/storage`), fetching and controlling bucket lifecycle.
 
 **Phase 4: Integrations & AI**
 
-- Map out the `GitHub` integration screens (`/settings/github`), handling OAuth flows and repository syncing (`/git/repos`).
-- Develop the `Domains` & `DNS` system (`/domains`, `/settings/dns`), syncing custom domains automatically.
-- Build the `AI Assistant` interface (`/ai`) connected to Vessl's backend knowledge base for auto-generating Compose files and config.
+- [ ] Map out the `GitHub` integration screens (`/settings/github`), handling OAuth flows and repository syncing (`/git/repos`).
+- [ ] Develop the `Domains` & `DNS` system (`/domains`, `/settings/dns`), syncing custom domains automatically.
+- [ ] Build the `AI Assistant` interface (`/ai`) connected to Vessl's backend knowledge base for auto-generating Compose files and config.
 
 **Phase 5: Super Admin & Maintenance**
 
-- Create `Users` management (`/settings/users`) and API Tokens (`/settings/api`).
-- Build the `Maintenance` and `Updates` dashboards (`docker system prune`, `vessld` auto-updates).
-- Finalize the `Migration` bundle logic (`.vessl` export/import functionality).
+- [ ] Create `Users` management (`/settings/users`) and API Tokens (`/settings/api`).
+- [ ] Build the `Maintenance` and `Updates` dashboards (`docker system prune`, `vessld` auto-updates).
+- [x] Finalize the `Migration` bundle logic (`.vessl` export/import functionality).
 
 **Phase 6: Polish & Verification**
 
-- Strict Biome formatting (`npm run format:fix`) and type-checking across all components.
-- Audit all inputs and buttons to ensure minimalist "plain" design (no weird autofill backgrounds, sharp padding/margins).
-- Ensure all components are under 350 lines and correctly modularized in `src/features/`.
+- [ ] Strict Biome formatting (`npm run format:fix`) and type-checking across all components.
+- [ ] Audit all inputs and buttons to ensure minimalist "plain" design (no weird autofill backgrounds, sharp padding/margins).
+- [ ] Ensure all components are under 350 lines and correctly modularized in `src/features/`.
