@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { ResetPasswordForm } from '#/features/auth/reset-password-form';
+import { useSystemStore } from '#/stores/systemStore';
 
 export const Route = createFileRoute('/_auth/reset-password')({
   validateSearch: (search: Record<string, unknown>) => {
@@ -8,6 +9,10 @@ export const Route = createFileRoute('/_auth/reset-password')({
     };
   },
   component: ResetPasswordPage,
+  head: () => {
+    const siteName = useSystemStore.getState().siteName;
+    return { meta: [{ title: `New Password - ${siteName}` }] };
+  },
 });
 
 function ResetPasswordPage() {

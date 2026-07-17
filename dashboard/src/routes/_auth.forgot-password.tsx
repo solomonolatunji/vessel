@@ -3,9 +3,14 @@ import { AlertCircle } from 'lucide-react';
 import { Button } from '#/components/ui/button';
 import { ForgotPasswordForm } from '#/features/auth/forgot-password-form';
 import { useGetPublicSettings } from '#/hooks/useSettings';
+import { useSystemStore } from '#/stores/systemStore';
 
 export const Route = createFileRoute('/_auth/forgot-password')({
   component: ForgotPasswordPage,
+  head: () => {
+    const siteName = useSystemStore.getState().siteName;
+    return { meta: [{ title: `Reset Password - ${siteName}` }] };
+  },
 });
 
 function ForgotPasswordPage() {
@@ -34,7 +39,7 @@ function ForgotPasswordPage() {
             </div>
             <div className="space-y-1">
               <p className="font-semibold text-base text-foreground tracking-tight">
-                Email Not Configured
+                Email not configured
               </p>
               <p className="text-muted-foreground text-sm">
                 Your team is yet to set or enable email. Please contact your administrator.

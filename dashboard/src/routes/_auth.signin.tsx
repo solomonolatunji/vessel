@@ -2,9 +2,14 @@ import { createFileRoute, Link, Navigate } from '@tanstack/react-router';
 import { LoginForm } from '#/features/auth/login-form';
 import { OAuthButtons } from '#/features/auth/o-auth-buttons';
 import { useGetPublicSettings, useGetSetupStatus } from '#/hooks/useSettings';
+import { useSystemStore } from '#/stores/systemStore';
 
 export const Route = createFileRoute('/_auth/signin')({
   component: LoginPage,
+  head: () => {
+    const siteName = useSystemStore.getState().siteName;
+    return { meta: [{ title: `Sign In - ${siteName}` }] };
+  },
 });
 
 function LoginPage() {
@@ -35,13 +40,13 @@ function LoginPage() {
         <LoginForm />
 
         {registrationEnabled && (
-          <p className="mt-8 text-center text-muted-foreground text-sm">
+          <p className="mt-6 text-center text-muted-foreground text-sm">
             Don't have an account?{' '}
             <Link
               to="/signup"
               className="font-medium text-primary underline-offset-4 transition-colors hover:text-primary-hover hover:underline"
             >
-              Sign up
+              Create one
             </Link>
           </p>
         )}

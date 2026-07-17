@@ -5,9 +5,11 @@ import { AppSidebar } from './app-sidebar';
 import { CommandPalette } from './command-palette';
 import { Topbar } from './topbar';
 
-export function Shell({ children }: { children: React.ReactNode }) {
+export function AppLayout({ children }: { children: React.ReactNode }) {
   const [commandOpen, setCommandOpen] = useState(false);
-  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  });
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -15,7 +17,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
       <div className="flex flex-1 flex-col pl-60">
         <Topbar onOpenCommand={() => setCommandOpen(true)} />
         <main className="flex-1 overflow-auto p-6">
-          <div key={pathname} className="page-transition mx-auto w-full max-w-[1480px]">
+          <div key={pathname} className="page-transition mx-auto w-full max-w-370">
             {children}
           </div>
         </main>

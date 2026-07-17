@@ -2,9 +2,14 @@ import { createFileRoute, Link, Navigate } from '@tanstack/react-router';
 import { OAuthButtons } from '#/features/auth/o-auth-buttons';
 import { RegisterForm } from '#/features/auth/register-form';
 import { useGetPublicSettings, useGetSetupStatus } from '#/hooks/useSettings';
+import { useSystemStore } from '#/stores/systemStore';
 
 export const Route = createFileRoute('/_auth/signup')({
   component: RegisterPage,
+  head: () => {
+    const siteName = useSystemStore.getState().siteName;
+    return { meta: [{ title: `Sign Up - ${siteName}` }] };
+  },
 });
 
 function RegisterPage() {

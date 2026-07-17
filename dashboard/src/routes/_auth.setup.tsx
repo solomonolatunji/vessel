@@ -1,9 +1,14 @@
 import { createFileRoute, Navigate } from '@tanstack/react-router';
 import { SetupForm } from '#/features/auth/setup-form';
 import { useGetSetupStatus } from '#/hooks/useSettings';
+import { useSystemStore } from '#/stores/systemStore';
 
 export const Route = createFileRoute('/_auth/setup')({
   component: SetupPage,
+  head: () => {
+    const siteName = useSystemStore.getState().siteName;
+    return { meta: [{ title: `Setup - ${siteName}` }] };
+  },
 });
 
 function SetupPage() {
