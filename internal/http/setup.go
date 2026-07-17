@@ -66,6 +66,8 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	serviceVarRepo := repositories.NewServiceVarRepo(db)
 	dbRepo := repositories.NewDatabaseRepo(db, v)
 	settingsRepo := repositories.NewSettingsRepo(db)
+	notifRepo := repositories.NewNotificationSettingsRepo(db)
+	aiRepo := repositories.NewAISettingsRepo(db)
 	envVarRepo := repositories.NewEnvRepo(db, v)
 	storageRepo := repositories.NewStorageRepo(db, v)
 	jobRepo := repositories.NewJobRepo(db)
@@ -112,14 +114,16 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 		return nil, fmt.Errorf("token service: %w", err)
 	}
 	settingsService := services.NewSettingsService(settingsRepo)
+	notifSettingsService := services.NewNotificationSettingsService(notifRepo)
+	aiSettingsService := services.NewAISettingsService(aiRepo)
 	serviceLinker := services.NewServiceLinker(dbRepo, storageRepo)
-	mailerService, err := notifications.NewMailerService(settingsService)
+	mailerService, err := notifications.NewMailerService(notifSettingsService)
 	if err != nil {
 		return nil, fmt.Errorf("mailer service: %w", err)
 	}
-	authService := services.NewAuthService(userRepo, settingsRepo, projectSettingsRepo, tokenService, mailerService)
+	authService := services.NewAuthService(userRepo, settingsRepo, notifRepo, projectSettingsRepo, tokenService, mailerService)
 	projectSettingsService := services.NewProjectSettingsService(projectSettingsRepo, userRepo, authService)
-	dispatcherService := core.NewDispatcherService(settingsRepo, userRepo, mailerService)
+	dispatcherService := core.NewDispatcherService(settingsRepo, notifRepo, userRepo, mailerService)
 	storageService := services.NewStorageService(storageRepo, storageDeployer)
 	jobService := services.NewJobService(jobRepo, cronManager)
 	canvasService := services.NewCanvasService(canvasRepo)
@@ -162,7 +166,9 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	serviceVarHandler := handlers.NewServiceVarHandler(appService, auditService)
 	projectSettingsHandler := handlers.NewProjectSettingsHandler(projectSettingsService)
 	backupHandler := handlers.NewBackupHandler(backupService)
-	settingsHandler := handlers.NewSettingsHandler(settingsService)
+	settingsHandler := handlers.NewSettingsHandler(settingsService, notifSettingsService)
+	notifSettingsHandler := handlers.NewNotificationSettingsHandler(notifSettingsService)
+	aiSettingsHandler := handlers.NewAISettingsHandler(aiSettingsService)
 	updaterHandler := handlers.NewUpdaterHandler(updaterService)
 	userHandler := handlers.NewUserHandler(userService)
 	authHandler := handlers.NewAuthHandler(authService)
@@ -220,6 +226,8 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 		projectSettingsHandler: projectSettingsHandler,
 		backupHandler:          backupHandler,
 		settingsHandler:        settingsHandler,
+		notifSettingsHandler:   notifSettingsHandler,
+		aiSettingsHandler:      aiSettingsHandler,
 		updaterHandler:         updaterHandler,
 		userHandler:            userHandler,
 		authHandler:            authHandler,

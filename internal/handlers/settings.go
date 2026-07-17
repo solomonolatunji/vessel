@@ -12,11 +12,12 @@ import (
 )
 
 type SettingsHandler struct {
-	settingsService *services.SettingsService
+	settingsService      *services.SettingsService
+	notifSettingsService *services.NotificationSettingsService
 }
 
-func NewSettingsHandler(s *services.SettingsService) *SettingsHandler {
-	return &SettingsHandler{settingsService: s}
+func NewSettingsHandler(s *services.SettingsService, ns *services.NotificationSettingsService) *SettingsHandler {
+	return &SettingsHandler{settingsService: s, notifSettingsService: ns}
 }
 
 // @Summary GetSettings endpoint
@@ -44,10 +45,15 @@ func (h *SettingsHandler) GetPublicSettings(c echo.Context) error {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 
+	notif, err := h.notifSettingsService.GetNotificationSettings(c.Request().Context())
+	if err != nil {
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
+	}
+
 	publicSettings := map[string]any{
 		"registrationEnabled": s.RegistrationEnabled,
 		"siteName":            s.SiteName,
-		"emailEnabled":        s.SMTPEnabled || s.ResendEnabled,
+		"emailEnabled":        notif.SMTPEnabled || notif.ResendEnabled,
 	}
 	return utils.Success(c, "Operation successful", publicSettings)
 }

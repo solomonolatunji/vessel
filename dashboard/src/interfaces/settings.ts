@@ -63,6 +63,13 @@ export interface ServerSettings {
   disableTwoStepConfirmation: boolean;
   defaultOpenAIKey?: string;
   defaultAnthropicKey?: string;
+  defaultGoogleKey?: string;
+  defaultMistralKey?: string;
+  defaultGroqKey?: string;
+  defaultDeepSeekKey?: string;
+  defaultXAIKey?: string;
+  defaultMoonshotKey?: string;
+  defaultAiProvider?: string;
   updateCheckCron: string;
   autoUpdateEnabled: boolean;
   telemetryEnabled: boolean;

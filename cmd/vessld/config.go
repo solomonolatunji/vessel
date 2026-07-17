@@ -11,19 +11,21 @@ import (
 func runConfig() {
 	_, db, _ := initDataDir()
 	repo := repositories.NewSettingsRepo(db)
+	notifRepo := repositories.NewNotificationSettingsRepo(db)
 	settings, err := repo.GetServerSettings(context.Background())
 	if err != nil {
 		exitError("Failed to load settings: %v", err)
 	}
 
+	notif, _ := notifRepo.GetNotificationSettings(context.Background())
 	if len(os.Args) < 3 {
 		fmt.Println("Current configuration:")
 		fmt.Printf("  site-name:         %s\n", settings.SiteName)
 		fmt.Printf("  registration:      %v\n", settings.RegistrationEnabled)
 		fmt.Printf("  telemetry:         %v\n", settings.TelemetryEnabled)
 		fmt.Printf("  domain:            %s\n", os.Getenv("VESSL_DOMAIN"))
-		fmt.Printf("  smtp-enabled:      %v\n", settings.SMTPEnabled)
-		fmt.Printf("  resend-enabled:    %v\n", settings.ResendEnabled)
+		fmt.Printf("  smtp-enabled:      %v\n", notif.SMTPEnabled)
+		fmt.Printf("  resend-enabled:    %v\n", notif.ResendEnabled)
 		fmt.Println("\nUsage: vessld config <key>=<value>")
 		fmt.Println("  e.g.  vessld config site-name=MyVessl")
 		fmt.Println("        vessld config registration=true")

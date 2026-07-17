@@ -13,6 +13,7 @@ import (
 
 type DispatcherService struct {
 	settingsRepo repositories.SettingsRepository
+	notifRepo    repositories.NotificationSettingsRepository
 	userRepo     repositories.UserRepository
 	mailer       interface {
 		SendSystemEmail(ctx context.Context, templateName string, toAddress string, subject string, data any) error
@@ -23,8 +24,8 @@ type Mailer interface {
 	SendSystemEmail(ctx context.Context, templateName string, toAddress string, subject string, data any) error
 }
 
-func NewDispatcherService(settingsRepo repositories.SettingsRepository, userRepo repositories.UserRepository, mailer Mailer) *DispatcherService {
-	return &DispatcherService{settingsRepo: settingsRepo, userRepo: userRepo, mailer: mailer}
+func NewDispatcherService(settingsRepo repositories.SettingsRepository, notifRepo repositories.NotificationSettingsRepository, userRepo repositories.UserRepository, mailer Mailer) *DispatcherService {
+	return &DispatcherService{settingsRepo: settingsRepo, notifRepo: notifRepo, userRepo: userRepo, mailer: mailer}
 }
 
 func (d *DispatcherService) Dispatch(event *models.NotificationEvent) {
@@ -44,9 +45,9 @@ func (d *DispatcherService) Send(event *models.NotificationEvent) error {
 
 func (d *DispatcherService) sendGlobalTest(event *models.NotificationEvent) error {
 	ctx := context.Background()
-	settings, err := d.settingsRepo.GetServerSettings(ctx)
+	settings, err := d.notifRepo.GetNotificationSettings(ctx)
 	if err != nil || settings == nil {
-		return fmt.Errorf("could not fetch server settings: %v", err)
+		return fmt.Errorf("could not fetch notification settings: %v", err)
 	}
 
 	provider := event.EventType[len("test_global_"):]

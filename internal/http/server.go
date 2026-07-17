@@ -39,6 +39,8 @@ type Server struct {
 	projectSettingsHandler *handlers.ProjectSettingsHandler
 	backupHandler          *handlers.BackupHandler
 	settingsHandler        *handlers.SettingsHandler
+	notifSettingsHandler   *handlers.NotificationSettingsHandler
+	aiSettingsHandler      *handlers.AISettingsHandler
 	updaterHandler         *handlers.UpdaterHandler
 	userHandler            *handlers.UserHandler
 	authHandler            *handlers.AuthHandler

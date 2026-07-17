@@ -142,6 +142,12 @@ func (s *Server) registerRoutes() {
 	authGroup.DELETE("/s3-destinations/:id", s.backupHandler.DeleteS3Destination)
 	authGroup.GET("/settings", s.settingsHandler.GetSettings)
 	apiGroup.PUT("/settings", s.settingsHandler.UpdateSettings, s.authGuard.RequireRole("admin"))
+
+	authGroup.GET("/ai", s.aiSettingsHandler.GetAISettings)
+	apiGroup.PUT("/ai", s.aiSettingsHandler.UpdateAISettings, s.authGuard.RequireRole("admin"))
+
+	authGroup.GET("/notifications", s.notifSettingsHandler.GetNotificationSettings)
+	apiGroup.PUT("/notifications", s.notifSettingsHandler.UpdateNotificationSettings, s.authGuard.RequireRole("admin"))
 	authGroup.GET("/settings/updates/status", s.updaterHandler.GetUpdateStatus)
 	apiGroup.POST("/settings/updates/check", s.updaterHandler.CheckUpdate, s.authGuard.RequireRole("admin"))
 	apiGroup.POST("/settings/updates/deploy", s.updaterHandler.DeployUpdate, s.authGuard.RequireRole("admin"))

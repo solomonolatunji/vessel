@@ -446,7 +446,7 @@ We will build the dashboard in distinct phases to ensure stability, proper data-
 
 - [ ] Map out the `GitHub` integration screens (`/settings/github`), handling OAuth flows and repository syncing (`/git/repos`).
 - [x] Develop the `Domains` & `DNS` system (`/domains`, `/settings/dns`), syncing custom domains automatically.
-- [ ] Build the `AI Assistant` interface (`/ai`) connected to Vessl's backend knowledge base for auto-generating Compose files and config.
+- [x] Build the AI Assistant interface (`/ai`) connected to Vessl's backend knowledge base for auto-generating Compose files and config.
 
 **Phase 5: Super Admin & Maintenance**
 

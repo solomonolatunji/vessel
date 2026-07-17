@@ -33,6 +33,41 @@ export const useUpdateSettings = () => {
   });
 };
 
+export const useGetAISettings = () => {
+  return useQuery({
+    queryKey: ['settings', 'getAISettings'].filter(Boolean),
+    queryFn: () => settingsService.getAISettings(),
+  });
+};
+
+export const useUpdateAISettings = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: Record<string, unknown>) => settingsService.updateAISettings(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['settings', 'getAISettings'] });
+    },
+  });
+};
+
+export const useGetNotificationSettings = () => {
+  return useQuery({
+    queryKey: ['settings', 'getNotificationSettings'].filter(Boolean),
+    queryFn: () => settingsService.getNotificationSettings(),
+  });
+};
+
+export const useUpdateNotificationSettings = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: Record<string, unknown>) =>
+      settingsService.updateNotificationSettings(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['settings', 'getNotificationSettings'] });
+    },
+  });
+};
+
 export const useGetNotifications = () => {
   return useQuery({
     queryKey: ['settings', 'getNotifications'].filter(Boolean),

@@ -20,6 +20,7 @@ type Mailer interface {
 type AuthService struct {
 	userRepo        repositories.UserRepository
 	settingsRepo    repositories.SettingsRepository
+	notifRepo       repositories.NotificationSettingsRepository
 	projectSettings repositories.ProjectSettingsRepository
 	tokenService    *TokenService
 	mailer          Mailer
@@ -28,6 +29,7 @@ type AuthService struct {
 func NewAuthService(
 	ur repositories.UserRepository,
 	sr repositories.SettingsRepository,
+	nr repositories.NotificationSettingsRepository,
 	psr repositories.ProjectSettingsRepository,
 	ts *TokenService,
 	mailer Mailer,
@@ -35,6 +37,7 @@ func NewAuthService(
 	return &AuthService{
 		userRepo:        ur,
 		settingsRepo:    sr,
+		notifRepo:       nr,
 		projectSettings: psr,
 		tokenService:    ts,
 		mailer:          mailer,
@@ -123,9 +126,9 @@ func (a *AuthService) ForgotPassword(ctx context.Context, email string, originUr
 		return errors.New("email is required")
 	}
 
-	cfg, err := a.settingsRepo.GetServerSettings(ctx)
+	cfg, err := a.notifRepo.GetNotificationSettings(ctx)
 	if err != nil || cfg == nil {
-		return errors.New("could not load server settings")
+		return errors.New("could not load notification settings")
 	}
 
 	if !cfg.SMTPEnabled && !cfg.ResendEnabled {

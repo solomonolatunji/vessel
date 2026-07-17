@@ -10,20 +10,20 @@ import (
 )
 
 type MailerService struct {
-	globalSettingsService *services.SettingsService
+	notifSettingsService *services.NotificationSettingsService
 }
 
-func NewMailerService(globalSettings *services.SettingsService) (*MailerService, error) {
+func NewMailerService(notifSettings *services.NotificationSettingsService) (*MailerService, error) {
 	if err := LoadTemplates(); err != nil {
 		return nil, fmt.Errorf("failed to load email templates: %w", err)
 	}
 	return &MailerService{
-		globalSettingsService: globalSettings,
+		notifSettingsService: notifSettings,
 	}, nil
 }
 
 func (s *MailerService) SendSystemEmail(ctx context.Context, templateName string, toAddress string, subject string, data any) error {
-	settings, err := s.globalSettingsService.GetSettings(ctx)
+	settings, err := s.notifSettingsService.GetNotificationSettings(ctx)
 	if err != nil {
 		return fmt.Errorf("fetching server settings: %w", err)
 	}

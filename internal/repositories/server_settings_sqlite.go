@@ -29,7 +29,7 @@ func NewSettingsRepo(db *sql.DB) *SettingsRepo {
 	return &SettingsRepo{db: sqlx.NewDb(db, "sqlite")}
 }
 
-const serverSettingsColumns = `id, traefik_wildcard_ip, discord_webhook_url, discord_ping_enabled, discord_enabled, slack_webhook_url, slack_enabled, telegram_bot_token, telegram_chat_id, telegram_enabled, smtp_host, smtp_port, smtp_user, smtp_password, smtp_from_name, smtp_from_address, smtp_enabled, resend_api_key, resend_enabled, pushover_user_key, pushover_api_token, pushover_enabled, generic_webhook_url, generic_webhook_enabled, notification_alerts, registration_enabled, registration_domain_allowlist, custom_dns_resolvers, dns_validation_enabled, ip_allowlist, mcp_server_enabled, default_wildcard_domain, panel_domain, site_name, public_ipv4, public_ipv6, show_sponsorship_popup, disable_two_step_confirmation, default_openai_key, default_anthropic_key, cloudflare_api_token, namecheap_api_user, namecheap_api_key, namecheap_client_ip, spaceship_api_key, update_check_cron, auto_update_enabled, concurrent_builds, deployment_timeout, server_timezone, docker_cleanup_cron, disk_usage_threshold, disk_usage_cron, current_version, latest_version, last_update_check, updated_at`
+const serverSettingsColumns = `id, traefik_wildcard_ip, registration_enabled, registration_domain_allowlist, custom_dns_resolvers, dns_validation_enabled, ip_allowlist, mcp_server_enabled, default_wildcard_domain, panel_domain, site_name, public_ipv4, public_ipv6, show_sponsorship_popup, disable_two_step_confirmation, cloudflare_api_token, namecheap_api_user, namecheap_api_key, namecheap_client_ip, spaceship_api_key, update_check_cron, auto_update_enabled, concurrent_builds, deployment_timeout, server_timezone, docker_cleanup_cron, disk_usage_threshold, disk_usage_cron, current_version, latest_version, last_update_check, updated_at`
 
 func serverSettingsPlaceholders() string {
 	columns := strings.Split(serverSettingsColumns, ",")
@@ -42,13 +42,9 @@ func serverSettingsPlaceholders() string {
 
 func scanServerSettings(scanner interface{ Scan(dest ...any) error }, cfg *models.ServerSettings) error {
 	return scanner.Scan(
-		&cfg.ID, &cfg.TraefikWildcardIP, &cfg.DiscordWebhookURL, &cfg.DiscordPingEnabled, &cfg.DiscordEnabled, &cfg.SlackWebhookURL, &cfg.SlackEnabled, &cfg.TelegramBotToken, &cfg.TelegramChatID, &cfg.TelegramEnabled,
-		&cfg.SMTPHost, &cfg.SMTPPort, &cfg.SMTPUser, &cfg.SMTPPassword, &cfg.SMTPFromName, &cfg.SMTPFromAddress, &cfg.SMTPEnabled,
-		&cfg.ResendAPIKey, &cfg.ResendEnabled, &cfg.PushoverUserKey, &cfg.PushoverAPIToken, &cfg.PushoverEnabled, &cfg.GenericWebhookURL, &cfg.GenericWebhookEnabled,
-		&cfg.NotificationAlerts,
+		&cfg.ID, &cfg.TraefikWildcardIP,
 		&cfg.RegistrationEnabled, &cfg.RegistrationDomainAllowlist, &cfg.CustomDNSResolvers, &cfg.DNSValidationEnabled, &cfg.IPAllowlist, &cfg.MCPServerEnabled, &cfg.DefaultWildcardDomain, &cfg.PanelDomain,
 		&cfg.SiteName, &cfg.PublicIPv4, &cfg.PublicIPv6, &cfg.ShowSponsorshipPopup, &cfg.DisableTwoStepConfirmation,
-		&cfg.DefaultOpenAIKey, &cfg.DefaultAnthropicKey,
 		&cfg.CloudflareAPIToken, &cfg.NamecheapAPIUser, &cfg.NamecheapAPIKey, &cfg.NamecheapClientIP, &cfg.SpaceshipAPIKey,
 		&cfg.UpdateCheckCron, &cfg.AutoUpdateEnabled,
 		&cfg.ConcurrentBuilds, &cfg.DeploymentTimeout, &cfg.ServerTimezone, &cfg.DockerCleanupCron, &cfg.DiskUsageThreshold, &cfg.DiskUsageCron,
@@ -58,13 +54,9 @@ func scanServerSettings(scanner interface{ Scan(dest ...any) error }, cfg *model
 
 func serverSettingsArgs(cfg *models.ServerSettings) []any {
 	return []any{
-		cfg.ID, cfg.TraefikWildcardIP, cfg.DiscordWebhookURL, cfg.DiscordPingEnabled, cfg.DiscordEnabled, cfg.SlackWebhookURL, cfg.SlackEnabled, cfg.TelegramBotToken, cfg.TelegramChatID, cfg.TelegramEnabled,
-		cfg.SMTPHost, cfg.SMTPPort, cfg.SMTPUser, cfg.SMTPPassword, cfg.SMTPFromName, cfg.SMTPFromAddress, cfg.SMTPEnabled,
-		cfg.ResendAPIKey, cfg.ResendEnabled, cfg.PushoverUserKey, cfg.PushoverAPIToken, cfg.PushoverEnabled, cfg.GenericWebhookURL, cfg.GenericWebhookEnabled,
-		cfg.NotificationAlerts,
+		cfg.ID, cfg.TraefikWildcardIP,
 		cfg.RegistrationEnabled, cfg.RegistrationDomainAllowlist, cfg.CustomDNSResolvers, cfg.DNSValidationEnabled, cfg.IPAllowlist, cfg.MCPServerEnabled, cfg.DefaultWildcardDomain, cfg.PanelDomain,
 		cfg.SiteName, cfg.PublicIPv4, cfg.PublicIPv6, cfg.ShowSponsorshipPopup, cfg.DisableTwoStepConfirmation,
-		cfg.DefaultOpenAIKey, cfg.DefaultAnthropicKey,
 		cfg.CloudflareAPIToken, cfg.NamecheapAPIUser, cfg.NamecheapAPIKey, cfg.NamecheapClientIP, cfg.SpaceshipAPIKey,
 		cfg.UpdateCheckCron, cfg.AutoUpdateEnabled, cfg.ConcurrentBuilds, cfg.DeploymentTimeout, cfg.ServerTimezone, cfg.DockerCleanupCron, cfg.DiskUsageThreshold, cfg.DiskUsageCron, cfg.CurrentVersion, cfg.LatestVersion, cfg.LastUpdateCheck, cfg.UpdatedAt,
 	}
@@ -79,7 +71,6 @@ func (r *SettingsRepo) GetServerSettings(ctx context.Context) (*models.ServerSet
 		defaultSettings := &models.ServerSettings{
 			ID:                   "global",
 			RegistrationEnabled:  true,
-			NotificationAlerts:   true,
 			DNSValidationEnabled: true,
 			CustomDNSResolvers:   "1.1.1.1",
 			MCPServerEnabled:     true,
@@ -111,29 +102,6 @@ func (r *SettingsRepo) UpdateServerSettings(ctx context.Context, cfg *models.Ser
 	          VALUES (%s)
 	          ON CONFLICT(id) DO UPDATE SET
 	          traefik_wildcard_ip = excluded.traefik_wildcard_ip,
-	          discord_webhook_url = excluded.discord_webhook_url,
-	          discord_ping_enabled = excluded.discord_ping_enabled,
-	          discord_enabled = excluded.discord_enabled,
-	          slack_webhook_url = excluded.slack_webhook_url,
-	          slack_enabled = excluded.slack_enabled,
-	          telegram_bot_token = excluded.telegram_bot_token,
-	          telegram_chat_id = excluded.telegram_chat_id,
-	          telegram_enabled = excluded.telegram_enabled,
-	          smtp_host = excluded.smtp_host,
-	          smtp_port = excluded.smtp_port,
-	          smtp_user = excluded.smtp_user,
-	          smtp_password = excluded.smtp_password,
-	          smtp_from_name = excluded.smtp_from_name,
-	          smtp_from_address = excluded.smtp_from_address,
-	          smtp_enabled = excluded.smtp_enabled,
-	          resend_api_key = excluded.resend_api_key,
-	          resend_enabled = excluded.resend_enabled,
-	          pushover_user_key = excluded.pushover_user_key,
-	          pushover_api_token = excluded.pushover_api_token,
-	          pushover_enabled = excluded.pushover_enabled,
-	          generic_webhook_url = excluded.generic_webhook_url,
-	          generic_webhook_enabled = excluded.generic_webhook_enabled,
-	          notification_alerts = excluded.notification_alerts,
 	          registration_enabled = excluded.registration_enabled,
 	          registration_domain_allowlist = excluded.registration_domain_allowlist,
 	          custom_dns_resolvers = excluded.custom_dns_resolvers,
@@ -147,8 +115,6 @@ func (r *SettingsRepo) UpdateServerSettings(ctx context.Context, cfg *models.Ser
 	          public_ipv6 = excluded.public_ipv6,
 	          show_sponsorship_popup = excluded.show_sponsorship_popup,
 	          disable_two_step_confirmation = excluded.disable_two_step_confirmation,
-	          default_openai_key = excluded.default_openai_key,
-	          default_anthropic_key = excluded.default_anthropic_key,
 	          cloudflare_api_token = excluded.cloudflare_api_token,
 	          namecheap_api_user = excluded.namecheap_api_user,
 	          namecheap_api_key = excluded.namecheap_api_key,

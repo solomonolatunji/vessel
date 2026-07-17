@@ -86,12 +86,21 @@ export const MaintenancePage = () => {
         </div>
 
         <div className="flex shrink-0 flex-col items-end gap-4">
-          <Badge
-            variant="outline"
-            className="border-yellow-500/50 bg-yellow-500/10 px-3 py-1 font-bold text-[10px] text-yellow-500 uppercase tracking-widest"
-          >
-            1 ISSUE
-          </Badge>
+          {Number(reclaimableGb) > 3 ? (
+            <Badge
+              variant="outline"
+              className="border-yellow-500/50 bg-yellow-500/10 px-3 py-1 font-bold text-[10px] text-yellow-500 uppercase tracking-widest"
+            >
+              1 ISSUE
+            </Badge>
+          ) : (
+            <Badge
+              variant="outline"
+              className="border-green-500/50 bg-green-500/10 px-3 py-1 font-bold text-[10px] text-green-500 uppercase tracking-widest"
+            >
+              0 ISSUES
+            </Badge>
+          )}
           <Button
             variant="outline"
             onClick={() => refetch()}
