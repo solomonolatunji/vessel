@@ -363,15 +363,15 @@ export const MaintenancePage = () => {
             </div>
             <div className="flex justify-between p-4">
               <span className="text-muted-foreground">Backups</span>
-              <span className="font-mono text-muted-foreground/50">Unknown</span>
+              <span className="font-mono">{stats?.backups?.size || '0 B'}</span>
             </div>
             <div className="flex justify-between p-4">
-              <span className="text-muted-foreground">APT cache</span>
-              <span className="font-mono text-muted-foreground/50">Unknown</span>
+              <span className="text-muted-foreground">Package cache</span>
+              <span className="font-mono">{stats?.packageCache?.size || '0 B'}</span>
             </div>
             <div className="flex justify-between p-4">
               <span className="text-muted-foreground">System logs</span>
-              <span className="font-mono text-muted-foreground/50">Unknown</span>
+              <span className="font-mono">{stats?.systemLogs?.size || '0 B'}</span>
             </div>
           </div>
 
@@ -398,7 +398,7 @@ export const MaintenancePage = () => {
 
       {/* Modals */}
       <Dialog open={confirmCleanup} onOpenChange={setConfirmCleanup}>
-        <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-[500px] [&>button]:hidden">
+        <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-125 [&>button]:hidden">
           <div className="flex flex-col p-8 pb-6">
             <div className="flex items-start justify-between">
               <div className="flex flex-col">
@@ -442,7 +442,7 @@ export const MaintenancePage = () => {
       </Dialog>
 
       <Dialog open={confirmRestart} onOpenChange={setConfirmRestart}>
-        <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-[500px] [&>button]:hidden">
+        <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-125 [&>button]:hidden">
           <div className="flex flex-col p-8 pb-6">
             <div className="flex items-start justify-between">
               <div className="flex flex-col">

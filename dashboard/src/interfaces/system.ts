@@ -54,6 +54,9 @@ export interface SystemStats {
   processes: number;
   uptimeSeconds: number;
   docker: DockerStats;
+  backups?: { size: string };
+  packageCache?: { size: string };
+  systemLogs?: { size: string };
 }
 
 export interface DockerStats {
