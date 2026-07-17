@@ -80,6 +80,9 @@ export const OnboardingForm = ({ cwd }: { cwd?: string }) => {
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
 
   const onSubmit = async (data: SetupSchema) => {
+    if (currentStep !== 4) {
+      return nextStep();
+    }
     try {
       await setupUser(data);
     } catch (error) {
@@ -121,7 +124,6 @@ export const OnboardingForm = ({ cwd }: { cwd?: string }) => {
 
   return (
     <div className="mx-auto w-full max-w-5xl pt-8 pb-6">
-      {/* Top Header */}
       <div className="mb-6 flex items-center justify-between border-border/50 border-b pb-6">
         <div className="flex items-center gap-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -139,7 +141,6 @@ export const OnboardingForm = ({ cwd }: { cwd?: string }) => {
         </div>
       </div>
 
-      {/* Steps Progression */}
       <div className="relative mb-8 flex justify-between">
         <div className="absolute top-1/2 left-0 h-px w-full -translate-y-1/2 bg-border/50" />
         <div
@@ -181,8 +182,19 @@ export const OnboardingForm = ({ cwd }: { cwd?: string }) => {
       </div>
 
       <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {/* Main Card Content */}
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              if (currentStep < 4) {
+                nextStep();
+              } else {
+                handleSubmit(onSubmit)(e);
+              }
+            }
+          }}
+        >
           <div className="mb-6 min-h-[350px] rounded-xl border border-border/50 bg-card/40 p-6 shadow-xl backdrop-blur-xl">
             <div className="mb-6">
               <p className="mb-3 font-bold text-primary text-xs uppercase tracking-widest">
@@ -199,7 +211,6 @@ export const OnboardingForm = ({ cwd }: { cwd?: string }) => {
             {currentStep === 4 && <StepBackups />}
           </div>
 
-          {/* Bottom Buttons */}
           <div className="flex items-center justify-between pb-6">
             <Button
               type="button"
@@ -234,7 +245,6 @@ export const OnboardingForm = ({ cwd }: { cwd?: string }) => {
         </form>
       </FormProvider>
 
-      {/* Import Button */}
       <div className="mt-16 flex justify-center border-border/50 border-t pt-10">
         <Button
           variant="outline"

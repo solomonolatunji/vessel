@@ -46,7 +46,6 @@ export const ImportModal = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-187.5 [&>button]:hidden">
-        {/* Header */}
         <div className="flex flex-col p-8 pb-6">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-4">
@@ -75,7 +74,6 @@ export const ImportModal = ({
 
         <div className="h-px w-full bg-border/50" />
 
-        {/* Body */}
         <div className="grid grid-cols-1 gap-6 p-8 md:grid-cols-2 md:gap-8">
           <div className="space-y-3">
             <Label
@@ -126,7 +124,6 @@ export const ImportModal = ({
 
         <div className="h-px w-full bg-border/50" />
 
-        {/* Footer */}
         <div className="flex items-center justify-end gap-6 p-8 pt-6">
           <Button
             variant="ghost"

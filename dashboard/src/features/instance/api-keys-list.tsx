@@ -24,11 +24,10 @@ export function ApiKeysList() {
   const [newKeyPlain, setNewKeyPlain] = useState('');
   const [copied, setCopied] = useState(false);
 
-  // Form state
   const [name, setName] = useState('');
   const [accessLevel, setAccessLevel] = useState<'read' | 'read_write'>('read');
   const [projectScope, setProjectScope] = useState<'all' | 'specific'>('all');
-  const [expirationDays, setExpirationDays] = useState<number | null>(30); // null means no expiration
+  const [expirationDays, setExpirationDays] = useState<number | null>(30);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(newKeyPlain);
@@ -65,7 +64,6 @@ export function ApiKeysList() {
           setNewKeyPlain(data.plain);
           setIsCreateOpen(false);
           setIsNewKeyOpen(true);
-          // Reset form
           setName('');
           setAccessLevel('read');
           setProjectScope('all');
@@ -204,7 +202,6 @@ export function ApiKeysList() {
         )}
       </div>
 
-      {/* Create API Key Modal */}
       <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
         <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-2xl [&>button]:hidden">
           <div className="flex flex-col p-8 pb-6">
@@ -374,7 +371,6 @@ export function ApiKeysList() {
         </DialogContent>
       </Dialog>
 
-      {/* New API Key Success Modal */}
       <Dialog open={isNewKeyOpen} onOpenChange={setIsNewKeyOpen}>
         <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-2xl [&>button]:hidden">
           <div className="flex flex-col p-8 pb-6">
