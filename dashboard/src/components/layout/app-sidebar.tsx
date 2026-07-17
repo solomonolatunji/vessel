@@ -76,33 +76,40 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
         collapsed ? 'w-16' : 'w-64'
       }`}
     >
-      <div className="flex h-13 shrink-0 items-center gap-2 px-3">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+      <div className={collapsed ? 'px-2 py-2' : 'px-2'}>
+        <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3 px-2.5 py-2'}`}>
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-all duration-150">
             <Cloud className="h-4 w-4 text-primary" />
           </div>
           {!collapsed && (
-            <span className="font-semibold text-sidebar-foreground text-sm tracking-tight">
-              Vessl
-            </span>
+            <>
+              <span className="flex-1 truncate font-medium text-sidebar-foreground text-sm">
+                Vessl
+              </span>
+              <span className="rounded bg-sidebar-accent/80 px-1.5 py-0.5 font-medium text-[10px] text-muted-foreground">
+                v0.1
+              </span>
+              <button
+                type="button"
+                onClick={onToggle}
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-all duration-150 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+              >
+                <PanelLeft className="h-4 w-4" />
+              </button>
+            </>
           )}
         </div>
-        <div className="flex-1" />
-        {!collapsed && (
-          <span className="rounded bg-sidebar-accent/80 px-1.5 py-0.5 font-medium text-[10px] text-muted-foreground">
-            v0.1
-          </span>
-        )}
+      </div>
+
+      {collapsed && (
         <button
           type="button"
           onClick={onToggle}
-          className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+          className="absolute top-2 right-0 z-30 flex h-7 w-7 translate-x-1/2 items-center justify-center rounded-lg border border-border/60 bg-card text-muted-foreground shadow-md transition-all duration-300 hover:bg-sidebar-accent hover:text-sidebar-foreground active:scale-[0.95]"
         >
-          <PanelLeft
-            className={`h-4 w-4 transition-transform duration-300 ${collapsed ? 'scale-x-[-1]' : ''}`}
-          />
+          <PanelLeft className="h-4 w-4" />
         </button>
-      </div>
+      )}
 
       <nav className="flex flex-1 flex-col gap-5 overflow-y-auto px-2 pt-3 pb-3">
         {navGroups.map((group, i) => (
