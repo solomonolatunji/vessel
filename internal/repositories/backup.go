@@ -67,6 +67,8 @@ func (r *BackupRepo) EnsureTables() error {
 			id TEXT PRIMARY KEY,
 			project_id TEXT NOT NULL,
 			name TEXT NOT NULL,
+			description TEXT DEFAULT '',
+			provider TEXT DEFAULT 's3',
 			endpoint TEXT NOT NULL,
 			bucket TEXT NOT NULL,
 			region TEXT,

@@ -3,7 +3,6 @@ import {
   ArrowLeft,
   ArrowRight,
   Check,
-  Cloud,
   Database,
   Globe,
   Server,
@@ -14,15 +13,7 @@ import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Button } from '#/components/ui/button';
 import { useSetup } from '#/hooks/useAuth';
-import {
-  ImportModal,
-  type SetupSchema,
-  StepBackups,
-  StepDomain,
-  StepOwner,
-  StepRuntime,
-  setupSchema,
-} from '.';
+import { ImportModal, type SetupSchema, StepDomain, StepOwner, StepRuntime, setupSchema } from '.';
 
 export const OnboardingForm = ({ cwd }: { cwd?: string }) => {
   const { mutateAsync: setupUser, isPending } = useSetup();
@@ -44,11 +35,6 @@ export const OnboardingForm = ({ cwd }: { cwd?: string }) => {
       },
       dashboardDomain: '',
       defaultWildcardDomain: '',
-      s3Skip: false,
-      s3AccountId: '',
-      s3Bucket: '',
-      s3AccessKeyId: '',
-      s3SecretAccessKey: '',
     },
   });
 
@@ -66,21 +52,18 @@ export const OnboardingForm = ({ cwd }: { cwd?: string }) => {
       case 3:
         fieldsToValidate = ['dashboardDomain', 'defaultWildcardDomain'];
         break;
-      case 4:
-        fieldsToValidate = ['s3AccountId', 's3Bucket', 's3AccessKeyId', 's3SecretAccessKey'];
-        break;
     }
 
     const isValid = await trigger(fieldsToValidate);
     if (isValid) {
-      setCurrentStep((prev) => Math.min(prev + 1, 4));
+      setCurrentStep((prev) => Math.min(prev + 1, 3));
     }
   };
 
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
 
   const onSubmit = async (data: SetupSchema) => {
-    if (currentStep !== 4) {
+    if (currentStep !== 3) {
       return nextStep();
     }
     try {
@@ -113,13 +96,6 @@ export const OnboardingForm = ({ cwd }: { cwd?: string }) => {
       description: 'Configure the default domains for your applications.',
       icon: Globe,
     },
-    {
-      num: 4,
-      label: 'Backups',
-      title: 'Database backups',
-      description: 'Optional. Configure automated daily backups to S3/R2 compatible storage.',
-      icon: Cloud,
-    },
   ];
 
   return (
@@ -137,7 +113,7 @@ export const OnboardingForm = ({ cwd }: { cwd?: string }) => {
           </div>
         </div>
         <div className="font-medium text-muted-foreground text-sm uppercase tracking-widest">
-          STEP {currentStep} OF 5
+          STEP {currentStep} OF 3
         </div>
       </div>
 
@@ -145,7 +121,7 @@ export const OnboardingForm = ({ cwd }: { cwd?: string }) => {
         <div className="absolute top-1/2 left-0 h-px w-full -translate-y-1/2 bg-border/50" />
         <div
           className="absolute top-1/2 left-0 h-px -translate-y-1/2 bg-primary transition-all duration-300"
-          style={{ width: `${((currentStep - 1) / 3) * 100}%` }}
+          style={{ width: `${((currentStep - 1) / 2) * 100}%` }}
         />
         {steps.map((step) => {
           const isComplete = step.num < currentStep;
@@ -187,7 +163,7 @@ export const OnboardingForm = ({ cwd }: { cwd?: string }) => {
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault();
-              if (currentStep < 4) {
+              if (currentStep < 3) {
                 nextStep();
               } else {
                 handleSubmit(onSubmit)(e);
@@ -208,7 +184,6 @@ export const OnboardingForm = ({ cwd }: { cwd?: string }) => {
             {currentStep === 1 && <StepOwner />}
             {currentStep === 2 && <StepRuntime />}
             {currentStep === 3 && <StepDomain />}
-            {currentStep === 4 && <StepBackups />}
           </div>
 
           <div className="flex items-center justify-between pb-6">
@@ -222,7 +197,7 @@ export const OnboardingForm = ({ cwd }: { cwd?: string }) => {
               <ArrowLeft className="h-4 w-4" /> BACK
             </Button>
 
-            {currentStep < 4 ? (
+            {currentStep < 3 ? (
               <Button
                 type="button"
                 variant="outline"

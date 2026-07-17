@@ -1,10 +1,23 @@
-import { Database, Info } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Cloud, Database, Eye, EyeOff, Info, MoreVertical, Plus, Trash, X } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '#/components/ui/button';
-import { Checkbox } from '#/components/ui/checkbox';
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '#/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '#/components/ui/dropdown-menu';
 import { Input } from '#/components/ui/input';
 import { Label } from '#/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '#/components/ui/select';
 import {
   useCreateS3Destination,
   useDeleteS3Destination,
@@ -12,81 +25,80 @@ import {
 } from '#/hooks/useBackups';
 
 export function S3DestinationsList() {
-  const [accountId, setAccountId] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [provider, setProvider] = useState('r2');
+  const [endpoint, setEndpoint] = useState('');
   const [bucket, setBucket] = useState('');
+  const [region, setRegion] = useState('us-east-1');
   const [accessKeyId, setAccessKeyId] = useState('');
   const [secretAccessKey, setSecretAccessKey] = useState('');
-  const [createOrVerify, setCreateOrVerify] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
+  const [showSecret, setShowSecret] = useState(false);
 
   const { data: s3Destinations, isLoading } = useListS3Destinations('global');
   const createS3Dest = useCreateS3Destination();
   const deleteS3Dest = useDeleteS3Destination();
 
-  // If there's an existing configuration, populate it
-  const existingDest = s3Destinations?.data?.[0];
-
-  useEffect(() => {
-    if (existingDest) {
-      // For R2, the account ID is usually the subdomain of the endpoint.
-      // But we can just store the endpoint directly or reconstruct it.
-      // E.g., https://<account_id>.r2.cloudflarestorage.com
-      const match = existingDest.endpoint.match(/https?:\/\/([^.]+)\.r2/);
-      if (match) {
-        setAccountId(match[1]);
-      } else {
-        setAccountId(existingDest.endpoint); // fallback
-      }
-      setBucket(existingDest.bucket);
-      setAccessKeyId(existingDest.accessKeyId);
-      // Secret access key is usually not returned or shouldn't be populated for security
+  const handleProviderChange = (value: string) => {
+    setProvider(value);
+    if (value === 'r2') {
+      setEndpoint('https://<account_id>.r2.cloudflarestorage.com');
+      setRegion('auto');
+    } else if (value === 's3') {
+      setEndpoint('https://s3.<region>.amazonaws.com');
+      setRegion('us-east-1');
+    } else {
+      setEndpoint('');
+      setRegion('');
     }
-  }, [existingDest]);
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSaving(true);
     try {
-      const endpoint = accountId.includes('http')
-        ? accountId
-        : `https://${accountId}.r2.cloudflarestorage.com`;
-
       await createS3Dest.mutateAsync({
         payload: {
-          projectId: 'global', // assuming global for instance-level settings
-          name: 'default',
+          projectId: 'global',
+          name,
+          description,
+          provider,
           endpoint,
           bucket,
-          region: 'auto',
+          region,
           accessKeyId,
           secretAccessKey,
         },
       });
-      toast.success('R2 connection saved successfully');
-    } catch (_error) {
-      toast.error('Failed to save R2 connection');
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!existingDest) return;
-    try {
-      await deleteS3Dest.mutateAsync({ id: existingDest.id });
-      toast.success('R2 connection deleted successfully');
-      setAccountId('');
+      toast.success('S3 destination added successfully');
+      setIsOpen(false);
+      setName('');
+      setDescription('');
+      setProvider('r2');
+      setEndpoint('');
       setBucket('');
+      setRegion('us-east-1');
       setAccessKeyId('');
       setSecretAccessKey('');
     } catch (_error) {
-      toast.error('Failed to delete R2 connection');
+      toast.error('Failed to add S3 destination');
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteS3Dest.mutateAsync({ id });
+      toast.success('S3 destination deleted successfully');
+    } catch (_error) {
+      toast.error('Failed to delete S3 destination');
     }
   };
 
   if (isLoading) {
     return <div className="p-6">Loading configuration...</div>;
   }
+
+  const list = s3Destinations?.data || [];
 
   return (
     <div className="space-y-6">
@@ -96,146 +108,255 @@ export function S3DestinationsList() {
             <p className="font-bold text-[10px] text-muted-foreground uppercase tracking-[0.15em]">
               STORAGE & BACKUPS
             </p>
-            <h1 className="font-bold text-3xl tracking-tight">Connect R2</h1>
+            <h1 className="font-bold text-3xl tracking-tight">S3 Destinations</h1>
           </div>
           <p className="text-muted-foreground text-sm leading-relaxed">
-            Manage your R2 connection. Store R2 credentials in Vessl for database backups.
+            Manage your S3 compatible storage connections. Store credentials in Vessl to use them as
+            database backup targets.
           </p>
         </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-6">
-        <div className="rounded-xl border border-blue-500/20 bg-blue-500/10 p-4">
-          <div className="flex items-start gap-3">
-            <div className="mt-0.5 rounded-full bg-blue-500/20 p-1">
-              <Info className="h-4 w-4 text-blue-500" />
-            </div>
-            <div>
-              <h3 className="font-medium text-blue-500 text-sm">Secure your credentials</h3>
-              <p className="mt-1 text-muted-foreground text-sm">
-                These credentials will be used to automatically push database backups to your R2
-                bucket. Ensure the API token has sufficient permissions to write to the bucket.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-6 rounded-2xl border border-border/50 bg-card/40 p-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
-              <Database className="h-5 w-5" />
-            </div>
-            <div>
-              <h2 className="font-semibold text-lg">R2 credentials</h2>
-              <p className="text-muted-foreground text-sm">Enter your connection details</p>
-            </div>
-          </div>
-
-          <form onSubmit={handleSave} className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label
-                  htmlFor="accountId"
-                  className="font-bold text-muted-foreground text-xs uppercase tracking-wider"
-                >
-                  ACCOUNT ID
-                </Label>
-                <Input
-                  id="accountId"
-                  type="text"
-                  value={accountId}
-                  onChange={(e) => setAccountId(e.target.value)}
-                  placeholder="00d8..."
-                  className="h-11 bg-background/50 font-mono"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label
-                  htmlFor="bucket"
-                  className="font-bold text-muted-foreground text-xs uppercase tracking-wider"
-                >
-                  BUCKET NAME
-                </Label>
-                <Input
-                  id="bucket"
-                  type="text"
-                  value={bucket}
-                  onChange={(e) => setBucket(e.target.value)}
-                  placeholder="vessl-backups"
-                  className="h-11 bg-background/50 font-mono"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label
-                  htmlFor="accessKeyId"
-                  className="font-bold text-muted-foreground text-xs uppercase tracking-wider"
-                >
-                  ACCESS KEY ID
-                </Label>
-                <Input
-                  id="accessKeyId"
-                  type="text"
-                  value={accessKeyId}
-                  onChange={(e) => setAccessKeyId(e.target.value)}
-                  placeholder="Enter access key"
-                  className="h-11 bg-background/50 font-mono"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label
-                  htmlFor="secretAccessKey"
-                  className="font-bold text-muted-foreground text-xs uppercase tracking-wider"
-                >
-                  SECRET ACCESS KEY
-                </Label>
-                <Input
-                  id="secretAccessKey"
-                  type="password"
-                  value={secretAccessKey}
-                  onChange={(e) => setSecretAccessKey(e.target.value)}
-                  placeholder="Enter secret key"
-                  className="h-11 bg-background/50 font-mono"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-2 pt-2 pb-2">
-              <Checkbox
-                id="verify"
-                checked={createOrVerify}
-                onCheckedChange={(checked) => setCreateOrVerify(checked as boolean)}
-              />
-              <Label htmlFor="verify" className="font-medium text-sm leading-none">
-                Verify credentials and create bucket if missing
-              </Label>
-            </div>
-
-            <div className="flex justify-end gap-3 pt-2">
-              {existingDest && (
-                <Button
-                  type="button"
-                  variant="destructive"
-                  onClick={handleDelete}
-                  disabled={deleteS3Dest.isPending}
-                  className="h-11 font-bold text-xs uppercase tracking-wider"
-                >
-                  DELETE
-                </Button>
-              )}
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+          <DialogTrigger asChild>
+            <Button className="h-11 shrink-0 gap-2 bg-primary font-bold text-primary-foreground text-xs uppercase tracking-wider">
+              <Plus className="h-4 w-4" />
+              New Destination
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl [&>button]:hidden">
+            <div className="flex items-center justify-between border-border/50 border-b px-6 py-4">
+              <DialogTitle className="font-semibold text-lg">New S3 Storage</DialogTitle>
               <Button
-                type="submit"
-                disabled={isSaving || createS3Dest.isPending}
-                className="h-11 bg-primary font-bold text-primary-foreground text-xs uppercase tracking-wider"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-full"
+                onClick={() => setIsOpen(false)}
               >
-                {isSaving ? 'SAVING...' : 'SAVE R2 CONFIGURATION'}
+                <X className="h-4 w-4" />
               </Button>
             </div>
-          </form>
-        </div>
+            <div className="p-6">
+              <p className="mb-6 text-muted-foreground text-sm">
+                For more details, please visit the{' '}
+                <a
+                  href="https://docs.vessl.dev"
+                  className="text-primary underline"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Vessl Docs
+                </a>
+                .
+              </p>
+              <form onSubmit={handleSave} className="space-y-5">
+                <div className="space-y-2">
+                  <Label className="font-medium text-muted-foreground text-sm">Provider</Label>
+                  <Select value={provider} onValueChange={handleProviderChange}>
+                    <SelectTrigger className="h-11 bg-background/50">
+                      <SelectValue placeholder="Select provider" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="r2">Cloudflare R2</SelectItem>
+                      <SelectItem value="s3">AWS S3</SelectItem>
+                      <SelectItem value="custom">Custom S3 Compatible</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label className="font-medium text-muted-foreground text-sm">
+                      Name <span className="text-yellow-500">*</span>
+                    </Label>
+                    <Input
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="h-11 bg-background/50 focus-visible:ring-yellow-500/50"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="font-medium text-muted-foreground text-sm">Description</Label>
+                    <Input
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      className="h-11 bg-background/50 focus-visible:ring-yellow-500/50"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="font-medium text-muted-foreground text-sm">
+                    Endpoint <span className="text-yellow-500">*</span>
+                  </Label>
+                  <Input
+                    required
+                    value={endpoint}
+                    onChange={(e) => setEndpoint(e.target.value)}
+                    className="h-11 bg-background/50 font-mono text-sm focus-visible:ring-yellow-500/50"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label className="font-medium text-muted-foreground text-sm">
+                      Bucket <span className="text-yellow-500">*</span>
+                    </Label>
+                    <Input
+                      required
+                      value={bucket}
+                      onChange={(e) => setBucket(e.target.value)}
+                      className="h-11 bg-background/50 font-mono focus-visible:ring-yellow-500/50"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-1.5">
+                      <Label className="font-medium text-muted-foreground text-sm">
+                        Region <span className="text-yellow-500">*</span>
+                      </Label>
+                      <Info className="h-3.5 w-3.5 text-yellow-500" />
+                    </div>
+                    <Input
+                      required
+                      value={region}
+                      onChange={(e) => setRegion(e.target.value)}
+                      className="h-11 bg-background/50 font-mono focus-visible:ring-yellow-500/50"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label className="font-medium text-muted-foreground text-sm">
+                      Access Key <span className="text-yellow-500">*</span>
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        required
+                        type="password"
+                        value={accessKeyId}
+                        onChange={(e) => setAccessKeyId(e.target.value)}
+                        className="h-11 bg-background/50 pr-10 font-mono focus-visible:ring-yellow-500/50"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-0 right-0 h-11 w-11 text-muted-foreground"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="font-medium text-muted-foreground text-sm">
+                      Secret Key <span className="text-yellow-500">*</span>
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        required
+                        type={showSecret ? 'text' : 'password'}
+                        value={secretAccessKey}
+                        onChange={(e) => setSecretAccessKey(e.target.value)}
+                        className="h-11 bg-background/50 pr-10 font-mono focus-visible:ring-yellow-500/50"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setShowSecret(!showSecret)}
+                        className="absolute top-0 right-0 h-11 w-11 text-muted-foreground"
+                      >
+                        {showSecret ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <Button
+                    type="submit"
+                    disabled={createS3Dest.isPending}
+                    className="h-11 w-full border border-border bg-card font-medium text-foreground text-sm transition-colors hover:bg-muted"
+                  >
+                    {createS3Dest.isPending ? 'Validating...' : 'Validate Connection & Continue'}
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {list.length === 0 ? (
+          <div className="col-span-full flex flex-col items-center justify-center rounded-2xl border border-border/50 border-dashed bg-card/20 py-16 text-center">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Cloud className="h-6 w-6" />
+            </div>
+            <h3 className="font-medium text-lg">No destinations</h3>
+            <p className="mt-1 max-w-sm text-muted-foreground text-sm">
+              Add an S3 destination to start backing up your databases remotely.
+            </p>
+          </div>
+        ) : (
+          list.map((dest) => (
+            <div
+              key={dest.id}
+              className="group relative flex flex-col rounded-2xl border border-border/50 bg-card/40 p-5 transition-colors hover:border-border"
+            >
+              <div className="mb-4 flex items-start justify-between gap-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
+                  <Database className="h-5 w-5" />
+                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="end"
+                    className="w-40 border-border/50 bg-card/95 backdrop-blur-xl"
+                  >
+                    <DropdownMenuItem
+                      className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+                      onClick={() => handleDelete(dest.id)}
+                    >
+                      <Trash className="mr-2 h-4 w-4" />
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-semibold text-lg">{dest.name}</h3>
+                {dest.description && (
+                  <p className="text-muted-foreground text-sm">{dest.description}</p>
+                )}
+              </div>
+              <div className="mt-4 flex flex-col gap-2 border-border/50 border-t pt-4 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Provider</span>
+                  <span className="font-medium capitalize">{dest.provider}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Bucket</span>
+                  <span className="max-w-[150px] truncate font-medium" title={dest.bucket}>
+                    {dest.bucket}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Region</span>
+                  <span className="font-medium uppercase">{dest.region}</span>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

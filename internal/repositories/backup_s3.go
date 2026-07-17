@@ -39,9 +39,9 @@ func (r *S3DestinationRepo) CreateS3Destination(ctx context.Context, dest *model
 	}
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	_, err := r.db.ExecContext(ctx, `INSERT INTO s3_destinations (id, project_id, name, endpoint, bucket, region, access_key_id, secret_access_key, created_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-		dest.ID, dest.ProjectID, dest.Name, dest.Endpoint, dest.Bucket, dest.Region, dest.AccessKeyID, dest.SecretAccessKey, dest.CreatedAt)
+	_, err := r.db.ExecContext(ctx, `INSERT INTO s3_destinations (id, project_id, name, description, provider, endpoint, bucket, region, access_key_id, secret_access_key, created_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		dest.ID, dest.ProjectID, dest.Name, dest.Description, dest.Provider, dest.Endpoint, dest.Bucket, dest.Region, dest.AccessKeyID, dest.SecretAccessKey, dest.CreatedAt)
 	if err != nil {
 		return fmt.Errorf("failed to create s3 destination: %w", err)
 	}
@@ -52,7 +52,7 @@ func (r *S3DestinationRepo) ListS3Destinations(ctx context.Context, projectID st
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	var list []*models.S3Destination
-	err := r.db.SelectContext(ctx, &list, `SELECT id, project_id, name, endpoint, bucket, COALESCE(region, '') as region, COALESCE(access_key_id, '') as access_key_id, COALESCE(secret_access_key, '') as secret_access_key, created_at
+	err := r.db.SelectContext(ctx, &list, `SELECT id, project_id, name, COALESCE(description, '') as description, COALESCE(provider, '') as provider, endpoint, bucket, COALESCE(region, '') as region, COALESCE(access_key_id, '') as access_key_id, COALESCE(secret_access_key, '') as secret_access_key, created_at
 		FROM s3_destinations WHERE project_id = ? ORDER BY created_at DESC`, projectID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list s3 destinations: %w", err)
@@ -67,7 +67,7 @@ func (r *S3DestinationRepo) GetS3Destination(ctx context.Context, id string) (*m
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	var dest models.S3Destination
-	err := r.db.GetContext(ctx, &dest, `SELECT id, project_id, name, endpoint, bucket, COALESCE(region, '') as region, COALESCE(access_key_id, '') as access_key_id, COALESCE(secret_access_key, '') as secret_access_key, created_at
+	err := r.db.GetContext(ctx, &dest, `SELECT id, project_id, name, COALESCE(description, '') as description, COALESCE(provider, '') as provider, endpoint, bucket, COALESCE(region, '') as region, COALESCE(access_key_id, '') as access_key_id, COALESCE(secret_access_key, '') as secret_access_key, created_at
 		FROM s3_destinations WHERE id = ?`, id)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, utils.NewNotFoundError("S3Destination", id)

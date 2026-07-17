@@ -313,6 +313,8 @@ CREATE TABLE IF NOT EXISTS s3_destinations (
 			id TEXT PRIMARY KEY,
 			project_id TEXT NOT NULL,
 			name TEXT NOT NULL,
+			description TEXT DEFAULT '',
+			provider TEXT DEFAULT 's3',
 			endpoint TEXT NOT NULL,
 			bucket TEXT NOT NULL,
 			region TEXT NOT NULL,

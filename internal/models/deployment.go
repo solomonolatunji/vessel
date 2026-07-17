@@ -264,6 +264,8 @@ type S3Destination struct {
 	ID              string `json:"id" db:"id"`
 	ProjectID       string `json:"projectId" db:"project_id"`
 	Name            string `json:"name" db:"name"`
+	Description     string `json:"description" db:"description"`
+	Provider        string `json:"provider" db:"provider"`
 	Endpoint        string `json:"endpoint" db:"endpoint"`
 	Bucket          string `json:"bucket" db:"bucket"`
 	Region          string `json:"region" db:"region"`

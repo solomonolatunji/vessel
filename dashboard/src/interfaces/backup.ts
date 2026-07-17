@@ -35,6 +35,8 @@ export interface S3Destination {
   id: string;
   projectId: string;
   name: string;
+  description: string;
+  provider: string;
   endpoint: string;
   bucket: string;
   region: string;
@@ -56,6 +58,8 @@ export interface CreateBackupConfigRequest {
 export interface CreateS3DestinationRequest {
   projectId: string;
   name: string;
+  description: string;
+  provider: string;
   endpoint: string;
   bucket: string;
   region: string;
