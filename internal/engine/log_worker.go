@@ -38,7 +38,6 @@ func NewLogWorker(cli *client.Client) *LogWorker {
 }
 
 func (w *LogWorker) Start(ctx context.Context) {
-	// 1. Discover already running containers
 	containers, err := w.dockerClient.ContainerList(ctx, container.ListOptions{})
 	if err == nil {
 		for _, c := range containers {
@@ -48,7 +47,6 @@ func (w *LogWorker) Start(ctx context.Context) {
 		slog.Error("log worker failed to list initial containers", "err", err)
 	}
 
-	// 2. Listen for new containers starting
 	go w.listenForEvents(ctx)
 }
 
@@ -64,7 +62,6 @@ func (w *LogWorker) listenForEvents(ctx context.Context) {
 		case err := <-errs:
 			if err != nil {
 				slog.Error("docker events stream error", "err", err)
-				// Small backoff before recreating event stream (simplified)
 				time.Sleep(2 * time.Second)
 				msgs, errs = w.dockerClient.Events(ctx, events.ListOptions{
 					Filters: filters.NewArgs(filters.Arg("type", "container"), filters.Arg("event", "start")),
@@ -129,7 +126,6 @@ func (w *LogWorker) tailContainerLogs(ctx context.Context, containerID, serviceI
 }
 
 func (w *LogWorker) pushToLoki(containerID, serviceID, line string) {
-	// Loki format
 	payload := map[string]any{
 		"streams": []map[string]any{
 			{

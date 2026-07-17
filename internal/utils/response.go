@@ -22,7 +22,6 @@ type PaginatedData struct {
 	TotalPages int `json:"totalPages"`
 }
 
-// Success returns a standardized success response
 func Success(c echo.Context, message string, data interface{}) error {
 	start := time.Now()
 	if v := c.Get("startTime"); v != nil {
@@ -41,7 +40,6 @@ func Success(c echo.Context, message string, data interface{}) error {
 	})
 }
 
-// Created returns a standardized 201 response
 func Created(c echo.Context, message string, data interface{}) error {
 	return c.JSON(http.StatusCreated, APIResponse{
 		Status:  "success",
@@ -51,7 +49,6 @@ func Created(c echo.Context, message string, data interface{}) error {
 	})
 }
 
-// Accepted returns a standardized 202 response
 func Accepted(c echo.Context, message string, data interface{}) error {
 	return c.JSON(http.StatusAccepted, APIResponse{
 		Status:  "success",
@@ -61,7 +58,6 @@ func Accepted(c echo.Context, message string, data interface{}) error {
 	})
 }
 
-// Error returns a standardized error response
 func Error(c echo.Context, statusCode int, message string) error {
 	return c.JSON(statusCode, APIResponse{
 		Status:  "error",
@@ -70,7 +66,6 @@ func Error(c echo.Context, statusCode int, message string) error {
 	})
 }
 
-// Paginated returns a standardized paginated response
 func Paginated(c echo.Context, message string, records interface{}, total, page, limit int) error {
 	totalPages := 0
 	if limit > 0 {

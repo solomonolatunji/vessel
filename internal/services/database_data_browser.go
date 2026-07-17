@@ -10,7 +10,6 @@ import (
 	"vessl.dev/vessl/internal/models"
 )
 
-// GetSchemas returns table and column definitions.
 func (s *DatabaseService) GetSchemas(ctx context.Context, id string) ([]models.TableSchema, error) {
 	db, err := s.repo.GetByID(ctx, id)
 	if err != nil || db == nil {
@@ -129,7 +128,6 @@ func getMySQLSchemas(db *models.Database) ([]models.TableSchema, error) {
 	return schemas, nil
 }
 
-// GetTableData gets rows from a table.
 func (s *DatabaseService) GetTableData(ctx context.Context, id, table string, limit, offset int) (*models.DatabaseQueryResponse, error) {
 	db, err := s.repo.GetByID(ctx, id)
 	if err != nil || db == nil {
@@ -157,7 +155,6 @@ func escapeSQLValue(v any) string {
 	return fmt.Sprintf("'%s'", str)
 }
 
-// InsertTableRow inserts a row into a table.
 func (s *DatabaseService) InsertTableRow(ctx context.Context, id, table string, data map[string]any) (*models.DatabaseQueryResponse, error) {
 	db, err := s.repo.GetByID(ctx, id)
 	if err != nil || db == nil {
@@ -188,7 +185,6 @@ func (s *DatabaseService) InsertTableRow(ctx context.Context, id, table string, 
 	return s.QueryDatabase(ctx, id, query)
 }
 
-// UpdateTableRow updates a row.
 type UpdateTableRowOpts struct {
 	ID    string
 	Table string
@@ -243,7 +239,6 @@ func (s *DatabaseService) UpdateTableRow(ctx context.Context, opts UpdateTableRo
 	}
 }
 
-// DeleteTableRow deletes a row.
 func (s *DatabaseService) DeleteTableRow(ctx context.Context, id, table string, keys map[string]any) (*models.DatabaseQueryResponse, error) {
 	db, err := s.repo.GetByID(ctx, id)
 	if err != nil || db == nil {

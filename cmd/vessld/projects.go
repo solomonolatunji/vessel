@@ -210,8 +210,6 @@ func runEnvVars(args []string) {
 			for _, arg := range args[1:] {
 				if arg == k {
 					delete(existing, k)
-					// SetVar with empty value acts as delete is not supported;
-					// write remaining keys
 					fmt.Printf("  ✅ Unset %s\n", k)
 				}
 			}

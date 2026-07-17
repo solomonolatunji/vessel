@@ -51,27 +51,22 @@ func (h *OnboardingHandler) SetupStatus(c echo.Context) error {
 	})
 }
 
-type SetupEnv struct {
+type setupEnv struct {
 	JWTSecret    string `json:"jwtSecret"`
 	DataDir      string `json:"dataDir"`
 	DashboardURL string `json:"dashboardUrl"`
 	Port         int    `json:"port"`
 }
 
-// RegisterRequest defines the expected payload for setup
-type SetupRequest struct {
-	// User
+type setupRequest struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 
-	// Runtime Environment (written to .env.local)
-	Env SetupEnv `json:"env"`
+	Env setupEnv `json:"env"`
 
-	// Domain (optional)
 	DefaultWildcardDomain string `json:"defaultWildcardDomain,omitempty"`
 
-	// Backups (optional)
 	S3AccountID       string `json:"s3AccountId,omitempty"`
 	S3Bucket          string `json:"s3Bucket,omitempty"`
 	S3AccessKeyID     string `json:"s3AccessKeyId,omitempty"`
@@ -98,7 +93,7 @@ func (h *OnboardingHandler) Setup(c echo.Context) error {
 		return utils.Error(c, 403, "Setup has already been completed")
 	}
 
-	var req SetupRequest
+	var req setupRequest
 	if err := c.Bind(&req); err != nil {
 		fmt.Printf("Setup Error: Failed to bind request: %v\n", err)
 		return utils.Error(c, 400, "invalid request")
@@ -109,12 +104,10 @@ func (h *OnboardingHandler) Setup(c echo.Context) error {
 		return utils.Error(c, 400, err.Error())
 	}
 
-	// Write to .env.local
 	envContent := fmt.Sprintf("VESSL_JWT_SECRET=%s\nVESSL_DATA_DIR=%s\nVESSL_DASHBOARD_URL=%s\nPORT=%d\n",
 		req.Env.JWTSecret, req.Env.DataDir, req.Env.DashboardURL, req.Env.Port)
 	_ = os.WriteFile(".env.local", []byte(envContent), 0644)
 
-	// Update settings
 	settings, err := h.settingsRepo.GetSettings(ctx)
 	if err == nil && settings != nil {
 		updated := false
@@ -127,7 +120,6 @@ func (h *OnboardingHandler) Setup(c echo.Context) error {
 		}
 	}
 
-	// Save S3 Destination
 	if !req.S3Skip && req.S3AccountID != "" && req.S3Bucket != "" && req.S3AccessKeyID != "" && req.S3SecretAccessKey != "" {
 		endpoint := fmt.Sprintf("https://%s.r2.cloudflarestorage.com", req.S3AccountID)
 		_ = h.backupService.CreateS3Destination(ctx, &models.S3Destination{

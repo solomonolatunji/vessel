@@ -74,13 +74,11 @@ func canonicalPath(bucket string, key string) string {
 	return "/" + bucketPath + "/" + strings.Join(parts, "/")
 }
 
-// EnsureS3Bucket implements HEAD bucket and PUT bucket if missing
 func EnsureS3Bucket(ctx context.Context, dest *models.S3Destination) error {
 	resp, err := signedS3Request(ctx, dest, http.MethodHead, "", nil, "")
 	if err != nil {
 		s3Err, ok := err.(*S3Error)
 		if ok && s3Err.Status == 404 {
-			// Bucket not found, create it
 			respPut, errPut := signedS3Request(ctx, dest, http.MethodPut, "", nil, "")
 			if errPut != nil {
 				return fmt.Errorf("failed to create bucket: %w", errPut)

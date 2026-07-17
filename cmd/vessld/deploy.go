@@ -139,9 +139,7 @@ func runDeploy(args []string) {
 				var choice int
 				_, err := fmt.Scanln(&choice)
 				if err != nil || choice < 0 || choice > len(projects) {
-					// Handle enter without input or invalid
 					fmt.Println("Invalid choice.")
-					// Consume remainder of line if any
 					continue
 				}
 				if choice > 0 {

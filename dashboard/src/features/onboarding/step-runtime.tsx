@@ -42,7 +42,9 @@ export const StepRuntime = () => {
             {...register('env.port', { valueAsNumber: true })}
             className="h-11 rounded-xl border-border bg-card px-4 text-sm transition-all duration-300 focus:border-primary/50 focus:ring-1 focus:ring-primary/50"
           />
-          {errors.env?.port && <p className="text-destructive text-xs">{errors.env.port.message}</p>}
+          {errors.env?.port && (
+            <p className="text-destructive text-xs">{errors.env.port.message}</p>
+          )}
         </div>
 
         <div className="space-y-1.5 md:col-span-2">

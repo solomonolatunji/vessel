@@ -34,9 +34,7 @@ func (bm *BackupManager) RestoreBackup(ctx context.Context, recordID string) err
 	if rec.FilePath != "" {
 		data, err = os.ReadFile(rec.FilePath)
 		if err != nil {
-			// If file not on disk, we would try S3 here.
 			if rec.S3URL != "" && cfg.S3DestinationID != "" {
-				// S3 download stub
 				data = []byte("-- Simulated download from " + rec.S3URL)
 			} else {
 				return fmt.Errorf("failed to read backup file and no S3 backup available: %w", err)
@@ -91,7 +89,6 @@ func (bm *BackupManager) buildRestoreCommand(cfg *models.BackupConfig) (string, 
 			}
 			return containerName, cmd, nil
 		}
-		// Fallback for storage/redis
 		return containerName, []string{"tar", "-xzf", "-", "-C", "/data"}, nil
 
 	} else if cfg.StorageID != "" {
@@ -129,7 +126,6 @@ func (bm *BackupManager) executeRestore(ctx context.Context, containerName strin
 	}
 	defer attachResp.Close()
 
-	// Write data to Stdin concurrently
 	go func() {
 		_, _ = io.Copy(attachResp.Conn, bytes.NewReader(data))
 		attachResp.CloseWrite()

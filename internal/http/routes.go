@@ -66,7 +66,6 @@ func (s *Server) registerRoutes() {
 	authGroup.POST("/databases/:id/query", s.dbHandler.QueryDatabase, s.authGuard.RequireScope("database:manage"))
 	authGroup.POST("/databases/:id/import", s.dbHandler.ImportData, s.authGuard.RequireScope("database:manage"))
 
-	// Data Browser
 	authGroup.GET("/databases/:id/schemas", s.dbHandler.GetSchemas, s.authGuard.RequireScope("database:manage"))
 	authGroup.GET("/databases/:id/data/:table", s.dbHandler.GetTableData, s.authGuard.RequireScope("database:manage"))
 	authGroup.POST("/databases/:id/data/:table", s.dbHandler.InsertTableRow, s.authGuard.RequireScope("database:manage"))

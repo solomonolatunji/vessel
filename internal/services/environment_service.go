@@ -80,9 +80,7 @@ func (s *EnvironmentService) CreateDomain(ctx context.Context, d *models.DomainC
 		return nil, err
 	}
 
-	// Best-effort DNS provisioning
 	if s.dnsService != nil {
-		// Run in background so we don't block the API response unnecessarily, or we can run synchronously
 		go func() {
 			_ = s.dnsService.ProvisionARecord(context.Background(), d.DomainName)
 		}()

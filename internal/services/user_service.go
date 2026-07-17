@@ -97,7 +97,6 @@ func (s *UserService) CreatePAT(ctx context.Context, userID, name string, expire
 	rand.Read(bytes)
 	rawToken := "vpt_" + hex.EncodeToString(bytes)
 
-	// Use SHA256 for PATs instead of bcrypt to avoid the 72-byte limit and for better performance
 	hasher := sha256.New()
 	hasher.Write([]byte(rawToken))
 	hash := hex.EncodeToString(hasher.Sum(nil))

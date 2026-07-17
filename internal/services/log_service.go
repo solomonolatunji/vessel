@@ -34,7 +34,6 @@ type LokiStream struct {
 	Values [][]string        `json:"values"`
 }
 
-// GetHistoricalLogs fetches logs from Loki for a given serviceID within the specified time range.
 type HistoricalLogsOpts struct {
 	ServiceID string
 	Start     time.Time

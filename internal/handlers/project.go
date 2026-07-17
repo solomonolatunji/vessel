@@ -85,7 +85,6 @@ func (h *ProjectHandler) GetProject(c echo.Context) error {
 	}
 	user := middleware.GetUserClaimsFromContext(c.Request().Context())
 	if user != nil && user.Role != "admin" {
-		// Removed ownership check
 	}
 	return utils.Success(c, "Operation successful", p)
 }
@@ -108,7 +107,6 @@ func (h *ProjectHandler) DeleteProject(c echo.Context) error {
 	}
 	user := middleware.GetUserClaimsFromContext(c.Request().Context())
 	if user != nil && user.Role != "admin" {
-		// Removed ownership check
 	}
 	if err := h.projectService.DeleteProject(c.Request().Context(), id); err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())

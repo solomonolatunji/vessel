@@ -225,7 +225,6 @@ func (d *Deployer) startContainer(ctx context.Context, opts StartContainerOpts) 
 		startedNames = append(startedNames, containerName)
 	}
 
-	// For database apps, scheduleCleanup shouldn't run unless we support replicas.
 	return startedNames, nil
 }
 

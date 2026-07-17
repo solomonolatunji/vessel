@@ -54,7 +54,6 @@ func (w *MetricsWorker) collectAndPush() {
 	timestamp := time.Now().UnixMilli()
 
 	for _, c := range containers {
-		// Ignore Vessl system containers
 		if len(c.Names) > 0 {
 			name := strings.TrimPrefix(c.Names[0], "/")
 			if name == TraefikContainerName || name == TSDBContainerName {
@@ -79,8 +78,6 @@ func (w *MetricsWorker) collectAndPush() {
 
 		tags := fmt.Sprintf(`container_id="%s",container_name="%s",service_id="%s"`, c.ID, containerName, serviceID)
 
-		// VictoriaMetrics Prometheus import format:
-		// metric_name{labels} value timestamp
 		sb.WriteString(fmt.Sprintf("container_cpu_usage_percent{%s} %f %d\n", tags, health.CPUUsagePercentage, timestamp))
 		sb.WriteString(fmt.Sprintf("container_memory_usage_bytes{%s} %d %d\n", tags, health.MemoryUsageBytes, timestamp))
 		sb.WriteString(fmt.Sprintf("container_memory_limit_bytes{%s} %d %d\n", tags, health.MemoryLimitBytes, timestamp))

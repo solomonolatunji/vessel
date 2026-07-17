@@ -44,7 +44,6 @@ func (s *AuditService) LogAction(ctx context.Context, opts AuditActionOpts) {
 		IPAddress: opts.IPAddress,
 	}
 
-	// We log asynchronously so we don't block the caller
 	go func() {
 		err := s.repo.Create(context.Background(), log)
 		if err != nil {

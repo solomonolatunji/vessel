@@ -132,7 +132,6 @@ func (h *DatabaseHandler) UpdateDatabase(c echo.Context) error {
 	if err := h.databaseService.UpdateDatabase(c.Request().Context(), db); err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	// Re-deploy is usually required to apply Traefik label changes
 	return utils.Success(c, "Operation successful", db)
 }
 
@@ -265,8 +264,6 @@ func (h *DatabaseHandler) ImportData(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
-	// Run import as background task or sync? Import can take long, but we'll do it sync for simplicity
-	// Alternatively, we should probably run it async and return immediately
 	go func() {
 		_ = h.databaseService.ImportData(context.Background(), id, req.SourceURL)
 	}()

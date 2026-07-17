@@ -193,7 +193,6 @@ func (h *DeploymentHandler) GetMetrics(c echo.Context) error {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 
-	// For the dashboard, we return an array. We can simulate the 5-minute window or just return the current one.
 	now := time.Now().UTC()
 	metrics := []map[string]any{
 		{

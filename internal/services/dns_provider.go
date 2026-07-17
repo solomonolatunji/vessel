@@ -21,7 +21,6 @@ func NewDNSProviderService(repo repositories.SettingsRepository) *DNSProviderSer
 	return &DNSProviderService{settingsRepo: repo}
 }
 
-// ProvisionARecord attempts to create an A record for the given domain using configured providers.
 func (s *DNSProviderService) ProvisionARecord(ctx context.Context, domain string) error {
 	cfg, err := s.settingsRepo.GetServerSettings(ctx)
 	if err != nil || cfg == nil {
@@ -65,7 +64,6 @@ func (s *DNSProviderService) provisionCloudflare(ctx context.Context, token, dom
 	rootDomain := getRootDomain(domain)
 	client := &http.Client{}
 
-	// Get Zone ID
 	req, _ := http.NewRequestWithContext(ctx, http.MethodGet, "https://api.cloudflare.com/client/v4/zones?name="+rootDomain, nil)
 	req.Header.Set("Authorization", "Bearer "+token)
 	resp, err := client.Do(req)
@@ -84,7 +82,6 @@ func (s *DNSProviderService) provisionCloudflare(ctx context.Context, token, dom
 	}
 	zoneID := zoneRes.Result[0].ID
 
-	// Create DNS Record
 	payload := map[string]any{
 		"type":    "A",
 		"name":    domain,
@@ -141,7 +138,6 @@ func (s *DNSProviderService) provisionNamecheap(ctx context.Context, cfg *models
 }
 
 func (s *DNSProviderService) provisionSpaceship(ctx context.Context, key, domain, targetIP string) error {
-	// Simulated Spaceship API
 	payload := map[string]any{
 		"type":    "A",
 		"name":    domain,

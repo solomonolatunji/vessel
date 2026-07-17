@@ -42,7 +42,6 @@ func (s *MailerService) SendSystemEmail(ctx context.Context, templateName string
 		return fmt.Errorf("global SMTP configuration missing")
 	}
 
-	// Render template
 	var buf bytes.Buffer
 	if err := HTMLTemplates.ExecuteTemplate(&buf, templateName, data); err != nil {
 		return fmt.Errorf("executing template %s: %w", templateName, err)

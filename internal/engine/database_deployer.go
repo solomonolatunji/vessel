@@ -218,7 +218,6 @@ func (d *DatabaseDeployer) ImportData(ctx context.Context, dbConfig *models.Data
 		if err != nil {
 			return fmt.Errorf("failed to start exec for pg_dump: %w", err)
 		}
-		// wait for exec to finish
 		for {
 			inspect, err := d.dockerClient.ContainerExecInspect(ctx, execID.ID)
 			if err != nil {
@@ -235,7 +234,6 @@ func (d *DatabaseDeployer) ImportData(ctx context.Context, dbConfig *models.Data
 		return nil
 
 	case "redis":
-		// Stream to dump.rdb then restart container so it loads it
 		cmd := fmt.Sprintf("redis-cli -u \"%s\" --rdb /data/dump.rdb", sourceURL)
 		execConfig := container.ExecOptions{
 			Cmd:          []string{"sh", "-c", cmd},
@@ -263,7 +261,6 @@ func (d *DatabaseDeployer) ImportData(ctx context.Context, dbConfig *models.Data
 			}
 			time.Sleep(1 * time.Second)
 		}
-		// restart redis to load rdb
 		return d.dockerClient.ContainerRestart(ctx, containerName, container.StopOptions{})
 
 	default:

@@ -44,7 +44,6 @@ func (h *SettingsHandler) GetPublicSettings(c echo.Context) error {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 
-	// Only return safe public settings
 	publicSettings := map[string]any{
 		"registrationEnabled": s.RegistrationEnabled,
 		"siteName":            s.SiteName,

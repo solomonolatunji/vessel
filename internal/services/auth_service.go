@@ -134,7 +134,6 @@ func (a *AuthService) ForgotPassword(ctx context.Context, email string, originUr
 
 	u, err := a.userRepo.GetUserByEmail(ctx, email)
 	if err != nil || u == nil {
-		// Prevent email enumeration by returning nil even if not found
 		return nil
 	}
 
@@ -180,7 +179,6 @@ func (a *AuthService) ResetPassword(ctx context.Context, tokenStr, newPassword s
 		return err
 	}
 
-	// Accept any pending project invites for this user since they successfully set their password
 	_ = a.projectSettings.AcceptAllInvitesForUser(ctx, u.ID)
 
 	return nil
@@ -207,8 +205,6 @@ func (a *AuthService) InviteUser(ctx context.Context, email string, originUrl st
 		return nil, err
 	}
 
-	// Trigger forgot password flow so the invited user can set their password.
-	// We ignore errors here so the invite still succeeds even if email fails.
 	_ = a.ForgotPassword(ctx, u.Email, originUrl)
 
 	return u, nil

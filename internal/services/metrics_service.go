@@ -21,7 +21,6 @@ func NewMetricsService() *MetricsService {
 	}
 }
 
-// GetServiceMetrics queries the TSDB for a given serviceID within the specified time range.
 type ServiceMetricsOpts struct {
 	ServiceID string
 	Start     time.Time

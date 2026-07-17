@@ -37,7 +37,6 @@ func (s *OAuthService) ListEnabledProviders(ctx context.Context) ([]models.OAuth
 	var enabledProviders []models.OAuthProviderConfig
 	for _, p := range allProviders {
 		if p.Enabled {
-			// Strip secrets before returning to unauthorized clients
 			p.ClientSecret = ""
 			enabledProviders = append(enabledProviders, p)
 		}
