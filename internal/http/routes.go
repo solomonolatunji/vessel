@@ -31,7 +31,7 @@ func (s *Server) registerRoutes() {
 	authGroup.GET("/system/stats", s.systemHandler.GetStats)
 	apiGroup.POST("/system/restart", s.systemHandler.Restart, s.authGuard.RequireRole("admin"))
 	apiGroup.POST("/system/maintenance/cleanup", s.systemHandler.Cleanup, s.authGuard.RequireRole("admin"))
-	apiGroup.GET("/system/export", s.migrationHandler.Export, s.authGuard.RequireRole("admin"))
+	apiGroup.POST("/system/export", s.migrationHandler.Export, s.authGuard.RequireRole("admin"))
 	apiGroup.POST("/system/import", s.migrationHandler.Import, s.authGuard.RequireRole("admin"))
 	apiGroup.GET("/system/migration/railway/projects", s.railwayHandler.GetProjects, s.authGuard.RequireRole("admin"))
 	apiGroup.POST("/system/migration/railway/import", s.railwayHandler.ImportProject, s.authGuard.RequireRole("admin"))

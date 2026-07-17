@@ -23,25 +23,28 @@ func NewMigrationHandler(s *services.MigrationService) *MigrationHandler {
 // @Summary Export server bundle
 // @Description Exports the full server state (SQLite database + all DB container dumps) into an AES-256-GCM encrypted .vessl bundle. Admin only.
 // @Tags System
+// @Accept json
 // @Produce application/octet-stream
-// @Param passphrase query string true "Passphrase used to encrypt the bundle"
+// @Param request body map[string]string true "JSON with passphrase"
 // @Success 200 {file} binary "Encrypted .vessl bundle file"
 // @Failure 400 {object} map[string]any "Missing passphrase"
 // @Failure 500 {object} map[string]any "Export failed"
-// @Router /system/export [get]
+// @Router /system/export [post]
 func (h *MigrationHandler) Export(c echo.Context) error {
-	passphrase := c.QueryParam("passphrase")
-	if passphrase == "" {
-		return utils.Error(c, http.StatusBadRequest, "passphrase query parameter is required")
+	var req struct {
+		Passphrase string `json:"passphrase"`
+	}
+	if err := c.Bind(&req); err != nil || req.Passphrase == "" {
+		return utils.Error(c, http.StatusBadRequest, "passphrase is required in request body")
 	}
 
-	bundleData, err := h.service.Export(c.Request().Context(), passphrase)
+	bundleData, err := h.service.Export(c.Request().Context(), req.Passphrase)
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, fmt.Sprintf("export failed: %v", err))
 	}
 
 	filename := fmt.Sprintf("vessl-bundle-%s.vessl", time.Now().UTC().Format("20060102-150405"))
-	c.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%q", filename))
+	c.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filename))
 	c.Response().Header().Set("Content-Type", "application/octet-stream")
 	c.Response().WriteHeader(http.StatusOK)
 	_, _ = c.Response().Write(bundleData)
@@ -53,16 +56,16 @@ func (h *MigrationHandler) Export(c echo.Context) error {
 // @Tags System
 // @Accept multipart/form-data
 // @Produce json
-// @Param passphrase query string true "Passphrase used to decrypt the bundle"
+// @Param passphrase formData string true "Passphrase used to decrypt the bundle"
 // @Param bundle formData file true "The .vessl bundle file to import"
 // @Success 200 {object} map[string]any "Import completed with manifest details"
 // @Failure 400 {object} map[string]any "Missing passphrase or bundle file"
 // @Failure 422 {object} map[string]any "Decryption or restore failed"
 // @Router /system/import [post]
 func (h *MigrationHandler) Import(c echo.Context) error {
-	passphrase := c.QueryParam("passphrase")
+	passphrase := c.FormValue("passphrase")
 	if passphrase == "" {
-		return utils.Error(c, http.StatusBadRequest, "passphrase query parameter is required")
+		return utils.Error(c, http.StatusBadRequest, "passphrase form value is required")
 	}
 
 	file, err := c.FormFile("bundle")
