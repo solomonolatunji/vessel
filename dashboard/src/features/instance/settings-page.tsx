@@ -1,36 +1,38 @@
-import { Link, Outlet, useRouterState } from '@tanstack/react-router';
-import { Bell, Lock, Settings } from 'lucide-react';
+import { Bell, Database, Lock, Settings as SettingsIcon } from 'lucide-react';
+import { useState } from 'react';
+import { GeneralSettings } from './general-settings';
+import { NotificationsSettings } from './notifications-settings';
+import { OAuthProvidersList } from './oauth-providers-list';
+import { S3DestinationsList } from './s3-destinations-list';
 
-type Tab = { id: string; label: string; icon: React.ReactNode; path: string };
+type TabId = 'general' | 'notifications' | 'oauth' | 'backups';
+
+type Tab = { id: TabId; label: string; icon: React.ReactNode };
 
 const TABS: Tab[] = [
   {
     id: 'general',
     label: 'General',
-    icon: <Settings className="h-4 w-4" />,
-    path: '/settings/general',
+    icon: <SettingsIcon className="h-4 w-4" />,
   },
   {
     id: 'notifications',
     label: 'Notifications',
     icon: <Bell className="h-4 w-4" />,
-    path: '/settings/notifications',
   },
-  { id: 'oauth', label: 'OAuth', icon: <Lock className="h-4 w-4" />, path: '/settings/oauth' },
+  { id: 'oauth', label: 'OAuth', icon: <Lock className="h-4 w-4" /> },
+  { id: 'backups', label: 'Backups', icon: <Database className="h-4 w-4" /> },
 ];
 
 export const SettingsLayout = () => {
-  const { location } = useRouterState();
-  const pathname = location.pathname;
-
-  const activeId = TABS.find((t) => pathname.startsWith(t.path))?.id ?? 'general';
+  const [activeId, setActiveId] = useState<TabId>('general');
 
   return (
     <div className="flex min-h-full flex-col">
       <div className="border-border/50 border-b bg-background/50 px-6 pt-6 backdrop-blur-sm">
         <div className="mb-5 flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-            <Settings className="h-4.5 w-4.5" />
+            <SettingsIcon className="h-4.5 w-4.5" />
           </div>
           <div>
             <h1 className="font-bold text-xl">Instance Settings</h1>
@@ -42,9 +44,10 @@ export const SettingsLayout = () => {
           {TABS.map((t) => {
             const isActive = t.id === activeId;
             return (
-              <Link
+              <button
                 key={t.id}
-                to={t.path}
+                onClick={() => setActiveId(t.id)}
+                type="button"
                 className={[
                   'flex shrink-0 items-center gap-2 rounded-t-lg border border-b-0 px-4 py-2.5 text-sm transition-colors',
                   isActive
@@ -54,14 +57,17 @@ export const SettingsLayout = () => {
               >
                 {t.icon}
                 {t.label}
-              </Link>
+              </button>
             );
           })}
         </nav>
       </div>
 
       <div className="flex-1 p-6">
-        <Outlet />
+        {activeId === 'general' && <GeneralSettings />}
+        {activeId === 'notifications' && <NotificationsSettings />}
+        {activeId === 'oauth' && <OAuthProvidersList />}
+        {activeId === 'backups' && <S3DestinationsList />}
       </div>
     </div>
   );

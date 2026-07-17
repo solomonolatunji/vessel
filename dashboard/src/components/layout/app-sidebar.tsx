@@ -51,11 +51,11 @@ const navGroups: NavGroup[] = [
   {
     title: 'System & Settings',
     items: [
-      { title: 'API Access', url: '/settings/api', icon: Key },
+      { title: 'API Access', url: '/api-access', icon: Key },
       { title: 'DNS', url: '/dns', icon: Network },
       { title: 'Migration', url: '/migrations', icon: Download },
-      { title: 'Maintenance', url: '/settings/maintenance', icon: Wrench },
-      { title: 'Updates', url: '/settings/updates', icon: RefreshCw },
+      { title: 'Maintenance', url: '/maintenance', icon: Wrench },
+      { title: 'Updates', url: '/updates', icon: RefreshCw },
       { title: 'Settings', url: '/settings', icon: Settings, exact: true },
     ],
   },
