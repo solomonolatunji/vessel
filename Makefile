@@ -57,8 +57,8 @@ dev-dryrun:
 	npx concurrently -k "DEPLOY_DRY_RUN=true make dev-daemon" "make dev-dashboard"
 
 dev-daemon:
-	@echo "🚀 Running Go daemon in dev mode..."
-	go run ./cmd/vessld
+	@echo "🚀 Running Go daemon in dev mode with live reload..."
+	go run github.com/air-verse/air@latest -c .air.toml
 
 dev-dashboard:
 	@echo "💻 Running Dashboard dev server on port 3000..."
