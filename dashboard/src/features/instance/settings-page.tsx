@@ -1,9 +1,9 @@
 import { Bell, Database, Lock, Settings as SettingsIcon } from 'lucide-react';
 import { useState } from 'react';
+import { BackupsList } from './backups-list';
 import { GeneralSettings } from './general-settings';
 import { NotificationsSettings } from './notifications-settings';
 import { OAuthProvidersList } from './oauth-providers-list';
-import { S3DestinationsList } from './s3-destinations-list';
 
 type TabId = 'general' | 'notifications' | 'oauth' | 'backups';
 
@@ -67,7 +67,7 @@ export const SettingsLayout = () => {
         {activeId === 'general' && <GeneralSettings />}
         {activeId === 'notifications' && <NotificationsSettings />}
         {activeId === 'oauth' && <OAuthProvidersList />}
-        {activeId === 'backups' && <S3DestinationsList />}
+        {activeId === 'backups' && <BackupsList />}
       </div>
     </div>
   );

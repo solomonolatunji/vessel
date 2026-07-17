@@ -20,6 +20,7 @@ import { Route as DashboardTemplatesRouteImport } from './routes/_dashboard.temp
 import { Route as DashboardStorageRouteImport } from './routes/_dashboard.storage'
 import { Route as DashboardSourcesRouteImport } from './routes/_dashboard.sources'
 import { Route as DashboardSettingsRouteImport } from './routes/_dashboard.settings'
+import { Route as DashboardS3DestinationsRouteImport } from './routes/_dashboard.s3-destinations'
 import { Route as DashboardProjectsRouteImport } from './routes/_dashboard.projects'
 import { Route as DashboardProfileRouteImport } from './routes/_dashboard.profile'
 import { Route as DashboardMigrationsRouteImport } from './routes/_dashboard.migrations'
@@ -99,6 +100,11 @@ const DashboardSourcesRoute = DashboardSourcesRouteImport.update({
 const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardS3DestinationsRoute = DashboardS3DestinationsRouteImport.update({
+  id: '/s3-destinations',
+  path: '/s3-destinations',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardProjectsRoute = DashboardProjectsRouteImport.update({
@@ -268,6 +274,7 @@ export interface FileRoutesByFullPath {
   '/migrations': typeof DashboardMigrationsRoute
   '/profile': typeof DashboardProfileRoute
   '/projects': typeof DashboardProjectsRouteWithChildren
+  '/s3-destinations': typeof DashboardS3DestinationsRoute
   '/settings': typeof DashboardSettingsRoute
   '/sources': typeof DashboardSourcesRoute
   '/storage': typeof DashboardStorageRoute
@@ -306,6 +313,7 @@ export interface FileRoutesByTo {
   '/migrations': typeof DashboardMigrationsRoute
   '/profile': typeof DashboardProfileRoute
   '/projects': typeof DashboardProjectsRouteWithChildren
+  '/s3-destinations': typeof DashboardS3DestinationsRoute
   '/settings': typeof DashboardSettingsRoute
   '/sources': typeof DashboardSourcesRoute
   '/storage': typeof DashboardStorageRoute
@@ -346,6 +354,7 @@ export interface FileRoutesById {
   '/_dashboard/migrations': typeof DashboardMigrationsRoute
   '/_dashboard/profile': typeof DashboardProfileRoute
   '/_dashboard/projects': typeof DashboardProjectsRouteWithChildren
+  '/_dashboard/s3-destinations': typeof DashboardS3DestinationsRoute
   '/_dashboard/settings': typeof DashboardSettingsRoute
   '/_dashboard/sources': typeof DashboardSourcesRoute
   '/_dashboard/storage': typeof DashboardStorageRoute
@@ -387,6 +396,7 @@ export interface FileRouteTypes {
     | '/migrations'
     | '/profile'
     | '/projects'
+    | '/s3-destinations'
     | '/settings'
     | '/sources'
     | '/storage'
@@ -425,6 +435,7 @@ export interface FileRouteTypes {
     | '/migrations'
     | '/profile'
     | '/projects'
+    | '/s3-destinations'
     | '/settings'
     | '/sources'
     | '/storage'
@@ -464,6 +475,7 @@ export interface FileRouteTypes {
     | '/_dashboard/migrations'
     | '/_dashboard/profile'
     | '/_dashboard/projects'
+    | '/_dashboard/s3-destinations'
     | '/_dashboard/settings'
     | '/_dashboard/sources'
     | '/_dashboard/storage'
@@ -569,6 +581,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof DashboardSettingsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/s3-destinations': {
+      id: '/_dashboard/s3-destinations'
+      path: '/s3-destinations'
+      fullPath: '/s3-destinations'
+      preLoaderRoute: typeof DashboardS3DestinationsRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/_dashboard/projects': {
@@ -812,6 +831,7 @@ interface DashboardRouteChildren {
   DashboardMigrationsRoute: typeof DashboardMigrationsRoute
   DashboardProfileRoute: typeof DashboardProfileRoute
   DashboardProjectsRoute: typeof DashboardProjectsRouteWithChildren
+  DashboardS3DestinationsRoute: typeof DashboardS3DestinationsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardSourcesRoute: typeof DashboardSourcesRoute
   DashboardStorageRoute: typeof DashboardStorageRoute
@@ -840,6 +860,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardMigrationsRoute: DashboardMigrationsRoute,
   DashboardProfileRoute: DashboardProfileRoute,
   DashboardProjectsRoute: DashboardProjectsRouteWithChildren,
+  DashboardS3DestinationsRoute: DashboardS3DestinationsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardSourcesRoute: DashboardSourcesRoute,
   DashboardStorageRoute: DashboardStorageRoute,
