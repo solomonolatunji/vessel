@@ -1,9 +1,7 @@
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { Badge } from '#/components/ui/badge';
 import { Button } from '#/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -75,53 +73,69 @@ export function Security2FASetup() {
 
   if (isLoading) {
     return (
-      <Card>
-        <CardContent className="flex justify-center py-10">
-          <Loader2 className="animate-spin text-muted-foreground" />
-        </CardContent>
-      </Card>
+      <div className="flex justify-center rounded-2xl border border-border/50 bg-card/40 p-10">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
     );
   }
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Two-Factor Authentication</CardTitle>
-              <CardDescription>Add an extra layer of security to your account.</CardDescription>
-            </div>
-            {isEnabled ? (
-              <Badge
-                variant="default"
-                className="bg-green-500/10 text-green-500 hover:bg-green-500/20"
+      <div className="space-y-6 rounded-2xl border border-border/50 bg-card/40 p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-5 w-5"
               >
-                Enabled
-              </Badge>
-            ) : (
-              <Badge variant="secondary">Disabled</Badge>
-            )}
+                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="font-semibold text-lg">Two-Factor Authentication</h2>
+              <p className="text-muted-foreground text-sm">
+                Add an extra layer of security to your account.
+              </p>
+            </div>
           </div>
-        </CardHeader>
-        <CardContent>
-          <p className="mb-4 text-muted-foreground text-sm">
+          {isEnabled ? (
+            <Button
+              variant="destructive"
+              onClick={handleDisableClick}
+              className="h-11 font-bold text-xs uppercase tracking-wider"
+            >
+              DISABLE 2FA
+            </Button>
+          ) : (
+            <Button
+              onClick={handleEnableClick}
+              disabled={setup2FA.isPending}
+              className="h-11 bg-primary font-bold text-primary-foreground text-xs uppercase tracking-wider"
+            >
+              {setup2FA.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              ENABLE 2FA
+            </Button>
+          )}
+        </div>
+
+        <div className="space-y-4">
+          <p className="text-muted-foreground text-sm leading-relaxed">
             {isEnabled
               ? 'Two-factor authentication is currently enabled. You will need to enter a code from your authenticator app when signing in.'
               : 'Protect your account from unauthorized access by requiring a second authentication method in addition to your password.'}
           </p>
-          {isEnabled ? (
-            <Button variant="destructive" onClick={handleDisableClick}>
-              Disable 2FA
-            </Button>
-          ) : (
-            <Button onClick={handleEnableClick} disabled={setup2FA.isPending}>
-              {setup2FA.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Enable 2FA
-            </Button>
-          )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       <Dialog open={verifyOpen} onOpenChange={setVerifyOpen}>
         <DialogContent>

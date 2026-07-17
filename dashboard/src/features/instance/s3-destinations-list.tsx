@@ -8,8 +8,8 @@ import { Label } from '#/components/ui/label';
 import {
   useCreateS3Destination,
   useDeleteS3Destination,
-  useS3Destinations,
-} from '#/hooks/useBackup';
+  useListS3Destinations,
+} from '#/hooks/useBackups';
 
 export function S3DestinationsList() {
   const [accountId, setAccountId] = useState('');
@@ -19,12 +19,12 @@ export function S3DestinationsList() {
   const [createOrVerify, setCreateOrVerify] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  const { data: destinationsData, isLoading } = useS3Destinations();
+  const { data: s3Destinations, isLoading } = useListS3Destinations('global');
   const createS3Dest = useCreateS3Destination();
   const deleteS3Dest = useDeleteS3Destination();
 
   // If there's an existing configuration, populate it
-  const existingDest = destinationsData?.data?.[0];
+  const existingDest = s3Destinations?.data?.[0];
 
   useEffect(() => {
     if (existingDest) {
@@ -52,13 +52,15 @@ export function S3DestinationsList() {
         : `https://${accountId}.r2.cloudflarestorage.com`;
 
       await createS3Dest.mutateAsync({
-        projectId: 'global', // assuming global for instance-level settings
-        name: 'default',
-        endpoint,
-        bucket,
-        region: 'auto',
-        accessKeyId,
-        secretAccessKey,
+        payload: {
+          projectId: 'global', // assuming global for instance-level settings
+          name: 'default',
+          endpoint,
+          bucket,
+          region: 'auto',
+          accessKeyId,
+          secretAccessKey,
+        },
       });
       toast.success('R2 connection saved successfully');
     } catch (_error) {
@@ -71,7 +73,7 @@ export function S3DestinationsList() {
   const handleDelete = async () => {
     if (!existingDest) return;
     try {
-      await deleteS3Dest.mutateAsync(existingDest.id);
+      await deleteS3Dest.mutateAsync({ id: existingDest.id });
       toast.success('R2 connection deleted successfully');
       setAccountId('');
       setBucket('');

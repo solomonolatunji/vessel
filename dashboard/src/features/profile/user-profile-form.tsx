@@ -1,8 +1,7 @@
-import { Loader2 } from 'lucide-react';
+import { Loader2, Mail, User } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '#/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -32,7 +31,8 @@ export function ProfileNameForm() {
     setName(profile.data.name);
   }
 
-  const handleSave = () => {
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
     updateProfile.mutate(
       { name },
       {
@@ -43,30 +43,47 @@ export function ProfileNameForm() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Profile Name</CardTitle>
-        <CardDescription>Update your display name.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="name">Full Name</Label>
-          <Input
-            id="name"
-            placeholder="John Doe"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+    <div className="space-y-6 rounded-2xl border border-border/50 bg-card/40 p-6">
+      <form onSubmit={handleSave} className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
+              <User className="h-5 w-5" />
+            </div>
+            <div>
+              <h2 className="font-semibold text-lg">Profile Name</h2>
+              <p className="text-muted-foreground text-sm">Update your display name.</p>
+            </div>
+          </div>
+          <Button
+            type="submit"
+            disabled={isLoading || updateProfile.isPending || name === profile?.data?.name}
+            className="h-11 bg-primary font-bold text-primary-foreground text-xs uppercase tracking-wider"
+          >
+            {updateProfile.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            SAVE NAME
+          </Button>
         </div>
-        <Button
-          onClick={handleSave}
-          disabled={isLoading || updateProfile.isPending || name === profile?.data?.name}
-        >
-          {updateProfile.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Save Name
-        </Button>
-      </CardContent>
-    </Card>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="space-y-2">
+            <Label
+              htmlFor="name"
+              className="font-bold text-muted-foreground text-xs uppercase tracking-wider"
+            >
+              FULL NAME
+            </Label>
+            <Input
+              id="name"
+              placeholder="John Doe"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="h-11 bg-background/50"
+            />
+          </div>
+        </div>
+      </form>
+    </div>
   );
 }
 
@@ -84,7 +101,8 @@ export function ProfileEmailForm() {
     setEmail(profile.data.email);
   }
 
-  const handleRequest = () => {
+  const handleRequest = (e: React.FormEvent) => {
+    e.preventDefault();
     requestEmailChange.mutate(
       { newEmail: email },
       {
@@ -97,7 +115,8 @@ export function ProfileEmailForm() {
     );
   };
 
-  const handleVerify = () => {
+  const handleVerify = (e: React.FormEvent) => {
+    e.preventDefault();
     verifyEmailChange.mutate(
       { otp },
       {
@@ -113,30 +132,49 @@ export function ProfileEmailForm() {
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <CardTitle>Email Address</CardTitle>
-          <CardDescription>Change the email address associated with your account.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+      <div className="space-y-6 rounded-2xl border border-border/50 bg-card/40 p-6">
+        <form onSubmit={handleRequest} className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
+                <Mail className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="font-semibold text-lg">Email Address</h2>
+                <p className="text-muted-foreground text-sm">
+                  Change the email address associated with your account.
+                </p>
+              </div>
+            </div>
+            <Button
+              type="submit"
+              disabled={isLoading || requestEmailChange.isPending || email === profile?.data?.email}
+              className="h-11 bg-primary font-bold text-primary-foreground text-xs uppercase tracking-wider"
+            >
+              {requestEmailChange.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              REQUEST CHANGE
+            </Button>
           </div>
-          <Button
-            onClick={handleRequest}
-            disabled={isLoading || requestEmailChange.isPending || email === profile?.data?.email}
-          >
-            {requestEmailChange.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Request Email Change
-          </Button>
-        </CardContent>
-      </Card>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label
+                htmlFor="email"
+                className="font-bold text-muted-foreground text-xs uppercase tracking-wider"
+              >
+                EMAIL
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="h-11 bg-background/50 font-mono"
+              />
+            </div>
+          </div>
+        </form>
+      </div>
 
       <Dialog open={otpOpen} onOpenChange={setOtpOpen}>
         <DialogContent>
@@ -181,7 +219,8 @@ export function ProfilePasswordForm() {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
 
-  const handleSave = () => {
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
     changePassword.mutate(
       { oldPassword, newPassword },
       {
@@ -196,38 +235,77 @@ export function ProfilePasswordForm() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Change Password</CardTitle>
-        <CardDescription>Update your account password.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="oldPassword">Current Password</Label>
-          <Input
-            id="oldPassword"
-            type="password"
-            value={oldPassword}
-            onChange={(e) => setOldPassword(e.target.value)}
-          />
+    <div className="space-y-6 rounded-2xl border border-border/50 bg-card/40 p-6">
+      <form onSubmit={handleSave} className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-5 w-5"
+              >
+                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="font-semibold text-lg">Change Password</h2>
+              <p className="text-muted-foreground text-sm">
+                Update the password you use to sign in.
+              </p>
+            </div>
+          </div>
+          <Button
+            type="submit"
+            disabled={changePassword.isPending || !oldPassword || !newPassword}
+            className="h-11 bg-primary font-bold text-primary-foreground text-xs uppercase tracking-wider"
+          >
+            {changePassword.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            UPDATE PASSWORD
+          </Button>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="newPassword">New Password</Label>
-          <Input
-            id="newPassword"
-            type="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="space-y-2">
+            <Label
+              htmlFor="oldPassword"
+              className="font-bold text-muted-foreground text-xs uppercase tracking-wider"
+            >
+              CURRENT PASSWORD
+            </Label>
+            <Input
+              id="oldPassword"
+              type="password"
+              value={oldPassword}
+              onChange={(e) => setOldPassword(e.target.value)}
+              className="h-11 bg-background/50 font-mono"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label
+              htmlFor="newPassword"
+              className="font-bold text-muted-foreground text-xs uppercase tracking-wider"
+            >
+              NEW PASSWORD
+            </Label>
+            <Input
+              id="newPassword"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="h-11 bg-background/50 font-mono"
+            />
+          </div>
         </div>
-        <Button
-          onClick={handleSave}
-          disabled={changePassword.isPending || !oldPassword || !newPassword}
-        >
-          {changePassword.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Update Password
-        </Button>
-      </CardContent>
-    </Card>
+      </form>
+    </div>
   );
 }
