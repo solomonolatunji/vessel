@@ -162,11 +162,6 @@ body {
 }
 
 @layer utilities {
-  .sidebar-glass {
-    background: rgba(10, 10, 15, 0.95);
-    backdrop-filter: blur(20px);
-  }
-
   .nav-active-glow {
     box-shadow: 0 0 15px -3px rgb(109 40 217 / 0.3);
   }

@@ -72,7 +72,7 @@ interface AppSidebarProps {
 export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
   return (
     <aside
-      className={`sidebar-glass fixed inset-y-0 left-0 z-20 flex flex-col shadow-[inset_-1px_0_0_0_rgb(255_255_255_/_0.06)] transition-all duration-300 ${
+      className={`fixed inset-y-0 left-0 z-20 flex flex-col border-sidebar-border/50 border-r bg-sidebar/90 backdrop-blur-xl transition-all duration-300 ${
         collapsed ? 'w-16' : 'w-64'
       }`}
     >

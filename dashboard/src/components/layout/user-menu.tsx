@@ -1,5 +1,14 @@
 import { Link } from '@tanstack/react-router';
-import { BarChart3, LogOut, Moon, MoreVertical, Sun, UserCircle } from 'lucide-react';
+import {
+  Heart,
+  HelpCircle,
+  LogOut,
+  MessageSquare,
+  Moon,
+  MoreVertical,
+  Sun,
+  UserCircle,
+} from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useEffect, useRef, useState } from 'react';
 import { useLogout } from '#/hooks/useAuth';
@@ -40,64 +49,106 @@ export function UserMenu({ collapsed }: UserMenuProps) {
     >
       {open && (
         <div
-          className={`fade-in zoom-in-95 absolute z-50 mb-2 animate-in rounded-xl border border-border/60 bg-popover/95 py-1 shadow-2xl backdrop-blur-2xl duration-100 ${
-            collapsed ? 'bottom-full left-full ml-3 min-w-56' : 'right-2 bottom-full left-2'
+          className={`fade-in slide-in-from-bottom-2 absolute z-50 mb-3 animate-in rounded-2xl border border-border/80 bg-card p-1.5 shadow-2xl shadow-black/10 backdrop-blur-xl duration-200 dark:shadow-black/40 ${
+            collapsed ? 'bottom-0 left-full ml-3 w-56' : 'right-2 bottom-full left-2'
           }`}
         >
-          <div className="mb-1 border-border/50 border-b px-3 py-2">
-            <p className="font-semibold text-[13px] text-foreground">{user?.name}</p>
-            <p className="text-[11px] text-muted-foreground">{user?.email}</p>
+          <div className="border-sidebar-border/50 border-b px-3 pt-2 pb-2.5">
+            <p className="font-semibold text-sidebar-foreground text-sm">{user?.name}</p>
+            <p className="text-[12px] text-sidebar-foreground/60">{user?.email}</p>
           </div>
 
-          <div className="space-y-0.5 px-1 py-0.5">
+          <div className="space-y-0.5 py-1.5">
             <Link
               to={'/settings' as never}
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-[13px] transition-colors hover:bg-accent/50"
+              className="group flex items-center gap-3 rounded-xl px-2.5 py-2 font-medium text-sidebar-foreground/60 text-sm transition-all duration-150 hover:bg-sidebar-accent hover:text-sidebar-foreground active:scale-[0.985]"
             >
-              <UserCircle className="h-4 w-4 text-muted-foreground" />
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-all duration-150 group-hover:border-sidebar-border/60 group-hover:bg-sidebar-accent group-hover:text-sidebar-foreground">
+                <UserCircle className="h-3.5 w-3.5" />
+              </div>
               Account Settings
             </Link>
-            <Link
-              to={'/settings' as never}
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-[13px] transition-colors hover:bg-accent/50"
-            >
-              <BarChart3 className="h-4 w-4 text-muted-foreground" />
-              Project Usage
-            </Link>
           </div>
 
-          <div className="my-1 h-px bg-border/50" />
+          <div className="mx-3 my-1 h-px bg-sidebar-border/40" />
 
-          <div className="space-y-0.5 px-1 py-0.5">
+          <div className="space-y-0.5 py-1.5">
+            <button
+              type="button"
+              onClick={() => {
+                window.open('https://github.com/anomalyco/vessl', '_blank');
+                setOpen(false);
+              }}
+              className="group flex w-full items-center gap-3 rounded-xl px-2.5 py-2 font-medium text-sidebar-foreground/60 text-sm transition-all duration-150 hover:bg-sidebar-accent hover:text-sidebar-foreground active:scale-[0.985]"
+            >
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-all duration-150 group-hover:border-sidebar-border/60 group-hover:bg-sidebar-accent group-hover:text-sidebar-foreground">
+                <HelpCircle className="h-3.5 w-3.5" />
+              </div>
+              Get Help
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                window.open('https://github.com/sponsors/anomalyco', '_blank');
+                setOpen(false);
+              }}
+              className="group flex w-full items-center gap-3 rounded-xl px-2.5 py-2 font-medium text-sidebar-foreground/60 text-sm transition-all duration-150 hover:bg-sidebar-accent hover:text-sidebar-foreground active:scale-[0.985]"
+            >
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-all duration-150 group-hover:border-sidebar-border/60 group-hover:bg-sidebar-accent group-hover:text-sidebar-foreground">
+                <Heart className="h-3.5 w-3.5" />
+              </div>
+              Sponsor
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                window.open('https://github.com/anomalyco/vessl/issues', '_blank');
+                setOpen(false);
+              }}
+              className="group flex w-full items-center gap-3 rounded-xl px-2.5 py-2 font-medium text-sidebar-foreground/60 text-sm transition-all duration-150 hover:bg-sidebar-accent hover:text-sidebar-foreground active:scale-[0.985]"
+            >
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-all duration-150 group-hover:border-sidebar-border/60 group-hover:bg-sidebar-accent group-hover:text-sidebar-foreground">
+                <MessageSquare className="h-3.5 w-3.5" />
+              </div>
+              Share Feedback
+            </button>
+          </div>
+
+          <div className="mx-3 my-1 h-px bg-sidebar-border/40" />
+
+          <div className="space-y-0.5 py-1.5">
             <button
               type="button"
               onClick={() => {
                 setTheme(theme === 'dark' ? 'light' : 'dark');
                 setOpen(false);
               }}
-              className="flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-[13px] transition-colors hover:bg-accent/50"
+              className="group flex w-full items-center gap-3 rounded-xl px-2.5 py-2 font-medium text-sidebar-foreground/60 text-sm transition-all duration-150 hover:bg-sidebar-accent hover:text-sidebar-foreground active:scale-[0.985]"
             >
-              {theme === 'dark' ? (
-                <Sun className="h-4 w-4 text-muted-foreground" />
-              ) : (
-                <Moon className="h-4 w-4 text-muted-foreground" />
-              )}
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-all duration-150 group-hover:border-sidebar-border/60 group-hover:bg-sidebar-accent group-hover:text-sidebar-foreground">
+                {theme === 'dark' ? (
+                  <Sun className="h-3.5 w-3.5" />
+                ) : (
+                  <Moon className="h-3.5 w-3.5" />
+                )}
+              </div>
               {theme === 'dark' ? 'Light Theme' : 'Dark Theme'}
             </button>
           </div>
 
-          <div className="my-1 h-px bg-border/50" />
+          <div className="mx-3 my-1 h-px bg-sidebar-border/40" />
 
-          <div className="space-y-0.5 px-1 py-0.5">
+          <div className="space-y-0.5 py-1.5">
             <button
               type="button"
               onClick={() => logout()}
-              className="flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-[13px] text-destructive transition-colors hover:bg-destructive/10"
+              className="group flex w-full items-center gap-3 rounded-xl px-2.5 py-2 font-medium text-sm transition-all duration-150 hover:bg-destructive/10 active:scale-[0.985]"
             >
-              <LogOut className="h-4 w-4" />
-              Log out
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-destructive/70 transition-all duration-150 group-hover:border-destructive/20 group-hover:bg-destructive/10 group-hover:text-destructive">
+                <LogOut className="h-3.5 w-3.5" />
+              </div>
+              <span className="text-destructive/80 group-hover:text-destructive">Log out</span>
             </button>
           </div>
         </div>

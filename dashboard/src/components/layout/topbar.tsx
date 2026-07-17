@@ -1,81 +1,17 @@
-import { useNavigate, useRouterState } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { BellIcon, PlusIcon, SearchIcon } from 'lucide-react';
 import { toast } from 'sonner';
-
-const routeLabels: Record<string, { title: string; description: string }> = {
-  '/': {
-    title: 'Instance overview',
-    description: 'Health and resource pressure',
-  },
-  '/projects': { title: 'Projects', description: 'Workloads and environments' },
-  '/databases': {
-    title: 'Databases',
-    description: 'Persistent services and backups',
-  },
-  '/templates': {
-    title: 'Templates',
-    description: 'Starter services and resources',
-  },
-  '/teams': { title: 'Teams', description: 'Ownership and permissions' },
-  '/notifications': {
-    title: 'Notifications',
-    description: 'Event delivery channels',
-  },
-  '/audit-logs': {
-    title: 'Audit logs',
-    description: 'Security and operator activity',
-  },
-  '/terminal': { title: 'Terminal', description: 'Controlled host sessions' },
-  '/settings': { title: 'Settings', description: 'Instance administration' },
-};
-
-const sectionDescriptions: Record<string, string> = {
-  projects: 'Project workspace',
-  services: 'Service operations',
-  databases: 'Database operations',
-  settings: 'Instance administration',
-  imports: 'Migration workflow',
-  profile: 'Account settings',
-};
-
-function titleFromPath(pathname: string) {
-  const exact = routeLabels[pathname];
-
-  if (exact) {
-    return exact;
-  }
-
-  const segments = pathname.split('/').filter(Boolean);
-  const section = segments[0] ?? 'dashboard';
-  const current = segments.at(-1) ?? section;
-  const title = current.replaceAll('-', ' ').replace(/^\w/, (character) => character.toUpperCase());
-
-  return {
-    title,
-    description: sectionDescriptions[section] ?? 'Dashboard workflow',
-  };
-}
 
 interface TopbarProps {
   onOpenCommand: () => void;
 }
 
 export function Topbar({ onOpenCommand }: TopbarProps) {
-  const routerState = useRouterState();
   const navigate = useNavigate();
-  const pathname = routerState.location.pathname;
-  const current = titleFromPath(pathname);
 
   return (
-    <header className="flex h-16 shrink-0 items-center justify-between bg-background/80 px-8 shadow-[inset_0_-1px_0_0_rgb(255_255_255_/_0.06)] backdrop-blur-xl">
-      <div className="min-w-0">
-        <h1 className="truncate font-semibold text-foreground text-lg tracking-tight">
-          {current.title}
-        </h1>
-        {current.description && (
-          <p className="text-muted-foreground text-xs">{current.description}</p>
-        )}
-      </div>
+    <header className="flex h-14 shrink-0 items-center justify-between bg-background/80 px-8 backdrop-blur-xl">
+      <div />
 
       <div className="flex items-center gap-2">
         <button
