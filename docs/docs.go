@@ -95,6 +95,111 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/apps/{id}/redeploy": {
+            "post": {
+                "description": "Creates a new deployment for this app service using the same branch/commit as the last deployment",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AppServices"
+                ],
+                "summary": "Redeploy App Service",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "App ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/apps/{id}/restart": {
+            "post": {
+                "description": "Restarts all containers belonging to this app service",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AppServices"
+                ],
+                "summary": "Restart App Service",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "App ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/apps/{id}/stop": {
+            "post": {
+                "description": "Stops all containers belonging to this app service",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AppServices"
+                ],
+                "summary": "Stop App Service",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "App ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/audit-logs": {
+            "get": {
+                "description": "Fetches audit logs for the dashboard",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Audit"
+                ],
+                "summary": "List Audit Logs",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Max lines to fetch",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Offset for pagination",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/auth/2fa/disable": {
             "post": {
                 "description": "Disable2FA endpoint",
@@ -875,6 +980,31 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/databases/{id}/restart": {
+            "post": {
+                "description": "RestartDatabase endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Databases"
+                ],
+                "summary": "RestartDatabase endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/databases/{id}/schemas": {
             "get": {
                 "description": "GetSchemas endpoint",
@@ -1037,6 +1167,113 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/dns": {
+            "get": {
+                "description": "List all DNS records for a specific domain",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DNS"
+                ],
+                "summary": "List DNS Records",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Domain Name",
+                        "name": "domain",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "post": {
+                "description": "Create a generic DNS record (A, CNAME, TXT, etc.)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DNS"
+                ],
+                "summary": "Create a DNS Record",
+                "parameters": [
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateDNSRecordRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/dns/{id}": {
+            "put": {
+                "description": "Update an existing DNS record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DNS"
+                ],
+                "summary": "Update a DNS Record",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Record ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateDNSRecordRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            },
+            "delete": {
+                "description": "Delete an existing DNS record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DNS"
+                ],
+                "summary": "Delete a DNS Record",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Record ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1964,7 +2201,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.ProjectMember"
+                            "$ref": "#/definitions/models.AddMemberRequest"
                         }
                     }
                 ],
@@ -2301,6 +2538,43 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/services/{serviceId}/logs/historical": {
+            "get": {
+                "description": "Fetches historical logs from Loki for a specific service",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Logs"
+                ],
+                "summary": "Get Historical Logs",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Service ID",
+                        "name": "serviceId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Time range (e.g., 24h, 7d)",
+                        "name": "range",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Max lines to fetch",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/services/{serviceId}/metrics": {
             "get": {
                 "description": "GetMetrics endpoint",
@@ -2321,6 +2595,37 @@ const docTemplate = `{
                         "name": "serviceId",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/services/{serviceId}/metrics/historical": {
+            "get": {
+                "description": "Fetches 24h/7d performance graphs from TSDB",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Metrics"
+                ],
+                "summary": "Get Historical Metrics",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Service ID",
+                        "name": "serviceId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Time range (e.g., 24h, 7d)",
+                        "name": "range",
+                        "in": "query"
                     }
                 ],
                 "responses": {}
@@ -3211,7 +3516,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.GithubWebhookPayload"
+                            "$ref": "#/definitions/models.GithubWebhookPayload"
                         }
                     }
                 ],
@@ -3308,33 +3613,6 @@ const docTemplate = `{
                 }
             }
         },
-        "handlers.GithubWebhookPayload": {
-            "type": "object",
-            "properties": {
-                "action": {
-                    "type": "string"
-                },
-                "number": {
-                    "type": "integer"
-                },
-                "pull_request": {
-                    "type": "object",
-                    "properties": {
-                        "head": {
-                            "type": "object",
-                            "properties": {
-                                "ref": {
-                                    "type": "string"
-                                },
-                                "sha": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "handlers.RegisterRequest": {
             "type": "object",
             "properties": {
@@ -3363,14 +3641,54 @@ const docTemplate = `{
         "handlers.SetupRequest": {
             "type": "object",
             "properties": {
+                "defaultWildcardDomain": {
+                    "description": "Domain (optional)",
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
+                "githubAppId": {
+                    "description": "Github Integration (optional)",
+                    "type": "string"
+                },
+                "githubAppName": {
+                    "type": "string"
+                },
+                "githubClientId": {
+                    "type": "string"
+                },
+                "githubClientSecret": {
+                    "type": "string"
+                },
+                "githubPrivateKey": {
+                    "type": "string"
+                },
+                "githubWebhookSecret": {
+                    "type": "string"
+                },
                 "name": {
+                    "description": "User",
                     "type": "string"
                 },
                 "password": {
                     "type": "string"
+                },
+                "s3AccessKeyId": {
+                    "type": "string"
+                },
+                "s3AccountId": {
+                    "description": "Backups (optional)",
+                    "type": "string"
+                },
+                "s3Bucket": {
+                    "type": "string"
+                },
+                "s3SecretAccessKey": {
+                    "type": "string"
+                },
+                "s3Skip": {
+                    "type": "boolean"
                 }
             }
         },
@@ -3389,7 +3707,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "role": {
-                    "type": "string"
+                    "$ref": "#/definitions/models.UserRole"
                 }
             }
         },
@@ -3415,6 +3733,17 @@ const docTemplate = `{
                 }
             }
         },
+        "models.AddMemberRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "permission": {
+                    "$ref": "#/definitions/models.MemberPermission"
+                }
+            }
+        },
         "models.AppService": {
             "type": "object",
             "properties": {
@@ -3425,7 +3754,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "buildEngine": {
-                    "type": "string"
+                    "$ref": "#/definitions/models.BuildEngine"
                 },
                 "containerId": {
                     "type": "string"
@@ -3463,6 +3792,9 @@ const docTemplate = `{
                 "projectId": {
                     "type": "string"
                 },
+                "replicas": {
+                    "type": "integer"
+                },
                 "repositoryUrl": {
                     "type": "string"
                 },
@@ -3479,12 +3811,29 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "type": "string"
+                    "$ref": "#/definitions/models.AppServiceStatus"
                 },
                 "updatedAt": {
                     "type": "string"
                 }
             }
+        },
+        "models.AppServiceStatus": {
+            "type": "string",
+            "enum": [
+                "created",
+                "building",
+                "stopped",
+                "running",
+                "error"
+            ],
+            "x-enum-varnames": [
+                "AppServiceStatusCreated",
+                "AppServiceStatusBuilding",
+                "AppServiceStatusStopped",
+                "AppServiceStatusRunning",
+                "AppServiceStatusError"
+            ]
         },
         "models.BackupConfig": {
             "type": "object",
@@ -3514,7 +3863,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "type": "string"
+                    "$ref": "#/definitions/models.BackupConfigStatus"
                 },
                 "storageId": {
                     "type": "string"
@@ -3524,6 +3873,36 @@ const docTemplate = `{
                 }
             }
         },
+        "models.BackupConfigStatus": {
+            "type": "string",
+            "enum": [
+                "active",
+                "inactive"
+            ],
+            "x-enum-varnames": [
+                "BackupConfigStatusActive",
+                "BackupConfigStatusInactive"
+            ]
+        },
+        "models.BuildEngine": {
+            "type": "string",
+            "enum": [
+                "auto",
+                "dockerfile",
+                "nixpacks",
+                "buildpacks",
+                "railpack",
+                "serverless"
+            ],
+            "x-enum-varnames": [
+                "BuildEngineAuto",
+                "BuildEngineDockerfile",
+                "BuildEngineNixpacks",
+                "BuildEngineBuildpacks",
+                "BuildEngineRailpack",
+                "BuildEngineServerless"
+            ]
+        },
         "models.CPUStats": {
             "type": "object",
             "properties": {
@@ -3532,6 +3911,26 @@ const docTemplate = `{
                 },
                 "percent": {
                     "type": "number"
+                }
+            }
+        },
+        "models.CreateDNSRecordRequest": {
+            "type": "object",
+            "properties": {
+                "domainName": {
+                    "type": "string"
+                },
+                "recordName": {
+                    "type": "string"
+                },
+                "recordType": {
+                    "type": "string"
+                },
+                "recordValue": {
+                    "type": "string"
+                },
+                "ttl": {
+                    "type": "integer"
                 }
             }
         },
@@ -3545,7 +3944,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "engine": {
-                    "type": "string"
+                    "$ref": "#/definitions/models.DatabaseEngine"
                 },
                 "environmentId": {
                     "type": "string"
@@ -3634,6 +4033,41 @@ const docTemplate = `{
                 }
             }
         },
+        "models.DatabaseEngine": {
+            "type": "string",
+            "enum": [
+                "postgres",
+                "postgresql",
+                "mysql",
+                "redis",
+                "mongodb",
+                "mongo",
+                "mariadb",
+                "clickhouse",
+                "kafka",
+                "rabbitmq",
+                "nats",
+                "dragonfly",
+                "keydb",
+                "timescaledb"
+            ],
+            "x-enum-varnames": [
+                "DatabaseEnginePostgres",
+                "DatabaseEnginePostgreSQL",
+                "DatabaseEngineMySQL",
+                "DatabaseEngineRedis",
+                "DatabaseEngineMongoDB",
+                "DatabaseEngineMongo",
+                "DatabaseEngineMariaDB",
+                "DatabaseEngineClickhouse",
+                "DatabaseEngineKafka",
+                "DatabaseEngineRabbitMQ",
+                "DatabaseEngineNats",
+                "DatabaseEngineDragonfly",
+                "DatabaseEngineKeyDB",
+                "DatabaseEngineTimescaleDB"
+            ]
+        },
         "models.DatabaseQueryRequest": {
             "type": "object",
             "properties": {
@@ -3681,7 +4115,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "sslCertStatus": {
-                    "type": "string"
+                    "$ref": "#/definitions/models.SSLCertStatus"
                 },
                 "updatedAt": {
                     "type": "string"
@@ -3725,6 +4159,45 @@ const docTemplate = `{
                 }
             }
         },
+        "models.GithubPullRequest": {
+            "type": "object",
+            "properties": {
+                "head": {
+                    "$ref": "#/definitions/models.GithubPullRequestHead"
+                }
+            }
+        },
+        "models.GithubPullRequestHead": {
+            "type": "object",
+            "properties": {
+                "ref": {
+                    "type": "string"
+                },
+                "sha": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.GithubWebhookPayload": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "after": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "integer"
+                },
+                "pull_request": {
+                    "$ref": "#/definitions/models.GithubPullRequest"
+                },
+                "ref": {
+                    "type": "string"
+                }
+            }
+        },
         "models.ImportDatabaseRequest": {
             "type": "object",
             "properties": {
@@ -3761,12 +4234,44 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "type": "string"
+                    "$ref": "#/definitions/models.JobStatus"
                 },
                 "updatedAt": {
                     "type": "string"
                 }
             }
+        },
+        "models.JobStatus": {
+            "type": "string",
+            "enum": [
+                "active",
+                "inactive",
+                "running",
+                "completed",
+                "failed",
+                "error"
+            ],
+            "x-enum-varnames": [
+                "JobStatusActive",
+                "JobStatusInactive",
+                "JobStatusRunning",
+                "JobStatusCompleted",
+                "JobStatusFailed",
+                "JobStatusError"
+            ]
+        },
+        "models.MemberPermission": {
+            "type": "string",
+            "enum": [
+                "admin",
+                "member",
+                "viewer"
+            ],
+            "x-enum-varnames": [
+                "MemberPermissionAdmin",
+                "MemberPermissionMember",
+                "MemberPermissionViewer"
+            ]
         },
         "models.MemoryStats": {
             "type": "object",
@@ -3816,35 +4321,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedAt": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.ProjectMember": {
-            "type": "object",
-            "properties": {
-                "acceptedAt": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "invitedAt": {
-                    "type": "string"
-                },
-                "permission": {
-                    "type": "string"
-                },
-                "projectId": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "userId": {
                     "type": "string"
                 }
             }
@@ -3911,6 +4387,19 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "models.SSLCertStatus": {
+            "type": "string",
+            "enum": [
+                "pending",
+                "issued",
+                "failed"
+            ],
+            "x-enum-varnames": [
+                "SSLCertStatusPending",
+                "SSLCertStatusIssued",
+                "SSLCertStatusFailed"
+            ]
         },
         "models.ServerSettings": {
             "type": "object",
@@ -4131,10 +4620,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "type": "string"
+                    "$ref": "#/definitions/models.StorageStatus"
                 },
                 "type": {
-                    "type": "string"
+                    "$ref": "#/definitions/models.StorageType"
                 },
                 "updatedAt": {
                     "type": "string"
@@ -4143,6 +4632,30 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "models.StorageStatus": {
+            "type": "string",
+            "enum": [
+                "running",
+                "stopped",
+                "error"
+            ],
+            "x-enum-varnames": [
+                "StorageStatusRunning",
+                "StorageStatusStopped",
+                "StorageStatusError"
+            ]
+        },
+        "models.StorageType": {
+            "type": "string",
+            "enum": [
+                "minio",
+                "s3"
+            ],
+            "x-enum-varnames": [
+                "StorageTypeMinIO",
+                "StorageTypeS3"
+            ]
         },
         "models.SystemStats": {
             "type": "object",
@@ -4170,6 +4683,23 @@ const docTemplate = `{
                 }
             }
         },
+        "models.UpdateDNSRecordRequest": {
+            "type": "object",
+            "properties": {
+                "recordName": {
+                    "type": "string"
+                },
+                "recordType": {
+                    "type": "string"
+                },
+                "recordValue": {
+                    "type": "string"
+                },
+                "ttl": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.UpdateDatabaseRequest": {
             "type": "object",
             "properties": {
@@ -4183,6 +4713,19 @@ const docTemplate = `{
                     "type": "boolean"
                 }
             }
+        },
+        "models.UserRole": {
+            "type": "string",
+            "enum": [
+                "admin",
+                "member",
+                "viewer"
+            ],
+            "x-enum-varnames": [
+                "UserRoleAdmin",
+                "UserRoleMember",
+                "UserRoleViewer"
+            ]
         },
         "models.Variable": {
             "type": "object",

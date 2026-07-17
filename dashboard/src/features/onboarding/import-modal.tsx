@@ -1,4 +1,4 @@
-import { ArrowRight, CloudUpload, Database } from 'lucide-react';
+import { Check, CloudUpload, Database } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '#/components/ui/button';
 import {
@@ -22,7 +22,7 @@ export const ImportModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-[750px] [&>button]:hidden">
+      <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-187.5 [&>button]:hidden">
         {/* Header */}
         <div className="flex flex-col p-8 pb-6">
           <div className="flex items-start justify-between">
@@ -112,7 +112,7 @@ export const ImportModal = ({
             variant="outline"
             className="flex h-11 items-center gap-2 rounded-xl border-primary/20 bg-primary/10 px-6 font-semibold text-primary text-xs uppercase tracking-widest hover:bg-primary/20 hover:text-primary"
           >
-            IMPORT <ArrowRight className="h-4 w-4" />
+            <Check className="h-4 w-4" /> IMPORT
           </Button>
         </div>
       </DialogContent>

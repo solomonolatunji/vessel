@@ -32,23 +32,6 @@ definitions:
       code:
         type: string
     type: object
-  handlers.GithubWebhookPayload:
-    properties:
-      action:
-        type: string
-      number:
-        type: integer
-      pull_request:
-        properties:
-          head:
-            properties:
-              ref:
-                type: string
-              sha:
-                type: string
-            type: object
-        type: object
-    type: object
   handlers.RegisterRequest:
     properties:
       email:
@@ -67,12 +50,40 @@ definitions:
     type: object
   handlers.SetupRequest:
     properties:
+      defaultWildcardDomain:
+        description: Domain (optional)
+        type: string
       email:
         type: string
+      githubAppId:
+        description: Github Integration (optional)
+        type: string
+      githubAppName:
+        type: string
+      githubClientId:
+        type: string
+      githubClientSecret:
+        type: string
+      githubPrivateKey:
+        type: string
+      githubWebhookSecret:
+        type: string
       name:
+        description: User
         type: string
       password:
         type: string
+      s3AccessKeyId:
+        type: string
+      s3AccountId:
+        description: Backups (optional)
+        type: string
+      s3Bucket:
+        type: string
+      s3SecretAccessKey:
+        type: string
+      s3Skip:
+        type: boolean
     type: object
   handlers.TestNotificationRequest:
     properties:
@@ -84,7 +95,7 @@ definitions:
       email:
         type: string
       role:
-        type: string
+        $ref: '#/definitions/models.UserRole'
     type: object
   handlers.Verify2FARequest:
     properties:
@@ -100,6 +111,13 @@ definitions:
       projectId:
         type: string
     type: object
+  models.AddMemberRequest:
+    properties:
+      email:
+        type: string
+      permission:
+        $ref: '#/definitions/models.MemberPermission'
+    type: object
   models.AppService:
     properties:
       branch:
@@ -107,7 +125,7 @@ definitions:
       buildCommand:
         type: string
       buildEngine:
-        type: string
+        $ref: '#/definitions/models.BuildEngine'
       containerId:
         type: string
       createdAt:
@@ -132,6 +150,8 @@ definitions:
         type: string
       projectId:
         type: string
+      replicas:
+        type: integer
       repositoryUrl:
         type: string
       rootDirectory:
@@ -143,10 +163,24 @@ definitions:
       staticOutput:
         type: string
       status:
-        type: string
+        $ref: '#/definitions/models.AppServiceStatus'
       updatedAt:
         type: string
     type: object
+  models.AppServiceStatus:
+    enum:
+    - created
+    - building
+    - stopped
+    - running
+    - error
+    type: string
+    x-enum-varnames:
+    - AppServiceStatusCreated
+    - AppServiceStatusBuilding
+    - AppServiceStatusStopped
+    - AppServiceStatusRunning
+    - AppServiceStatusError
   models.BackupConfig:
     properties:
       createdAt:
@@ -166,18 +200,55 @@ definitions:
       schedule:
         type: string
       status:
-        type: string
+        $ref: '#/definitions/models.BackupConfigStatus'
       storageId:
         type: string
       updatedAt:
         type: string
     type: object
+  models.BackupConfigStatus:
+    enum:
+    - active
+    - inactive
+    type: string
+    x-enum-varnames:
+    - BackupConfigStatusActive
+    - BackupConfigStatusInactive
+  models.BuildEngine:
+    enum:
+    - auto
+    - dockerfile
+    - nixpacks
+    - buildpacks
+    - railpack
+    - serverless
+    type: string
+    x-enum-varnames:
+    - BuildEngineAuto
+    - BuildEngineDockerfile
+    - BuildEngineNixpacks
+    - BuildEngineBuildpacks
+    - BuildEngineRailpack
+    - BuildEngineServerless
   models.CPUStats:
     properties:
       cores:
         type: integer
       percent:
         type: number
+    type: object
+  models.CreateDNSRecordRequest:
+    properties:
+      domainName:
+        type: string
+      recordName:
+        type: string
+      recordType:
+        type: string
+      recordValue:
+        type: string
+      ttl:
+        type: integer
     type: object
   models.CreateDatabaseRequest:
     properties:
@@ -186,7 +257,7 @@ definitions:
       databaseName:
         type: string
       engine:
-        type: string
+        $ref: '#/definitions/models.DatabaseEngine'
       environmentId:
         type: string
       logicalReplication:
@@ -244,6 +315,38 @@ definitions:
           type: string
         type: array
     type: object
+  models.DatabaseEngine:
+    enum:
+    - postgres
+    - postgresql
+    - mysql
+    - redis
+    - mongodb
+    - mongo
+    - mariadb
+    - clickhouse
+    - kafka
+    - rabbitmq
+    - nats
+    - dragonfly
+    - keydb
+    - timescaledb
+    type: string
+    x-enum-varnames:
+    - DatabaseEnginePostgres
+    - DatabaseEnginePostgreSQL
+    - DatabaseEngineMySQL
+    - DatabaseEngineRedis
+    - DatabaseEngineMongoDB
+    - DatabaseEngineMongo
+    - DatabaseEngineMariaDB
+    - DatabaseEngineClickhouse
+    - DatabaseEngineKafka
+    - DatabaseEngineRabbitMQ
+    - DatabaseEngineNats
+    - DatabaseEngineDragonfly
+    - DatabaseEngineKeyDB
+    - DatabaseEngineTimescaleDB
   models.DatabaseQueryRequest:
     properties:
       query:
@@ -275,7 +378,7 @@ definitions:
       redirectTo:
         type: string
       sslCertStatus:
-        type: string
+        $ref: '#/definitions/models.SSLCertStatus'
       updatedAt:
         type: string
     type: object
@@ -303,6 +406,31 @@ definitions:
       provider:
         type: string
     type: object
+  models.GithubPullRequest:
+    properties:
+      head:
+        $ref: '#/definitions/models.GithubPullRequestHead'
+    type: object
+  models.GithubPullRequestHead:
+    properties:
+      ref:
+        type: string
+      sha:
+        type: string
+    type: object
+  models.GithubWebhookPayload:
+    properties:
+      action:
+        type: string
+      after:
+        type: string
+      number:
+        type: integer
+      pull_request:
+        $ref: '#/definitions/models.GithubPullRequest'
+      ref:
+        type: string
+    type: object
   models.ImportDatabaseRequest:
     properties:
       sourceUrl:
@@ -327,10 +455,36 @@ definitions:
       schedule:
         type: string
       status:
-        type: string
+        $ref: '#/definitions/models.JobStatus'
       updatedAt:
         type: string
     type: object
+  models.JobStatus:
+    enum:
+    - active
+    - inactive
+    - running
+    - completed
+    - failed
+    - error
+    type: string
+    x-enum-varnames:
+    - JobStatusActive
+    - JobStatusInactive
+    - JobStatusRunning
+    - JobStatusCompleted
+    - JobStatusFailed
+    - JobStatusError
+  models.MemberPermission:
+    enum:
+    - admin
+    - member
+    - viewer
+    type: string
+    x-enum-varnames:
+    - MemberPermissionAdmin
+    - MemberPermissionMember
+    - MemberPermissionViewer
   models.MemoryStats:
     properties:
       freeMb:
@@ -363,25 +517,6 @@ definitions:
       tenant:
         type: string
       updatedAt:
-        type: string
-    type: object
-  models.ProjectMember:
-    properties:
-      acceptedAt:
-        type: string
-      email:
-        type: string
-      id:
-        type: string
-      invitedAt:
-        type: string
-      permission:
-        type: string
-      projectId:
-        type: string
-      status:
-        type: string
-      userId:
         type: string
     type: object
   models.RailwayImportRequest:
@@ -426,6 +561,16 @@ definitions:
       secretAccessKey:
         type: string
     type: object
+  models.SSLCertStatus:
+    enum:
+    - pending
+    - issued
+    - failed
+    type: string
+    x-enum-varnames:
+    - SSLCertStatusPending
+    - SSLCertStatusIssued
+    - SSLCertStatusFailed
   models.ServerSettings:
     properties:
       autoUpdateEnabled:
@@ -572,14 +717,32 @@ definitions:
       secretKey:
         type: string
       status:
-        type: string
+        $ref: '#/definitions/models.StorageStatus'
       type:
-        type: string
+        $ref: '#/definitions/models.StorageType'
       updatedAt:
         type: string
       volumePath:
         type: string
     type: object
+  models.StorageStatus:
+    enum:
+    - running
+    - stopped
+    - error
+    type: string
+    x-enum-varnames:
+    - StorageStatusRunning
+    - StorageStatusStopped
+    - StorageStatusError
+  models.StorageType:
+    enum:
+    - minio
+    - s3
+    type: string
+    x-enum-varnames:
+    - StorageTypeMinIO
+    - StorageTypeS3
   models.SystemStats:
     properties:
       cpu:
@@ -597,6 +760,17 @@ definitions:
       uptimeSeconds:
         type: integer
     type: object
+  models.UpdateDNSRecordRequest:
+    properties:
+      recordName:
+        type: string
+      recordType:
+        type: string
+      recordValue:
+        type: string
+      ttl:
+        type: integer
+    type: object
   models.UpdateDatabaseRequest:
     properties:
       customArgs:
@@ -606,6 +780,16 @@ definitions:
       logicalReplication:
         type: boolean
     type: object
+  models.UserRole:
+    enum:
+    - admin
+    - member
+    - viewer
+    type: string
+    x-enum-varnames:
+    - UserRoleAdmin
+    - UserRoleMember
+    - UserRoleViewer
   models.Variable:
     properties:
       createdAt:
@@ -708,6 +892,78 @@ paths:
       summary: Update App Service
       tags:
       - AppServices
+  /apps/{id}/redeploy:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new deployment for this app service using the same branch/commit
+        as the last deployment
+      parameters:
+      - description: App ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Redeploy App Service
+      tags:
+      - AppServices
+  /apps/{id}/restart:
+    post:
+      consumes:
+      - application/json
+      description: Restarts all containers belonging to this app service
+      parameters:
+      - description: App ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Restart App Service
+      tags:
+      - AppServices
+  /apps/{id}/stop:
+    post:
+      consumes:
+      - application/json
+      description: Stops all containers belonging to this app service
+      parameters:
+      - description: App ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Stop App Service
+      tags:
+      - AppServices
+  /audit-logs:
+    get:
+      consumes:
+      - application/json
+      description: Fetches audit logs for the dashboard
+      parameters:
+      - description: Max lines to fetch
+        in: query
+        name: limit
+        type: integer
+      - description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: List Audit Logs
+      tags:
+      - Audit
   /auth/2fa/disable:
     post:
       consumes:
@@ -1240,6 +1496,23 @@ paths:
       summary: QueryDatabase endpoint
       tags:
       - Databases
+  /databases/{id}/restart:
+    post:
+      consumes:
+      - application/json
+      description: RestartDatabase endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: RestartDatabase endpoint
+      tags:
+      - Databases
   /databases/{id}/schemas:
     get:
       consumes:
@@ -1355,6 +1628,79 @@ paths:
       summary: Rollback endpoint
       tags:
       - Deployments
+  /dns:
+    get:
+      consumes:
+      - application/json
+      description: List all DNS records for a specific domain
+      parameters:
+      - description: Domain Name
+        in: query
+        name: domain
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: List DNS Records
+      tags:
+      - DNS
+    post:
+      consumes:
+      - application/json
+      description: Create a generic DNS record (A, CNAME, TXT, etc.)
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateDNSRecordRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create a DNS Record
+      tags:
+      - DNS
+  /dns/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an existing DNS record
+      parameters:
+      - description: Record ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete a DNS Record
+      tags:
+      - DNS
+    put:
+      consumes:
+      - application/json
+      description: Update an existing DNS record
+      parameters:
+      - description: Record ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateDNSRecordRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: Update a DNS Record
+      tags:
+      - DNS
   /domains/{id}:
     delete:
       consumes:
@@ -1978,7 +2324,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.ProjectMember'
+          $ref: '#/definitions/models.AddMemberRequest'
       produces:
       - application/json
       responses: {}
@@ -2214,6 +2560,31 @@ paths:
       summary: ListServiceDeployments endpoint
       tags:
       - AppServices
+  /services/{serviceId}/logs/historical:
+    get:
+      consumes:
+      - application/json
+      description: Fetches historical logs from Loki for a specific service
+      parameters:
+      - description: Service ID
+        in: path
+        name: serviceId
+        required: true
+        type: string
+      - description: Time range (e.g., 24h, 7d)
+        in: query
+        name: range
+        type: string
+      - description: Max lines to fetch
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Get Historical Logs
+      tags:
+      - Logs
   /services/{serviceId}/metrics:
     get:
       consumes:
@@ -2231,6 +2602,27 @@ paths:
       summary: GetMetrics endpoint
       tags:
       - AppServices
+  /services/{serviceId}/metrics/historical:
+    get:
+      consumes:
+      - application/json
+      description: Fetches 24h/7d performance graphs from TSDB
+      parameters:
+      - description: Service ID
+        in: path
+        name: serviceId
+        required: true
+        type: string
+      - description: Time range (e.g., 24h, 7d)
+        in: query
+        name: range
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Get Historical Metrics
+      tags:
+      - Metrics
   /services/{serviceId}/serverless/code:
     get:
       consumes:
@@ -2831,7 +3223,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handlers.GithubWebhookPayload'
+          $ref: '#/definitions/models.GithubWebhookPayload'
       produces:
       - application/json
       responses: {}
