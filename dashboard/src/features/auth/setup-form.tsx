@@ -10,7 +10,7 @@ import { useSetup } from '#/hooks/useAuth';
 
 const setupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.email('Please enter a valid email address'),
+  email: z.string().email('Please enter a valid email address'),
   password: z.string().min(8, 'Password must be at least 8 characters long'),
 });
 
@@ -26,11 +26,7 @@ export const SetupForm = () => {
     formState: { errors },
   } = useForm<SetupSchema>({
     resolver: zodResolver(setupSchema),
-    defaultValues: {
-      name: '',
-      email: '',
-      password: '',
-    },
+    defaultValues: { name: '', email: '', password: '' },
   });
 
   const onSubmit = async (data: SetupSchema) => {
@@ -40,75 +36,78 @@ export const SetupForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-      <div className="space-y-2">
-        <Label htmlFor="name" className="font-medium text-sm">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <div className="space-y-1.5">
+        <Label htmlFor="name" className="font-medium text-foreground/90 text-sm">
           Owner Full Name
         </Label>
-        <div className="relative">
-          <div className="absolute top-3.5 left-3 text-muted-foreground">
-            <User className="h-5 w-5" />
+        <div className="group relative">
+          <div className="absolute top-1/2 left-3.5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary">
+            <User className="h-4 w-4" />
           </div>
           <Input
             id="name"
             type="text"
             placeholder="John Doe"
-            className="h-12 bg-background pl-10 text-base"
+            className="h-11 rounded-xl border-border bg-background/80 pl-10 text-sm transition-all duration-300 focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
             {...register('name')}
           />
         </div>
-        {errors.name && <p className="text-[13px] text-destructive">{errors.name.message}</p>}
+        {errors.name && <p className="pl-1 text-destructive text-xs">{errors.name.message}</p>}
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="email" className="font-medium text-sm">
+      <div className="space-y-1.5">
+        <Label htmlFor="email" className="font-medium text-foreground/90 text-sm">
           Owner Email
         </Label>
-        <div className="relative">
-          <div className="absolute top-3.5 left-3 text-muted-foreground">
-            <Mail className="h-5 w-5" />
+        <div className="group relative">
+          <div className="absolute top-1/2 left-3.5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary">
+            <Mail className="h-4 w-4" />
           </div>
           <Input
             id="email"
             type="email"
             placeholder="name@example.com"
-            className="h-12 bg-background pl-10 text-base"
+            className="h-11 rounded-xl border-border bg-background/80 pl-10 text-sm transition-all duration-300 focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
             {...register('email')}
           />
         </div>
-        {errors.email && <p className="text-[13px] text-destructive">{errors.email.message}</p>}
+        {errors.email && <p className="pl-1 text-destructive text-xs">{errors.email.message}</p>}
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="password" className="font-medium text-sm">
+      <div className="space-y-1.5">
+        <Label htmlFor="password" className="font-medium text-foreground/90 text-sm">
           Owner Password
         </Label>
-        <div className="relative">
-          <div className="absolute top-3.5 left-3 text-muted-foreground">
-            <Lock className="h-5 w-5" />
+        <div className="group relative">
+          <div className="absolute top-1/2 left-3.5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary">
+            <Lock className="h-4 w-4" />
           </div>
           <Input
             id="password"
             type={showPassword ? 'text' : 'password'}
-            className="h-12 bg-background pr-10 pl-10 text-base"
+            className="h-11 rounded-xl border-border bg-background/80 pr-10 pl-10 text-sm transition-all duration-300 focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
             {...register('password')}
           />
           <button
             type="button"
-            className="absolute top-3.5 right-3 text-muted-foreground hover:text-foreground focus:outline-none"
             onClick={() => setShowPassword(!showPassword)}
-            tabIndex={-1}
+            className="absolute top-1/2 right-3.5 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
           >
-            {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
         </div>
         {errors.password && (
-          <p className="text-[13px] text-destructive">{errors.password.message}</p>
+          <p className="pl-1 text-destructive text-xs">{errors.password.message}</p>
         )}
       </div>
 
-      <Button type="submit" className="h-12 w-full text-base" disabled={isPending}>
-        {isPending ? 'Creating Owner Account...' : 'Complete Setup'}
+      <Button
+        type="submit"
+        disabled={isPending}
+        className="h-11 w-full rounded-xl bg-linear-to-r from-primary to-purple-600 font-semibold text-sm shadow-lg shadow-primary/30 transition-all duration-200 hover:brightness-110 active:scale-[0.985]"
+      >
+        {isPending ? 'Creating account...' : 'Complete Setup'}
       </Button>
     </form>
   );

@@ -160,3 +160,17 @@ body {
     }
   }
 }
+
+@layer utilities {
+  .backdrop-blur-xl {
+    backdrop-filter: blur(20px);
+  }
+
+  input:focus {
+    box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.15);
+  }
+
+  .rounded-3xl {
+    border-radius: 1.5rem;
+  }
+}

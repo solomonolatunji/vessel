@@ -16,26 +16,27 @@ export const OAuthButtons = () => {
 
   return (
     <>
-      <div className="mb-6 flex flex-col space-y-3">
+      <div className="mb-5 space-y-2">
         {enabledProviders.map((provider) => (
           <Button
             key={provider}
             variant="outline"
             type="button"
             onClick={() => handleOAuthLogin(provider)}
-            className="h-11 w-full border-border bg-background font-medium text-base capitalize hover:bg-muted/50"
+            className="h-10 w-full rounded-xl border-border/80 font-medium text-sm capitalize transition-all hover:border-primary/30 hover:bg-muted/50"
           >
             Continue with {provider}
           </Button>
         ))}
       </div>
-      <div className="relative mb-6">
+
+      <div className="relative mb-5">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-border border-t" />
+          <div className="h-px w-full bg-linear-to-r from-transparent via-border to-transparent" />
         </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 font-semibold text-muted-foreground">
-            Or continue with email
+        <div className="relative flex justify-center">
+          <span className="bg-card/80 px-3 text-muted-foreground text-xs uppercase tracking-widest">
+            or
           </span>
         </div>
       </div>

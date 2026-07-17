@@ -1,38 +1,61 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { AlertCircle } from 'lucide-react';
+import { Button } from '#/components/ui/button';
 import { ForgotPasswordForm } from '#/features/auth/forgot-password-form';
+import { useGetPublicSettings } from '#/hooks/useSettings';
 
 export const Route = createFileRoute('/_auth/forgot-password')({
   component: ForgotPasswordPage,
 });
-
-import { AlertCircle } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
-import { useGetPublicSettings } from '#/hooks/useSettings';
 
 function ForgotPasswordPage() {
   const { data, isLoading } = useGetPublicSettings();
   const emailEnabled = data?.data?.emailEnabled;
 
   return (
-    <div className="fade-in slide-in-from-bottom-4 animate-in duration-500">
-      <div className="mb-8 flex flex-col space-y-2 text-center">
-        <h1 className="font-semibold text-3xl text-foreground tracking-tight">
-          Reset your password
-        </h1>
-        <p className="text-muted-foreground text-sm">Enter your email to receive a reset link.</p>
+    <div className="fade-in slide-in-from-bottom-4 animate-in space-y-8 duration-700">
+      <div className="relative rounded-2xl border border-border/80 bg-card/70 p-6 shadow-2xl shadow-black/10 backdrop-blur-xl dark:shadow-black/40">
+        <div className="mb-5 flex items-center gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-primary via-purple-600 to-violet-600 shadow-md shadow-primary/25">
+            <span className="font-bold text-base text-white tracking-tighter">V</span>
+          </div>
+          <div>
+            <p className="text-muted-foreground/70 text-xs uppercase tracking-wider">
+              VESSL ACCESS
+            </p>
+            <p className="font-semibold text-foreground text-lg tracking-tight">Reset password</p>
+          </div>
+        </div>
+
+        {!isLoading && emailEnabled === false ? (
+          <div className="flex flex-col items-center gap-4 py-6 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
+              <AlertCircle className="h-6 w-6 text-destructive" />
+            </div>
+            <div className="space-y-1">
+              <p className="font-semibold text-base text-foreground tracking-tight">
+                Email Not Configured
+              </p>
+              <p className="text-muted-foreground text-sm">
+                Your team is yet to set or enable email. Please contact your administrator.
+              </p>
+            </div>
+            <Button asChild variant="outline" className="mt-2">
+              <Link to="/signin">Back to sign in</Link>
+            </Button>
+          </div>
+        ) : (
+          <ForgotPasswordForm />
+        )}
       </div>
 
-      {!isLoading && emailEnabled === false ? (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Email not configured</AlertTitle>
-          <AlertDescription>
-            Your team is yet to set or enable email. Please contact your administrator.
-          </AlertDescription>
-        </Alert>
-      ) : (
-        <ForgotPasswordForm />
-      )}
+      <div className="text-center">
+        <div className="inline-flex items-center gap-2 text-[10px] text-muted-foreground/60 uppercase tracking-[2px]">
+          <div className="h-px w-8 bg-border" />
+          SECURE ACCESS
+          <div className="h-px w-8 bg-border" />
+        </div>
+      </div>
     </div>
   );
 }
