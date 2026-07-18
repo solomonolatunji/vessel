@@ -141,7 +141,7 @@ func (r *BackupRepo) UpdateConfig(ctx context.Context, cfg *models.BackupConfig)
 	cfg.UpdatedAt = time.Now().UTC().Format(time.RFC3339)
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	
+
 	if cfg.DbPassword == "********" || cfg.DbPassword == "" {
 		_, err := r.db.ExecContext(ctx, `UPDATE backup_configs SET name=?, description=?, db_user=?, backup_enabled=?, s3_enabled=?, disable_local=?, schedule=?, timezone=?, timeout=?, retention_days=?, max_backups=?, max_storage_gb=?, updated_at=? WHERE id=?`,
 			cfg.Name, cfg.Description, cfg.DbUser, cfg.BackupEnabled, cfg.S3Enabled, cfg.DisableLocal, cfg.Schedule, cfg.Timezone, cfg.Timeout, cfg.RetentionDays, cfg.MaxBackups, cfg.MaxStorageGB, cfg.UpdatedAt, cfg.ID)

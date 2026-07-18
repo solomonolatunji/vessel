@@ -13,7 +13,7 @@ import (
 )
 
 type OAuthService struct {
-	oauthRepo    repositories.OAuthRepository
+	oauthRepo       repositories.OAuthRepository
 	userRepo        repositories.UserRepository
 	tokenService    *TokenService
 	pendingTOTP     sync.Map
@@ -130,9 +130,9 @@ func (s *OAuthService) Setup2FA(ctx context.Context, userID, email string) (*mod
 	}
 	s.pendingTOTP.Store(userID, secret)
 	s.pendingRecovery.Store(userID, recoveryCodes)
-	
+
 	return &models.TwoFASetupResponse{
-		QRCodeURI:     GenerateTOTPQRUri(email, secret),
+		QRCodeURI: GenerateTOTPQRUri(email, secret),
 	}, nil
 }
 

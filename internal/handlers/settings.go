@@ -29,7 +29,7 @@ func (h *SettingsHandler) GetSettings(c echo.Context) error {
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	
+
 	// Create a masked copy for the frontend
 	masked := *s
 	if masked.CloudflareAPIToken != "" {
@@ -41,7 +41,7 @@ func (h *SettingsHandler) GetSettings(c echo.Context) error {
 	if masked.SpaceshipAPIKey != "" {
 		masked.SpaceshipAPIKey = "********"
 	}
-	
+
 	return utils.Success(c, "Operation successful", masked)
 }
 

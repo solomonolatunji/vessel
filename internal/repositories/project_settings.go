@@ -37,7 +37,6 @@ func NewProjectSettingsRepo(db *sql.DB) *ProjectSettingsRepo {
 	return &ProjectSettingsRepo{db: sqlx.NewDb(db, "sqlite")}
 }
 
-
 func (r *ProjectSettingsRepo) deleteByIDAndProject(ctx context.Context, table, id, projectID, entityName string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()

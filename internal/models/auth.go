@@ -32,5 +32,5 @@ type OAuthProviderConfig struct {
 }
 
 type TwoFASetupResponse struct {
-	QRCodeURI     string   `json:"qrCodeUri"`
+	QRCodeURI string `json:"qrCodeUri"`
 }

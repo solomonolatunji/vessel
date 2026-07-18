@@ -22,7 +22,7 @@ func (h *NotificationSettingsHandler) GetNotificationSettings(c echo.Context) er
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	
+
 	masked := *s
 	if masked.SMTPPassword != "" {
 		masked.SMTPPassword = "********"

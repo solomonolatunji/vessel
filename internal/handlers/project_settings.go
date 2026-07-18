@@ -19,8 +19,6 @@ func NewProjectSettingsHandler(s *services.ProjectSettingsService) *ProjectSetti
 	return &ProjectSettingsHandler{settingsService: s}
 }
 
-
-
 // @Summary ListTokens endpoint
 // @Description ListTokens endpoint
 // @Tags Projects

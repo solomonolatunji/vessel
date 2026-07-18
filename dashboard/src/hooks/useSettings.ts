@@ -43,7 +43,7 @@ export const useGetAISettings = () => {
 export const useUpdateAISettings = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: Record<string, string>) => settingsService.updateAISettings(payload),
+    mutationFn: (payload: Record<string, unknown>) => settingsService.updateAISettings(payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['settings', 'getAISettings'] });
     },

@@ -124,7 +124,6 @@ type ProjectMember struct {
 	AcceptedAt time.Time        `json:"acceptedAt,omitempty" db:"accepted_at"`
 }
 
-
 type CreateTokenRequest struct {
 	Name          string     `json:"name"`
 	EnvironmentID string     `json:"environmentId"`
