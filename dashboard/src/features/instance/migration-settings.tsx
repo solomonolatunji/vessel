@@ -39,8 +39,8 @@ export function MigrationSettings() {
     <div className="space-y-6">
       <div className="mb-5 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-            <Upload className="h-4.5 w-4.5" />
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary">
+            <Upload className="h-6 w-6" />
           </div>
           <div>
             <h1 className="font-bold text-xl">Export instance</h1>

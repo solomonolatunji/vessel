@@ -12,6 +12,7 @@ export const useGet = (id: string) => {
   return useQuery({
     queryKey: ['backups', 'get', id].filter(Boolean),
     queryFn: () => backupsService.get(id),
+    enabled: !!id,
   });
 };
 
@@ -60,6 +61,7 @@ export const useListRecords = (id: string) => {
   return useQuery({
     queryKey: ['backups', 'listRecords', id].filter(Boolean),
     queryFn: () => backupsService.listRecords(id),
+    enabled: !!id,
   });
 };
 
