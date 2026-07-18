@@ -46,7 +46,7 @@ func (s *Server) registerRoutes() {
 	authGroup.POST("/projects", s.projectHandler.CreateProject)
 	authGroup.GET("/projects/:id", s.projectHandler.GetProject)
 	authGroup.DELETE("/projects/:id", s.projectHandler.DeleteProject)
-	authGroup.POST("/projects/:id/deploy", s.deploymentHandler.DeployProject, s.authGuard.RequireScope("deploy:write"))
+
 	authGroup.GET("/projects/:id/domains", s.domainHandler.ListByProject)
 	authGroup.POST("/projects/:id/domains", s.domainHandler.Create)
 	authGroup.DELETE("/domains/:id", s.domainHandler.Delete)
@@ -82,7 +82,7 @@ func (s *Server) registerRoutes() {
 	authGroup.GET("/git/status", s.gitHandler.Status)
 	authGroup.DELETE("/git/connect/:provider", s.gitHandler.Disconnect)
 	authGroup.GET("/git/repos", s.gitHandler.ListRepos)
-	apiGroup.POST("/webhooks/git/:projectId", s.webhookHandler.HandleProjectWebhook)
+
 	apiGroup.POST("/webhooks/git/services/:serviceId", s.webhookHandler.HandleServiceWebhook)
 	apiGroup.POST("/webhooks/github/services/:serviceId", s.webhookHandler.HandleGitHubWebhook)
 	authGroup.GET("/canvas/projects", s.canvasHandler.ListCanvasSummaries)

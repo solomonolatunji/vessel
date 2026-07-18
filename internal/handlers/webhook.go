@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"path/filepath"
+
 	"time"
 
 	"github.com/google/uuid"
@@ -46,34 +46,6 @@ func NewWebhookHandler(
 		prPreviewService:  prPreviewService,
 		gitAppsService:    gitAppsService,
 	}
-}
-
-// @Summary HandleProjectWebhook endpoint
-// @Description HandleProjectWebhook endpoint
-// @Tags Webhooks
-// @Accept json
-// @Produce json
-// @Param projectId path string true "projectId"
-// @Router /webhooks/git/{projectId} [post]
-func (h *WebhookHandler) HandleProjectWebhook(c echo.Context) error {
-	projectID := c.Param("projectId")
-	if projectID == "" {
-		return utils.Error(c, http.StatusBadRequest, "missing projectId parameter")
-	}
-	project, err := h.projectService.GetProject(c.Request().Context(), projectID)
-	if err != nil || project == nil {
-		return utils.Error(c, http.StatusNotFound, "project not found")
-	}
-	h.deployProjectAsync(project)
-	return utils.Accepted(c, fmt.Sprintf("triggering background build & deployment for %s", project.Name), nil)
-}
-
-func (h *WebhookHandler) deployProjectAsync(project *models.ProjectConfig) {
-	go func() {
-		ctx := context.Background()
-		sourceDir := filepath.Join(utils.GetDataDir(), "builds", project.ID)
-		_, _ = h.deploymentService.DeployProject(ctx, project.ID, sourceDir, nil)
-	}()
 }
 
 // @Summary HandleServiceWebhook endpoint

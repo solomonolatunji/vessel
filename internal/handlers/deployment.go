@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -204,43 +203,4 @@ func (h *DeploymentHandler) GetMetrics(c echo.Context) error {
 		},
 	}
 	return utils.Success(c, "Operation successful", metrics)
-}
-
-type DeployRequest struct {
-	DryRun bool `json:"dry_run"`
-}
-
-// @Summary DeployProject endpoint
-// @Description DeployProject endpoint
-// @Tags Projects
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Router /projects/{id}/deploy [post]
-func (h *DeploymentHandler) DeployProject(c echo.Context) error {
-	id := c.Param("id")
-	if id == "" {
-		return utils.Error(c, http.StatusBadRequest, "missing project id parameter")
-	}
-
-	sourceDir := fmt.Sprintf("data/builds/%s", id)
-	containerID, err := h.deploymentService.DeployProject(c.Request().Context(), id, sourceDir, nil)
-	if err != nil {
-		return utils.Error(c, http.StatusInternalServerError, err.Error())
-	}
-
-	h.auditService.LogAction(c.Request().Context(), services.AuditActionOpts{
-		UserID:    "system",
-		Action:    "deployment.trigger",
-		Resource:  id,
-		IPAddress: c.RealIP(),
-		Details: map[string]string{
-			"projectId": id,
-		},
-	})
-
-	return utils.Success(c, "Project deployed successfully", map[string]string{
-		"status":       "deployed",
-		"container_id": containerID,
-	})
 }

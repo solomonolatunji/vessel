@@ -241,16 +241,12 @@ func runDeploy(args []string) {
 		if err := cloneCmd.Run(); err != nil {
 			exitError("Git clone failed: %v", err)
 		}
-		project, err := projectRepo.Get(context.Background(), projectID)
-		if err != nil {
-			exitError("Failed to load project: %v", err)
-		}
 		fmt.Println("🔨 Building and deploying...")
 		srcDir := cloneDir
 		if svc.RootDirectory != "" {
 			srcDir = filepath.Join(cloneDir, svc.RootDirectory)
 		}
-		containerID, err := deployer.Deploy(context.Background(), project, srcDir, os.Stdout)
+		containerID, err := deployer.DeployAppService(context.Background(), svc, srcDir, os.Stdout)
 		if err != nil {
 			exitError("Deployment failed: %v", err)
 		}
@@ -293,12 +289,8 @@ func runDeploy(args []string) {
 		f.Close()
 
 		srcDir := findSourceDir(archiveDir)
-		project, err := projectRepo.Get(context.Background(), projectID)
-		if err != nil {
-			exitError("Failed to load project: %v", err)
-		}
 		fmt.Println("🔨 Building and deploying...")
-		containerID, err := deployer.Deploy(context.Background(), project, srcDir, os.Stdout)
+		containerID, err := deployer.DeployAppService(context.Background(), svc, srcDir, os.Stdout)
 		if err != nil {
 			exitError("Deployment failed: %v", err)
 		}

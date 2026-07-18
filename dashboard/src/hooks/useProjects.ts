@@ -38,17 +38,6 @@ export const useDeleteProject = () => {
   });
 };
 
-export const useDeployProject = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (payload: { id: string }) => projectsService.deployProject(payload.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-      queryClient.invalidateQueries({ queryKey: ['canvas'] });
-    },
-  });
-};
-
 export const useGetVars = (id: string) => {
   return useQuery({
     queryKey: ['projects', 'getVars', id].filter(Boolean),

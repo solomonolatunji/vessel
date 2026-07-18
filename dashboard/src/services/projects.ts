@@ -42,14 +42,6 @@ export const projectsService = {
     }
   },
 
-  deployProject: async (id: string): Promise<void> => {
-    try {
-      await apiClient.post(`/projects/${id}/deploy`);
-    } catch (error) {
-      throw handleApiError(error);
-    }
-  },
-
   getVars: async (id: string): Promise<BaseResponse<Record<string, string>>> => {
     try {
       return await apiClient.get<BaseResponse<Record<string, string>>>(`/projects/${id}/env`);
