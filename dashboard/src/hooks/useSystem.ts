@@ -46,11 +46,11 @@ export const useCleanupSystem = () => {
   });
 };
 
-export const useGetRailwayProjects = (token: string) => {
+export const useGetRailwayProjects = (token: string, enabled = false) => {
   return useQuery({
     queryKey: ['system', 'migration', 'railway', 'projects', token],
     queryFn: () => systemService.getRailwayProjects(token),
-    enabled: !!token,
+    enabled: enabled && !!token,
   });
 };
 
