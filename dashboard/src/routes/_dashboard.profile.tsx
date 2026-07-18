@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { User } from 'lucide-react';
 import { Security2FASetup } from '#/features/profile/security-2fa-setup';
 import {
   ProfileEmailForm,
@@ -13,17 +14,17 @@ export const Route = createFileRoute('/_dashboard/profile')({
 function ProfilePage() {
   return (
     <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-6 pb-2 md:flex-row md:items-start">
-        <div className="flex-1 space-y-4">
-          <div className="space-y-1">
-            <p className="font-bold text-[10px] text-muted-foreground uppercase tracking-[0.15em]">
-              ACCOUNT MANAGEMENT
-            </p>
-            <h1 className="font-bold text-3xl tracking-tight">Profile & Security</h1>
+      <div className="mb-5 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <User className="h-4.5 w-4.5" />
           </div>
-          <p className="max-w-2xl text-muted-foreground text-sm leading-relaxed">
-            Manage your personal profile and security preferences.
-          </p>
+          <div>
+            <h1 className="font-bold text-xl">Profile & Security</h1>
+            <p className="text-muted-foreground text-sm">
+              Manage your personal profile and security preferences.
+            </p>
+          </div>
         </div>
       </div>
 

@@ -35,18 +35,18 @@ export const UpdatesPage = () => {
   return (
     <div className="space-y-6">
       {/* Top Section */}
-      <div className="flex flex-col justify-between gap-6 pb-2 md:flex-row md:items-start">
-        <div className="flex-1 space-y-4">
-          <div className="space-y-1">
-            <p className="font-bold text-[10px] text-muted-foreground uppercase tracking-[0.15em]">
-              UPDATES
-            </p>
-            <h1 className="font-bold text-3xl tracking-tight">Vessl release channel</h1>
+      <div className="mb-5 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <RefreshCw className="h-4.5 w-4.5" />
           </div>
-          <p className="text-muted-foreground text-sm leading-relaxed">
-            Compare this install with the official Vessl releases, review changelogs, and update the
-            daemon when you are ready.
-          </p>
+          <div>
+            <h1 className="font-bold text-xl">Vessl release channel</h1>
+            <p className="text-muted-foreground text-sm">
+              Compare this install with the official Vessl releases, review changelogs, and update
+              the daemon when you are ready.
+            </p>
+          </div>
         </div>
 
         <div className="flex shrink-0 flex-col items-end gap-4">

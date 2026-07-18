@@ -97,19 +97,29 @@ export function ApiKeysList() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-6 pb-2 md:flex-row md:items-start">
-        <div className="flex-1 space-y-4">
-          <h1 className="font-bold text-3xl tracking-tight">API keys</h1>
+      <div className="mb-5 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <Key className="h-4.5 w-4.5" />
+          </div>
+          <div>
+            <h1 className="font-bold text-xl">API keys</h1>
+            <p className="text-muted-foreground text-sm">
+              Manage API keys for external integrations, CLI access, and programmatic control.
+            </p>
+          </div>
+        </div>
+        <div className="flex shrink-0 items-center gap-4">
           <p className="font-bold text-[10px] text-muted-foreground uppercase tracking-[0.15em]">
             {tokens.length} {tokens.length === 1 ? 'KEY' : 'KEYS'}
           </p>
+          <Button
+            onClick={() => setIsCreateOpen(true)}
+            className="h-11 rounded-xl border-primary/20 bg-primary/10 px-6 font-semibold text-primary text-xs uppercase tracking-widest hover:bg-primary/20 hover:text-primary"
+          >
+            <Plus className="mr-2 h-4 w-4" /> CREATE API KEY
+          </Button>
         </div>
-        <Button
-          onClick={() => setIsCreateOpen(true)}
-          className="h-11 rounded-xl border-primary/20 bg-primary/10 px-6 font-semibold text-primary text-xs uppercase tracking-widest hover:bg-primary/20 hover:text-primary"
-        >
-          <Plus className="mr-2 h-4 w-4" /> CREATE API KEY
-        </Button>
       </div>
 
       <div className="grid grid-cols-1 gap-6">

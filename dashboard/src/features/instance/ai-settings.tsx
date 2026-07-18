@@ -1,4 +1,4 @@
-import { Brain, Check, ChevronDown, Star } from 'lucide-react';
+import { Bot, Brain, Check, ChevronDown, Star } from 'lucide-react';
 import { useState } from 'react';
 import {
   DropdownMenu,
@@ -94,16 +94,23 @@ export function AISettings() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-6 pb-2 md:flex-row md:items-start">
-        <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-border/50 bg-card/40">
-            <Brain className="h-5 w-5 text-primary" />
+      <div className="mb-5 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <Brain className="h-4.5 w-4.5" />
           </div>
-          <h1 className="font-bold text-3xl tracking-tight">AI</h1>
+          <div>
+            <h1 className="font-bold text-xl">AI</h1>
+            <p className="text-muted-foreground text-sm">
+              Configure built-in AI models and providers for your Vessl instance.
+            </p>
+          </div>
         </div>
-        <p className="font-bold text-[10px] text-muted-foreground uppercase tracking-widest">
-          DEFAULT <span className="text-foreground">{defaultProvider}</span>
-        </p>
+        <div className="flex shrink-0 items-center gap-4">
+          <p className="font-bold text-[10px] text-muted-foreground uppercase tracking-widest">
+            DEFAULT <span className="text-foreground">{defaultProvider}</span>
+          </p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
