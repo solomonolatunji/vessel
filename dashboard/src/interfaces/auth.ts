@@ -38,11 +38,12 @@ export interface SetupCredentials extends RegisterCredentials {
 
 export interface Setup2FAResponse {
   secret: string;
-  qrCodeUrl: string;
+  qrCodeUri: string;
+  recoveryCodes: string[];
 }
 
 export interface Verify2FARequest {
-  token: string;
+  passcode: string;
 }
 
 export type LoginResponse = BaseResponse<AuthResponse>;

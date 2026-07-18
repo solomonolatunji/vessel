@@ -264,7 +264,7 @@ export function ProfilePasswordForm() {
             placeholder="Current Password"
           />
         </Row>
-        <Row label="New Password">
+        <Row label="New Password" description="Must be at least 8 characters long.">
           <Input
             id="newPassword"
             type="password"
