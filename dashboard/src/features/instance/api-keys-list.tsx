@@ -113,11 +113,9 @@ export function ApiKeysList() {
           <p className="font-bold text-[10px] text-muted-foreground uppercase tracking-[0.15em]">
             {tokens.length} {tokens.length === 1 ? 'KEY' : 'KEYS'}
           </p>
-          <Button
-            onClick={() => setIsCreateOpen(true)}
-            className="h-11 rounded-xl px-6 font-semibold text-xs uppercase tracking-widest transition-all"
-          >
-            <Plus className="mr-2 h-4 w-4" /> CREATE API KEY
+          <Button onClick={() => setIsCreateOpen(true)} className="gap-2">
+            <Plus className="h-4 w-4" />
+            CREATE API KEY
           </Button>
         </div>
       </div>

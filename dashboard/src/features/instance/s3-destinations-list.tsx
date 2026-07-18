@@ -117,9 +117,9 @@ export function S3DestinationsList() {
         </div>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
-            <Button className="h-11 shrink-0 gap-2 bg-primary font-bold text-primary-foreground text-xs uppercase tracking-wider">
+            <Button className="gap-2">
               <Plus className="h-4 w-4" />
-              New Destination
+              NEW DESTINATION
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl [&>button]:hidden">

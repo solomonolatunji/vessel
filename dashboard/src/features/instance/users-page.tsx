@@ -100,8 +100,9 @@ export const UsersPage = () => {
         </div>
         <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
           <DialogTrigger asChild>
-            <Button className="h-11 rounded-xl px-6 font-semibold text-xs uppercase tracking-widest transition-all">
-              <Plus className="mr-2 h-4 w-4" /> INVITE USER
+            <Button className="gap-2">
+              <Plus className="h-4 w-4" />
+              INVITE USER
             </Button>
           </DialogTrigger>
           <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-[500px] [&>button]:hidden">
