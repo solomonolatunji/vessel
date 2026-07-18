@@ -10,14 +10,22 @@ import { Label } from '#/components/ui/label';
 import { Switch } from '#/components/ui/switch';
 import { useCreate, useDelete, useList, useListRecords, useTrigger } from '#/hooks/useBackups';
 
-type SectionProps = { icon: React.ReactNode; title: string; children: React.ReactNode };
-const Section = ({ icon, title, children }: SectionProps) => (
+type SectionProps = {
+  icon: React.ReactNode;
+  title: string;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+};
+const Section = ({ icon, title, action, children }: SectionProps) => (
   <div className="rounded-xl border border-border/50 bg-card/40 p-6">
-    <div className="mb-4 flex items-center gap-3">
-      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-        {icon}
+    <div className="mb-4 flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+          {icon}
+        </div>
+        <span className="font-semibold text-sm">{title}</span>
       </div>
-      <span className="font-semibold text-sm">{title}</span>
+      {action && <div className="flex shrink-0">{action}</div>}
     </div>
     <div className="divide-y divide-border/50">{children}</div>
   </div>
@@ -221,17 +229,17 @@ export function BackupsList() {
         </Row>
       </Section>
 
-      <Section icon={<History className="h-4 w-4" />} title={`Executions (${records.length})`}>
-        <div className="flex flex-col gap-4 py-4">
-          <div className="flex items-center justify-end gap-3 pb-2">
-            <Button variant="outline" size="sm">
-              Cleanup Failed Backups
-            </Button>
-            <Button variant="destructive" size="sm">
-              Cleanup Deleted
-            </Button>
+      <Section
+        icon={<History className="h-4 w-4" />}
+        title={`Executions (${records.length})`}
+        action={
+          <div className="flex items-center gap-3">
+            <Button variant="outline">Cleanup Failed Backups</Button>
+            <Button variant="destructive">Cleanup Deleted</Button>
           </div>
-
+        }
+      >
+        <div className="flex flex-col gap-4 py-4">
           <div className="flex flex-col gap-4">
             {isLoadingRecords ? (
               <div className="py-8 text-center text-muted-foreground">Loading executions...</div>
