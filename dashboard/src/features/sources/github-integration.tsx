@@ -278,7 +278,7 @@ export function GithubIntegration() {
 
       <Dialog open={isEditing} onOpenChange={setIsEditing}>
         <DialogContent className="max-w-[800px] gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl [&>button]:hidden">
-          <div className="p-5">
+          <div className="px-5 pt-5 pb-4">
             <div className="flex items-start justify-between">
               <div className="flex flex-col">
                 <DialogTitle className="flex items-center gap-2 font-bold text-foreground text-xl tracking-tight">
@@ -317,7 +317,7 @@ export function GithubIntegration() {
 
           <div className="h-px w-full bg-border/50" />
 
-          <div className="p-5">
+          <div className="px-5 pt-4 pb-5">
             {!editingApp && (
               <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-4">
                 <div className="flex items-center justify-between">

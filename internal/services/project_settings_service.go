@@ -28,34 +28,6 @@ func NewProjectSettingsService(r repositories.ProjectSettingsRepository, ur repo
 	}
 }
 
-func (s *ProjectSettingsService) CreateWebhook(ctx context.Context, w *models.Webhook) (*models.Webhook, error) {
-	if w == nil || w.ServiceID == "" || w.URL == "" {
-		return nil, errors.New("valid webhook with serviceId and url required")
-	}
-	if w.ID == "" {
-		w.ID = uuid.New().String()
-	}
-	w.CreatedAt = time.Now()
-	if err := s.repo.CreateWebhook(ctx, w); err != nil {
-		return nil, err
-	}
-	return w, nil
-}
-
-func (s *ProjectSettingsService) ListWebhooks(ctx context.Context, serviceID string) ([]*models.Webhook, error) {
-	if serviceID == "" {
-		return nil, errors.New("serviceId required")
-	}
-	return s.repo.ListWebhooksByService(ctx, serviceID)
-}
-
-func (s *ProjectSettingsService) DeleteWebhook(ctx context.Context, id, serviceID string) error {
-	if id == "" || serviceID == "" {
-		return errors.New("id and serviceId required")
-	}
-	return s.repo.DeleteWebhook(ctx, id, serviceID)
-}
-
 func (s *ProjectSettingsService) CreateToken(ctx context.Context, t *models.ProjectToken) (*models.ProjectToken, string, error) {
 	if t == nil || t.ProjectID == "" || t.Name == "" {
 		return nil, "", errors.New("valid token with projectId and name required")

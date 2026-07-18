@@ -1,5 +1,5 @@
 import { Check } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '#/components/ui/button';
 import { Input } from '#/components/ui/input';
@@ -51,7 +51,7 @@ const PROVIDERS: ProviderConfig[] = [
     ],
   },
   {
-    id: 'microsoft',
+    id: 'azuread',
     name: 'Microsoft',
     fields: [
       {
@@ -74,15 +74,19 @@ export const OAuthProvidersList = () => {
   const [form, setForm] = useState<ProviderState>({});
   const [saving, setSaving] = useState<string | null>(null);
 
+  const isInitialized = React.useRef(false);
+
   useEffect(() => {
-    if (data?.data) {
+    if (data?.data && !isInitialized.current) {
+      isInitialized.current = true;
       const initial: ProviderState = {};
       for (const p of PROVIDERS) {
         const existing = data.data.find((d) => d.providerName === p.id);
         initial[p.id] = {
+          id: existing?.id,
           providerName: p.id,
           clientId: existing?.clientId ?? '',
-          clientSecret: '',
+          clientSecret: existing?.clientId ? '********' : '',
           baseUrl: existing?.baseUrl ?? '',
           tenant: existing?.tenant ?? '',
           enabled: existing?.enabled ?? false,
@@ -100,7 +104,17 @@ export const OAuthProvidersList = () => {
     setSaving('all');
     try {
       await Promise.all(
-        PROVIDERS.map((p) => save({ payload: form[p.id] as SaveOAuthProviderRequest }))
+        PROVIDERS.map((p) => {
+          const s = form[p.id] as SaveOAuthProviderRequest;
+          const payload = {
+            ...s,
+            redirectUri: `${window.location.origin}/api/auth/oauth/${p.id}/callback`,
+            clientSecret: s.clientSecret === '********' ? undefined : s.clientSecret,
+            enabled:
+              !s.clientId || (!s.clientSecret && s.clientSecret !== '********') ? false : s.enabled,
+          };
+          return save({ payload });
+        })
       );
       toast.success('OAuth providers saved');
     } catch {

@@ -35,6 +35,9 @@ func (h *BackupHandler) List(c echo.Context) error {
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
+	for i := range list {
+		list[i].DbPassword = "********"
+	}
 	return utils.Success(c, "Operation successful", list)
 }
 
@@ -56,6 +59,27 @@ func (h *BackupHandler) Create(c echo.Context) error {
 	return utils.Created(c, "Created successfully", cfg)
 }
 
+// @Summary Update Backup
+// @Description Update Backup
+// @Tags Backups
+// @Accept json
+// @Produce json
+// @Param id path string true "Backup ID"
+// @Param request body models.BackupConfig true "Payload"
+// @Router /backups/{id} [put]
+func (h *BackupHandler) Update(c echo.Context) error {
+	id := c.Param("id")
+	var cfg models.BackupConfig
+	if err := c.Bind(&cfg); err != nil {
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
+	}
+	cfg.ID = id
+	if err := h.backupService.UpdateConfig(c.Request().Context(), &cfg); err != nil {
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
+	}
+	return utils.Success(c, "Updated successfully", cfg)
+}
+
 // @Summary Get Backup
 // @Description Get Backup
 // @Tags Backups
@@ -72,6 +96,7 @@ func (h *BackupHandler) Get(c echo.Context) error {
 	if err != nil || cfg == nil {
 		return utils.Error(c, http.StatusNotFound, "backup config not found")
 	}
+	cfg.DbPassword = "********"
 	return utils.Success(c, "Operation successful", cfg)
 }
 

@@ -27,8 +27,8 @@ export const useUpdateSettings = () => {
   return useMutation({
     mutationFn: (payload: { payload: Parameters<typeof settingsService.updateSettings>[0] }) =>
       settingsService.updateSettings(payload.payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['settings'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['settings'] });
     },
   });
 };
@@ -44,8 +44,8 @@ export const useUpdateAISettings = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: Record<string, string>) => settingsService.updateAISettings(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['settings', 'getAISettings'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['settings', 'getAISettings'] });
     },
   });
 };
@@ -62,8 +62,8 @@ export const useUpdateNotificationSettings = () => {
   return useMutation({
     mutationFn: (payload: Record<string, unknown>) =>
       settingsService.updateNotificationSettings(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['settings', 'getNotificationSettings'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['settings', 'getNotificationSettings'] });
     },
   });
 };
@@ -86,8 +86,8 @@ export const useSaveGitApp = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: Record<string, unknown>) => settingsService.saveGitApp(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['settings', 'getGitApps', 'github'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['settings', 'getGitApps', 'github'] });
     },
   });
 };
@@ -96,8 +96,8 @@ export const useDeleteGitApp = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => settingsService.deleteGitApp(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['settings', 'getGitApps', 'github'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['settings', 'getGitApps', 'github'] });
     },
   });
 };
@@ -133,8 +133,8 @@ export const useSaveNotificationChannel = () => {
   return useMutation({
     mutationFn: (payload: Record<string, unknown>) =>
       settingsService.saveNotificationChannel(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['settings', 'getNotifications'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['settings', 'getNotifications'] });
     },
   });
 };
@@ -149,8 +149,8 @@ export const useDeleteNotificationChannel = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => settingsService.deleteNotificationChannel(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['settings', 'getNotifications'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['settings', 'getNotifications'] });
     },
   });
 };

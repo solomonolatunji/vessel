@@ -22,7 +22,7 @@ export interface ServiceWebhook {
 export const projectSettingsService = {
   listWebhooks: async (serviceId: string): Promise<BaseResponse<ServiceWebhook[]>> => {
     try {
-      return await apiClient.get<BaseResponse<ServiceWebhook[]>>(`/services/${serviceId}/webhooks`);
+      return await apiClient.get<BaseResponse<ServiceWebhook[]>>(`/apps/${serviceId}/webhooks`);
     } catch (error) {
       throw handleApiError(error);
     }
@@ -34,7 +34,7 @@ export const projectSettingsService = {
   ): Promise<BaseResponse<ServiceWebhook>> => {
     try {
       return await apiClient.post<BaseResponse<ServiceWebhook>>(
-        `/services/${serviceId}/webhooks`,
+        `/apps/${serviceId}/webhooks`,
         payload
       );
     } catch (error) {
@@ -44,7 +44,7 @@ export const projectSettingsService = {
 
   deleteWebhook: async (serviceId: string, id: string): Promise<void> => {
     try {
-      await apiClient.delete(`/services/${serviceId}/webhooks/${id}`);
+      await apiClient.delete(`/apps/${serviceId}/webhooks/${id}`);
     } catch (error) {
       throw handleApiError(error);
     }

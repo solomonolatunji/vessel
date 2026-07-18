@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -13,8 +14,10 @@ import (
 
 type OAuthService struct {
 	oauthRepo    repositories.OAuthRepository
-	userRepo     repositories.UserRepository
-	tokenService *TokenService
+	userRepo        repositories.UserRepository
+	tokenService    *TokenService
+	pendingTOTP     sync.Map
+	pendingRecovery sync.Map
 }
 
 func NewOAuthService(or repositories.OAuthRepository, ur repositories.UserRepository, ts *TokenService) *OAuthService {
@@ -125,25 +128,34 @@ func (s *OAuthService) Setup2FA(ctx context.Context, userID, email string) (*mod
 	if err != nil {
 		return nil, errors.New("failed generating recovery codes")
 	}
-	if err := s.oauthRepo.UpdateUserTOTP(ctx, userID, false, secret, recoveryCodes); err != nil {
-		return nil, err
-	}
+	s.pendingTOTP.Store(userID, secret)
+	s.pendingRecovery.Store(userID, recoveryCodes)
+	
 	return &models.TwoFASetupResponse{
-		Secret:        secret,
 		QRCodeURI:     GenerateTOTPQRUri(email, secret),
-		RecoveryCodes: recoveryCodes,
 	}, nil
 }
 
 func (s *OAuthService) Verify2FA(ctx context.Context, userID, passcode string) error {
-	secret, recoveryCodes, err := s.oauthRepo.GetUserTOTPSecret(ctx, userID)
-	if err != nil || secret == "" {
-		return errors.New("totp setup has not been initiated for this user")
+	secretAny, ok := s.pendingTOTP.Load(userID)
+	if !ok {
+		return errors.New("totp setup has not been initiated or has expired")
 	}
+	secret := secretAny.(string)
+
 	if !ValidateTOTP(secret, passcode) {
 		return errors.New("invalid 6-digit totp verification code")
 	}
-	return s.oauthRepo.UpdateUserTOTP(ctx, userID, true, secret, recoveryCodes)
+
+	recoveryAny, _ := s.pendingRecovery.Load(userID)
+	recoveryCodes := recoveryAny.([]string)
+
+	err := s.oauthRepo.UpdateUserTOTP(ctx, userID, true, secret, recoveryCodes)
+	if err == nil {
+		s.pendingTOTP.Delete(userID)
+		s.pendingRecovery.Delete(userID)
+	}
+	return err
 }
 
 func (s *OAuthService) Disable2FA(ctx context.Context, userID string) error {

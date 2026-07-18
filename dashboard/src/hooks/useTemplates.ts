@@ -13,8 +13,8 @@ export const useDeployOneClickApp = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: OneClickDeployRequest) => templatesService.deployOneClickApp(payload),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['projects', variables.projectId, 'apps'] });
+    onSuccess: async (_, variables) => {
+      await queryClient.invalidateQueries({ queryKey: ['projects', variables.projectId, 'apps'] });
     },
   });
 };
@@ -24,8 +24,8 @@ export const useDeployCompose = () => {
   return useMutation({
     mutationFn: ({ projectId, file }: { projectId: string; file: File }) =>
       templatesService.deployCompose(projectId, file),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['projects', variables.projectId, 'apps'] });
+    onSuccess: async (_, variables) => {
+      await queryClient.invalidateQueries({ queryKey: ['projects', variables.projectId, 'apps'] });
     },
   });
 };
@@ -35,9 +35,11 @@ export const useDeployArchive = () => {
   return useMutation({
     mutationFn: ({ projectId, file }: { projectId: string; file: File }) =>
       templatesService.deployArchive(projectId, file),
-    onSuccess: (_, variables) => {
+    onSuccess: async (_, variables) => {
       if (variables.projectId) {
-        queryClient.invalidateQueries({ queryKey: ['projects', variables.projectId, 'apps'] });
+        await queryClient.invalidateQueries({
+          queryKey: ['projects', variables.projectId, 'apps'],
+        });
       }
     },
   });

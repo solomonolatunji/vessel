@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -23,6 +24,9 @@ type AppServiceRepository interface {
 	ListAll(ctx context.Context) ([]*models.AppService, error)
 	Update(ctx context.Context, svc *models.AppService) error
 	Delete(ctx context.Context, id string) error
+	CreateWebhook(ctx context.Context, w *models.Webhook) error
+	ListWebhooksByService(ctx context.Context, serviceID string) ([]*models.Webhook, error)
+	DeleteWebhook(ctx context.Context, id, serviceID string) error
 }
 
 type AppServiceRepo struct {
@@ -155,4 +159,68 @@ func (r *AppServiceRepo) Delete(_ context.Context, id string) error {
 	defer r.mu.Unlock()
 	_, err := r.db.Exec(`DELETE FROM app_services WHERE id = ?`, id)
 	return err
+}
+
+func (r *AppServiceRepo) CreateWebhook(ctx context.Context, w *models.Webhook) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if w.ID == "" {
+		w.ID = uuid.NewString()
+	}
+	now := time.Now().UTC()
+	w.CreatedAt = now
+	w.UpdatedAt = now
+	eventTypesStr := strings.Join(w.EventTypes, ",")
+	_, err := r.db.ExecContext(ctx,
+		`INSERT INTO service_webhooks (id, service_id, url, event_types, include_pr_environments, created_at, updated_at)
+		 VALUES (?, ?, ?, ?, ?, ?, ?)`,
+		w.ID, w.ServiceID, w.URL, eventTypesStr, w.IncludePREnvironments, w.CreatedAt, w.UpdatedAt)
+	if err != nil {
+		return fmt.Errorf("create webhook: %w", err)
+	}
+	return nil
+}
+
+func (r *AppServiceRepo) ListWebhooksByService(ctx context.Context, serviceID string) ([]*models.Webhook, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	rows, err := r.db.QueryContext(ctx,
+		`SELECT id, service_id, url, event_types, include_pr_environments, created_at, updated_at
+		 FROM service_webhooks WHERE service_id = ? ORDER BY created_at DESC`, serviceID)
+	if err != nil {
+		return nil, fmt.Errorf("list webhooks: %w", err)
+	}
+	defer rows.Close()
+	var out []*models.Webhook
+	for rows.Next() {
+		var w models.Webhook
+		var eventsStr string
+		var includePr int
+		if err := rows.Scan(&w.ID, &w.ServiceID, &w.URL, &eventsStr, &includePr, &w.CreatedAt, &w.UpdatedAt); err != nil {
+			return nil, fmt.Errorf("scan webhook: %w", err)
+		}
+		if eventsStr != "" {
+			w.EventTypes = strings.Split(eventsStr, ",")
+		} else {
+			w.EventTypes = []string{}
+		}
+		w.IncludePREnvironments = includePr == 1
+		out = append(out, &w)
+	}
+	return out, rows.Err()
+}
+
+func (r *AppServiceRepo) DeleteWebhook(ctx context.Context, id, serviceID string) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	query := "DELETE FROM service_webhooks WHERE id = ? AND service_id = ?"
+	res, err := r.db.ExecContext(ctx, query, id, serviceID)
+	if err != nil {
+		return fmt.Errorf("delete webhook: %w", err)
+	}
+	n, _ := res.RowsAffected()
+	if n == 0 {
+		return fmt.Errorf("webhook not found")
+	}
+	return nil
 }

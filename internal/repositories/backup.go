@@ -16,6 +16,7 @@ import (
 
 type BackupRepository interface {
 	CreateConfig(ctx context.Context, cfg *models.BackupConfig) error
+	UpdateConfig(ctx context.Context, cfg *models.BackupConfig) error
 	GetConfigByID(ctx context.Context, id string) (*models.BackupConfig, error)
 	ListConfigsByProject(ctx context.Context, projectID string) ([]*models.BackupConfig, error)
 	ListAllActiveConfigs(ctx context.Context) ([]*models.BackupConfig, error)
@@ -107,8 +108,8 @@ func (r *BackupRepo) CreateConfig(ctx context.Context, cfg *models.BackupConfig)
 	if cfg.Status == "" {
 		cfg.Status = "active"
 	}
-	if cfg.RetentionDays <= 0 {
-		cfg.RetentionDays = 7
+	if cfg.Timeout == 0 {
+		cfg.Timeout = 3600
 	}
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -134,6 +135,22 @@ func (r *BackupRepo) GetConfigByID(ctx context.Context, id string) (*models.Back
 		return nil, fmt.Errorf("failed to get backup config %s: %w", id, err)
 	}
 	return &cfg, nil
+}
+
+func (r *BackupRepo) UpdateConfig(ctx context.Context, cfg *models.BackupConfig) error {
+	cfg.UpdatedAt = time.Now().UTC().Format(time.RFC3339)
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	
+	if cfg.DbPassword == "********" || cfg.DbPassword == "" {
+		_, err := r.db.ExecContext(ctx, `UPDATE backup_configs SET name=?, description=?, db_user=?, backup_enabled=?, s3_enabled=?, disable_local=?, schedule=?, timezone=?, timeout=?, retention_days=?, max_backups=?, max_storage_gb=?, updated_at=? WHERE id=?`,
+			cfg.Name, cfg.Description, cfg.DbUser, cfg.BackupEnabled, cfg.S3Enabled, cfg.DisableLocal, cfg.Schedule, cfg.Timezone, cfg.Timeout, cfg.RetentionDays, cfg.MaxBackups, cfg.MaxStorageGB, cfg.UpdatedAt, cfg.ID)
+		return err
+	}
+
+	_, err := r.db.ExecContext(ctx, `UPDATE backup_configs SET name=?, description=?, db_user=?, db_password=?, backup_enabled=?, s3_enabled=?, disable_local=?, schedule=?, timezone=?, timeout=?, retention_days=?, max_backups=?, max_storage_gb=?, updated_at=? WHERE id=?`,
+		cfg.Name, cfg.Description, cfg.DbUser, cfg.DbPassword, cfg.BackupEnabled, cfg.S3Enabled, cfg.DisableLocal, cfg.Schedule, cfg.Timezone, cfg.Timeout, cfg.RetentionDays, cfg.MaxBackups, cfg.MaxStorageGB, cfg.UpdatedAt, cfg.ID)
+	return err
 }
 
 func (r *BackupRepo) ListConfigsByProject(ctx context.Context, projectID string) ([]*models.BackupConfig, error) {

@@ -19,69 +19,7 @@ func NewProjectSettingsHandler(s *services.ProjectSettingsService) *ProjectSetti
 	return &ProjectSettingsHandler{settingsService: s}
 }
 
-// @Summary ListWebhooks endpoint
-// @Description ListWebhooks endpoint
-// @Tags Services
-// @Accept json
-// @Produce json
-// @Param serviceId path string true "serviceId"
-// @Router /services/{serviceId}/webhooks [get]
-func (h *ProjectSettingsHandler) ListWebhooks(c echo.Context) error {
-	serviceID := c.Param("serviceId")
-	if serviceID == "" {
-		return utils.Error(c, http.StatusBadRequest, "missing serviceId")
-	}
-	list, err := h.settingsService.ListWebhooks(c.Request().Context(), serviceID)
-	if err != nil {
-		return utils.Error(c, http.StatusInternalServerError, err.Error())
-	}
-	return utils.Success(c, "Operation successful", list)
-}
 
-// @Summary CreateWebhook endpoint
-// @Description CreateWebhook endpoint
-// @Tags Services
-// @Accept json
-// @Produce json
-// @Param serviceId path string true "serviceId"
-// @Param request body models.Webhook true "Payload"
-// @Router /services/{serviceId}/webhooks [post]
-func (h *ProjectSettingsHandler) CreateWebhook(c echo.Context) error {
-	serviceID := c.Param("serviceId")
-	if serviceID == "" {
-		return utils.Error(c, http.StatusBadRequest, "missing serviceId")
-	}
-	var req models.Webhook
-	if err := c.Bind(&req); err != nil {
-		return utils.Error(c, http.StatusBadRequest, "invalid payload")
-	}
-	req.ServiceID = serviceID
-	created, err := h.settingsService.CreateWebhook(c.Request().Context(), &req)
-	if err != nil {
-		return utils.Error(c, http.StatusInternalServerError, err.Error())
-	}
-	return utils.Created(c, "Created successfully", created)
-}
-
-// @Summary DeleteWebhook endpoint
-// @Description DeleteWebhook endpoint
-// @Tags Services
-// @Accept json
-// @Produce json
-// @Param serviceId path string true "serviceId"
-// @Param id path string true "id"
-// @Router /services/{serviceId}/webhooks/{id} [delete]
-func (h *ProjectSettingsHandler) DeleteWebhook(c echo.Context) error {
-	serviceID := c.Param("serviceId")
-	id := c.Param("id")
-	if serviceID == "" || id == "" {
-		return utils.Error(c, http.StatusBadRequest, "missing serviceId or id")
-	}
-	if err := h.settingsService.DeleteWebhook(c.Request().Context(), id, serviceID); err != nil {
-		return utils.Error(c, http.StatusInternalServerError, err.Error())
-	}
-	return c.NoContent(http.StatusNoContent)
-}
 
 // @Summary ListTokens endpoint
 // @Description ListTokens endpoint

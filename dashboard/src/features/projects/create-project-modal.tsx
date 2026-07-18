@@ -41,7 +41,7 @@ export function CreateProjectModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-125 [&>button]:hidden">
         <form onSubmit={handleSubmit}>
-          <div className="p-5">
+          <div className="px-5 pt-5 pb-4">
             <div className="flex items-start justify-between">
               <div className="flex flex-col">
                 <DialogTitle className="flex items-center gap-2 font-bold text-xl tracking-tight">
@@ -67,7 +67,7 @@ export function CreateProjectModal({
 
           <div className="h-px w-full bg-border/50" />
 
-          <div className="space-y-5 p-5">
+          <div className="space-y-5 px-5 pt-4 pb-5">
             <div className="space-y-2.5">
               <Label className="font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
                 PROJECT NAME

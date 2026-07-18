@@ -13,9 +13,9 @@ export const useCreateEnvironment = () => {
   return useMutation({
     mutationFn: (payload: { projectId: string; name: string }) =>
       environmentsService.createEnvironment(payload.projectId, payload.name),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['environments'] });
-      queryClient.invalidateQueries({ queryKey: ['canvas'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['environments'] });
+      await queryClient.invalidateQueries({ queryKey: ['canvas'] });
     },
   });
 };
@@ -25,9 +25,9 @@ export const useDeleteEnvironment = () => {
   return useMutation({
     mutationFn: (payload: { environmentId: string }) =>
       environmentsService.deleteEnvironment(payload.environmentId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['environments'] });
-      queryClient.invalidateQueries({ queryKey: ['canvas'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['environments'] });
+      await queryClient.invalidateQueries({ queryKey: ['canvas'] });
     },
   });
 };

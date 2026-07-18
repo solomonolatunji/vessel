@@ -37,8 +37,8 @@ func (s *BackupService) CreateConfig(ctx context.Context, cfg *models.BackupConf
 	if cfg.Schedule == "" {
 		cfg.Schedule = "0 2 * * *"
 	}
-	if cfg.RetentionDays == 0 {
-		cfg.RetentionDays = 7
+	if cfg.Timeout == 0 {
+		cfg.Timeout = 3600
 	}
 	cfg.CreatedAt = time.Now().UTC().Format(time.RFC3339)
 	cfg.UpdatedAt = cfg.CreatedAt
@@ -49,6 +49,14 @@ func (s *BackupService) CreateConfig(ctx context.Context, cfg *models.BackupConf
 		_ = s.manager.RegisterBackup(cfg)
 	}
 	return nil
+}
+
+func (s *BackupService) UpdateConfig(ctx context.Context, cfg *models.BackupConfig) error {
+	if cfg.Timeout == 0 {
+		cfg.Timeout = 3600
+	}
+	cfg.UpdatedAt = time.Now().UTC().Format(time.RFC3339)
+	return s.backupRepo.UpdateConfig(ctx, cfg)
 }
 
 func (s *BackupService) GetConfig(ctx context.Context, id string) (*models.BackupConfig, error) {

@@ -76,7 +76,7 @@ export const useSetup = () => {
 export const useForgotPassword = () => {
   return useMutation({
     mutationFn: (email: string) => authService.forgotPassword(email),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       toast.success(
         data?.message ||
           'If an account with that email exists, a password reset link has been sent.'
@@ -126,8 +126,8 @@ export const useSetup2FA = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => authService.setup2FA(),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['auth'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['auth'] });
     },
   });
 };
@@ -137,8 +137,8 @@ export const useVerify2FA = () => {
   return useMutation({
     mutationFn: (payload: Parameters<typeof authService.verify2FA>[0]) =>
       authService.verify2FA(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['auth'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['auth'] });
     },
   });
 };
@@ -148,8 +148,8 @@ export const useDisable2FA = () => {
   return useMutation({
     mutationFn: (payload: Parameters<typeof authService.disable2FA>[0]) =>
       authService.disable2FA(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['auth'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['auth'] });
     },
   });
 };

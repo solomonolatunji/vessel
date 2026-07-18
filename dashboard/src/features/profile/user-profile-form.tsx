@@ -157,7 +157,7 @@ export function ProfileEmailForm() {
 
       <Dialog open={otpOpen} onOpenChange={setOtpOpen}>
         <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-[400px] [&>button]:hidden">
-          <div className="p-5">
+          <div className="px-5 pt-5 pb-4">
             <div className="flex items-start justify-between">
               <div className="flex flex-col">
                 <DialogTitle className="flex items-center gap-2 font-bold text-foreground text-xl tracking-tight">

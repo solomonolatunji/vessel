@@ -94,7 +94,7 @@ export function S3DestinationsList() {
 
   const handleDelete = async (id: string) => {
     try {
-      await deleteS3Dest.mutateAsync({ id });
+      await deleteS3Dest.mutateAsync({ id, projectId: 'global' });
       toast.success('S3 destination deleted successfully');
     } catch (_error) {
       toast.error('Failed to delete S3 destination');
@@ -130,7 +130,7 @@ export function S3DestinationsList() {
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-150 gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl [&>button]:hidden">
-            <div className="p-5">
+            <div className="px-5 pt-5 pb-4">
               <div className="flex items-start justify-between">
                 <div className="flex flex-col">
                   <DialogTitle className="flex items-center gap-2 font-bold text-foreground text-xl tracking-tight">
@@ -153,7 +153,7 @@ export function S3DestinationsList() {
               </div>
             </div>
             <div className="h-px w-full bg-border/50" />
-            <div className="p-5">
+            <div className="px-5 pt-4 pb-5">
               <p className="mb-5 text-muted-foreground text-sm">
                 For more details, please visit the{' '}
                 <a

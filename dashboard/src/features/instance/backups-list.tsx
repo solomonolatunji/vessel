@@ -15,6 +15,7 @@ import {
   useList,
   useListRecords,
   useTrigger,
+  useUpdate,
 } from '#/hooks/useBackups';
 
 export function BackupsList() {
@@ -23,6 +24,7 @@ export function BackupsList() {
   const config = configs[0];
 
   const createBackup = useCreate();
+  const updateBackup = useUpdate();
   const triggerBackup = useTrigger();
   const deleteBackup = useDelete();
   const deleteRecord = useDeleteRecord();
@@ -65,27 +67,28 @@ export function BackupsList() {
   const handleSave = async (e?: React.FormEvent) => {
     e?.preventDefault();
     try {
+      const payload = {
+        projectId: 'global',
+        name,
+        description,
+        dbUser,
+        dbPassword: dbPassword === '********' ? '' : dbPassword,
+        backupEnabled,
+        s3Enabled,
+        disableLocal,
+        schedule,
+        timezone,
+        timeout: parseInt(timeout, 10),
+        retentionDays: parseInt(retentionDays, 10),
+        maxBackups: parseInt(maxBackups, 10),
+        maxStorageGb: parseInt(maxStorage, 10),
+      };
+
       if (config) {
-        await deleteBackup.mutateAsync({ id: config.id });
+        await updateBackup.mutateAsync({ id: config.id, payload });
+      } else {
+        await createBackup.mutateAsync({ payload });
       }
-      await createBackup.mutateAsync({
-        payload: {
-          projectId: 'global',
-          name,
-          description,
-          dbUser,
-          dbPassword,
-          backupEnabled,
-          s3Enabled,
-          disableLocal,
-          schedule,
-          timezone,
-          timeout: parseInt(timeout, 10),
-          retentionDays: parseInt(retentionDays, 10),
-          maxBackups: parseInt(maxBackups, 10),
-          maxStorageGb: parseInt(maxStorage, 10),
-        },
-      });
       toast.success('Backup configuration saved');
     } catch {
       toast.error('Failed to save backup configuration');

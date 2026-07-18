@@ -19,8 +19,8 @@ export const useCreateServiceVariable = () => {
   return useMutation({
     mutationFn: ({ serviceId, payload }: { serviceId: string; payload: unknown }) =>
       serviceVariablesService.create(serviceId, payload),
-    onSuccess: (_, { serviceId }) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (_, { serviceId }) => {
+      await queryClient.invalidateQueries({
         queryKey: serviceVariablesKeys.byService(serviceId),
       });
     },
@@ -32,8 +32,8 @@ export const useUpdateServiceVariable = () => {
   return useMutation({
     mutationFn: ({ serviceId, id, payload }: { serviceId: string; id: string; payload: unknown }) =>
       serviceVariablesService.update(serviceId, id, payload),
-    onSuccess: (_, { serviceId }) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (_, { serviceId }) => {
+      await queryClient.invalidateQueries({
         queryKey: serviceVariablesKeys.byService(serviceId),
       });
     },
@@ -45,8 +45,8 @@ export const useDeleteServiceVariable = () => {
   return useMutation({
     mutationFn: ({ serviceId, id }: { serviceId: string; id: string }) =>
       serviceVariablesService.delete(serviceId, id),
-    onSuccess: (_, { serviceId }) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (_, { serviceId }) => {
+      await queryClient.invalidateQueries({
         queryKey: serviceVariablesKeys.byService(serviceId),
       });
     },

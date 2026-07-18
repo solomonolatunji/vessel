@@ -85,11 +85,11 @@ export function AISettings() {
   const defaultProvider = (settings?.data?.defaultProvider as string) || 'none';
 
   const handleSetDefault = (id: string) => {
-    updateSettings.mutate({ defaultProvider: id });
+    updateSettings.mutate({ ...settings?.data, defaultProvider: id });
   };
 
   const handleUpdateKey = (keyField: string, value: string) => {
-    updateSettings.mutate({ [keyField]: value });
+    updateSettings.mutate({ ...settings?.data, [keyField]: value });
   };
 
   return (

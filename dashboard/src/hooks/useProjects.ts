@@ -20,9 +20,9 @@ export const useCreateProject = () => {
   return useMutation({
     mutationFn: (payload: { payload: Parameters<typeof projectsService.createProject>[0] }) =>
       projectsService.createProject(payload.payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-      queryClient.invalidateQueries({ queryKey: ['canvas'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['projects'] });
+      await queryClient.invalidateQueries({ queryKey: ['canvas'] });
     },
   });
 };
@@ -31,9 +31,9 @@ export const useDeleteProject = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: { id: string }) => projectsService.deleteProject(payload.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-      queryClient.invalidateQueries({ queryKey: ['canvas'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['projects'] });
+      await queryClient.invalidateQueries({ queryKey: ['canvas'] });
     },
   });
 };
@@ -50,9 +50,9 @@ export const useSetVars = () => {
   return useMutation({
     mutationFn: (payload: { id: string; payload: { variables: Record<string, string> } }) =>
       projectsService.setVars(payload.id, payload.payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-      queryClient.invalidateQueries({ queryKey: ['canvas'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['projects'] });
+      await queryClient.invalidateQueries({ queryKey: ['canvas'] });
     },
   });
 };

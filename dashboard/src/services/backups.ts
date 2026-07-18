@@ -36,9 +36,17 @@ export const backupsService = {
     }
   },
 
-  delete: async (id: string): Promise<void> => {
+  update: async (id: string, payload: CreateBackupConfigRequest): Promise<CreateBackupResponse> => {
     try {
-      await apiClient.delete(`/backups/${id}`);
+      return await apiClient.put<CreateBackupResponse>(`/backups/${id}`, payload);
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  delete: async (id: string, projectId: string): Promise<void> => {
+    try {
+      await apiClient.delete(`/backups/${id}?projectId=${projectId}`);
     } catch (error) {
       throw handleApiError(error);
     }
@@ -96,9 +104,9 @@ export const backupsService = {
     }
   },
 
-  deleteS3Destination: async (id: string): Promise<void> => {
+  deleteS3Destination: async (id: string, projectId: string): Promise<void> => {
     try {
-      await apiClient.delete(`/s3-destinations/${id}`);
+      await apiClient.delete(`/s3-destinations/${id}?projectId=${projectId}`);
     } catch (error) {
       throw handleApiError(error);
     }
