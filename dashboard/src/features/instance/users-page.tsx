@@ -16,12 +16,6 @@ import { Skeleton } from '#/components/ui/skeleton';
 import { useDeleteUser, useInviteUser, useListUsers } from '#/hooks/useUsers';
 import type { User } from '#/interfaces/users';
 
-const _roleVariant: Record<string, 'default' | 'secondary' | 'outline'> = {
-  admin: 'default',
-  member: 'secondary',
-  viewer: 'outline',
-};
-
 const UserRow = ({ user, onDelete }: { user: User; onDelete: (u: User) => void }) => (
   <div className="rounded-2xl border border-border/50 bg-card/40 p-6">
     <div className="flex items-start justify-between">

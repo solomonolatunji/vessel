@@ -1,5 +1,5 @@
 import type { BaseResponse } from '#/interfaces/base';
-import type { RailwayImportRequest, RailwayProject, SystemStats } from '#/interfaces/system';
+import type { SystemStats } from '#/interfaces/system';
 import { apiClient } from '#/lib/apiClient';
 import { handleApiError } from '#/lib/error';
 
@@ -41,24 +41,6 @@ export const systemService = {
   cleanupSystem: async (): Promise<void> => {
     try {
       await apiClient.post('/system/maintenance/cleanup');
-    } catch (error) {
-      throw handleApiError(error);
-    }
-  },
-
-  getRailwayProjects: async (token: string): Promise<BaseResponse<RailwayProject[]>> => {
-    try {
-      return await apiClient.get<BaseResponse<RailwayProject[]>>(
-        `/system/migration/railway/projects?token=${encodeURIComponent(token)}`
-      );
-    } catch (error) {
-      throw handleApiError(error);
-    }
-  },
-
-  importRailwayProject: async (payload: RailwayImportRequest): Promise<void> => {
-    try {
-      await apiClient.post('/system/migration/railway/import', payload);
     } catch (error) {
       throw handleApiError(error);
     }

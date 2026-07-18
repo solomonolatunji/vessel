@@ -1,10 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { Box, LogOut, Plus, SearchIcon, TrainFront, Triangle } from 'lucide-react';
+import { Box, LogOut, Plus, SearchIcon } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '#/components/ui/button';
 import { CreateProjectModal } from '#/features/projects/create-project-modal';
-import { RailwayImporter } from '#/features/projects/railway-importer';
-import { VercelImporter } from '#/features/projects/vercel-importer';
 
 export const Route = createFileRoute('/_dashboard/')({
   component: DashboardIndex,
@@ -12,8 +10,6 @@ export const Route = createFileRoute('/_dashboard/')({
 
 function DashboardIndex() {
   const [createOpen, setCreateOpen] = useState(false);
-  const [railwayOpen, setRailwayOpen] = useState(false);
-  const [vercelOpen, setVercelOpen] = useState(false);
 
   return (
     <div className="space-y-6">
@@ -41,22 +37,6 @@ function DashboardIndex() {
             SEARCH
           </Button>
 
-          <Button
-            onClick={() => setRailwayOpen(true)}
-            className="gap-2 bg-[#5C28F2] text-white hover:bg-[#5C28F2]/90 dark:bg-[#5C28F2] dark:text-white"
-          >
-            <TrainFront className="h-4 w-4" />
-            IMPORT RAILWAY
-          </Button>
-
-          <Button
-            onClick={() => setVercelOpen(true)}
-            className="gap-2 bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90"
-          >
-            <Triangle className="h-4 w-4" />
-            IMPORT VERCEL
-          </Button>
-
           <Button onClick={() => setCreateOpen(true)} className="gap-2">
             <Plus className="h-4 w-4" />
             NEW PROJECT
@@ -69,8 +49,6 @@ function DashboardIndex() {
       </div>
 
       <CreateProjectModal open={createOpen} onOpenChange={setCreateOpen} />
-      <RailwayImporter open={railwayOpen} onOpenChange={setRailwayOpen} />
-      <VercelImporter open={vercelOpen} onOpenChange={setVercelOpen} />
     </div>
   );
 }

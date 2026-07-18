@@ -15,7 +15,6 @@ import {
   Search,
   Settings,
   Terminal,
-  UploadCloud,
   Users,
 } from 'lucide-react';
 import { useEffect } from 'react';
@@ -51,12 +50,6 @@ const navigationItems = [
     description: 'Starter workloads',
     to: '/templates',
     icon: LayoutTemplate,
-  },
-  {
-    label: 'Import Railway',
-    description: 'Migration workflow',
-    to: '/imports/railway',
-    icon: UploadCloud,
   },
   {
     label: 'Notifications',

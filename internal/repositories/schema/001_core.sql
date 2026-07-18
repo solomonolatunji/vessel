@@ -102,17 +102,6 @@ CREATE TABLE IF NOT EXISTS user_git_providers (
 			UNIQUE(user_id, provider)
 		);
 
-CREATE TABLE IF NOT EXISTS user_vercel_accounts (
-			id TEXT PRIMARY KEY,
-			user_id TEXT NOT NULL,
-			encrypted_access_token TEXT NOT NULL,
-			vercel_team_id TEXT, -- Vercel team ID if they authenticated a team, or NULL for personal account
-			account_name TEXT NOT NULL,
-			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-			UNIQUE(user_id, vercel_team_id)
-		);
-
 CREATE TABLE IF NOT EXISTS environments (
 			id TEXT PRIMARY KEY,
 			project_id TEXT NOT NULL,

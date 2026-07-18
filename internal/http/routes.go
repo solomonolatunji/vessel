@@ -33,8 +33,6 @@ func (s *Server) registerRoutes() {
 	apiGroup.POST("/system/maintenance/cleanup", s.systemHandler.Cleanup, s.authGuard.RequireRole("admin"))
 	apiGroup.POST("/system/export", s.migrationHandler.Export, s.authGuard.RequireRole("admin"))
 	apiGroup.POST("/system/import", s.migrationHandler.Import, s.authGuard.RequireRole("admin"))
-	apiGroup.GET("/system/migration/railway/projects", s.railwayHandler.GetProjects, s.authGuard.RequireRole("admin"))
-	apiGroup.POST("/system/migration/railway/import", s.railwayHandler.ImportProject, s.authGuard.RequireRole("admin"))
 	authGroup.POST("/compose/deploy", s.composeHandler.Deploy)
 	authGroup.POST("/deploy/archive", s.archiveHandler.DeployArchive)
 	authGroup.GET("/one-click", s.oneClickHandler.List)
@@ -174,10 +172,6 @@ func (s *Server) registerRoutes() {
 	authGroup.GET("/settings/git_apps/github/:id", s.gitAppsHandler.GetGithubApp)
 	apiGroup.PUT("/settings/git_apps/github", s.gitAppsHandler.SaveGithubApp, s.authGuard.RequireRole("admin"))
 	apiGroup.DELETE("/settings/git_apps/github/:id", s.gitAppsHandler.DeleteGithubApp, s.authGuard.RequireRole("admin"))
-
-	authGroup.GET("/oauth/vercel/callback", s.vercelHandler.Callback)
-	authGroup.GET("/vercel/projects", s.vercelHandler.ListProjects)
-	authGroup.GET("/vercel/projects/:id/env", s.vercelHandler.GetProjectEnv)
 
 	apiGroup.GET("/ws/services/:id/terminal", s.terminalHandler.HandleWebSocket)
 	s.setupSPAFallback()

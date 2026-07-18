@@ -84,7 +84,6 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	gitAppRepo := repositories.NewGitAppRepo(db, v)
 	dnsRepo := repositories.NewDNSRepo(db)
 	auditRepository := repositories.NewAuditLogRepo(db)
-	vercelRepository := repositories.NewVercelRepository(db, v)
 
 	httpEngineAdapter := newEngineAdapter(settingsRepo, appRepo, envVarRepo, dbRepo, projectRepo, jobRepo, backupRepo, s3DestinationRepo, serviceVarRepo, serverlessRepository)
 	databaseDeployer := engine.NewDatabaseDeployer(dockerClient, httpEngineAdapter)
@@ -139,7 +138,6 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	environmentService := services.NewEnvironmentService(environmentRepo, domainRepo, envVarRepo, dnsProviderService)
 	notificationService := services.NewNotificationService(dispatcherService)
 	gitAppsService := services.NewGitAppsService(gitAppRepo)
-	vercelService := services.NewVercelService(vercelRepository)
 	serverlessService := services.NewServerlessService(serverlessRepository)
 	dnsService := services.NewDNSService(dnsRepo, dnsProviderService)
 	metricsService := services.NewMetricsService()
@@ -177,7 +175,6 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	projectEnvHandler := handlers.NewProjectEnvHandler(environmentService)
 	notificationHandler := handlers.NewNotificationHandler(notificationService)
 	gitAppsHandler := handlers.NewGitAppsHandler(gitAppsService)
-	vercelHandler := handlers.NewVercelHandler(vercelService)
 	tmplMgr, _ := engine.NewTemplateManager()
 	composeDeployer := engine.NewComposeDeployer(dockerClient)
 	composeHandler := handlers.NewComposeHandler(composeDeployer, projectService, appService, environmentRepo, appRepo)
@@ -191,8 +188,6 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	migrationService := services.NewMigrationService(dbRepo, dataDir)
 	migrationHandler := handlers.NewMigrationHandler(migrationService)
 	onboardingHandler := handlers.NewOnboardingHandler(userService, authService, settingsService, gitAppsService, backupService)
-	railwayService := services.NewRailwayService(projectService, environmentService, appService, databaseService)
-	railwayHandler := handlers.NewRailwayHandler(railwayService)
 	dnsHandler := handlers.NewDNSHandler(dnsService)
 	metricsHandler := handlers.NewMetricsHandler(metricsService)
 	logHandler := handlers.NewLogHandler(logService)
@@ -235,7 +230,6 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 		projectEnvHandler:      projectEnvHandler,
 		notificationHandler:    notificationHandler,
 		gitAppsHandler:         gitAppsHandler,
-		vercelHandler:          vercelHandler,
 		serverlessHandler:      serverlessHandler,
 		systemHandler:          systemHandler,
 		composeHandler:         composeHandler,
@@ -243,7 +237,6 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 		archiveHandler:         archiveHandler,
 		migrationHandler:       migrationHandler,
 		onboardingHandler:      onboardingHandler,
-		railwayHandler:         railwayHandler,
 		dnsHandler:             dnsHandler,
 		metricsHandler:         metricsHandler,
 		logHandler:             logHandler,

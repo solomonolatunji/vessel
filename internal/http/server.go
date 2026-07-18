@@ -52,7 +52,6 @@ type Server struct {
 	projectEnvHandler      *handlers.ProjectEnvHandler
 	notificationHandler    *handlers.NotificationHandler
 	gitAppsHandler         *handlers.GitAppsHandler
-	vercelHandler          *handlers.VercelHandler
 	serverlessHandler      *handlers.ServerlessHandler
 	systemHandler          *handlers.SystemHandler
 	composeHandler         *handlers.ComposeHandler
@@ -60,7 +59,6 @@ type Server struct {
 	archiveHandler         *handlers.ArchiveHandler
 	migrationHandler       *handlers.MigrationHandler
 	onboardingHandler      *handlers.OnboardingHandler
-	railwayHandler         *handlers.RailwayHandler
 	dnsHandler             *handlers.DNSHandler
 	metricsHandler         *handlers.MetricsHandler
 	logHandler             *handlers.LogHandler
