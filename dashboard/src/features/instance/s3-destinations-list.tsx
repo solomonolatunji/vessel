@@ -1,4 +1,4 @@
-import { Cloud, Database, Eye, EyeOff, Info, MoreVertical, Plus, Trash } from 'lucide-react';
+import { Database, Eye, EyeOff, Info, MoreVertical, Plus, Trash } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '#/components/ui/button';
@@ -129,7 +129,7 @@ export function S3DestinationsList() {
               NEW DESTINATION
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-[600px] gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl [&>button]:hidden">
+          <DialogContent className="max-w-150 gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl [&>button]:hidden">
             <div className="p-5">
               <div className="flex items-start justify-between">
                 <div className="flex flex-col">
@@ -383,7 +383,7 @@ export function S3DestinationsList() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Bucket</span>
-                  <span className="max-w-[150px] truncate font-medium" title={dest.bucket}>
+                  <span className="max-w-37.5 truncate font-medium" title={dest.bucket}>
                     {dest.bucket}
                   </span>
                 </div>
