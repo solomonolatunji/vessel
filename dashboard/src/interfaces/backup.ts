@@ -7,11 +7,20 @@ export interface BackupConfig {
   id: string;
   projectId: string;
   databaseId?: string;
-
   s3DestinationId?: string;
   name: string;
+  description: string;
+  dbUser: string;
+  dbPassword?: string;
+  backupEnabled: boolean;
+  s3Enabled: boolean;
+  disableLocal: boolean;
   schedule: string;
+  timezone: string;
+  timeout: number;
   retentionDays: number;
+  maxBackups: number;
+  maxStorageGb: number;
   status: BackupConfigStatus;
   createdAt: string;
   updatedAt: string;
@@ -48,10 +57,19 @@ export interface S3Destination {
 export interface CreateBackupConfigRequest {
   projectId: string;
   name: string;
+  description: string;
+  dbUser: string;
+  dbPassword?: string;
+  backupEnabled: boolean;
+  s3Enabled: boolean;
+  disableLocal: boolean;
   schedule: string;
+  timezone: string;
+  timeout: number;
   retentionDays: number;
+  maxBackups: number;
+  maxStorageGb: number;
   databaseId?: string;
-
   s3DestinationId?: string;
 }
 
