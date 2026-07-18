@@ -338,14 +338,15 @@ export function GithubIntegration() {
                   </span>
                 </div>
 
-                <div className="mt-4 flex w-full items-center justify-between">
-                  <div className="text-muted-foreground text-sm">
+                <div className="mt-6 flex w-full flex-col items-start gap-4">
+                  <div className="text-muted-foreground text-sm leading-relaxed">
                     Already created an app? You can find the required credentials in your GitHub
-                    developer settings.
+                    developer settings, or you can create a new app manually.
                   </div>
                   <Button
                     asChild
-                    className="h-10 gap-2 border-border/50 bg-background/50 font-bold text-xs uppercase tracking-widest hover:bg-background/80"
+                    variant="outline"
+                    className="h-10 gap-2 border-primary/20 bg-primary/10 font-bold text-primary text-xs uppercase tracking-widest hover:bg-primary/20 hover:text-primary"
                   >
                     <a href="https://github.com/settings/apps/new" target="_blank" rel="noreferrer">
                       <ExternalLink className="h-4 w-4" />
