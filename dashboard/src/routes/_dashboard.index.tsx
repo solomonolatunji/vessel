@@ -3,6 +3,7 @@ import { Box, LogOut, Plus, SearchIcon } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '#/components/ui/button';
 import { CreateProjectModal } from '#/features/projects/create-project-modal';
+import { ProjectList } from '#/features/projects/project-list';
 
 export const Route = createFileRoute('/_dashboard/')({
   component: DashboardIndex,
@@ -48,6 +49,7 @@ function DashboardIndex() {
         </div>
       </div>
 
+      <ProjectList onCreateClick={() => setCreateOpen(true)} />
       <CreateProjectModal open={createOpen} onOpenChange={setCreateOpen} />
     </div>
   );
