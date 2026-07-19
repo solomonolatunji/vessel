@@ -12,9 +12,9 @@ import { apiClient } from '#/lib/apiClient';
 import { handleApiError } from '#/lib/error';
 
 export const backupsService = {
-  list: async (projectId: string): Promise<ListBackupsResponse> => {
+  list: async (): Promise<ListBackupsResponse> => {
     try {
-      return await apiClient.get<ListBackupsResponse>(`/backups?projectId=${projectId}`);
+      return await apiClient.get<ListBackupsResponse>(`/backups`);
     } catch (error) {
       throw handleApiError(error);
     }
@@ -44,9 +44,9 @@ export const backupsService = {
     }
   },
 
-  delete: async (id: string, projectId: string): Promise<void> => {
+  delete: async (id: string): Promise<void> => {
     try {
-      await apiClient.delete(`/backups/${id}?projectId=${projectId}`);
+      await apiClient.delete(`/backups/${id}`);
     } catch (error) {
       throw handleApiError(error);
     }
@@ -84,11 +84,9 @@ export const backupsService = {
     }
   },
 
-  listS3Destinations: async (projectId: string): Promise<ListS3DestinationsResponse> => {
+  listS3Destinations: async (): Promise<ListS3DestinationsResponse> => {
     try {
-      return await apiClient.get<ListS3DestinationsResponse>(
-        `/s3-destinations?projectId=${projectId}`
-      );
+      return await apiClient.get<ListS3DestinationsResponse>(`/s3-destinations`);
     } catch (error) {
       throw handleApiError(error);
     }
@@ -104,9 +102,9 @@ export const backupsService = {
     }
   },
 
-  deleteS3Destination: async (id: string, projectId: string): Promise<void> => {
+  deleteS3Destination: async (id: string): Promise<void> => {
     try {
-      await apiClient.delete(`/s3-destinations/${id}?projectId=${projectId}`);
+      await apiClient.delete(`/s3-destinations/${id}`);
     } catch (error) {
       throw handleApiError(error);
     }

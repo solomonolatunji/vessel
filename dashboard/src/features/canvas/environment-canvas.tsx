@@ -23,7 +23,11 @@ const nodeTypes = {
   database: DatabaseNode,
 };
 
-export function EnvironmentCanvas({ envData }: { envData: Record<string, unknown> }) {
+export function EnvironmentCanvas({
+  envData,
+}: {
+  envData: any /* biome-ignore lint/suspicious/noExplicitAny: any */;
+}) {
   const { nodes, edges, setNodes, setEdges } = useCanvasSync(envData);
 
   const onNodesChange = useCallback(

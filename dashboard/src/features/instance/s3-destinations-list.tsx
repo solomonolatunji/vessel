@@ -43,7 +43,7 @@ export function S3DestinationsList() {
   const [secretAccessKey, setSecretAccessKey] = useState('');
   const [showSecret, setShowSecret] = useState(false);
 
-  const { data: s3Destinations, isLoading } = useListS3Destinations('global');
+  const { data: s3Destinations, isLoading } = useListS3Destinations();
   const createS3Dest = useCreateS3Destination();
   const deleteS3Dest = useDeleteS3Destination();
 

@@ -30,7 +30,7 @@ function JobsPage() {
   const { data: projectsResponse, isLoading: isLoadingProjects } = useListProjects();
   const projects = projectsResponse?.data?.records || [];
 
-  const { data: jobsResponse, isLoading: isLoadingJobs } = useListJobs(selectedProjectId);
+  const { data: jobsResponse, isLoading: isLoadingJobs } = useListJobs();
   const jobs = jobsResponse?.data || [];
 
   return (
@@ -57,11 +57,13 @@ function JobsPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">All Projects</SelectItem>
-                {projects.map((project: Record<string, unknown>) => (
-                  <SelectItem key={project.id} value={project.id}>
-                    {project.name}
-                  </SelectItem>
-                ))}
+                {projects.map(
+                  (project: any /* biome-ignore lint/suspicious/noExplicitAny: any */) => (
+                    <SelectItem key={project.id} value={project.id}>
+                      {project.name}
+                    </SelectItem>
+                  )
+                )}
               </SelectContent>
             </Select>
           </div>

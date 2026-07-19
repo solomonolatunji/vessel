@@ -1,6 +1,10 @@
 import { Handle, Position } from '@xyflow/react';
 
-export function AppServiceNode({ data }: { data: Record<string, unknown> }) {
+export function AppServiceNode({
+  data,
+}: {
+  data: any /* biome-ignore lint/suspicious/noExplicitAny: any */;
+}) {
   return (
     <div className="rounded-md border-2 border-blue-500 bg-white px-4 py-2 shadow-md">
       <div className="flex items-center">

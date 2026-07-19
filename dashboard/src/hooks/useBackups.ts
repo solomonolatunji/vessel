@@ -1,10 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { backupsService } from '#/services/backups';
 
-export const useList = (projectId: string) => {
+export const useList = () => {
   return useQuery({
-    queryKey: ['backups', 'list', projectId].filter(Boolean),
-    queryFn: () => backupsService.list(projectId),
+    queryKey: ['backups'],
+    queryFn: () => backupsService.list(),
   });
 };
 
@@ -41,8 +41,7 @@ export const useUpdate = () => {
 export const useDelete = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: { id: string; projectId: string }) =>
-      backupsService.delete(payload.id, payload.projectId),
+    mutationFn: (payload: { id: string }) => backupsService.delete(payload.id),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['backups'] });
     },
@@ -88,10 +87,10 @@ export const useListRecords = (id: string) => {
   });
 };
 
-export const useListS3Destinations = (projectId: string) => {
+export const useListS3Destinations = () => {
   return useQuery({
-    queryKey: ['backups', 'listS3Destinations', projectId].filter(Boolean),
-    queryFn: () => backupsService.listS3Destinations(projectId),
+    queryKey: ['s3-destinations'],
+    queryFn: () => backupsService.listS3Destinations(),
   });
 };
 
@@ -110,7 +109,7 @@ export const useDeleteS3Destination = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: { id: string; projectId: string }) =>
-      backupsService.deleteS3Destination(payload.id, payload.projectId),
+      backupsService.deleteS3Destination(payload.id),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['backups'] });
     },

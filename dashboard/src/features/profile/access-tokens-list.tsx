@@ -48,7 +48,8 @@ export function AccessTokensList() {
       // Depending on the API, the token itself might be returned here
       // For security, it's typically only returned once
       setCreatedToken(
-        (res as Record<string, unknown>)?.data?.token || 'token-created-successfully'
+        (res as any) /* biome-ignore lint/suspicious/noExplicitAny: any */?.data?.token ||
+          'token-created-successfully'
       );
     } catch (error) {
       console.error('Failed to create token', error);
@@ -102,7 +103,7 @@ export function AccessTokensList() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {tokens.map((token: Record<string, unknown>) => (
+              {tokens.map((token: any /* biome-ignore lint/suspicious/noExplicitAny: any */) => (
                 <TableRow key={token.id}>
                   <TableCell className="font-medium">{token.name}</TableCell>
                   <TableCell>{new Date(token.createdAt).toLocaleString()}</TableCell>

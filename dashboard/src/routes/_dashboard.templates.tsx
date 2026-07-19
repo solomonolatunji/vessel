@@ -13,8 +13,8 @@ function TemplatesPage() {
   const { data: oneClickResponse, isLoading: oneClickLoading } = useListOneClickApps();
   const { data: examplesResponse, isLoading: examplesLoading } = useListExampleApps();
 
-  const templates = Object.values(oneClickResponse?.data || {});
-  const examples = examplesResponse || [];
+  const templates = Array.isArray(oneClickResponse) ? oneClickResponse : [];
+  const examples = Array.isArray(examplesResponse) ? examplesResponse : [];
 
   return (
     <div className="space-y-6">
@@ -57,12 +57,12 @@ function TemplatesPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {templates.map((template: Record<string, unknown>) => (
+              {templates.map((template) => (
                 <Card key={template.id}>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      {template.logo && (
-                        <img src={template.logo} alt={template.name} className="h-6 w-6" />
+                      {(template as any).logo && (
+                        <img src={(template as any).logo} alt={template.name} className="h-6 w-6" />
                       )}
                       {template.name}
                     </CardTitle>
@@ -94,7 +94,7 @@ function TemplatesPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {examples.map((example: Record<string, unknown>) => (
+              {examples.map((example) => (
                 <Card key={example.id}>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">

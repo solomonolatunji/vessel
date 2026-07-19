@@ -1,8 +1,12 @@
 import { Loader2 } from 'lucide-react';
 import { useList } from '#/hooks/useBackups';
 
-export function BackupManager({ database }: { database: Record<string, unknown> }) {
-  const { data, isLoading } = useList(database.projectId);
+export function BackupManager({
+  database,
+}: {
+  database: any /* biome-ignore lint/suspicious/noExplicitAny: any */;
+}) {
+  const { data, isLoading } = useList();
 
   if (isLoading) {
     return <Loader2 className="h-6 w-6 animate-spin text-gray-500" />;

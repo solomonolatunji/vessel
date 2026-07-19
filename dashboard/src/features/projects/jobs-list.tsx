@@ -2,8 +2,8 @@ import { Button } from '#/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card';
 import { useDeleteJob, useListJobs, useTriggerJob } from '#/hooks/useJobs';
 
-export function JobsList({ projectId }: { projectId: string }) {
-  const { data: jobsRes, isLoading } = useListJobs(projectId);
+export function JobsList() {
+  const { data: jobsRes, isLoading } = useListJobs();
   const triggerJob = useTriggerJob();
   const deleteJob = useDeleteJob();
 

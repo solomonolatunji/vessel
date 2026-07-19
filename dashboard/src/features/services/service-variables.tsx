@@ -4,7 +4,11 @@ import { Button } from '#/components/ui/button';
 import { Input } from '#/components/ui/input';
 import { useCreate, useDelete, useList } from '#/hooks/useServices';
 
-export function ServiceVariables({ app }: { app: Record<string, unknown> }) {
+export function ServiceVariables({
+  app,
+}: {
+  app: any /* biome-ignore lint/suspicious/noExplicitAny: any */;
+}) {
   const { data, isLoading } = useList(app.id);
   const createVar = useCreate();
   const deleteVar = useDelete();

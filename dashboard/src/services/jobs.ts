@@ -4,9 +4,9 @@ import { apiClient } from '#/lib/apiClient';
 import { handleApiError } from '#/lib/error';
 
 export const jobsService = {
-  listJobs: async (projectId: string): Promise<BaseResponse<Job[]>> => {
+  listJobs: async (): Promise<BaseResponse<Job[]>> => {
     try {
-      return await apiClient.get<BaseResponse<Job[]>>(`/jobs?projectId=${projectId}`);
+      return await apiClient.get<BaseResponse<Job[]>>(`/jobs`);
     } catch (error) {
       throw handleApiError(error);
     }

@@ -19,7 +19,7 @@ import {
 } from '#/hooks/useBackups';
 
 export function BackupsList() {
-  const { data: configsData, isLoading } = useList('global');
+  const { data: configsData, isLoading } = useList();
   const configs = configsData?.data || [];
   const config = configs[0];
 

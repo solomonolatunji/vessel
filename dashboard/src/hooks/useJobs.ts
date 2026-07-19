@@ -1,10 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { jobsService } from '#/services/jobs';
 
-export const useListJobs = (projectId: string) => {
+export const useListJobs = () => {
   return useQuery({
-    queryKey: ['jobs', 'listJobs', projectId].filter(Boolean),
-    queryFn: () => jobsService.listJobs(projectId),
+    queryKey: ['jobs'],
+    queryFn: () => jobsService.listJobs(),
   });
 };
 
