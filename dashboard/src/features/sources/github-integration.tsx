@@ -1,8 +1,8 @@
+import { useNavigate } from '@tanstack/react-router';
 import { Check, Edit, ExternalLink, Plus, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '#/components/ui/button';
-
 import {
   Dialog,
   DialogClose,
@@ -20,6 +20,7 @@ import {
   useSaveGitApp,
 } from '#/hooks/useSettings';
 import type { GithubApp } from '#/interfaces/settings';
+import { Route } from '#/routes/_dashboard.sources';
 
 const GithubIcon = ({ className }: { className?: string }) => (
   <svg
@@ -57,11 +58,15 @@ export function GithubIntegration() {
   const [appSlug, setAppSlug] = useState('');
   const [privateKey, setPrivateKey] = useState('');
 
+  const navigate = useNavigate();
+  const search = Route.useSearch();
+
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get('code');
+    const code = search.code;
     if (code && !exchangeMutation.isPending && !exchangeMutation.isSuccess) {
-      window.history.replaceState({}, document.title, window.location.pathname);
+      // @ts-ignore
+      navigate({ search: (prev: any) => ({ ...prev, code: undefined }), replace: true });
+
       exchangeMutation.mutate(
         { code },
         {
@@ -76,7 +81,13 @@ export function GithubIntegration() {
         }
       );
     }
-  }, [exchangeMutation.isPending, exchangeMutation.isSuccess, exchangeMutation.mutate]);
+  }, [
+    exchangeMutation.isPending,
+    exchangeMutation.isSuccess,
+    exchangeMutation.mutate,
+    search.code,
+    navigate,
+  ]);
 
   useEffect(() => {
     if (editingApp) {
@@ -289,7 +300,7 @@ export function GithubIntegration() {
       )}
 
       <Dialog open={isEditing} onOpenChange={setIsEditing}>
-        <DialogContent className="max-w-4xl gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl [&>button]:hidden">
+        <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-4xl [&>button]:hidden">
           <div className="px-5 pt-5 pb-4">
             <div className="flex items-start justify-between">
               <div className="flex flex-col">
@@ -465,7 +476,7 @@ export function GithubIntegration() {
       </Dialog>
 
       <Dialog open={!!deletingApp} onOpenChange={(open) => !open && setDeletingApp(null)}>
-        <DialogContent className="max-w-md gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl [&>button]:hidden">
+        <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-md [&>button]:hidden">
           <div className="p-5">
             <div className="flex items-start justify-between">
               <div className="flex flex-col">

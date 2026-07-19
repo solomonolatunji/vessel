@@ -250,7 +250,6 @@ CREATE TABLE IF NOT EXISTS project_members (
 
 CREATE TABLE IF NOT EXISTS backup_configs (
 			id TEXT PRIMARY KEY,
-			project_id TEXT NOT NULL,
 			database_id TEXT,
 			storage_id TEXT,
 			s3_destination_id TEXT,
@@ -275,7 +274,6 @@ CREATE TABLE IF NOT EXISTS backup_configs (
 CREATE TABLE IF NOT EXISTS backup_records (
 			id TEXT PRIMARY KEY,
 			backup_config_id TEXT NOT NULL,
-			project_id TEXT NOT NULL,
 			database_id TEXT,
 			status TEXT DEFAULT 'running',
 			file_path TEXT,
@@ -288,7 +286,6 @@ CREATE TABLE IF NOT EXISTS backup_records (
 
 CREATE TABLE IF NOT EXISTS s3_destinations (
 			id TEXT PRIMARY KEY,
-			project_id TEXT NOT NULL,
 			name TEXT NOT NULL,
 			description TEXT DEFAULT '',
 			provider TEXT DEFAULT 's3',
@@ -396,7 +393,5 @@ CREATE INDEX IF NOT EXISTS idx_service_vars_service_id ON service_vars(service_i
 CREATE INDEX IF NOT EXISTS idx_project_tokens_project_id ON project_tokens(project_id);
 CREATE INDEX IF NOT EXISTS idx_project_members_project_id ON project_members(project_id);
 CREATE INDEX IF NOT EXISTS idx_project_members_user_id ON project_members(user_id);
-CREATE INDEX IF NOT EXISTS idx_backup_configs_project_id ON backup_configs(project_id);
 CREATE INDEX IF NOT EXISTS idx_backup_records_backup_config_id ON backup_records(backup_config_id);
-CREATE INDEX IF NOT EXISTS idx_s3_destinations_project_id ON s3_destinations(project_id);
 

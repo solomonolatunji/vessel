@@ -28,8 +28,7 @@ func NewBackupHandler(s *services.BackupService) *BackupHandler {
 // @Produce json
 // @Router /backups [get]
 func (h *BackupHandler) List(c echo.Context) error {
-	projectID := c.QueryParam("projectId")
-	list, err := h.backupService.ListConfigsByProject(c.Request().Context(), projectID)
+	list, err := h.backupService.ListConfigs(c.Request().Context())
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
@@ -77,11 +76,7 @@ func (h *BackupHandler) Update(c echo.Context) error {
 		return utils.Error(c, http.StatusNotFound, "backup config not found")
 	}
 
-	if tokenProjID, ok := c.Get("project_id").(string); ok && tokenProjID != "" {
-		if tokenProjID != existing.ProjectID {
-			return utils.Error(c, http.StatusForbidden, "permission denied for this project")
-		}
-	}
+
 
 	var req struct {
 		Name            string `json:"name"`
@@ -192,11 +187,10 @@ func (h *BackupHandler) Get(c echo.Context) error {
 // @Router /backups/{id} [delete]
 func (h *BackupHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
-	projectID := c.QueryParam("projectId")
-	if id == "" || projectID == "" {
-		return utils.Error(c, http.StatusBadRequest, "missing id or projectId")
+	if id == "" {
+		return utils.Error(c, http.StatusBadRequest, "missing id")
 	}
-	if err := h.backupService.DeleteConfig(c.Request().Context(), id, projectID); err != nil {
+	if err := h.backupService.DeleteConfig(c.Request().Context(), id); err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return c.NoContent(http.StatusNoContent)
@@ -268,11 +262,7 @@ func (h *BackupHandler) DownloadRecord(c echo.Context) error {
 	if rec.BackupConfigID != id {
 		return utils.Error(c, http.StatusNotFound, "record not found")
 	}
-	if tokenProjID, ok := c.Get("project_id").(string); ok && tokenProjID != "" {
-		if tokenProjID != rec.ProjectID {
-			return utils.Error(c, http.StatusForbidden, "permission denied for this project")
-		}
-	}
+
 	if rec.FilePath == "" {
 		return utils.Error(c, http.StatusNotFound, "local backup file not available")
 	}
@@ -307,11 +297,7 @@ func (h *BackupHandler) DeleteRecord(c echo.Context) error {
 	if rec.BackupConfigID != id {
 		return utils.Error(c, http.StatusNotFound, "record not found")
 	}
-	if tokenProjID, ok := c.Get("project_id").(string); ok && tokenProjID != "" {
-		if tokenProjID != rec.ProjectID {
-			return utils.Error(c, http.StatusForbidden, "permission denied for this project")
-		}
-	}
+
 	if err := h.backupService.DeleteRecord(c.Request().Context(), recordID); err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
@@ -344,8 +330,7 @@ func (h *BackupHandler) Restore(c echo.Context) error {
 // @Produce json
 // @Router /s3-destinations [get]
 func (h *BackupHandler) ListS3Destinations(c echo.Context) error {
-	projectID := c.QueryParam("projectId")
-	list, err := h.backupService.ListS3Destinations(c.Request().Context(), projectID)
+	list, err := h.backupService.ListS3Destinations(c.Request().Context())
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
@@ -379,11 +364,10 @@ func (h *BackupHandler) CreateS3Destination(c echo.Context) error {
 // @Router /s3-destinations/{id} [delete]
 func (h *BackupHandler) DeleteS3Destination(c echo.Context) error {
 	id := c.Param("id")
-	projectID := c.QueryParam("projectId")
-	if id == "" || projectID == "" {
-		return utils.Error(c, http.StatusBadRequest, "missing id or projectId")
+	if id == "" {
+		return utils.Error(c, http.StatusBadRequest, "missing id")
 	}
-	if err := h.backupService.DeleteS3Destination(c.Request().Context(), id, projectID); err != nil {
+	if err := h.backupService.DeleteS3Destination(c.Request().Context(), id); err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return c.NoContent(http.StatusNoContent)

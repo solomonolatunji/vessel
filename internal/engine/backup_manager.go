@@ -136,7 +136,6 @@ func (bm *BackupManager) TriggerBackup(ctx context.Context, backupConfigID strin
 	rec := &models.BackupRecord{
 		ID:             uuid.New().String(),
 		BackupConfigID: cfg.ID,
-		ProjectID:      cfg.ProjectID,
 		DatabaseID:     cfg.DatabaseID,
 		Status:         models.BackupRecordStatusRunning,
 		Logs:           fmt.Sprintf("Initiating automated backup '%s' at %s...\n", cfg.Name, time.Now().UTC().Format(time.RFC3339)),
@@ -149,7 +148,7 @@ func (bm *BackupManager) TriggerBackup(ctx context.Context, backupConfigID strin
 	var execLogs string
 	var fileExt string
 
-	if cfg.ProjectID == "global" {
+	if cfg.DatabaseID == "global" || cfg.DatabaseID == "" {
 		dbPath := filepath.Join(utils.GetDataDir(), "vessl.db")
 		content, err := os.ReadFile(dbPath)
 		if err != nil {

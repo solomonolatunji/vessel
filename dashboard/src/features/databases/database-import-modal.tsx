@@ -58,7 +58,7 @@ export function DatabaseImportModal({ isOpen, onOpenChange, databaseId }: Props)
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Import Data</DialogTitle>
           <DialogDescription>

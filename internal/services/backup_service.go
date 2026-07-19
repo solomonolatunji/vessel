@@ -28,8 +28,8 @@ func NewBackupService(br repositories.BackupRepository, sr repositories.S3Destin
 }
 
 func (s *BackupService) CreateConfig(ctx context.Context, cfg *models.BackupConfig) error {
-	if cfg == nil || cfg.ProjectID == "" {
-		return errors.New("valid backup config with projectId required")
+	if cfg == nil {
+		return errors.New("valid backup config required")
 	}
 	if cfg.ID == "" {
 		cfg.ID = uuid.New().String()
@@ -79,25 +79,22 @@ func (s *BackupService) GetConfig(ctx context.Context, id string) (*models.Backu
 	return s.backupRepo.GetConfigByID(ctx, id)
 }
 
-func (s *BackupService) ListConfigsByProject(ctx context.Context, projectID string) ([]*models.BackupConfig, error) {
-	if projectID == "" {
-		return nil, errors.New("project id required")
-	}
-	return s.backupRepo.ListConfigsByProject(ctx, projectID)
+func (s *BackupService) ListConfigs(ctx context.Context) ([]*models.BackupConfig, error) {
+	return s.backupRepo.ListConfigs(ctx)
 }
 
-func (s *BackupService) DeleteConfig(ctx context.Context, id, projectID string) error {
-	if id == "" || projectID == "" {
-		return errors.New("id and projectId required")
+func (s *BackupService) DeleteConfig(ctx context.Context, id string) error {
+	if id == "" {
+		return errors.New("id required")
 	}
 	if s.manager != nil {
 		s.manager.UnregisterBackup(id)
 	}
-	return s.backupRepo.DeleteConfig(ctx, id, projectID)
+	return s.backupRepo.DeleteConfig(ctx, id)
 }
 
 func (s *BackupService) CreateS3Destination(ctx context.Context, dest *models.S3Destination) error {
-	if dest == nil || dest.ProjectID == "" || dest.Bucket == "" {
+	if dest == nil || dest.Bucket == "" {
 		return errors.New("valid s3 destination required")
 	}
 	if dest.ID == "" {
@@ -112,18 +109,15 @@ func (s *BackupService) CreateS3Destination(ctx context.Context, dest *models.S3
 	return s.s3Repo.CreateS3Destination(ctx, dest)
 }
 
-func (s *BackupService) ListS3Destinations(ctx context.Context, projectID string) ([]*models.S3Destination, error) {
-	if projectID == "" {
-		return nil, errors.New("project id required")
-	}
-	return s.s3Repo.ListS3Destinations(ctx, projectID)
+func (s *BackupService) ListS3Destinations(ctx context.Context) ([]*models.S3Destination, error) {
+	return s.s3Repo.ListS3Destinations(ctx)
 }
 
-func (s *BackupService) DeleteS3Destination(ctx context.Context, id, projectID string) error {
-	if id == "" || projectID == "" {
-		return errors.New("id and projectId required")
+func (s *BackupService) DeleteS3Destination(ctx context.Context, id string) error {
+	if id == "" {
+		return errors.New("id required")
 	}
-	return s.s3Repo.DeleteS3Destination(ctx, id, projectID)
+	return s.s3Repo.DeleteS3Destination(ctx, id)
 }
 
 func (s *BackupService) TriggerBackup(ctx context.Context, configID string) (*models.BackupRecord, error) {

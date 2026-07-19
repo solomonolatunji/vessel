@@ -103,9 +103,13 @@ export const useDeleteGitApp = () => {
 };
 
 export const useExchangeGithubManifest = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: Record<string, unknown>) =>
       settingsService.exchangeGithubManifest(payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['settings', 'getGitApps', 'github'] });
+    },
   });
 };
 

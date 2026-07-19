@@ -224,7 +224,6 @@ type UpdateJobRequest struct {
 
 type BackupConfig struct {
 	ID              string             `json:"id" db:"id"`
-	ProjectID       string             `json:"projectId" db:"project_id"`
 	DatabaseID      string             `json:"databaseId,omitempty" db:"database_id"`
 	S3DestinationID string             `json:"s3DestinationId,omitempty" db:"s3_destination_id"`
 	Name            string             `json:"name" db:"name"`
@@ -248,7 +247,6 @@ type BackupConfig struct {
 type BackupRecord struct {
 	ID             string             `json:"id" db:"id"`
 	BackupConfigID string             `json:"backupConfigId" db:"backup_config_id"`
-	ProjectID      string             `json:"projectId" db:"project_id"`
 	DatabaseID     string             `json:"databaseId,omitempty" db:"database_id"`
 	Status         BackupRecordStatus `json:"status" db:"status"`
 	FilePath       string             `json:"filePath" db:"file_path"`
@@ -271,7 +269,6 @@ type UpdateBackupRecordOpts struct {
 
 type S3Destination struct {
 	ID              string `json:"id" db:"id"`
-	ProjectID       string `json:"projectId" db:"project_id"`
 	Name            string `json:"name" db:"name"`
 	Description     string `json:"description" db:"description"`
 	Provider        string `json:"provider" db:"provider"`

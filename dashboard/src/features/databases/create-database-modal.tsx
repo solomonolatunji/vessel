@@ -114,7 +114,7 @@ export function CreateDatabaseModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[80vh] max-w-md overflow-y-auto">
+      <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Provision Database</DialogTitle>
           <DialogDescription>Select a database engine to spin up a new instance.</DialogDescription>
