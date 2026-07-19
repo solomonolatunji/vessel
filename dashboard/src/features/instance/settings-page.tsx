@@ -1,11 +1,12 @@
-import { Bell, Database, Lock, Settings as SettingsIcon } from 'lucide-react';
+import { Bell, Database, Lock, Settings as SettingsIcon, GitBranch } from 'lucide-react';
 import { useState } from 'react';
 import { BackupsList } from './backups-list';
 import { GeneralSettings } from './general-settings';
+import { GitAppsManager } from './git-apps-manager';
 import { NotificationsSettings } from './notifications-settings';
 import { OAuthProvidersList } from './oauth-providers-list';
 
-type TabId = 'general' | 'notifications' | 'oauth' | 'backups';
+type TabId = 'general' | 'notifications' | 'oauth' | 'backups' | 'git';
 
 type Tab = { id: TabId; label: string; icon: React.ReactNode };
 
@@ -22,6 +23,7 @@ const TABS: Tab[] = [
   },
   { id: 'oauth', label: 'OAuth', icon: <Lock className="h-4 w-4" /> },
   { id: 'backups', label: 'Backups', icon: <Database className="h-4 w-4" /> },
+  { id: 'git', label: 'Git Apps', icon: <GitBranch className="h-4 w-4" /> },
 ];
 
 export const SettingsLayout = () => {
@@ -68,6 +70,7 @@ export const SettingsLayout = () => {
         {activeId === 'notifications' && <NotificationsSettings />}
         {activeId === 'oauth' && <OAuthProvidersList />}
         {activeId === 'backups' && <BackupsList />}
+        {activeId === 'git' && <GitAppsManager />}
       </div>
     </div>
   );
