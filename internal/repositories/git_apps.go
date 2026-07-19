@@ -31,6 +31,9 @@ func NewGitAppRepo(db *sql.DB, vault Vault) *GitAppRepo {
 }
 
 func saveApp(ctx context.Context, db *sqlx.DB, tableName string, columns []string, values []any) error {
+	if tableName != "github_apps" {
+		return errors.New("invalid table name")
+	}
 	placeholders := make([]string, len(columns))
 	updates := make([]string, len(columns))
 	for i, col := range columns {
@@ -60,6 +63,9 @@ func saveApp(ctx context.Context, db *sqlx.DB, tableName string, columns []strin
 }
 
 func deleteApp(ctx context.Context, db *sqlx.DB, tableName, id string) error {
+	if tableName != "github_apps" {
+		return errors.New("invalid table name")
+	}
 	_, err := db.ExecContext(ctx, fmt.Sprintf("DELETE FROM %s WHERE id = ?", tableName), id)
 	return err
 }

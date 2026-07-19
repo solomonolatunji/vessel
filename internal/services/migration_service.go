@@ -182,8 +182,8 @@ func (s *MigrationService) dumpDatabase(_ context.Context, db *models.Database) 
 			"pg_dump", "-U", db.Username, db.DatabaseName)
 		return cmd.Output()
 	case "mysql", "mariadb":
-		cmd := exec.Command("docker", "exec", containerName,
-			"mysqldump", "-u", db.Username, fmt.Sprintf("-p%s", db.Password), db.DatabaseName)
+		cmd := exec.Command("docker", "exec", "-e", "MYSQL_PWD="+db.Password, containerName,
+			"mysqldump", "-u", db.Username, db.DatabaseName)
 		return cmd.Output()
 	case "mongodb":
 		cmd := exec.Command("docker", "exec", containerName,
@@ -220,8 +220,8 @@ func (s *MigrationService) restoreDatabase(_ context.Context, db *models.Databas
 		cmd.Stdin = bytes.NewReader(data)
 		return cmd.Run()
 	case "mysql", "mariadb":
-		cmd := exec.Command("docker", "exec", "-i", containerName,
-			"mysql", "-u", db.Username, fmt.Sprintf("-p%s", db.Password), db.DatabaseName)
+		cmd := exec.Command("docker", "exec", "-i", "-e", "MYSQL_PWD="+db.Password, containerName,
+			"mysql", "-u", db.Username, db.DatabaseName)
 		cmd.Stdin = bytes.NewReader(data)
 		return cmd.Run()
 	case "mongodb":

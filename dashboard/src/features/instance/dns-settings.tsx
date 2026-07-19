@@ -1,11 +1,9 @@
-import { CheckCircle2, Globe } from 'lucide-react';
+import { Globe } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Button } from '#/components/ui/button';
-import { Input } from '#/components/ui/input';
-import { Label } from '#/components/ui/label';
-import { Skeleton } from '#/components/ui/skeleton';
 import { useGetSettings, useUpdateSettings } from '#/hooks/useSettings';
+import { Skeleton } from '#/components/ui/skeleton';
+import { DnsProviderForm } from './components/dns-provider-form';
 
 const providers = [
   { id: 'cloudflare', name: 'Cloudflare', sub: 'API KEY / TOKEN + ZONE' },
@@ -18,7 +16,7 @@ export const DnsSettings = () => {
   const { mutateAsync: updateSettings, isPending } = useUpdateSettings();
 
   const [activeProvider, setActiveProvider] = useState('cloudflare');
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Record<string, string>>({
     cloudflareApiToken: '',
     namecheapApiUser: '',
     namecheapApiKey: '',
@@ -166,168 +164,13 @@ export const DnsSettings = () => {
           </div>
         </div>
 
-        <div className="space-y-6">
-          {activeProvider === 'cloudflare' && (
-            <div className="fade-in-50 animate-in space-y-6 duration-300">
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div className="space-y-3">
-                  <Label className="font-bold text-[10px] text-muted-foreground/90 uppercase tracking-[0.15em]">
-                    API KEY / TOKEN
-                  </Label>
-                  <Input
-                    placeholder="Cloudflare API key or DNS token"
-                    value={formData.cloudflareApiToken}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        cloudflareApiToken: e.target.value,
-                      })
-                    }
-                    className="h-12 rounded-xl border-border/50 bg-background/80 px-4 font-medium"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <Label className="font-bold text-[10px] text-muted-foreground/90 uppercase tracking-[0.15em]">
-                    ACCOUNT EMAIL
-                  </Label>
-                  <Input
-                    placeholder="Only needed for global API keys"
-                    value={formData.cloudflareEmail}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        cloudflareEmail: e.target.value,
-                      })
-                    }
-                    className="h-12 rounded-xl border-border/50 bg-background/80 px-4 font-medium placeholder:text-muted-foreground/40"
-                  />
-                </div>
-              </div>
-              <div className="space-y-3">
-                <Label className="font-bold text-[10px] text-muted-foreground/90 uppercase tracking-[0.15em]">
-                  ZONE ID
-                </Label>
-                <Input
-                  placeholder="Optional zone ID"
-                  value={formData.cloudflareZoneId}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      cloudflareZoneId: e.target.value,
-                    })
-                  }
-                  className="h-12 rounded-xl border-border/50 bg-background/80 px-4 font-medium placeholder:text-muted-foreground/40"
-                />
-              </div>
-            </div>
-          )}
-
-          {activeProvider === 'namecheap' && (
-            <div className="fade-in-50 animate-in space-y-6 duration-300">
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div className="space-y-3">
-                  <Label className="font-bold text-[10px] text-muted-foreground/90 uppercase tracking-[0.15em]">
-                    API USER
-                  </Label>
-                  <Input
-                    placeholder="username"
-                    value={formData.namecheapApiUser}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        namecheapApiUser: e.target.value,
-                      })
-                    }
-                    className="h-12 rounded-xl border-border/50 bg-background/80 px-4 font-medium"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <Label className="font-bold text-[10px] text-muted-foreground/90 uppercase tracking-[0.15em]">
-                    API KEY
-                  </Label>
-                  <Input
-                    type="password"
-                    placeholder="••••••••••••••••"
-                    value={formData.namecheapApiKey}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        namecheapApiKey: e.target.value,
-                      })
-                    }
-                    className="h-12 rounded-xl border-border/50 bg-background/80 px-4 font-medium"
-                  />
-                </div>
-              </div>
-              <div className="space-y-3">
-                <Label className="font-bold text-[10px] text-muted-foreground/90 uppercase tracking-[0.15em]">
-                  CLIENT IP
-                </Label>
-                <Input
-                  placeholder="Whitelisted server IP"
-                  value={formData.namecheapClientIp}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      namecheapClientIp: e.target.value,
-                    })
-                  }
-                  className="h-12 rounded-xl border-border/50 bg-background/80 px-4 font-medium placeholder:text-muted-foreground/40"
-                />
-              </div>
-            </div>
-          )}
-
-          {activeProvider === 'spaceship' && (
-            <div className="fade-in-50 animate-in space-y-6 duration-300">
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div className="space-y-3">
-                  <Label className="font-bold text-[10px] text-muted-foreground/90 uppercase tracking-[0.15em]">
-                    API KEY
-                  </Label>
-                  <Input
-                    placeholder="Spaceship API key"
-                    value={formData.spaceshipApiKey}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        spaceshipApiKey: e.target.value,
-                      })
-                    }
-                    className="h-12 rounded-xl border-border/50 bg-background/80 px-4 font-medium"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <Label className="font-bold text-[10px] text-muted-foreground/90 uppercase tracking-[0.15em]">
-                    API SECRET
-                  </Label>
-                  <Input
-                    type="password"
-                    placeholder="Spaceship API secret"
-                    value={formData.spaceshipApiSecret}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        spaceshipApiSecret: e.target.value,
-                      })
-                    }
-                    className="h-12 rounded-xl border-border/50 bg-background/80 px-4 font-medium placeholder:text-muted-foreground/40"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="pt-4">
-            <Button
-              onClick={() => handleSaveProvider(activeProvider)}
-              disabled={isPending}
-              className="flex h-11 items-center gap-2 rounded-xl border border-primary/20 bg-primary/10 px-6 font-semibold text-primary text-xs uppercase tracking-widest shadow-none transition-all hover:bg-primary/20 hover:text-primary"
-            >
-              <CheckCircle2 className="h-4 w-4" /> SAVE CREDENTIALS
-            </Button>
-          </div>
-        </div>
+        <DnsProviderForm
+          activeProvider={activeProvider}
+          formData={formData}
+          setFormData={setFormData}
+          isPending={isPending}
+          handleSaveProvider={handleSaveProvider}
+        />
       </div>
     </div>
   );

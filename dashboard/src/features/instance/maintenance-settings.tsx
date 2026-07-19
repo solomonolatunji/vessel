@@ -1,16 +1,10 @@
-import { Activity, AlertTriangle, Check, HardDrive, RefreshCw, Trash2 } from 'lucide-react';
+import { Activity, AlertTriangle, HardDrive, RefreshCw, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '#/components/ui/badge';
 import { Button } from '#/components/ui/button';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from '#/components/ui/dialog';
 import { useCleanupSystem, useGetSystemStats, useRestartSystem } from '#/hooks/useSystem';
+import { MaintenanceDialogs } from './components/maintenance-dialogs';
 
 const ProgressBar = ({ value, colorClass }: { value: number; colorClass: string }) => (
   <div className="flex h-1.5 w-full overflow-hidden rounded-full bg-background">
@@ -378,96 +372,16 @@ export const MaintenancePage = () => {
         </div>
       </div>
 
-      <Dialog open={confirmCleanup} onOpenChange={setConfirmCleanup}>
-        <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-[400px] [&>button]:hidden">
-          <div className="p-5">
-            <div className="flex items-start justify-between">
-              <div className="flex flex-col">
-                <DialogTitle className="flex items-center gap-2 font-bold text-foreground text-xl tracking-tight">
-                  <Trash2 className="h-5 w-5 text-primary" />
-                  Run Docker Cleanup
-                </DialogTitle>
-                <DialogDescription className="mt-1.5 flex items-center gap-1.5 font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                  <Trash2 className="h-3 w-3" />
-                  Removes unused images and volumes
-                </DialogDescription>
-              </div>
-              <DialogClose asChild>
-                <Button
-                  variant="ghost"
-                  className="font-medium text-foreground/80 text-sm hover:bg-transparent hover:text-foreground"
-                >
-                  CLOSE
-                </Button>
-              </DialogClose>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-end gap-3 p-5 pt-0">
-            <Button
-              variant="ghost"
-              onClick={() => setConfirmCleanup(false)}
-              className="h-9 font-mono font-semibold text-[11px] uppercase tracking-wider"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleCleanup}
-              disabled={cleaning}
-              className="h-9 gap-2 font-mono font-semibold text-[11px] uppercase tracking-wider"
-            >
-              <Check className="h-3.5 w-3.5" />
-              {cleaning ? 'Running...' : 'Run Cleanup'}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={confirmRestart} onOpenChange={setConfirmRestart}>
-        <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-[400px] [&>button]:hidden">
-          <div className="p-5">
-            <div className="flex items-start justify-between">
-              <div className="flex flex-col">
-                <DialogTitle className="flex items-center gap-2 font-bold text-destructive text-xl tracking-tight">
-                  <RefreshCw className="h-5 w-5" />
-                  Restart Daemon
-                </DialogTitle>
-                <DialogDescription className="mt-1.5 flex items-center gap-1.5 font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                  <RefreshCw className="h-3 w-3" />
-                  All services will be briefly unavailable
-                </DialogDescription>
-              </div>
-              <DialogClose asChild>
-                <Button
-                  variant="ghost"
-                  className="font-medium text-foreground/80 text-sm hover:bg-transparent hover:text-foreground"
-                >
-                  CLOSE
-                </Button>
-              </DialogClose>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-end gap-3 p-5 pt-0">
-            <Button
-              variant="ghost"
-              onClick={() => setConfirmRestart(false)}
-              className="h-9 font-mono font-semibold text-[11px] uppercase tracking-wider"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleRestart}
-              disabled={restarting}
-              variant="destructive"
-              className="h-9 gap-2 font-mono font-semibold text-[11px] uppercase tracking-wider"
-            >
-              <RefreshCw className="h-3.5 w-3.5" />
-              {restarting ? 'Restarting...' : 'Restart'}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <MaintenanceDialogs
+        confirmCleanup={confirmCleanup}
+        setConfirmCleanup={setConfirmCleanup}
+        cleaning={cleaning}
+        handleCleanup={handleCleanup}
+        confirmRestart={confirmRestart}
+        setConfirmRestart={setConfirmRestart}
+        restarting={restarting}
+        handleRestart={handleRestart}
+      />
     </div>
   );
 };

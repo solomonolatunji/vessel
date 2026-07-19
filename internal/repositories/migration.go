@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"sort"
+	"strings"
 )
 
 //go:embed schema/*.sql
@@ -101,9 +102,16 @@ func ensureMigrationsTable(db *sql.DB) error {
 		return err
 	}
 
-	for _, file := range files {
-		if _, err := db.Exec("INSERT INTO schema_migrations (filename) VALUES (?)", file); err != nil {
-			return fmt.Errorf("failed to seed migration %s: %w", file, err)
+	if len(files) > 0 {
+		var placeholders []string
+		var args []any
+		for _, file := range files {
+			placeholders = append(placeholders, "(?)")
+			args = append(args, file)
+		}
+		query := fmt.Sprintf("INSERT INTO schema_migrations (filename) VALUES %s", strings.Join(placeholders, ", "))
+		if _, err := db.Exec(query, args...); err != nil {
+			return fmt.Errorf("failed to seed migrations: %w", err)
 		}
 	}
 

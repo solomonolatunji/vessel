@@ -1,20 +1,11 @@
-import { Check, Mail, Plus, Trash2, Users } from 'lucide-react';
+import { Plus, Trash2, Users } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
 import { Button } from '#/components/ui/button';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-  DialogTrigger,
-} from '#/components/ui/dialog';
-import { Input } from '#/components/ui/input';
-import { Label } from '#/components/ui/label';
 import { Skeleton } from '#/components/ui/skeleton';
-import { useDeleteUser, useInviteUser, useListUsers } from '#/hooks/useUsers';
+import { useListUsers } from '#/hooks/useUsers';
 import type { User } from '#/interfaces/users';
+import { UserDeleteDialog } from './components/user-delete-dialog';
+import { UserInviteDialog } from './components/user-invite-dialog';
 
 const UserRow = ({ user, onDelete }: { user: User; onDelete: (u: User) => void }) => (
   <div className="rounded-2xl border border-border/50 bg-card/40 p-6">
@@ -43,39 +34,10 @@ const UserRow = ({ user, onDelete }: { user: User; onDelete: (u: User) => void }
 
 export const UsersPage = () => {
   const { data, isLoading } = useListUsers();
-  const { mutateAsync: deleteUser, isPending: deleting } = useDeleteUser();
-  const { mutateAsync: inviteUser, isPending: inviting } = useInviteUser();
   const [target, setTarget] = useState<User | null>(null);
   const [inviteOpen, setInviteOpen] = useState(false);
-  const [inviteEmail, setInviteEmail] = useState('');
 
   const users = data?.data?.records ?? [];
-
-  const confirmDelete = async () => {
-    if (!target) return;
-    try {
-      await deleteUser(target.id);
-      toast.success(`${target.name} removed`);
-    } catch {
-      toast.error('Failed to remove user');
-    } finally {
-      setTarget(null);
-    }
-  };
-
-  const handleInvite = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inviteEmail) return;
-    try {
-      await inviteUser(inviteEmail);
-      toast.success('User invited successfully');
-      setInviteOpen(false);
-      setInviteEmail('');
-    } catch (err) {
-      const error = err as Error;
-      toast.error(error.message || 'Failed to invite user');
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -91,82 +53,10 @@ export const UsersPage = () => {
             </p>
           </div>
         </div>
-        <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
-          <DialogTrigger asChild>
-            <Button className="gap-2">
-              <Plus className="h-4 w-4" />
-              INVITE USER
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-[400px] [&>button]:hidden">
-            <form onSubmit={handleInvite}>
-              <div className="px-5 pt-5 pb-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex flex-col">
-                    <DialogTitle className="flex items-center gap-2 font-bold text-foreground text-xl tracking-tight">
-                      <Mail className="h-5 w-5 text-primary" />
-                      Invite User
-                    </DialogTitle>
-                    <DialogDescription className="mt-1.5 flex items-center gap-1.5 font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                      <Mail className="h-3 w-3" />
-                      Send an email invitation
-                    </DialogDescription>
-                  </div>
-                  <DialogClose asChild>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      className="font-medium text-foreground/80 text-sm hover:bg-transparent hover:text-foreground"
-                    >
-                      CLOSE
-                    </Button>
-                  </DialogClose>
-                </div>
-              </div>
-
-              <div className="h-px w-full bg-border/50" />
-
-              <div className="px-5 pt-4 pb-5">
-                <div className="space-y-2.5">
-                  <Label
-                    htmlFor="email"
-                    className="font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]"
-                  >
-                    EMAIL ADDRESS
-                  </Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="name@example.com"
-                    value={inviteEmail}
-                    onChange={(e) => setInviteEmail(e.target.value)}
-                    required
-                    className="h-10 rounded-lg border-border/50 bg-background/80 px-3 text-sm transition-all duration-300 focus:border-primary/50 focus:ring-1 focus:ring-primary/20"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-end gap-3 p-5 pt-0">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => setInviteOpen(false)}
-                  className="h-9 font-mono font-semibold text-[11px] uppercase tracking-wider"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={inviting}
-                  className="h-9 gap-2 font-mono font-semibold text-[11px] uppercase tracking-wider"
-                >
-                  <Check className="h-3.5 w-3.5" />
-                  {inviting ? 'Inviting...' : 'Send Invite'}
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <Button onClick={() => setInviteOpen(true)} className="gap-2">
+          <Plus className="h-4 w-4" />
+          INVITE USER
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 gap-6">
@@ -185,50 +75,8 @@ export const UsersPage = () => {
         ))}
       </div>
 
-      <Dialog open={!!target} onOpenChange={(o) => !o && setTarget(null)}>
-        <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-[400px] [&>button]:hidden">
-          <div className="p-5">
-            <div className="flex items-start justify-between">
-              <div className="flex flex-col">
-                <DialogTitle className="flex items-center gap-2 font-bold text-destructive text-xl tracking-tight">
-                  <Trash2 className="h-5 w-5" />
-                  Remove User
-                </DialogTitle>
-                <DialogDescription className="mt-1.5 flex items-center gap-1.5 font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                  <Trash2 className="h-3 w-3" />
-                  This will permanently remove {target?.email}
-                </DialogDescription>
-              </div>
-              <DialogClose asChild>
-                <Button
-                  variant="ghost"
-                  className="font-medium text-foreground/80 text-sm hover:bg-transparent hover:text-foreground"
-                >
-                  CLOSE
-                </Button>
-              </DialogClose>
-            </div>
-          </div>
-          <div className="flex items-center justify-end gap-3 p-5 pt-0">
-            <Button
-              variant="ghost"
-              onClick={() => setTarget(null)}
-              className="h-9 font-mono font-semibold text-[11px] uppercase tracking-wider"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={confirmDelete}
-              disabled={deleting}
-              variant="destructive"
-              className="h-9 gap-2 font-mono font-semibold text-[11px] uppercase tracking-wider"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              {deleting ? 'Removing...' : 'Remove User'}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <UserInviteDialog open={inviteOpen} onOpenChange={setInviteOpen} />
+      <UserDeleteDialog target={target} onClose={() => setTarget(null)} />
     </div>
   );
 };

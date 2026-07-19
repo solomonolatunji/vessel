@@ -32,7 +32,6 @@ func (h *SettingsHandler) GetSettings(c echo.Context) error {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 
-
 	masked := *s
 	if masked.CloudflareAPIToken != "" {
 		masked.CloudflareAPIToken = "********"

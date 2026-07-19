@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -174,6 +175,10 @@ func (u *UpdaterService) DeployUpdate(ctx context.Context) error {
 	}
 
 	targetVersion := settingsCfg.LatestVersion
+
+	if !regexp.MustCompile(`^v?\d+\.\d+\.\d+(-\w+)?$`).MatchString(targetVersion) {
+		return fmt.Errorf("invalid target version format: %s", targetVersion)
+	}
 
 	settingsCfg.CurrentVersion = settingsCfg.LatestVersion
 	settingsCfg.LastUpdateCheck = time.Now().Format(time.RFC3339)

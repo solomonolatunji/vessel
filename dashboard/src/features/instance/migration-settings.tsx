@@ -4,11 +4,12 @@ import { toast } from 'sonner';
 import { Button } from '#/components/ui/button';
 import { Input } from '#/components/ui/input';
 import { Row, Section } from '#/components/ui/section';
+import { useExportSystem } from '#/hooks/useSystem';
 
 export function MigrationSettings() {
   const [passphrase, setPassphrase] = useState('');
   const [confirmPassphrase, setConfirmPassphrase] = useState('');
-  const [isExporting, setIsExporting] = useState(false);
+  const exportSystem = useExportSystem();
 
   const handleExport = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,16 +21,20 @@ export function MigrationSettings() {
       toast.error('Passphrase must be at least 8 characters long');
       return;
     }
-    setIsExporting(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const blob = await exportSystem.mutateAsync(passphrase);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `vessl-export-${new Date().toISOString().split('T')[0]}.enc`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+
       toast.success('Instance bundle downloaded successfully');
       setPassphrase('');
       setConfirmPassphrase('');
     } catch {
       toast.error('Failed to export instance bundle');
-    } finally {
-      setIsExporting(false);
     }
   };
 
@@ -72,14 +77,14 @@ export function MigrationSettings() {
             <Button
               type="submit"
               size="sm"
-              disabled={isExporting || !passphrase || passphrasesMismatch}
+              disabled={exportSystem.isPending || !passphrase || passphrasesMismatch}
             >
-              {isExporting ? (
+              {exportSystem.isPending ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
                 <Download className="mr-2 h-4 w-4" />
               )}
-              {isExporting ? 'Exporting...' : 'Download Bundle'}
+              {exportSystem.isPending ? 'Exporting...' : 'Download Bundle'}
             </Button>
           }
         >

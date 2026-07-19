@@ -41,18 +41,59 @@ func (d *DatabaseDeployer) SpinUp(ctx context.Context, dbConfig *models.Database
 
 	containerName := utils.NormalizeContainerName(fmt.Sprintf("vessl-db-%s", dbConfig.Name))
 	_ = d.dockerClient.ContainerRemove(ctx, containerName, container.RemoveOptions{Force: true})
+
+	imageName, envVars, cmd, containerMountPath, err := d.buildContainerConfig(dbConfig)
+	if err != nil {
+		return "", err
+	}
+
+	pullResp, err := d.dockerClient.ImagePull(ctx, imageName, image.PullOptions{})
+	if err == nil {
+		_, _ = io.Copy(io.Discard, pullResp)
+		_ = pullResp.Close()
+	}
+
+	if err := utils.EnsureVesslNetwork(ctx, d.dockerClient); err != nil {
+		return "", fmt.Errorf("failed to ensure Docker network: %w", err)
+	}
+
+	containerCfg, hostCfg, netCfg := d.createContainerSettings(dbConfig, containerName, imageName, envVars, cmd, containerMountPath)
+
+	if d.store != nil {
+		settings, _ := d.store.GetServerSettings()
+		if settings != nil {
+			ApplyCustomDNS(hostCfg, settings.CustomDNSResolvers)
+		}
+	}
+	created, err := d.dockerClient.ContainerCreate(ctx, containerCfg, hostCfg, netCfg, nil, containerName)
+	if err != nil {
+		return "", fmt.Errorf("failed to create database container: %w", err)
+	}
+	if err := d.dockerClient.ContainerStart(ctx, created.ID, container.StartOptions{}); err != nil {
+		return "", fmt.Errorf("failed to start database container: %w", err)
+	}
+	internalDNS := fmt.Sprintf("%s:%d", containerName, dbConfig.Port)
+	_ = d.store.UpdateDatabaseStatus(dbConfig.ID, models.DatabaseStatusRunning, created.ID)
+	dbConfig.ContainerID = created.ID
+	dbConfig.Status = models.DatabaseStatusRunning
+	dbConfig.InternalDNS = internalDNS
+	return created.ID, nil
+}
+
+func (d *DatabaseDeployer) buildContainerConfig(dbConfig *models.Database) (string, []string, []string, string, error) {
 	var imageName string
 	var envVars []string
 	var cmd []string
 	var containerMountPath string
+
 	tmplMgr, err := NewTemplateManager()
 	if err != nil {
-		return "", fmt.Errorf("failed to initialize template manager: %w", err)
+		return "", nil, nil, "", fmt.Errorf("failed to initialize template manager: %w", err)
 	}
 
 	composeFile, err := tmplMgr.GetTemplate(strings.ToLower(string(dbConfig.Engine)))
 	if err != nil {
-		return "", fmt.Errorf("unsupported database engine %s: %w", dbConfig.Engine, err)
+		return "", nil, nil, "", fmt.Errorf("unsupported database engine %s: %w", dbConfig.Engine, err)
 	}
 
 	tmplService, exists := composeFile.Services[strings.ToLower(string(dbConfig.Engine))]
@@ -108,16 +149,13 @@ func (d *DatabaseDeployer) SpinUp(ctx context.Context, dbConfig *models.Database
 	} else {
 		containerMountPath = "/data"
 	}
-	pullResp, err := d.dockerClient.ImagePull(ctx, imageName, image.PullOptions{})
-	if err == nil {
-		_, _ = io.Copy(io.Discard, pullResp)
-		_ = pullResp.Close()
-	}
+
+	return imageName, envVars, cmd, containerMountPath, nil
+}
+
+func (d *DatabaseDeployer) createContainerSettings(dbConfig *models.Database, containerName, imageName string, envVars, cmd []string, containerMountPath string) (*container.Config, *container.HostConfig, *network.NetworkingConfig) {
 	volumeName := fmt.Sprintf("vessl-db-data-%s", dbConfig.ID)
 
-	if err := utils.EnsureVesslNetwork(ctx, d.dockerClient); err != nil {
-		return "", fmt.Errorf("failed to ensure Docker network: %w", err)
-	}
 	labels := make(map[string]string)
 	if dbConfig.ExternalDNS != "" {
 		labels["traefik.enable"] = "true"
@@ -155,25 +193,8 @@ func (d *DatabaseDeployer) SpinUp(ctx context.Context, dbConfig *models.Database
 			},
 		},
 	}
-	if d.store != nil {
-		settings, _ := d.store.GetServerSettings()
-		if settings != nil {
-			ApplyCustomDNS(hostCfg, settings.CustomDNSResolvers)
-		}
-	}
-	created, err := d.dockerClient.ContainerCreate(ctx, containerCfg, hostCfg, netCfg, nil, containerName)
-	if err != nil {
-		return "", fmt.Errorf("failed to create database container: %w", err)
-	}
-	if err := d.dockerClient.ContainerStart(ctx, created.ID, container.StartOptions{}); err != nil {
-		return "", fmt.Errorf("failed to start database container: %w", err)
-	}
-	internalDNS := fmt.Sprintf("%s:%d", containerName, dbConfig.Port)
-	_ = d.store.UpdateDatabaseStatus(dbConfig.ID, models.DatabaseStatusRunning, created.ID)
-	dbConfig.ContainerID = created.ID
-	dbConfig.Status = models.DatabaseStatusRunning
-	dbConfig.InternalDNS = internalDNS
-	return created.ID, nil
+
+	return containerCfg, hostCfg, netCfg
 }
 
 func (d *DatabaseDeployer) Stop(ctx context.Context, dbID string) error {

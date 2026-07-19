@@ -1,96 +1,24 @@
 import { format } from 'date-fns';
-import { Calendar, Check, Clock, Copy, FolderOpen, Key, Plus, Trash2, X } from 'lucide-react';
+import { Calendar, Clock, FolderOpen, Key, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
 import { Button } from '#/components/ui/button';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from '#/components/ui/dialog';
-import { Input } from '#/components/ui/input';
-import { Label } from '#/components/ui/label';
-import { useCreateToken, useDeleteToken, useListTokens } from '#/hooks/useProfile';
+import { useListTokens } from '#/hooks/useProfile';
+import { ApiKeyCreateDialog } from './components/api-key-create-dialog';
+import { ApiKeyDeleteDialog } from './components/api-key-delete-dialog';
+import { ApiKeyNewDialog } from './components/api-key-new-dialog';
 
 export function ApiKeysList() {
   const { data: tokensResponse, isLoading } = useListTokens();
-  const createToken = useCreateToken();
-  const deleteToken = useDeleteToken();
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isNewKeyOpen, setIsNewKeyOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [newKeyPlain, setNewKeyPlain] = useState('');
-  const [copied, setCopied] = useState(false);
 
-  const [name, setName] = useState('');
-  const [accessLevel, setAccessLevel] = useState<'read' | 'read_write'>('read');
-  const [projectScope, setProjectScope] = useState<'all' | 'specific'>('all');
-  const [expirationDays, setExpirationDays] = useState<number | null>(30);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(newKeyPlain);
-    setCopied(true);
-    toast.success('API key copied to clipboard');
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleCreate = () => {
-    if (!name.trim()) {
-      toast.error('Please enter a name for the API key');
-      return;
-    }
-
-    let expiresAt: string | undefined;
-    if (expirationDays !== null) {
-      const date = new Date();
-      date.setDate(date.getDate() + expirationDays);
-      expiresAt = date.toISOString();
-    }
-
-    createToken.mutate(
-      {
-        payload: {
-          name,
-          accessLevel,
-          projectScope,
-          allowedProjects: [],
-          expiresAt,
-        },
-      },
-      {
-        onSuccess: (data) => {
-          setNewKeyPlain(data.plain);
-          setIsCreateOpen(false);
-          setIsNewKeyOpen(true);
-          setName('');
-          setAccessLevel('read');
-          setProjectScope('all');
-          setExpirationDays(30);
-        },
-        onError: (err) => {
-          toast.error(err.message || 'Failed to create API key');
-        },
-      }
-    );
-  };
-
-  const handleDelete = () => {
-    if (!deleteId) return;
-    deleteToken.mutate(
-      { id: deleteId },
-      {
-        onSuccess: () => {
-          toast.success('API key deleted');
-          setDeleteId(null);
-        },
-        onError: (err) => {
-          toast.error(err.message || 'Failed to delete API key');
-        },
-      }
-    );
+  const handleCreateSuccess = (plainKey: string) => {
+    setNewKeyPlain(plainKey);
+    setIsCreateOpen(false);
+    setIsNewKeyOpen(true);
   };
 
   const tokens = tokensResponse?.data || [];
@@ -219,284 +147,17 @@ export function ApiKeysList() {
         )}
       </div>
 
-      <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-        <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-2xl [&>button]:hidden">
-          <div className="px-5 pt-5 pb-4">
-            <div className="flex items-start justify-between">
-              <div className="flex flex-col">
-                <DialogTitle className="flex items-center gap-2 font-bold text-xl tracking-tight">
-                  <Key className="h-5 w-5 text-primary" />
-                  Create API key
-                </DialogTitle>
-                <DialogDescription className="mt-1.5 flex items-center gap-1.5 font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                  <Key className="h-3 w-3" />
-                  Bearer token access
-                </DialogDescription>
-              </div>
-              <DialogClose asChild>
-                <Button className="font-medium text-foreground/80 text-sm hover:bg-transparent hover:text-foreground">
-                  CLOSE
-                </Button>
-              </DialogClose>
-            </div>
-          </div>
-
-          <div className="h-px w-full bg-border/50" />
-
-          <div className="space-y-5 px-5 pt-4 pb-5">
-            <div className="space-y-2.5">
-              <Label className="font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                NAME
-              </Label>
-              <Input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Production deploys"
-                className="h-10 rounded-lg border-border/50 bg-background/50 px-3 text-sm"
-              />
-            </div>
-
-            <div className="space-y-2.5">
-              <Label className="font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                ACCESS
-              </Label>
-              <div className="grid grid-cols-2 gap-4">
-                <button
-                  type="button"
-                  onClick={() => setAccessLevel('read')}
-                  className={`flex h-12 items-center justify-center gap-2 rounded-xl border transition-colors ${
-                    accessLevel === 'read'
-                      ? 'border-primary/50 bg-primary/10 text-primary'
-                      : 'border-border/50 bg-transparent text-muted-foreground hover:bg-background/50 hover:text-foreground'
-                  }`}
-                >
-                  <Key className="h-4 w-4" /> READ
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setAccessLevel('read_write')}
-                  className={`flex h-12 items-center justify-center gap-2 rounded-xl border transition-colors ${
-                    accessLevel === 'read_write'
-                      ? 'border-primary/50 bg-primary/10 text-primary'
-                      : 'border-border/50 bg-transparent text-muted-foreground hover:bg-background/50 hover:text-foreground'
-                  }`}
-                >
-                  <Key className="h-4 w-4" /> READ AND WRITE
-                </button>
-              </div>
-            </div>
-
-            <div className="space-y-2.5">
-              <Label className="font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                PROJECTS
-              </Label>
-              <div className="grid grid-cols-2 gap-4">
-                <button
-                  type="button"
-                  onClick={() => setProjectScope('all')}
-                  className={`flex h-12 items-center justify-center gap-2 rounded-xl border transition-colors ${
-                    projectScope === 'all'
-                      ? 'border-primary/50 bg-primary/10 text-primary'
-                      : 'border-border/50 bg-transparent text-muted-foreground hover:bg-background/50 hover:text-foreground'
-                  }`}
-                >
-                  <FolderOpen className="h-4 w-4" /> ALL PROJECTS
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setProjectScope('specific')}
-                  className={`flex h-12 items-center justify-center gap-2 rounded-xl border transition-colors ${
-                    projectScope === 'specific'
-                      ? 'border-primary/50 bg-primary/10 text-primary'
-                      : 'border-border/50 bg-transparent text-muted-foreground hover:bg-background/50 hover:text-foreground'
-                  }`}
-                >
-                  <FolderOpen className="h-4 w-4" /> SPECIFIC PROJECTS
-                </button>
-              </div>
-            </div>
-
-            <div className="space-y-2.5">
-              <Label className="font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                EXPIRATION
-              </Label>
-              <div className="grid grid-cols-2 gap-4">
-                <button
-                  type="button"
-                  onClick={() => setExpirationDays(7)}
-                  className={`flex h-12 items-center justify-center gap-2 rounded-xl border transition-colors ${
-                    expirationDays === 7
-                      ? 'border-primary/50 bg-primary/10 text-primary'
-                      : 'border-border/50 bg-transparent text-muted-foreground hover:bg-background/50 hover:text-foreground'
-                  }`}
-                >
-                  <Clock className="h-4 w-4" /> 7 DAYS
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setExpirationDays(30)}
-                  className={`flex h-12 items-center justify-center gap-2 rounded-xl border transition-colors ${
-                    expirationDays === 30
-                      ? 'border-primary/50 bg-primary/10 text-primary'
-                      : 'border-border/50 bg-transparent text-muted-foreground hover:bg-background/50 hover:text-foreground'
-                  }`}
-                >
-                  <Clock className="h-4 w-4" /> 30 DAYS
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setExpirationDays(90)}
-                  className={`flex h-12 items-center justify-center gap-2 rounded-xl border transition-colors ${
-                    expirationDays === 90
-                      ? 'border-primary/50 bg-primary/10 text-primary'
-                      : 'border-border/50 bg-transparent text-muted-foreground hover:bg-background/50 hover:text-foreground'
-                  }`}
-                >
-                  <Clock className="h-4 w-4" /> 90 DAYS
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setExpirationDays(null)}
-                  className={`flex h-12 items-center justify-center gap-2 rounded-xl border transition-colors ${
-                    expirationDays === null
-                      ? 'border-primary/50 bg-primary/10 text-primary'
-                      : 'border-border/50 bg-transparent text-muted-foreground hover:bg-background/50 hover:text-foreground'
-                  }`}
-                >
-                  <Clock className="h-4 w-4" /> NO EXPIRATION
-                </button>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-end gap-3 pt-2">
-              <Button
-                onClick={() => setIsCreateOpen(false)}
-                variant="ghost"
-                className="h-9 font-mono font-semibold text-[11px] uppercase tracking-wider"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleCreate}
-                disabled={createToken.isPending}
-                className="h-9 gap-2 font-mono font-semibold text-[11px] uppercase tracking-wider"
-              >
-                <Check className="h-3.5 w-3.5" />
-                {createToken.isPending ? 'Creating...' : 'Create Key'}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={isNewKeyOpen} onOpenChange={setIsNewKeyOpen}>
-        <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-2xl [&>button]:hidden">
-          <div className="px-5 pt-5 pb-4">
-            <div className="flex items-start justify-between">
-              <div className="flex flex-col">
-                <DialogTitle className="flex items-center gap-2 font-bold text-xl tracking-tight">
-                  <Key className="h-5 w-5 text-primary" />
-                  New API key
-                </DialogTitle>
-                <DialogDescription className="mt-1.5 flex items-center gap-1.5 font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                  <Key className="h-3 w-3" />
-                  Shown only once
-                </DialogDescription>
-              </div>
-              <DialogClose asChild>
-                <Button
-                  variant="ghost"
-                  className="font-medium text-foreground/80 text-sm hover:bg-transparent hover:text-foreground"
-                >
-                  CLOSE
-                </Button>
-              </DialogClose>
-            </div>
-          </div>
-
-          <div className="h-px w-full bg-border/50" />
-
-          <div className="p-6">
-            <div className="rounded-xl border border-primary/20 bg-primary/5 p-6">
-              <div className="mb-4 flex items-start justify-between">
-                <div className="flex items-center gap-2">
-                  <Key className="h-4 w-4 text-primary" />
-                  <span className="font-bold text-[10px] text-primary uppercase tracking-[0.15em]">
-                    NEW API KEY
-                  </span>
-                </div>
-                <DialogClose asChild>
-                  <Button
-                    variant="ghost"
-                    className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </DialogClose>
-              </div>
-
-              <p className="mb-4 text-foreground/90 text-sm">
-                This full key is shown only once. Store it somewhere secure before closing this
-                dialog.
-              </p>
-
-              <div className="flex items-center justify-between rounded-xl border border-border/50 bg-background/50 p-1 pl-4">
-                <span className="break-all py-2 pr-4 font-mono text-foreground/90 text-sm">
-                  {newKeyPlain}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleCopy}
-                  className="h-10 w-10 shrink-0 text-muted-foreground hover:bg-background/80 hover:text-foreground"
-                >
-                  {copied ? (
-                    <Check className="h-4 w-4 text-primary" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-      <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-md [&>button]:hidden">
-          <div className="p-5">
-            <div className="flex items-start justify-between">
-              <div className="flex flex-col">
-                <DialogTitle className="flex items-center gap-2 font-bold text-foreground text-xl tracking-tight">
-                  <Trash2 className="h-5 w-5 text-destructive" />
-                  Delete API Key
-                </DialogTitle>
-              </div>
-            </div>
-            <p className="mt-4 text-muted-foreground text-sm">
-              Are you sure you want to delete this API key? Any applications or scripts using it
-              will immediately lose access. This action cannot be undone.
-            </p>
-          </div>
-          <div className="flex items-center justify-end gap-3 p-5 pt-0">
-            <Button
-              variant="ghost"
-              onClick={() => setDeleteId(null)}
-              className="h-9 font-mono font-semibold text-[11px] uppercase tracking-wider"
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={deleteToken.isPending}
-              className="h-9 gap-2 font-mono font-semibold text-[11px] uppercase tracking-wider"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              {deleteToken.isPending ? 'Deleting...' : 'Delete Key'}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <ApiKeyCreateDialog
+        open={isCreateOpen}
+        onOpenChange={setIsCreateOpen}
+        onSuccess={handleCreateSuccess}
+      />
+      <ApiKeyNewDialog
+        open={isNewKeyOpen}
+        onOpenChange={setIsNewKeyOpen}
+        newKeyPlain={newKeyPlain}
+      />
+      <ApiKeyDeleteDialog deleteId={deleteId} onClose={() => setDeleteId(null)} />
     </div>
   );
 }

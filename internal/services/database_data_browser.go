@@ -50,26 +50,32 @@ func getPostgresSchemas(db *models.Database) ([]models.TableSchema, error) {
 		}
 	}
 
+	colRows, err := conn.Query("SELECT table_name, column_name, data_type, is_nullable FROM information_schema.columns WHERE table_schema='public'")
+	if err != nil {
+		return nil, err
+	}
+	defer colRows.Close()
+
+	schemaMap := make(map[string][]models.ColumnSchema)
+	for colRows.Next() {
+		var tName, cName, cType, cNullable string
+		if err := colRows.Scan(&tName, &cName, &cType, &cNullable); err == nil {
+			schemaMap[tName] = append(schemaMap[tName], models.ColumnSchema{
+				Name:       cName,
+				Type:       cType,
+				IsNullable: cNullable == "YES",
+				IsPrimary:  false, // Keeping it simple for v1
+			})
+		}
+	}
+
 	var schemas []models.TableSchema
 	for _, t := range tableNames {
-		colRows, err := conn.Query("SELECT column_name, data_type, is_nullable FROM information_schema.columns WHERE table_schema='public' AND table_name=$1", t)
-		if err != nil {
-			continue
+		cols := schemaMap[t]
+		if cols == nil {
+			cols = []models.ColumnSchema{}
 		}
-		var columns []models.ColumnSchema
-		for colRows.Next() {
-			var cName, cType, cNullable string
-			if err := colRows.Scan(&cName, &cType, &cNullable); err == nil {
-				columns = append(columns, models.ColumnSchema{
-					Name:       cName,
-					Type:       cType,
-					IsNullable: cNullable == "YES",
-					IsPrimary:  false, // Keeping it simple for v1
-				})
-			}
-		}
-		colRows.Close()
-		schemas = append(schemas, models.TableSchema{Name: t, Columns: columns})
+		schemas = append(schemas, models.TableSchema{Name: t, Columns: cols})
 	}
 	if schemas == nil {
 		schemas = []models.TableSchema{}
@@ -100,27 +106,32 @@ func getMySQLSchemas(db *models.Database) ([]models.TableSchema, error) {
 		}
 	}
 
+	colRows, err := conn.Query("SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, IS_NULLABLE, COLUMN_KEY FROM information_schema.columns WHERE table_schema=?", db.DatabaseName)
+	if err != nil {
+		return nil, err
+	}
+	defer colRows.Close()
+
+	schemaMap := make(map[string][]models.ColumnSchema)
+	for colRows.Next() {
+		var tName, cField, cType, cNull, cKey string
+		if err := colRows.Scan(&tName, &cField, &cType, &cNull, &cKey); err == nil {
+			schemaMap[tName] = append(schemaMap[tName], models.ColumnSchema{
+				Name:       cField,
+				Type:       cType,
+				IsNullable: cNull == "YES",
+				IsPrimary:  cKey == "PRI",
+			})
+		}
+	}
+
 	var schemas []models.TableSchema
 	for _, t := range tableNames {
-		colRows, err := conn.Query(fmt.Sprintf("SHOW COLUMNS FROM `%s`", t))
-		if err != nil {
-			continue
+		cols := schemaMap[t]
+		if cols == nil {
+			cols = []models.ColumnSchema{}
 		}
-		var columns []models.ColumnSchema
-		for colRows.Next() {
-			var cField, cType, cNull, cKey string
-			var cDefault, cExtra sql.NullString
-			if err := colRows.Scan(&cField, &cType, &cNull, &cKey, &cDefault, &cExtra); err == nil {
-				columns = append(columns, models.ColumnSchema{
-					Name:       cField,
-					Type:       cType,
-					IsNullable: cNull == "YES",
-					IsPrimary:  cKey == "PRI",
-				})
-			}
-		}
-		colRows.Close()
-		schemas = append(schemas, models.TableSchema{Name: t, Columns: columns})
+		schemas = append(schemas, models.TableSchema{Name: t, Columns: cols})
 	}
 	if schemas == nil {
 		schemas = []models.TableSchema{}
