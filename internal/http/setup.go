@@ -193,11 +193,13 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	logHandler := handlers.NewLogHandler(logService)
 	auditLogHandler := handlers.NewAuditLogHandler(auditService)
 	authLimiter := middleware.NewRateLimiter(10, time.Minute)
+	otpLimiter := middleware.NewRateLimiter(5, time.Minute)
 
 	srv := &Server{
 		router:                 e,
 		mcpBridge:              bridge,
 		authRateLimiter:        authLimiter,
+		otpRateLimiter:         otpLimiter,
 		deployer:               deployer,
 		traefikManager:         traefikManager,
 		dockerClient:           dockerClient,

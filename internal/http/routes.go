@@ -70,7 +70,7 @@ func (s *Server) registerUserRoutes(apiGroup, authGroup *echo.Group) {
 	authGroup.GET("/profile", s.userHandler.GetProfile)
 	authGroup.PUT("/profile", s.userHandler.UpdateProfile)
 	authGroup.POST("/profile/email/request", s.userHandler.RequestEmailChange)
-	authGroup.POST("/profile/email/verify", s.userHandler.VerifyEmailChange)
+	authGroup.POST("/profile/email/verify", s.userHandler.VerifyEmailChange, s.otpRateLimiter.Middleware)
 	authGroup.PUT("/profile/password", s.userHandler.ChangePassword)
 	authGroup.GET("/profile/tokens", s.userHandler.ListPATs)
 	authGroup.POST("/profile/tokens", s.userHandler.CreatePAT)

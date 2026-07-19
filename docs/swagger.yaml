@@ -178,25 +178,6 @@ definitions:
     - AppServiceStatusStopped
     - AppServiceStatusRunning
     - AppServiceStatusError
-  models.BackupRecord:
-    type: object
-    properties:
-      id:
-        type: string
-      configId:
-        type: string
-      backupType:
-        type: string
-      status:
-        type: string
-      sizeMb:
-        type: number
-      createdAt:
-        type: string
-      completedAt:
-        type: string
-      errorMessage:
-        type: string
   models.BackupConfig:
     properties:
       backupEnabled:
@@ -892,6 +873,67 @@ paths:
       summary: Stop App Service
       tags:
       - AppServices
+  /apps/{id}/webhooks:
+    get:
+      consumes:
+      - application/json
+      description: ListWebhooks endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: ListWebhooks endpoint
+      tags:
+      - Services
+    post:
+      consumes:
+      - application/json
+      description: CreateWebhook endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Webhook'
+      produces:
+      - application/json
+      responses: {}
+      summary: CreateWebhook endpoint
+      tags:
+      - Services
+  /apps/{id}/webhooks/{webhookId}:
+    delete:
+      consumes:
+      - application/json
+      description: DeleteWebhook endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: webhookId
+        in: path
+        name: webhookId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: DeleteWebhook endpoint
+      tags:
+      - Services
   /audit-logs:
     get:
       consumes:
@@ -1141,6 +1183,28 @@ paths:
       summary: Get Backup
       tags:
       - Backups
+    put:
+      consumes:
+      - application/json
+      description: Update Backup
+      parameters:
+      - description: Backup ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.BackupConfig'
+      produces:
+      - application/json
+      responses: {}
+      summary: Update Backup
+      tags:
+      - Backups
   /backups/{id}/records:
     get:
       consumes:
@@ -1154,24 +1218,7 @@ paths:
         type: string
       produces:
       - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            properties:
-              data:
-                items:
-                  $ref: '#/definitions/models.BackupRecord'
-                type: array
-              executionTime:
-                type: number
-              message:
-                type: string
-              path:
-                type: string
-              status:
-                type: string
-            type: object
+      responses: {}
       summary: ListRecords endpoint
       tags:
       - Backups
@@ -1193,9 +1240,7 @@ paths:
         type: string
       produces:
       - application/json
-      responses:
-        "204":
-          description: No Content
+      responses: {}
       summary: Delete Backup Record
       tags:
       - Backups
@@ -1217,11 +1262,7 @@ paths:
         type: string
       produces:
       - application/octet-stream
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: file
+      responses: {}
       summary: Download Backup Record
       tags:
       - Backups
@@ -2195,23 +2236,6 @@ paths:
       summary: ListByProject endpoint
       tags:
       - AppServices
-  /projects/{id}/deploy:
-    post:
-      consumes:
-      - application/json
-      description: DeployProject endpoint
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: DeployProject endpoint
-      tags:
-      - Projects
   /projects/{id}/domains:
     get:
       consumes:
@@ -2743,67 +2767,6 @@ paths:
       summary: Update Service Variable
       tags:
       - AppServices
-  /apps/{id}/webhooks:
-    get:
-      consumes:
-      - application/json
-      description: ListWebhooks endpoint
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: ListWebhooks endpoint
-      tags:
-      - AppServices
-    post:
-      consumes:
-      - application/json
-      description: CreateWebhook endpoint
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Payload
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/models.Webhook'
-      produces:
-      - application/json
-      responses: {}
-      summary: CreateWebhook endpoint
-      tags:
-      - AppServices
-  /apps/{id}/webhooks/{webhookId}:
-    delete:
-      consumes:
-      - application/json
-      description: DeleteWebhook endpoint
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: webhookId
-        in: path
-        name: webhookId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: DeleteWebhook endpoint
-      tags:
-      - AppServices
   /settings:
     put:
       consumes:
@@ -3081,23 +3044,6 @@ paths:
       summary: ListUsers endpoint
       tags:
       - Users
-  /webhooks/git/{projectId}:
-    post:
-      consumes:
-      - application/json
-      description: HandleProjectWebhook endpoint
-      parameters:
-      - description: projectId
-        in: path
-        name: projectId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: HandleProjectWebhook endpoint
-      tags:
-      - Webhooks
   /webhooks/git/services/{serviceId}:
     post:
       consumes:

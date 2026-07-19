@@ -20,6 +20,7 @@ type Server struct {
 	router                 *echo.Echo
 	mcpBridge              *Bridge
 	authRateLimiter        *middleware.RateLimiter
+	otpRateLimiter         *middleware.RateLimiter
 	deployer               *engine.Deployer
 	traefikManager         *engine.TraefikManager
 	dockerClient           *client.Client

@@ -170,6 +170,95 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/apps/{id}/webhooks": {
+            "get": {
+                "description": "ListWebhooks endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Services"
+                ],
+                "summary": "ListWebhooks endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "post": {
+                "description": "CreateWebhook endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Services"
+                ],
+                "summary": "CreateWebhook endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Webhook"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/apps/{id}/webhooks/{webhookId}": {
+            "delete": {
+                "description": "DeleteWebhook endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Services"
+                ],
+                "summary": "DeleteWebhook endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "webhookId",
+                        "name": "webhookId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/audit-logs": {
             "get": {
                 "description": "Fetches audit logs for the dashboard",
@@ -510,6 +599,38 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "put": {
+                "description": "Update Backup",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backups"
+                ],
+                "summary": "Update Backup",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Backup ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.BackupConfig"
+                        }
                     }
                 ],
                 "responses": {}
@@ -2051,31 +2172,6 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/projects/{id}/deploy": {
-            "post": {
-                "description": "DeployProject endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "DeployProject endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
         "/projects/{id}/domains": {
             "get": {
                 "description": "List domains by project",
@@ -2848,95 +2944,6 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/services/{serviceId}/webhooks": {
-            "get": {
-                "description": "ListWebhooks endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Services"
-                ],
-                "summary": "ListWebhooks endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "serviceId",
-                        "name": "serviceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "post": {
-                "description": "CreateWebhook endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Services"
-                ],
-                "summary": "CreateWebhook endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "serviceId",
-                        "name": "serviceId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Payload",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Webhook"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/services/{serviceId}/webhooks/{id}": {
-            "delete": {
-                "description": "DeleteWebhook endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Services"
-                ],
-                "summary": "DeleteWebhook endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "serviceId",
-                        "name": "serviceId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
         "/settings": {
             "put": {
                 "description": "UpdateSettings endpoint",
@@ -3362,31 +3369,6 @@ const docTemplate = `{
                         "type": "string",
                         "description": "serviceId",
                         "name": "serviceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/webhooks/git/{projectId}": {
-            "post": {
-                "description": "HandleProjectWebhook endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Webhooks"
-                ],
-                "summary": "HandleProjectWebhook endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "projectId",
-                        "name": "projectId",
                         "in": "path",
                         "required": true
                     }
