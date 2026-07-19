@@ -35,8 +35,15 @@ function ServiceIndexRoute() {
       <div className="space-y-6">
         <h1 className="font-bold text-2xl">Database: {db.name}</h1>
         <DatabaseConnectionCard database={db} />
-        <DatabaseNetworking database={db} />
-        {db.engine === 'redis' ? <RedisKeyBrowser database={db} /> : <DataBrowser database={db} />}
+        <DatabaseNetworking
+          database={{ id: db.id, isPublic: !!db.externalDns, publicEndpoint: db.externalDns }}
+          onUpdate={() => {}}
+        />
+        {db.engine === 'redis' ? (
+          <RedisKeyBrowser databaseId={db.id} />
+        ) : (
+          <DataBrowser databaseId={db.id} />
+        )}
         <BackupManager database={db} />
       </div>
     );
@@ -46,7 +53,7 @@ function ServiceIndexRoute() {
     return (
       <div className="space-y-6">
         <h1 className="font-bold text-2xl">Service: {app.name}</h1>
-        <RuntimeModeCard app={app} />
+        <RuntimeModeCard serviceId={app.id} />
       </div>
     );
   }

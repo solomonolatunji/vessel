@@ -28,7 +28,7 @@ function ServiceTerminalRoute() {
   return (
     <div className="space-y-6">
       <h1 className="font-bold text-2xl">Terminal</h1>
-      <WebTerminal app={app} />
+      <WebTerminal serviceId={app.id} />
     </div>
   );
 }

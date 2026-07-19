@@ -1,4 +1,4 @@
-import { Bell, Database, Lock, Settings as SettingsIcon, GitBranch } from 'lucide-react';
+import { Bell, Database, GitBranch, Lock, Settings as SettingsIcon } from 'lucide-react';
 import { useState } from 'react';
 import { BackupsList } from './backups-list';
 import { GeneralSettings } from './general-settings';

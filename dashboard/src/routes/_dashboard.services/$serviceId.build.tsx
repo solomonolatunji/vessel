@@ -28,7 +28,7 @@ function ServiceBuildRoute() {
   return (
     <div className="space-y-6">
       <h1 className="font-bold text-2xl">Build Settings</h1>
-      <BuildSettings app={app} />
+      <BuildSettings serviceId={serviceId} />
     </div>
   );
 }
