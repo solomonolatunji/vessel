@@ -64,18 +64,17 @@ export function GithubIntegration() {
   useEffect(() => {
     const code = search.code;
     if (code && !exchangeMutation.isPending && !exchangeMutation.isSuccess) {
-      // @ts-ignore
-      navigate({ search: (prev: any) => ({ ...prev, code: undefined }), replace: true });
-
       exchangeMutation.mutate(
         { code },
         {
           onSuccess: () => {
+            navigate({ to: '/dashboard/sources', replace: true });
             toast.success('GitHub App connected successfully!');
             setIsEditing(false);
             setEditingApp(null);
           },
           onError: (err) => {
+            navigate({ to: '/dashboard/sources', replace: true });
             toast.error(err.message || 'Failed to connect GitHub App');
           },
         }

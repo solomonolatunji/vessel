@@ -71,13 +71,24 @@ func deleteApp(ctx context.Context, db *sqlx.DB, tableName, id string) error {
 }
 
 func (r *GitAppRepo) ListGithubApps(ctx context.Context) ([]models.GithubApp, error) {
-	query := `SELECT id, name, app_id, installation_id, client_id, is_public, created_at, updated_at FROM github_apps`
+	query := `SELECT id, name, app_id, installation_id, client_id, client_secret, webhook_secret, private_key, is_public, created_at, updated_at FROM github_apps`
 	var apps []models.GithubApp
 	if err := r.db.SelectContext(ctx, &apps, query); err != nil {
 		return nil, err
 	}
 	if apps == nil {
 		apps = make([]models.GithubApp, 0)
+	}
+	for i := range apps {
+		if apps[i].ClientSecret != "" {
+			apps[i].ClientSecret = "********"
+		}
+		if apps[i].WebhookSecret != "" {
+			apps[i].WebhookSecret = "********"
+		}
+		if apps[i].PrivateKey != "" {
+			apps[i].PrivateKey = "********"
+		}
 	}
 	return apps, nil
 }
@@ -104,6 +115,21 @@ func (r *GitAppRepo) GetGithubApp(ctx context.Context, id string) (*models.Githu
 }
 
 func (r *GitAppRepo) SaveGithubApp(ctx context.Context, app *models.GithubApp) error {
+	if app.ID != "" {
+		existing, err := r.GetGithubApp(ctx, app.ID)
+		if err == nil && existing != nil {
+			if app.ClientSecret == "" || app.ClientSecret == "********" {
+				app.ClientSecret = existing.ClientSecret
+			}
+			if app.WebhookSecret == "" || app.WebhookSecret == "********" {
+				app.WebhookSecret = existing.WebhookSecret
+			}
+			if app.PrivateKey == "" || app.PrivateKey == "********" {
+				app.PrivateKey = existing.PrivateKey
+			}
+		}
+	}
+
 	cs, _ := r.vault.Encrypt(app.ClientSecret)
 	ws, _ := r.vault.Encrypt(app.WebhookSecret)
 	pk, _ := r.vault.Encrypt(app.PrivateKey)
