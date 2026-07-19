@@ -330,6 +330,17 @@ definitions:
           type: string
         type: array
     type: object
+  models.CreateWebhookRequest:
+    properties:
+      eventTypes:
+        items:
+          type: string
+        type: array
+      includePrEnvironments:
+        type: boolean
+      url:
+        type: string
+    type: object
   models.DatabaseEngine:
     enum:
     - postgres
@@ -740,25 +751,6 @@ definitions:
       value:
         type: string
     type: object
-  models.Webhook:
-    properties:
-      createdAt:
-        type: string
-      eventTypes:
-        items:
-          type: string
-        type: array
-      id:
-        type: string
-      includePrEnvironments:
-        type: boolean
-      serviceId:
-        type: string
-      updatedAt:
-        type: string
-      url:
-        type: string
-    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -905,7 +897,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.Webhook'
+          $ref: '#/definitions/models.CreateWebhookRequest'
       produces:
       - application/json
       responses: {}

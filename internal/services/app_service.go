@@ -9,6 +9,7 @@ import (
 
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/repositories"
+	"vessl.dev/vessl/internal/utils"
 )
 
 type AppService struct {
@@ -131,6 +132,19 @@ func (s *AppService) CreateWebhook(ctx context.Context, w *models.Webhook) (*mod
 	if w == nil || w.ServiceID == "" || w.URL == "" {
 		return nil, errors.New("valid webhook with serviceId and url required")
 	}
+
+	validURL, err := utils.ValidateURL(w.URL)
+	if err != nil {
+		return nil, err
+	}
+	w.URL = validURL
+
+	validEventTypes, err := utils.ValidateEventTypes(w.EventTypes)
+	if err != nil {
+		return nil, err
+	}
+	w.EventTypes = validEventTypes
+
 	if w.ID == "" {
 		w.ID = uuid.New().String()
 	}

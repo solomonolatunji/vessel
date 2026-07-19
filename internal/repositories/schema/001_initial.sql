@@ -207,6 +207,8 @@ CREATE TABLE IF NOT EXISTS service_webhooks (
 			updated_at DATETIME
 		);
 
+CREATE INDEX IF NOT EXISTS idx_service_webhooks_service_id_created_at ON service_webhooks(service_id, created_at DESC);
+
 CREATE TABLE IF NOT EXISTS serverless_functions_code (
 			id TEXT PRIMARY KEY,
 			service_id TEXT NOT NULL,
@@ -253,8 +255,18 @@ CREATE TABLE IF NOT EXISTS backup_configs (
 			storage_id TEXT,
 			s3_destination_id TEXT,
 			name TEXT NOT NULL,
+			description TEXT,
+			db_user TEXT,
+			db_password TEXT,
+			backup_enabled INTEGER DEFAULT 1,
+			s3_enabled INTEGER DEFAULT 0,
+			disable_local INTEGER DEFAULT 0,
 			schedule TEXT NOT NULL,
+			timezone TEXT DEFAULT 'UTC',
+			timeout INTEGER DEFAULT 3600,
 			retention_days INTEGER DEFAULT 7,
+			max_backups INTEGER DEFAULT 0,
+			max_storage_gb INTEGER DEFAULT 0,
 			status TEXT DEFAULT 'active',
 			created_at TEXT,
 			updated_at TEXT
@@ -278,6 +290,8 @@ CREATE TABLE IF NOT EXISTS s3_destinations (
 			id TEXT PRIMARY KEY,
 			project_id TEXT NOT NULL,
 			name TEXT NOT NULL,
+			description TEXT DEFAULT '',
+			provider TEXT DEFAULT 's3',
 			endpoint TEXT NOT NULL,
 			bucket TEXT NOT NULL,
 			region TEXT NOT NULL,
@@ -365,6 +379,24 @@ CREATE TABLE IF NOT EXISTS oauth_providers (
 			redirect_uri TEXT DEFAULT '',
 			base_url TEXT DEFAULT '',
 			tenant TEXT DEFAULT '',
-			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 		);
+
+CREATE INDEX IF NOT EXISTS idx_domains_project_id ON domains(project_id);
+CREATE INDEX IF NOT EXISTS idx_env_vars_project_id ON env_vars(project_id);
+CREATE INDEX IF NOT EXISTS idx_jobs_project_id ON jobs(project_id);
+CREATE INDEX IF NOT EXISTS idx_user_git_providers_user_id ON user_git_providers(user_id);
+CREATE INDEX IF NOT EXISTS idx_environments_project_id ON environments(project_id);
+CREATE INDEX IF NOT EXISTS idx_app_services_project_id ON app_services(project_id);
+CREATE INDEX IF NOT EXISTS idx_app_services_environment_id ON app_services(environment_id);
+CREATE INDEX IF NOT EXISTS idx_deployments_service_id ON deployments(service_id);
+CREATE INDEX IF NOT EXISTS idx_deployments_project_id ON deployments(project_id);
+CREATE INDEX IF NOT EXISTS idx_pr_previews_service_id ON pr_previews(service_id);
+CREATE INDEX IF NOT EXISTS idx_service_vars_service_id ON service_vars(service_id);
+CREATE INDEX IF NOT EXISTS idx_project_tokens_project_id ON project_tokens(project_id);
+CREATE INDEX IF NOT EXISTS idx_project_members_project_id ON project_members(project_id);
+CREATE INDEX IF NOT EXISTS idx_project_members_user_id ON project_members(user_id);
+CREATE INDEX IF NOT EXISTS idx_backup_configs_project_id ON backup_configs(project_id);
+CREATE INDEX IF NOT EXISTS idx_backup_records_backup_config_id ON backup_records(backup_config_id);
+CREATE INDEX IF NOT EXISTS idx_s3_destinations_project_id ON s3_destinations(project_id);
+

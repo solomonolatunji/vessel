@@ -220,7 +220,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Webhook"
+                            "$ref": "#/definitions/models.CreateWebhookRequest"
                         }
                     }
                 ],
@@ -3945,6 +3945,23 @@ const docTemplate = `{
                 }
             }
         },
+        "models.CreateWebhookRequest": {
+            "type": "object",
+            "properties": {
+                "eventTypes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "includePrEnvironments": {
+                    "type": "boolean"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
         "models.DatabaseEngine": {
             "type": "string",
             "enum": [
@@ -4541,35 +4558,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "value": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.Webhook": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "eventTypes": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "id": {
-                    "type": "string"
-                },
-                "includePrEnvironments": {
-                    "type": "boolean"
-                },
-                "serviceId": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "url": {
                     "type": "string"
                 }
             }
