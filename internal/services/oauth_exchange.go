@@ -86,7 +86,7 @@ var providerConfigs = map[string]oauthConfig{
 		TokenURLBuilder: func(p *models.OAuthProviderConfig) string { return "https://oauth2.googleapis.com/token" },
 		UserURLBuilder:  func(p *models.OAuthProviderConfig) string { return "https://openidconnect.googleapis.com/v1/userinfo" },
 	},
-	"azuread": {
+	"microsoft": {
 		AuthURLBuilder: func(p *models.OAuthProviderConfig, state string) string {
 			tenant := p.Tenant
 			if tenant == "" {
@@ -165,9 +165,18 @@ var providerConfigs = map[string]oauthConfig{
 	},
 }
 
+func normalizeProviderName(name string) string {
+	n := strings.ToLower(name)
+	if n == "azuread" {
+		return "microsoft"
+	}
+	return n
+}
+
 func ExchangeCode(p *models.OAuthProviderConfig, code string) (string, error) {
 	client := &http.Client{Timeout: 10 * time.Second}
-	cfg, ok := providerConfigs[strings.ToLower(p.ProviderName)]
+	providerName := normalizeProviderName(p.ProviderName)
+	cfg, ok := providerConfigs[providerName]
 	if !ok || (cfg.ExchangeFunc == nil && cfg.TokenURLBuilder == nil) {
 		return "", fmt.Errorf("unsupported oauth provider for exchange: %s", p.ProviderName)
 	}
@@ -178,7 +187,8 @@ func GetAuthorizationURL(p *models.OAuthProviderConfig, state string) (string, e
 	if !p.Enabled || p.ClientID == "" {
 		return "", fmt.Errorf("oauth provider %s is not enabled or configured", p.ProviderName)
 	}
-	cfg, ok := providerConfigs[strings.ToLower(p.ProviderName)]
+	providerName := normalizeProviderName(p.ProviderName)
+	cfg, ok := providerConfigs[providerName]
 	if !ok || cfg.AuthURLBuilder == nil {
 		return "", fmt.Errorf("unsupported oauth provider: %s", p.ProviderName)
 	}

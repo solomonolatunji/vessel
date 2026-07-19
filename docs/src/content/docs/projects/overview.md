@@ -45,7 +45,7 @@ Set environment variables per environment:
 
 ## Canvas View
 
-The **Canvas** provides a visual overview of your environment — a Railway-inspired node graph showing how apps, databases, and storage connect:
+The **Canvas** provides a visual overview of your environment — a node graph showing how apps, databases, and storage connect:
 
 - **Service Nodes**: Each running service with status indicators.
 - **Database Nodes**: Connected database instances.

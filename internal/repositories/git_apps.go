@@ -19,16 +19,6 @@ type GitAppRepository interface {
 	GetGithubApp(ctx context.Context, id string) (*models.GithubApp, error)
 	SaveGithubApp(ctx context.Context, app *models.GithubApp) error
 	DeleteGithubApp(ctx context.Context, id string) error
-
-	ListGitlabApps(ctx context.Context) ([]models.GitlabApp, error)
-	GetGitlabApp(ctx context.Context, id string) (*models.GitlabApp, error)
-	SaveGitlabApp(ctx context.Context, app *models.GitlabApp) error
-	DeleteGitlabApp(ctx context.Context, id string) error
-
-	ListBitbucketApps(ctx context.Context) ([]models.BitbucketApp, error)
-	GetBitbucketApp(ctx context.Context, id string) (*models.BitbucketApp, error)
-	SaveBitbucketApp(ctx context.Context, app *models.BitbucketApp) error
-	DeleteBitbucketApp(ctx context.Context, id string) error
 }
 
 type GitAppRepo struct {
@@ -41,6 +31,9 @@ func NewGitAppRepo(db *sql.DB, vault Vault) *GitAppRepo {
 }
 
 func saveApp(ctx context.Context, db *sqlx.DB, tableName string, columns []string, values []any) error {
+	if tableName != "github_apps" {
+		return errors.New("invalid table name")
+	}
 	placeholders := make([]string, len(columns))
 	updates := make([]string, len(columns))
 	for i, col := range columns {
@@ -70,6 +63,9 @@ func saveApp(ctx context.Context, db *sqlx.DB, tableName string, columns []strin
 }
 
 func deleteApp(ctx context.Context, db *sqlx.DB, tableName, id string) error {
+	if tableName != "github_apps" {
+		return errors.New("invalid table name")
+	}
 	_, err := db.ExecContext(ctx, fmt.Sprintf("DELETE FROM %s WHERE id = ?", tableName), id)
 	return err
 }
@@ -123,98 +119,4 @@ func (r *GitAppRepo) SaveGithubApp(ctx context.Context, app *models.GithubApp) e
 
 func (r *GitAppRepo) DeleteGithubApp(ctx context.Context, id string) error {
 	return deleteApp(ctx, r.db, "github_apps", id)
-}
-
-func (r *GitAppRepo) ListGitlabApps(ctx context.Context) ([]models.GitlabApp, error) {
-	query := `SELECT id, name, app_id, api_url, is_public, created_at, updated_at FROM gitlab_apps`
-	var apps []models.GitlabApp
-	if err := r.db.SelectContext(ctx, &apps, query); err != nil {
-		return nil, err
-	}
-	if apps == nil {
-		apps = make([]models.GitlabApp, 0)
-	}
-	return apps, nil
-}
-
-func (r *GitAppRepo) GetGitlabApp(ctx context.Context, id string) (*models.GitlabApp, error) {
-	query := `SELECT id, name, app_id, app_secret, webhook_secret, api_url, is_public, created_at, updated_at FROM gitlab_apps WHERE id = ?`
-	var a models.GitlabApp
-	if err := r.db.GetContext(ctx, &a, query, id); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, utils.NewNotFoundError("GitlabApp", id)
-		}
-		return nil, err
-	}
-	if as, err := r.vault.Decrypt(a.AppSecret); err == nil && as != "" {
-		a.AppSecret = as
-	}
-	if ws, err := r.vault.Decrypt(a.WebhookSecret); err == nil && ws != "" {
-		a.WebhookSecret = ws
-	}
-	return &a, nil
-}
-
-func (r *GitAppRepo) SaveGitlabApp(ctx context.Context, app *models.GitlabApp) error {
-	as, _ := r.vault.Encrypt(app.AppSecret)
-	ws, _ := r.vault.Encrypt(app.WebhookSecret)
-	if app.CreatedAt.IsZero() {
-		app.CreatedAt = time.Now()
-	}
-	app.UpdatedAt = time.Now()
-
-	cols := []string{"id", "name", "app_id", "app_secret", "webhook_secret", "api_url", "is_public", "created_at", "updated_at"}
-	vals := []any{app.ID, app.Name, app.AppID, as, ws, app.APIURL, app.IsPublic, app.CreatedAt, app.UpdatedAt}
-	return saveApp(ctx, r.db, "gitlab_apps", cols, vals)
-}
-
-func (r *GitAppRepo) DeleteGitlabApp(ctx context.Context, id string) error {
-	return deleteApp(ctx, r.db, "gitlab_apps", id)
-}
-
-func (r *GitAppRepo) ListBitbucketApps(ctx context.Context) ([]models.BitbucketApp, error) {
-	query := `SELECT id, name, owner, client_id, is_public, created_at, updated_at FROM bitbucket_apps`
-	var apps []models.BitbucketApp
-	if err := r.db.SelectContext(ctx, &apps, query); err != nil {
-		return nil, err
-	}
-	if apps == nil {
-		apps = make([]models.BitbucketApp, 0)
-	}
-	return apps, nil
-}
-
-func (r *GitAppRepo) GetBitbucketApp(ctx context.Context, id string) (*models.BitbucketApp, error) {
-	query := `SELECT id, name, owner, client_id, client_secret, webhook_secret, is_public, created_at, updated_at FROM bitbucket_apps WHERE id = ?`
-	var a models.BitbucketApp
-	if err := r.db.GetContext(ctx, &a, query, id); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, utils.NewNotFoundError("BitbucketApp", id)
-		}
-		return nil, err
-	}
-	if cs, err := r.vault.Decrypt(a.ClientSecret); err == nil && cs != "" {
-		a.ClientSecret = cs
-	}
-	if ws, err := r.vault.Decrypt(a.WebhookSecret); err == nil && ws != "" {
-		a.WebhookSecret = ws
-	}
-	return &a, nil
-}
-
-func (r *GitAppRepo) SaveBitbucketApp(ctx context.Context, app *models.BitbucketApp) error {
-	cs, _ := r.vault.Encrypt(app.ClientSecret)
-	ws, _ := r.vault.Encrypt(app.WebhookSecret)
-	if app.CreatedAt.IsZero() {
-		app.CreatedAt = time.Now()
-	}
-	app.UpdatedAt = time.Now()
-
-	cols := []string{"id", "name", "owner", "client_id", "client_secret", "webhook_secret", "is_public", "created_at", "updated_at"}
-	vals := []any{app.ID, app.Name, app.Owner, app.ClientID, cs, ws, app.IsPublic, app.CreatedAt, app.UpdatedAt}
-	return saveApp(ctx, r.db, "bitbucket_apps", cols, vals)
-}
-
-func (r *GitAppRepo) DeleteBitbucketApp(ctx context.Context, id string) error {
-	return deleteApp(ctx, r.db, "bitbucket_apps", id)
 }

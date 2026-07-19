@@ -83,11 +83,7 @@ export default defineConfig({
         },
         {
           label: 'Migration',
-          items: [
-            { label: 'Vessl Bundles', slug: 'migration/vessl-bundles' },
-            { label: 'Railway Import', slug: 'migration/railway-import' },
-            { label: 'Vercel Import', slug: 'migration/vercel-import' },
-          ],
+          items: [{ label: 'Vessl Bundles', slug: 'migration/vessl-bundles' }],
         },
         {
           label: 'Operations',

@@ -51,9 +51,9 @@ func (s *GitService) SaveProvider(ctx context.Context, gp *models.GitProviderCon
 
 func (s *GitService) ConnectProvider(ctx context.Context, userID string, req *models.GitConnectRequest) (*models.GitProviderConfig, error) {
 	switch req.Provider {
-	case "github", "gitlab":
+	case "github":
 	default:
-		return nil, errors.New("unsupported git provider; must be 'github' or 'gitlab'")
+		return nil, errors.New("unsupported git provider; must be 'github'")
 	}
 	if req.AccessToken == "" {
 		return nil, errors.New("access token is required")
@@ -88,7 +88,7 @@ func (s *GitService) GetConnectedProviders(ctx context.Context, userID string) (
 		providerMap[gp.Provider] = gp
 	}
 	var results []map[string]any
-	for _, provider := range []string{"github", "gitlab"} {
+	for _, provider := range []string{"github"} {
 		if gp, ok := providerMap[provider]; ok && gp != nil {
 			results = append(results, map[string]any{
 				"provider":    provider,
@@ -142,8 +142,6 @@ func (s *GitService) ListRepositories(ctx context.Context, userID, provider stri
 	switch provider {
 	case "github":
 		return s.listGitHubRepos(ctx, gp.AccessToken)
-	case "gitlab":
-		return s.listGitLabRepos(ctx, gp.AccessToken)
 	default:
 		return nil, errors.New("unsupported provider: " + provider)
 	}
@@ -200,38 +198,6 @@ func (s *GitService) listGitHubRepos(ctx context.Context, token string) ([]model
 			Name:          r.Name,
 			FullName:      r.FullName,
 			Private:       r.Private,
-			CloneURL:      r.CloneURL,
-			HTMLURL:       r.HTMLURL,
-			DefaultBranch: r.Default,
-		})
-	}
-	return results, nil
-}
-
-func (s *GitService) listGitLabRepos(ctx context.Context, token string) ([]models.GitRepository, error) {
-	reqURL := "https://gitlab.com/api/v4/projects?membership=true&per_page=100&order_by=updated_at"
-	var glRepos []struct {
-		ID         int64  `json:"id"`
-		Name       string `json:"name"`
-		FullName   string `json:"path_with_namespace"`
-		Visibility string `json:"visibility"`
-		CloneURL   string `json:"http_url_to_repo"`
-		HTMLURL    string `json:"web_url"`
-		Default    string `json:"default_branch"`
-	}
-
-	err := s.fetchGitAPI(ctx, reqURL, token, nil, &glRepos)
-	if err != nil {
-		return nil, fmt.Errorf("gitlab: %w", err)
-	}
-
-	var results []models.GitRepository
-	for _, r := range glRepos {
-		results = append(results, models.GitRepository{
-			ID:            r.ID,
-			Name:          r.Name,
-			FullName:      r.FullName,
-			Private:       r.Visibility == "private",
 			CloneURL:      r.CloneURL,
 			HTMLURL:       r.HTMLURL,
 			DefaultBranch: r.Default,
@@ -314,8 +280,6 @@ func (s *GitService) injectAuthTokenIfAvailable(ctx context.Context, repoURL str
 	var provider string
 	if strings.Contains(u.Host, "github.com") {
 		provider = "github"
-	} else if strings.Contains(u.Host, "gitlab.com") {
-		provider = "gitlab"
 	} else {
 		return repoURL
 	}
@@ -326,8 +290,6 @@ func (s *GitService) injectAuthTokenIfAvailable(ctx context.Context, repoURL str
 	switch provider {
 	case "github":
 		u.User = url.UserPassword("x-access-token", gp.AccessToken)
-	case "gitlab":
-		u.User = url.UserPassword("oauth2", gp.AccessToken)
 	}
 	return u.String()
 }

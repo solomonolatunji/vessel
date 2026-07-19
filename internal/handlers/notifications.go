@@ -18,27 +18,71 @@ func NewNotificationSettingsHandler(s *services.NotificationSettingsService) *No
 	return &NotificationSettingsHandler{notifSettingsService: s}
 }
 
+func maskNotificationSecrets(s *models.NotificationSettings) {
+	if s.SMTPPassword != "" {
+		s.SMTPPassword = "********"
+	}
+	if s.ResendAPIKey != "" {
+		s.ResendAPIKey = "********"
+	}
+	if s.TelegramBotToken != "" {
+		s.TelegramBotToken = "********"
+	}
+	if s.PushoverAPIToken != "" {
+		s.PushoverAPIToken = "********"
+	}
+	if s.SlackWebhookURL != "" {
+		s.SlackWebhookURL = "********"
+	}
+}
+
 func (h *NotificationSettingsHandler) GetNotificationSettings(c echo.Context) error {
 	s, err := h.notifSettingsService.GetNotificationSettings(c.Request().Context())
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
-	return utils.Success(c, "Operation successful", s)
+
+	masked := *s
+	maskNotificationSecrets(&masked)
+	return utils.Success(c, "Operation successful", masked)
 }
 
 func (h *NotificationSettingsHandler) UpdateNotificationSettings(c echo.Context) error {
-	var req models.UpdateNotificationSettingsRequest
-	if err := c.Bind(&req); err != nil {
+	existing, err := h.notifSettingsService.GetNotificationSettings(c.Request().Context())
+	if err != nil {
+		return utils.Error(c, http.StatusInternalServerError, "failed to fetch existing notification settings")
+	}
+
+	realSMTP := existing.SMTPPassword
+	realResend := existing.ResendAPIKey
+	realTelegram := existing.TelegramBotToken
+	realPushover := existing.PushoverAPIToken
+	realSlack := existing.SlackWebhookURL
+
+	if err := c.Bind(existing); err != nil {
 		return utils.Error(c, http.StatusBadRequest, err.Error())
 	}
 
-	if err := h.notifSettingsService.UpdateNotificationSettings(c.Request().Context(), &req.NotificationSettings); err != nil {
+	if existing.SMTPPassword == "********" {
+		existing.SMTPPassword = realSMTP
+	}
+	if existing.ResendAPIKey == "********" {
+		existing.ResendAPIKey = realResend
+	}
+	if existing.TelegramBotToken == "********" {
+		existing.TelegramBotToken = realTelegram
+	}
+	if existing.PushoverAPIToken == "********" {
+		existing.PushoverAPIToken = realPushover
+	}
+	if existing.SlackWebhookURL == "********" {
+		existing.SlackWebhookURL = realSlack
+	}
+
+	if err := h.notifSettingsService.UpdateNotificationSettings(c.Request().Context(), existing); err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 
-	updated, err := h.notifSettingsService.GetNotificationSettings(c.Request().Context())
-	if err != nil {
-		return utils.Error(c, http.StatusInternalServerError, err.Error())
-	}
-	return utils.Success(c, "Notification settings updated successfully", updated)
+	maskNotificationSecrets(existing)
+	return utils.Success(c, "Notification settings updated successfully", existing)
 }

@@ -15,8 +15,8 @@ export const useCreate = () => {
       serviceId: string;
       payload: Parameters<typeof serviceVarsService.create>[1];
     }) => serviceVarsService.create(payload.serviceId, payload.payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['serviceVars'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['serviceVars'] });
     },
   });
 };
@@ -29,8 +29,8 @@ export const useUpdate = () => {
       id: string;
       payload: Parameters<typeof serviceVarsService.update>[2];
     }) => serviceVarsService.update(payload.serviceId, payload.id, payload.payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['serviceVars'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['serviceVars'] });
     },
   });
 };
@@ -40,8 +40,8 @@ export const useDelete = () => {
   return useMutation({
     mutationFn: (payload: { serviceId: string; id: string }) =>
       serviceVarsService.delete(payload.serviceId, payload.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['serviceVars'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['serviceVars'] });
     },
   });
 };

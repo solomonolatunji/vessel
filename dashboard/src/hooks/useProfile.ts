@@ -13,8 +13,26 @@ export const useUpdateProfile = () => {
   return useMutation({
     mutationFn: (payload: Parameters<typeof profileService.updateProfile>[0]) =>
       profileService.updateProfile(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['profile'] });
+    },
+  });
+};
+
+export const useRequestEmailChange = () => {
+  return useMutation({
+    mutationFn: (payload: Parameters<typeof profileService.requestEmailChange>[0]) =>
+      profileService.requestEmailChange(payload),
+  });
+};
+
+export const useVerifyEmailChange = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: Parameters<typeof profileService.verifyEmailChange>[0]) =>
+      profileService.verifyEmailChange(payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
   });
 };
@@ -38,8 +56,8 @@ export const useCreateToken = () => {
   return useMutation({
     mutationFn: (payload: { payload: Parameters<typeof profileService.createToken>[0] }) =>
       profileService.createToken(payload.payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
   });
 };
@@ -48,8 +66,8 @@ export const useDeleteToken = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: { id: string }) => profileService.deleteToken(payload.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
   });
 };

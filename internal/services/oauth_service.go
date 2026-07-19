@@ -2,7 +2,10 @@ package services
 
 import (
 	"context"
+	"database/sql"
 	"errors"
+	"fmt"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -12,9 +15,11 @@ import (
 )
 
 type OAuthService struct {
-	oauthRepo    repositories.OAuthRepository
-	userRepo     repositories.UserRepository
-	tokenService *TokenService
+	oauthRepo       repositories.OAuthRepository
+	userRepo        repositories.UserRepository
+	tokenService    *TokenService
+	pendingTOTP     sync.Map
+	pendingRecovery sync.Map
 }
 
 func NewOAuthService(or repositories.OAuthRepository, ur repositories.UserRepository, ts *TokenService) *OAuthService {
@@ -55,7 +60,21 @@ func (s *OAuthService) SaveProvider(ctx context.Context, p *models.OAuthProvider
 	if p == nil || p.ProviderName == "" {
 		return errors.New("valid provider required")
 	}
-	if p.ID == "" {
+	existing, err := s.oauthRepo.GetProvider(ctx, p.ProviderName)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return fmt.Errorf("failed to get provider: %w", err)
+	}
+	if existing != nil {
+		if p.ID == "" {
+			p.ID = existing.ID
+		}
+		if p.ClientSecret == "" {
+			p.ClientSecret = existing.ClientSecret
+		}
+		if p.CreatedAt.IsZero() {
+			p.CreatedAt = existing.CreatedAt
+		}
+	} else if p.ID == "" {
 		p.ID = uuid.New().String()
 	}
 	now := time.Now()
@@ -125,25 +144,55 @@ func (s *OAuthService) Setup2FA(ctx context.Context, userID, email string) (*mod
 	if err != nil {
 		return nil, errors.New("failed generating recovery codes")
 	}
-	if err := s.oauthRepo.UpdateUserTOTP(ctx, userID, false, secret, recoveryCodes); err != nil {
-		return nil, err
-	}
+	s.pendingTOTP.Store(userID, secret)
+	s.pendingRecovery.Store(userID, recoveryCodes)
+
 	return &models.TwoFASetupResponse{
-		Secret:        secret,
 		QRCodeURI:     GenerateTOTPQRUri(email, secret),
 		RecoveryCodes: recoveryCodes,
 	}, nil
 }
 
 func (s *OAuthService) Verify2FA(ctx context.Context, userID, passcode string) error {
-	secret, recoveryCodes, err := s.oauthRepo.GetUserTOTPSecret(ctx, userID)
-	if err != nil || secret == "" {
-		return errors.New("totp setup has not been initiated for this user")
+	secretAny, ok := s.pendingTOTP.Load(userID)
+	if !ok {
+		return errors.New("totp setup has not been initiated or has expired")
 	}
+	secret := secretAny.(string)
+
 	if !ValidateTOTP(secret, passcode) {
 		return errors.New("invalid 6-digit totp verification code")
 	}
-	return s.oauthRepo.UpdateUserTOTP(ctx, userID, true, secret, recoveryCodes)
+
+	recoveryAny, ok := s.pendingRecovery.Load(userID)
+	if !ok {
+		return errors.New("recovery codes missing")
+	}
+	recoveryCodes, ok := recoveryAny.([]string)
+	if !ok {
+		return errors.New("invalid recovery codes format")
+	}
+
+	err := s.oauthRepo.UpdateUserTOTP(ctx, userID, true, secret, recoveryCodes)
+	if err == nil {
+		s.pendingTOTP.Delete(userID)
+		s.pendingRecovery.Delete(userID)
+	}
+	return err
+}
+
+func (s *OAuthService) Validate2FA(ctx context.Context, userID, passcode string) error {
+	secret, _, err := s.oauthRepo.GetUserTOTPSecret(ctx, userID)
+	if err != nil {
+		return errors.New("failed to get totp secret")
+	}
+	if secret == "" {
+		return errors.New("2fa is not enabled")
+	}
+	if !ValidateTOTP(secret, passcode) {
+		return errors.New("invalid passcode")
+	}
+	return nil
 }
 
 func (s *OAuthService) Disable2FA(ctx context.Context, userID string) error {

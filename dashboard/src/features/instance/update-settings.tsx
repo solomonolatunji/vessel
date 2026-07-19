@@ -34,19 +34,18 @@ export const UpdatesPage = () => {
 
   return (
     <div className="space-y-6">
-      {/* Top Section */}
-      <div className="flex flex-col justify-between gap-6 pb-2 md:flex-row md:items-start">
-        <div className="flex-1 space-y-4">
-          <div className="space-y-1">
-            <p className="font-bold text-[10px] text-muted-foreground uppercase tracking-[0.15em]">
-              UPDATES
-            </p>
-            <h1 className="font-bold text-3xl tracking-tight">Vessl release channel</h1>
+      <div className="mb-5 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary">
+            <RefreshCw className="h-6 w-6" />
           </div>
-          <p className="text-muted-foreground text-sm leading-relaxed">
-            Compare this install with the official Vessl releases, review changelogs, and update the
-            daemon when you are ready.
-          </p>
+          <div>
+            <h1 className="font-bold text-xl">Vessl release channel</h1>
+            <p className="text-muted-foreground text-sm">
+              Compare this install with the official Vessl releases, review changelogs, and update
+              the daemon when you are ready.
+            </p>
+          </div>
         </div>
 
         <div className="flex shrink-0 flex-col items-end gap-4">
@@ -95,7 +94,6 @@ export const UpdatesPage = () => {
         </div>
       </div>
 
-      {/* Main Status Banner */}
       {!isLoading && (
         <div className="flex flex-col items-center justify-center space-y-6 rounded-2xl border border-border/50 bg-card/40 px-6 py-12 text-center">
           <div

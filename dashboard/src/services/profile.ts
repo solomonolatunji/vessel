@@ -2,7 +2,9 @@ import type { BaseResponse } from '#/interfaces/base';
 import type {
   ChangePasswordRequest,
   GetProfileResponse,
+  RequestEmailChangeRequest,
   UpdateProfileRequest,
+  VerifyEmailChangeRequest,
 } from '#/interfaces/profile';
 import type { CreatePATRequest, CreatePATResponse, PersonalAccessToken } from '#/interfaces/users';
 import { apiClient } from '#/lib/apiClient';
@@ -23,6 +25,22 @@ export const profileService = {
   updateProfile: async (payload: UpdateProfileRequest): Promise<void> => {
     try {
       await apiClient.put('/profile', payload);
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  requestEmailChange: async (payload: RequestEmailChangeRequest): Promise<void> => {
+    try {
+      await apiClient.post('/profile/email/request', payload);
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  verifyEmailChange: async (payload: VerifyEmailChangeRequest): Promise<void> => {
+    try {
+      await apiClient.post('/profile/email/verify', payload);
     } catch (error) {
       throw handleApiError(error);
     }

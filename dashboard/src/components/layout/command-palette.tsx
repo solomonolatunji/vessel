@@ -3,7 +3,6 @@ import { Command } from 'cmdk';
 import {
   Bell,
   CornerDownLeft,
-  Database,
   FileClock,
   FileCog,
   FolderKanban,
@@ -16,7 +15,6 @@ import {
   Search,
   Settings,
   Terminal,
-  UploadCloud,
   Users,
 } from 'lucide-react';
 import { useEffect } from 'react';
@@ -42,12 +40,6 @@ const navigationItems = [
     icon: FolderKanban,
   },
   {
-    label: 'Databases',
-    description: 'Persistent services',
-    to: '/databases',
-    icon: Database,
-  },
-  {
     label: 'Teams',
     description: 'Access and ownership',
     to: '/teams',
@@ -58,12 +50,6 @@ const navigationItems = [
     description: 'Starter workloads',
     to: '/templates',
     icon: LayoutTemplate,
-  },
-  {
-    label: 'Import Railway',
-    description: 'Migration workflow',
-    to: '/imports/railway',
-    icon: UploadCloud,
   },
   {
     label: 'Notifications',

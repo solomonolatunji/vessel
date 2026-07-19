@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
+	"path/filepath"
 
 	"github.com/labstack/echo/v4"
 
@@ -34,6 +36,9 @@ func (h *BackupHandler) List(c echo.Context) error {
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
+	for i := range list {
+		list[i].DbPassword = "********"
+	}
 	return utils.Success(c, "Operation successful", list)
 }
 
@@ -55,6 +60,108 @@ func (h *BackupHandler) Create(c echo.Context) error {
 	return utils.Created(c, "Created successfully", cfg)
 }
 
+// @Summary Update Backup
+// @Description Update Backup
+// @Tags Backups
+// @Accept json
+// @Produce json
+// @Param id path string true "Backup ID"
+// @Param request body models.BackupConfig true "Payload"
+// @Router /backups/{id} [put]
+func (h *BackupHandler) Update(c echo.Context) error {
+	id := c.Param("id")
+
+	existing, err := h.backupService.GetConfig(c.Request().Context(), id)
+	if err != nil || existing == nil {
+		var notFoundErr *utils.NotFoundError
+		if err != nil && !errors.As(err, &notFoundErr) {
+			return utils.Error(c, http.StatusInternalServerError, err.Error())
+		}
+		return utils.Error(c, http.StatusNotFound, "backup config not found")
+	}
+
+	if tokenProjID, ok := c.Get("project_id").(string); ok && tokenProjID != "" {
+		if tokenProjID != existing.ProjectID {
+			return utils.Error(c, http.StatusForbidden, "permission denied for this project")
+		}
+	}
+
+	var req struct {
+		Name            string `json:"name"`
+		Description     string `json:"description"`
+		DbUser          string `json:"dbUser"`
+		DbPassword      string `json:"dbPassword"`
+		Schedule        string `json:"schedule"`
+		Timezone        string `json:"timezone"`
+		Timeout         int    `json:"timeout"`
+		RetentionDays   int    `json:"retentionDays"`
+		MaxBackups      int    `json:"maxBackups"`
+		MaxStorageGB    int    `json:"maxStorageGB"`
+		S3DestinationID string `json:"s3DestinationId"`
+		DatabaseID      string `json:"databaseId"`
+		BackupEnabled   *bool  `json:"backupEnabled"`
+		S3Enabled       *bool  `json:"s3Enabled"`
+		DisableLocal    *bool  `json:"disableLocal"`
+	}
+	if err := c.Bind(&req); err != nil {
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
+	}
+
+	if req.Name != "" {
+		existing.Name = req.Name
+	}
+	if req.Description != "" {
+		existing.Description = req.Description
+	}
+	if req.DbUser != "" {
+		existing.DbUser = req.DbUser
+	}
+	if req.DbPassword != "" {
+		existing.DbPassword = req.DbPassword
+	}
+	if req.Schedule != "" {
+		existing.Schedule = req.Schedule
+	}
+	if req.Timezone != "" {
+		existing.Timezone = req.Timezone
+	}
+	if req.Timeout != 0 {
+		existing.Timeout = req.Timeout
+	}
+	if req.RetentionDays != 0 {
+		existing.RetentionDays = req.RetentionDays
+	}
+	if req.MaxBackups != 0 {
+		existing.MaxBackups = req.MaxBackups
+	}
+	if req.MaxStorageGB != 0 {
+		existing.MaxStorageGB = req.MaxStorageGB
+	}
+	if req.S3DestinationID != "" {
+		existing.S3DestinationID = req.S3DestinationID
+	}
+	if req.DatabaseID != "" {
+		existing.DatabaseID = req.DatabaseID
+	}
+
+	if req.BackupEnabled != nil {
+		existing.BackupEnabled = *req.BackupEnabled
+	}
+	if req.S3Enabled != nil {
+		existing.S3Enabled = *req.S3Enabled
+	}
+	if req.DisableLocal != nil {
+		existing.DisableLocal = *req.DisableLocal
+	}
+
+	if err := h.backupService.UpdateConfig(c.Request().Context(), existing); err != nil {
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
+	}
+
+	existing.DbPassword = "********"
+	return utils.Success(c, "Updated successfully", existing)
+}
+
 // @Summary Get Backup
 // @Description Get Backup
 // @Tags Backups
@@ -69,8 +176,13 @@ func (h *BackupHandler) Get(c echo.Context) error {
 	}
 	cfg, err := h.backupService.GetConfig(c.Request().Context(), id)
 	if err != nil || cfg == nil {
+		var notFoundErr *utils.NotFoundError
+		if err != nil && !errors.As(err, &notFoundErr) {
+			return utils.Error(c, http.StatusInternalServerError, err.Error())
+		}
 		return utils.Error(c, http.StatusNotFound, "backup config not found")
 	}
+	cfg.DbPassword = "********"
 	return utils.Success(c, "Operation successful", cfg)
 }
 
@@ -118,6 +230,7 @@ func (h *BackupHandler) Trigger(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
+// @Router /backups/{id}/records [get]
 func (h *BackupHandler) ListRecords(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -128,6 +241,60 @@ func (h *BackupHandler) ListRecords(c echo.Context) error {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 	return utils.Success(c, "Operation successful", recs)
+}
+
+// @Summary Download Backup Record
+// @Description Download Backup Record
+// @Tags Backups
+// @Accept json
+// @Produce application/octet-stream
+// @Param id path string true "Backup ID"
+// @Param recordId path string true "Record ID"
+// @Router /backups/{id}/records/{recordId}/download [get]
+func (h *BackupHandler) DownloadRecord(c echo.Context) error {
+	id := c.Param("id")
+	recordID := c.Param("recordId")
+	if id == "" || recordID == "" {
+		return utils.Error(c, http.StatusBadRequest, "missing id or recordId parameter")
+	}
+	rec, err := h.backupService.GetRecord(c.Request().Context(), recordID)
+	if err != nil || rec == nil {
+		return utils.Error(c, http.StatusNotFound, "record not found")
+	}
+	if rec.BackupConfigID != id {
+		return utils.Error(c, http.StatusNotFound, "record not found")
+	}
+	if rec.FilePath == "" {
+		return utils.Error(c, http.StatusNotFound, "local backup file not available")
+	}
+	return c.Attachment(rec.FilePath, filepath.Base(rec.FilePath))
+}
+
+// @Summary Delete Backup Record
+// @Description Delete Backup Record
+// @Tags Backups
+// @Accept json
+// @Produce json
+// @Param id path string true "Backup ID"
+// @Param recordId path string true "Record ID"
+// @Router /backups/{id}/records/{recordId} [delete]
+func (h *BackupHandler) DeleteRecord(c echo.Context) error {
+	id := c.Param("id")
+	recordID := c.Param("recordId")
+	if id == "" || recordID == "" {
+		return utils.Error(c, http.StatusBadRequest, "missing id or recordId parameter")
+	}
+	rec, err := h.backupService.GetRecord(c.Request().Context(), recordID)
+	if err != nil || rec == nil {
+		return utils.Error(c, http.StatusNotFound, "record not found")
+	}
+	if rec.BackupConfigID != id {
+		return utils.Error(c, http.StatusNotFound, "record not found")
+	}
+	if err := h.backupService.DeleteRecord(c.Request().Context(), recordID); err != nil {
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
+	}
+	return c.NoContent(http.StatusNoContent)
 }
 
 // @Summary Restore endpoint
@@ -173,6 +340,7 @@ func (h *BackupHandler) ListS3Destinations(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param request body models.S3Destination true "Payload"
+// @Router /s3-destinations [post]
 func (h *BackupHandler) CreateS3Destination(c echo.Context) error {
 	var dest models.S3Destination
 	if err := c.Bind(&dest); err != nil {

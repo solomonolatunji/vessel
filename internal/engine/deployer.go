@@ -34,20 +34,6 @@ func NewDeployer(dockerClient *client.Client, s DeployerStore) *Deployer {
 	}
 }
 
-func (d *Deployer) Deploy(ctx context.Context, project *models.ProjectConfig, sourceDir string, logWriter io.Writer) (string, error) {
-	apps, err := d.store.ListAppServicesByProject(project.ID)
-	if err == nil && len(apps) > 0 {
-		return d.DeployAppService(ctx, apps[0], sourceDir, logWriter)
-	}
-	syntheticApp := &models.AppService{
-		ID:           project.ID,
-		ProjectID:    project.ID,
-		Name:         project.Name,
-		InternalPort: defaultAppPort(),
-	}
-	return d.DeployAppService(ctx, syntheticApp, sourceDir, logWriter)
-}
-
 func (d *Deployer) DeployAppService(ctx context.Context, app *models.AppService, sourceDir string, logWriter io.Writer) (string, error) {
 	if logWriter != nil {
 		fmt.Fprintf(logWriter, "🚀 [Deployer] Starting deployment for service: %s (ID: %s)\n", app.Name, app.ID)

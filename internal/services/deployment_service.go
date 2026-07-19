@@ -170,25 +170,6 @@ func (s *DeploymentService) DeployAppService(ctx context.Context, appID, sourceD
 	return containerID, err
 }
 
-func (s *DeploymentService) DeployProject(ctx context.Context, projectID, sourceDir string, logWriter io.Writer) (string, error) {
-	if s.deployer == nil || s.projectRepo == nil {
-		return "", errors.New("deployer or project repo not available")
-	}
-	project, err := s.projectRepo.Get(ctx, projectID)
-	if err != nil {
-		return "", err
-	}
-	containerID, err := s.deployer.Deploy(ctx, project, sourceDir, logWriter)
-	if err == nil && containerID != "" {
-		apps, appErr := s.appRepo.ListByProject(ctx, projectID)
-		if appErr == nil && len(apps) > 0 {
-			apps[0].ContainerID = containerID
-			_ = s.appRepo.Update(ctx, apps[0])
-		}
-	}
-	return containerID, err
-}
-
 func (s *DeploymentService) GetMetrics(ctx context.Context, appID string) (*engine.ContainerHealth, error) {
 	app, err := s.appRepo.GetByID(ctx, appID)
 	if err != nil {

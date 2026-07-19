@@ -1,10 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { projectSettingsService } from '#/services/project-settings';
 
-export const useListWebhooks = (projectId: string) => {
+export const useListWebhooks = (serviceId: string) => {
   return useQuery({
-    queryKey: ['projectSettings', 'listWebhooks', projectId].filter(Boolean),
-    queryFn: () => projectSettingsService.listWebhooks(projectId),
+    queryKey: ['serviceSettings', 'listWebhooks', serviceId].filter(Boolean),
+    queryFn: () => projectSettingsService.listWebhooks(serviceId),
   });
 };
 
@@ -12,11 +12,11 @@ export const useCreateWebhook = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: {
-      projectId: string;
+      serviceId: string;
       payload: Parameters<typeof projectSettingsService.createWebhook>[1];
-    }) => projectSettingsService.createWebhook(payload.projectId, payload.payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projectSettings'] });
+    }) => projectSettingsService.createWebhook(payload.serviceId, payload.payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['serviceSettings'] });
     },
   });
 };
@@ -24,10 +24,10 @@ export const useCreateWebhook = () => {
 export const useDeleteWebhook = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: { projectId: string; id: string }) =>
-      projectSettingsService.deleteWebhook(payload.projectId, payload.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projectSettings'] });
+    mutationFn: (payload: { serviceId: string; id: string }) =>
+      projectSettingsService.deleteWebhook(payload.serviceId, payload.id),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['serviceSettings'] });
     },
   });
 };
@@ -46,8 +46,8 @@ export const useCreateToken = () => {
       projectId: string;
       payload: Parameters<typeof projectSettingsService.createToken>[1];
     }) => projectSettingsService.createToken(payload.projectId, payload.payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projectSettings'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['projectSettings'] });
     },
   });
 };
@@ -57,8 +57,8 @@ export const useDeleteToken = () => {
   return useMutation({
     mutationFn: (payload: { projectId: string; id: string }) =>
       projectSettingsService.deleteToken(payload.projectId, payload.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projectSettings'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['projectSettings'] });
     },
   });
 };
@@ -77,8 +77,8 @@ export const useAddMember = () => {
       projectId: string;
       payload: Parameters<typeof projectSettingsService.addMember>[1];
     }) => projectSettingsService.addMember(payload.projectId, payload.payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projectSettings'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['projectSettings'] });
     },
   });
 };
@@ -88,8 +88,8 @@ export const useRemoveMember = () => {
   return useMutation({
     mutationFn: (payload: { projectId: string; memberId: string }) =>
       projectSettingsService.removeMember(payload.projectId, payload.memberId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projectSettings'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['projectSettings'] });
     },
   });
 };

@@ -13,8 +13,8 @@ export const useCreateDNS = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: CreateDNSRecordRequest) => dnsService.create(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['dns'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['dns'] });
     },
   });
 };
@@ -24,8 +24,8 @@ export const useUpdateDNS = () => {
   return useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: UpdateDNSRecordRequest }) =>
       dnsService.update(id, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['dns'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['dns'] });
     },
   });
 };
@@ -34,8 +34,8 @@ export const useDeleteDNS = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => dnsService.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['dns'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['dns'] });
     },
   });
 };

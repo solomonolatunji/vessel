@@ -27,8 +27,8 @@ export const useUpdateSettings = () => {
   return useMutation({
     mutationFn: (payload: { payload: Parameters<typeof settingsService.updateSettings>[0] }) =>
       settingsService.updateSettings(payload.payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['settings'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['settings'] });
     },
   });
 };
@@ -43,9 +43,9 @@ export const useGetAISettings = () => {
 export const useUpdateAISettings = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: Record<string, string>) => settingsService.updateAISettings(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['settings', 'getAISettings'] });
+    mutationFn: (payload: Record<string, unknown>) => settingsService.updateAISettings(payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['settings', 'getAISettings'] });
     },
   });
 };
@@ -62,8 +62,8 @@ export const useUpdateNotificationSettings = () => {
   return useMutation({
     mutationFn: (payload: Record<string, unknown>) =>
       settingsService.updateNotificationSettings(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['settings', 'getNotificationSettings'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['settings', 'getNotificationSettings'] });
     },
   });
 };
@@ -75,20 +75,19 @@ export const useGetNotifications = () => {
   });
 };
 
-export const useGetGitApps = (provider: string) => {
+export const useGetGitApps = () => {
   return useQuery({
-    queryKey: ['settings', 'getGitApps', provider].filter(Boolean),
-    queryFn: () => settingsService.getGitApps(provider),
+    queryKey: ['settings', 'getGitApps', 'github'],
+    queryFn: () => settingsService.getGitApps(),
   });
 };
 
 export const useSaveGitApp = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ provider, payload }: { provider: string; payload: Record<string, unknown> }) =>
-      settingsService.saveGitApp(provider, payload),
-    onSuccess: (_, { provider }) => {
-      queryClient.invalidateQueries({ queryKey: ['settings', 'getGitApps', provider] });
+    mutationFn: (payload: Record<string, unknown>) => settingsService.saveGitApp(payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['settings', 'getGitApps', 'github'] });
     },
   });
 };
@@ -96,10 +95,9 @@ export const useSaveGitApp = () => {
 export const useDeleteGitApp = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ provider, id }: { provider: string; id: string }) =>
-      settingsService.deleteGitApp(provider, id),
-    onSuccess: (_, { provider }) => {
-      queryClient.invalidateQueries({ queryKey: ['settings', 'getGitApps', provider] });
+    mutationFn: (id: string) => settingsService.deleteGitApp(id),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['settings', 'getGitApps', 'github'] });
     },
   });
 };
@@ -135,8 +133,8 @@ export const useSaveNotificationChannel = () => {
   return useMutation({
     mutationFn: (payload: Record<string, unknown>) =>
       settingsService.saveNotificationChannel(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['settings', 'getNotifications'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['settings', 'getNotifications'] });
     },
   });
 };
@@ -151,8 +149,8 @@ export const useDeleteNotificationChannel = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => settingsService.deleteNotificationChannel(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['settings', 'getNotifications'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['settings', 'getNotifications'] });
     },
   });
 };

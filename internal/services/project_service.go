@@ -68,45 +68,6 @@ func (s *ProjectService) CreateProjectFromRequest(ctx context.Context, req *mode
 	if err := s.projectRepo.Create(ctx, p); err != nil {
 		return nil, fmt.Errorf("failed to create project: %w", err)
 	}
-	port := req.InternalPort
-	if port <= 0 {
-		port = req.InternalPortSnake
-	}
-	if port <= 0 {
-		port = 3000
-	}
-	repo := req.RepositoryURL
-	if repo == "" {
-		repo = req.RepositoryURLSnake
-	}
-	domain := req.Domain
-	if domain == "" {
-		wildcard := ""
-		if s.settingsRepo != nil {
-			settings, err := s.settingsRepo.GetServerSettings(ctx)
-			if err == nil {
-				wildcard = settings.DefaultWildcardDomain
-			}
-		}
-		domain = utils.GenerateAppDomain(req.Name, "", wildcard)
-	}
-	branch := req.Branch
-	if branch == "" {
-		branch = "main"
-	}
-	app := &models.AppService{
-		ID:            uuid.NewString(),
-		ProjectID:     p.ID,
-		EnvironmentID: "env-prod",
-		Name:          req.Name,
-		RepositoryURL: repo,
-		Branch:        branch,
-		InternalPort:  port,
-		Domain:        domain,
-		CreatedAt:     time.Now(),
-		UpdatedAt:     time.Now(),
-	}
-	_ = s.appRepo.Create(ctx, app)
 	return p, nil
 }
 

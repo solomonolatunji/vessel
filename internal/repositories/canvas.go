@@ -46,10 +46,6 @@ func (r *CanvasRepo) ListCanvasSummaries(ctx context.Context) ([]models.CanvasSu
 	if err != nil {
 		return nil, fmt.Errorf("failed to list all databases: %w", err)
 	}
-	allStorage, err := r.listAllStorage()
-	if err != nil {
-		return nil, fmt.Errorf("failed to list all storage: %w", err)
-	}
 	envsByProject := make(map[string][]*models.EnvironmentConfig)
 	for _, e := range allEnvs {
 		envsByProject[e.ProjectID] = append(envsByProject[e.ProjectID], e)
@@ -62,16 +58,11 @@ func (r *CanvasRepo) ListCanvasSummaries(ctx context.Context) ([]models.CanvasSu
 	for _, d := range allDbs {
 		dbsByProject[d.ProjectID] = append(dbsByProject[d.ProjectID], d)
 	}
-	storageByProject := make(map[string][]models.Storage)
-	for _, st := range allStorage {
-		storageByProject[st.ProjectID] = append(storageByProject[st.ProjectID], st)
-	}
 	var summaries []models.CanvasSummary
 	for _, project := range projects {
 		envs := envsByProject[project.ID]
 		apps := appsByProject[project.ID]
 		dbs := dbsByProject[project.ID]
-		storageItems := storageByProject[project.ID]
 		var defaultEnv *models.EnvironmentConfig
 		if len(envs) > 0 {
 			for _, e := range envs {
@@ -93,8 +84,8 @@ func (r *CanvasRepo) ListCanvasSummaries(ctx context.Context) ([]models.CanvasSu
 			EnvironmentsCount:  len(envs),
 			AppsCount:          len(apps),
 			DatabasesCount:     len(dbs),
-			StorageCount:       len(storageItems),
-			TotalServices:      len(apps) + len(dbs) + len(storageItems),
+			StorageCount:       0,
+			TotalServices:      len(apps) + len(dbs),
 			DefaultEnvironment: defaultEnv,
 			ServiceIcons:       make([]string, 0),
 		}
@@ -110,12 +101,6 @@ func (r *CanvasRepo) ListCanvasSummaries(ctx context.Context) ([]models.CanvasSu
 				onlineCount++
 			}
 			summary.ServiceIcons = append(summary.ServiceIcons, string(db.Engine))
-		}
-		for _, st := range storageItems {
-			if st.Status == models.StorageStatusRunning {
-				onlineCount++
-			}
-			summary.ServiceIcons = append(summary.ServiceIcons, string(st.Type))
 		}
 		summary.OnlineServices = onlineCount
 		summaries = append(summaries, summary)
@@ -133,7 +118,6 @@ func (r *CanvasRepo) GetCanvasSummary(ctx context.Context, id string) (*models.C
 	envs, _ := r.environments.ListByProject(ctx, id)
 	apps, _ := r.listAppServicesByProject(id)
 	dbs, _ := r.listDatabasesByProject(id)
-	storageItems, _ := r.listStorageByProject(id)
 	var defaultEnv *models.EnvironmentConfig
 	if len(envs) > 0 {
 		for _, e := range envs {
@@ -156,8 +140,8 @@ func (r *CanvasRepo) GetCanvasSummary(ctx context.Context, id string) (*models.C
 		EnvironmentsCount:  len(envs),
 		AppsCount:          len(apps),
 		DatabasesCount:     len(dbs),
-		StorageCount:       len(storageItems),
-		TotalServices:      len(apps) + len(dbs) + len(storageItems),
+		StorageCount:       0,
+		TotalServices:      len(apps) + len(dbs),
 		DefaultEnvironment: defaultEnv,
 		ServiceIcons:       make([]string, 0),
 	}
@@ -173,12 +157,6 @@ func (r *CanvasRepo) GetCanvasSummary(ctx context.Context, id string) (*models.C
 			onlineCount++
 		}
 		summary.ServiceIcons = append(summary.ServiceIcons, string(db.Engine))
-	}
-	for _, st := range storageItems {
-		if st.Status == models.StorageStatusRunning {
-			onlineCount++
-		}
-		summary.ServiceIcons = append(summary.ServiceIcons, string(st.Type))
 	}
 	summary.OnlineServices = onlineCount
 	return summary, nil

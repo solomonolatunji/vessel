@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"net/http"
 	"strconv"
 	"strings"
@@ -13,17 +14,30 @@ import (
 	"vessl.dev/vessl/internal/utils"
 )
 
-type UserHandler struct {
-	userService *services.UserService
+type Mailer interface {
+	SendSystemEmail(ctx context.Context, templateName string, toAddress string, subject string, data any) error
 }
 
-func NewUserHandler(s *services.UserService) *UserHandler {
-	return &UserHandler{userService: s}
+type UserHandler struct {
+	userService *services.UserService
+	mailer      Mailer
+}
+
+func NewUserHandler(s *services.UserService, mailer Mailer) *UserHandler {
+	return &UserHandler{userService: s, mailer: mailer}
 }
 
 type UpdateProfileRequest struct {
-	Email string          `json:"email"`
-	Role  models.UserRole `json:"role"`
+	Name string          `json:"name"`
+	Role models.UserRole `json:"role"`
+}
+
+type RequestEmailChangeRequest struct {
+	NewEmail string `json:"newEmail" validate:"required"`
+}
+
+type VerifyEmailChangeRequest struct {
+	OTP string `json:"otp" validate:"required"`
 }
 
 type CreatePATRequest struct {
@@ -146,8 +160,8 @@ func (h *UserHandler) UpdateProfile(c echo.Context) error {
 	if err := c.Bind(&payload); err != nil {
 		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
-	if payload.Email != "" {
-		u.Email = payload.Email
+	if payload.Name != "" {
+		u.Name = payload.Name
 	}
 	if payload.Role != "" {
 		u.Role = payload.Role
@@ -158,6 +172,75 @@ func (h *UserHandler) UpdateProfile(c echo.Context) error {
 	uCopy := *u
 	uCopy.PasswordHash = ""
 	return utils.Success(c, "Profile updated", &uCopy)
+}
+
+// @Summary RequestEmailChange endpoint
+// @Description Request an OTP to change email
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Router /profile/email/request [post]
+func (h *UserHandler) RequestEmailChange(c echo.Context) error {
+	userID := ExtractUserID(c)
+	if userID == "" {
+		return utils.Error(c, http.StatusUnauthorized, "unauthorized access")
+	}
+	var payload RequestEmailChangeRequest
+	if err := c.Bind(&payload); err != nil {
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
+	}
+	if payload.NewEmail == "" {
+		return utils.Error(c, http.StatusBadRequest, "new email is required")
+	}
+
+	otp, err := services.GenerateEmailOTP(userID, payload.NewEmail)
+	if err != nil {
+		return utils.Error(c, http.StatusInternalServerError, "failed to generate OTP")
+	}
+
+	err = h.mailer.SendSystemEmail(c.Request().Context(), "email_change", payload.NewEmail, "Verify Your Email Change", map[string]string{
+		"OTP": otp,
+	})
+	if err != nil {
+
+		return utils.Error(c, http.StatusInternalServerError, "failed to send verification email")
+	}
+
+	return utils.Success(c, "OTP sent to new email address", nil)
+}
+
+// @Summary VerifyEmailChange endpoint
+// @Description Verify the OTP to change email
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Router /profile/email/verify [post]
+func (h *UserHandler) VerifyEmailChange(c echo.Context) error {
+	userID := ExtractUserID(c)
+	if userID == "" {
+		return utils.Error(c, http.StatusUnauthorized, "unauthorized access")
+	}
+	var payload VerifyEmailChangeRequest
+	if err := c.Bind(&payload); err != nil {
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
+	}
+
+	newEmail, ok := services.VerifyEmailOTP(userID, payload.OTP)
+	if !ok {
+		return utils.Error(c, http.StatusBadRequest, "invalid or expired OTP")
+	}
+
+	u, err := h.userService.GetUserByID(c.Request().Context(), userID)
+	if err != nil || u == nil {
+		return utils.Error(c, http.StatusNotFound, "user not found")
+	}
+
+	u.Email = newEmail
+	if err := h.userService.UpdateUser(c.Request().Context(), u); err != nil {
+		return utils.Error(c, http.StatusInternalServerError, "failed to update email")
+	}
+
+	return utils.Success(c, "Email updated successfully", nil)
 }
 
 // @Summary CreatePAT endpoint

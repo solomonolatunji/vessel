@@ -131,30 +131,6 @@ export interface GithubApp {
   updatedAt: string;
 }
 
-export interface GitlabApp {
-  id: string;
-  name: string;
-  appId: string;
-  appSecret: string;
-  webhookSecret: string;
-  apiUrl: string;
-  isPublic: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface BitbucketApp {
-  id: string;
-  name: string;
-  owner: string;
-  clientId: string;
-  clientSecret: string;
-  webhookSecret: string;
-  isPublic: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface UpdateInfo {
   currentVersion: string;
   latestVersion: string;
@@ -175,10 +151,7 @@ export type UpdateServerSettingsResponse = BaseResponse<ServerSettings>;
 export type TestNotificationResponseType = BaseResponse<void>;
 export type GetGithubAppsResponse = BaseResponse<GithubApp[]>;
 export type SaveGithubAppResponse = BaseResponse<GithubApp>;
-export type GetGitlabAppsResponse = BaseResponse<GitlabApp[]>;
-export type SaveGitlabAppResponse = BaseResponse<GitlabApp>;
-export type GetBitbucketAppsResponse = BaseResponse<BitbucketApp[]>;
-export type SaveBitbucketAppResponse = BaseResponse<BitbucketApp>;
+
 export type ExchangeGithubManifestResponse = BaseResponse<GithubApp>;
 export type GetUpdateStatusResponse = BaseResponse<UpdateInfo>;
 export type CheckUpdateResponse = BaseResponse<UpdateInfo>;

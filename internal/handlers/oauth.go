@@ -176,6 +176,13 @@ func (h *OAuthHandler) Disable2FA(c echo.Context) error {
 	if userID == "" {
 		return utils.Error(c, http.StatusUnauthorized, "unauthorized access")
 	}
+	var payload Verify2FARequest
+	if err := c.Bind(&payload); err != nil {
+		return utils.Error(c, http.StatusBadRequest, "missing passcode")
+	}
+	if err := h.oauthService.Validate2FA(c.Request().Context(), userID, payload.Passcode); err != nil {
+		return utils.Error(c, http.StatusUnauthorized, err.Error())
+	}
 	if err := h.oauthService.Disable2FA(c.Request().Context(), userID); err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}

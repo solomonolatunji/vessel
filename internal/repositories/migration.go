@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"sort"
+	"strings"
 )
 
 //go:embed schema/*.sql
@@ -36,12 +37,23 @@ func RunMigrations(db *sql.DB) error {
 			return fmt.Errorf("failed to read schema file %s: %w", file, err)
 		}
 
-		if _, err := db.Exec(string(content)); err != nil {
+		tx, err := db.Begin()
+		if err != nil {
+			return fmt.Errorf("failed to begin transaction for %s: %w", file, err)
+		}
+
+		if _, err := tx.Exec(string(content)); err != nil {
+			tx.Rollback()
 			return fmt.Errorf("migration failed for %s: %w", file, err)
 		}
 
-		if _, err := db.Exec("INSERT INTO schema_migrations (filename) VALUES (?)", file); err != nil {
+		if _, err := tx.Exec("INSERT INTO schema_migrations (filename) VALUES (?)", file); err != nil {
+			tx.Rollback()
 			return fmt.Errorf("failed to record migration %s: %w", file, err)
+		}
+
+		if err := tx.Commit(); err != nil {
+			return fmt.Errorf("failed to commit migration %s: %w", file, err)
 		}
 
 		slog.Info("applied migration", "file", file)
@@ -101,9 +113,23 @@ func ensureMigrationsTable(db *sql.DB) error {
 		return err
 	}
 
-	for _, file := range files {
-		if _, err := db.Exec("INSERT INTO schema_migrations (filename) VALUES (?)", file); err != nil {
-			return fmt.Errorf("failed to seed migration %s: %w", file, err)
+	var baselineFiles []string
+	for _, f := range files {
+		if strings.HasPrefix(f, "001_") || strings.HasPrefix(f, "002_") {
+			baselineFiles = append(baselineFiles, f)
+		}
+	}
+
+	if len(baselineFiles) > 0 {
+		var placeholders []string
+		var args []any
+		for _, file := range baselineFiles {
+			placeholders = append(placeholders, "(?)")
+			args = append(args, file)
+		}
+		query := fmt.Sprintf("INSERT INTO schema_migrations (filename) VALUES %s", strings.Join(placeholders, ", "))
+		if _, err := db.Exec(query, args...); err != nil {
+			return fmt.Errorf("failed to seed migrations: %w", err)
 		}
 	}
 

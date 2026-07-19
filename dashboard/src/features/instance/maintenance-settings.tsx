@@ -1,16 +1,10 @@
-import { AlertTriangle, HardDrive, RefreshCw, Trash2 } from 'lucide-react';
+import { Activity, AlertTriangle, HardDrive, RefreshCw, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '#/components/ui/badge';
 import { Button } from '#/components/ui/button';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from '#/components/ui/dialog';
 import { useCleanupSystem, useGetSystemStats, useRestartSystem } from '#/hooks/useSystem';
+import { MaintenanceDialogs } from './components/maintenance-dialogs';
 
 const ProgressBar = ({ value, colorClass }: { value: number; colorClass: string }) => (
   <div className="flex h-1.5 w-full overflow-hidden rounded-full bg-background">
@@ -49,20 +43,17 @@ export const MaintenancePage = () => {
     }
   };
 
-  // Safe fallback values
   const usedPercent = stats?.disk.percent ? Number(stats.disk.percent.toFixed(1)) : 0;
   const freeGb = stats?.disk.freeGb ? stats.disk.freeGb.toFixed(1) : '0';
   const usedGb = stats?.disk.usedGb ? stats.disk.usedGb.toFixed(1) : '0';
   const totalGb = stats?.disk.totalGb ? stats.disk.totalGb.toFixed(1) : '0';
 
-  // Dynamic Docker stats
   const dockerPercent =
     stats?.disk?.totalGb && stats?.docker?.reclaimableGb
       ? Number(((stats.docker.reclaimableGb / stats.disk.totalGb) * 100).toFixed(1))
       : 0;
   const reclaimableGb = stats?.docker?.reclaimableGb ? stats.docker.reclaimableGb.toFixed(2) : '0';
 
-  // Extract just the numerical part for the build cache summary if possible
   const buildCacheReclaimableStr = stats?.docker?.buildCache?.reclaimable || '0';
   const buildCacheGb = parseFloat(buildCacheReclaimableStr)
     ? parseFloat(buildCacheReclaimableStr).toFixed(2)
@@ -70,19 +61,17 @@ export const MaintenancePage = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header section */}
-      <div className="flex flex-col justify-between gap-6 pb-2 md:flex-row md:items-start">
-        <div className="flex-1 space-y-4">
-          <div className="space-y-1">
-            <p className="font-bold text-[10px] text-muted-foreground uppercase tracking-[0.15em]">
-              MAINTENANCE
-            </p>
-            <h1 className="font-bold text-3xl tracking-tight">Host health and cleanup</h1>
+      <div className="mb-5 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary">
+            <Activity className="h-6 w-6" />
           </div>
-          <p className="max-w-2xl text-muted-foreground text-sm leading-relaxed">
-            Watch disk pressure, Docker growth, logs, and Vessl build artifacts before they take the
-            server down.
-          </p>
+          <div>
+            <h1 className="font-bold text-xl">Host health and cleanup</h1>
+            <p className="text-muted-foreground text-sm">
+              Manage unused resources, dangling images, and system caches to reclaim space.
+            </p>
+          </div>
         </div>
 
         <div className="flex shrink-0 flex-col items-end gap-4">
@@ -117,9 +106,7 @@ export const MaintenancePage = () => {
         </div>
       ) : null}
 
-      {/* Top Cards Grid */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        {/* Root Disk */}
         <div className="flex flex-col justify-between space-y-6 rounded-2xl border border-border/50 bg-card/40 p-6">
           <div className="flex items-center justify-between">
             <p className="font-bold text-[10px] text-muted-foreground uppercase tracking-[0.15em]">
@@ -138,7 +125,6 @@ export const MaintenancePage = () => {
           </div>
         </div>
 
-        {/* Docker Cleanup */}
         <div className="flex flex-col justify-between space-y-6 rounded-2xl border border-border/50 bg-card/40 p-6">
           <div className="flex items-center justify-between">
             <p className="w-32 font-bold text-[10px] text-muted-foreground uppercase tracking-[0.15em]">
@@ -157,7 +143,6 @@ export const MaintenancePage = () => {
           </div>
         </div>
 
-        {/* Build Artifacts */}
         <div className="flex flex-col justify-between space-y-6 rounded-2xl border border-border/50 bg-card/40 p-6">
           <div className="flex items-center justify-between">
             <p className="font-bold text-[10px] text-muted-foreground uppercase tracking-[0.15em]">
@@ -175,7 +160,6 @@ export const MaintenancePage = () => {
         </div>
       </div>
 
-      {/* Trend Charts */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <div className="flex h-32 flex-col rounded-2xl border border-border/50 bg-card/40 p-6">
           <p className="mb-4 font-bold text-[10px] text-muted-foreground uppercase tracking-[0.15em]">
@@ -217,9 +201,7 @@ export const MaintenancePage = () => {
         </div>
       </div>
 
-      {/* Lower Section */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Docker Storage (Left) */}
         <div className="overflow-hidden rounded-2xl border border-border/50 bg-card/40 lg:col-span-2">
           <div className="flex items-center justify-between border-border/50 border-b p-6">
             <h3 className="font-bold text-xl">Docker storage</h3>
@@ -232,7 +214,6 @@ export const MaintenancePage = () => {
           </div>
 
           <div className="divide-y divide-border/50">
-            {/* Images */}
             <div className="grid grid-cols-3 items-center p-6">
               <div>
                 <p className="font-bold text-[10px] text-muted-foreground uppercase tracking-[0.15em]">
@@ -255,7 +236,6 @@ export const MaintenancePage = () => {
                 </div>
               </div>
             </div>
-            {/* Containers */}
             <div className="grid grid-cols-3 items-center p-6">
               <div>
                 <p className="font-bold text-[10px] text-muted-foreground uppercase tracking-[0.15em]">
@@ -280,7 +260,6 @@ export const MaintenancePage = () => {
                 </div>
               </div>
             </div>
-            {/* Local Volumes */}
             <div className="grid grid-cols-3 items-center p-6">
               <div>
                 <p className="font-bold text-[10px] text-muted-foreground uppercase tracking-[0.15em]">
@@ -303,7 +282,6 @@ export const MaintenancePage = () => {
                 </div>
               </div>
             </div>
-            {/* Build Cache */}
             <div className="grid grid-cols-3 items-center p-6">
               <div>
                 <p className="font-bold text-[10px] text-muted-foreground uppercase tracking-[0.15em]">
@@ -328,7 +306,6 @@ export const MaintenancePage = () => {
                 </div>
               </div>
             </div>
-            {/* Help text */}
             <div className="bg-background/30 p-6 text-muted-foreground text-xs">
               Docker can keep image layers listed as candidates after safe cleanup when running
               services still reference them.
@@ -336,7 +313,6 @@ export const MaintenancePage = () => {
           </div>
         </div>
 
-        {/* Cleanup Actions (Right) */}
         <div className="flex flex-col space-y-6 rounded-2xl border border-border/50 bg-card/40 p-6 lg:col-span-1">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary">
@@ -396,94 +372,16 @@ export const MaintenancePage = () => {
         </div>
       </div>
 
-      {/* Modals */}
-      <Dialog open={confirmCleanup} onOpenChange={setConfirmCleanup}>
-        <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-125 [&>button]:hidden">
-          <div className="flex flex-col p-8 pb-6">
-            <div className="flex items-start justify-between">
-              <div className="flex flex-col">
-                <DialogTitle className="font-bold text-2xl text-foreground tracking-tight">
-                  Run Docker Cleanup
-                </DialogTitle>
-                <DialogDescription className="mt-1 font-bold text-[10px] text-muted-foreground uppercase tracking-[0.15em]">
-                  THIS WILL REMOVE UNUSED IMAGES AND DANGLING VOLUMES.
-                </DialogDescription>
-              </div>
-              <DialogClose asChild>
-                <Button
-                  variant="ghost"
-                  className="font-medium text-foreground/80 text-sm hover:bg-transparent hover:text-foreground"
-                >
-                  CLOSE
-                </Button>
-              </DialogClose>
-            </div>
-          </div>
-
-          <div className="h-px w-full bg-border/50" />
-
-          <div className="flex items-center justify-end gap-6 p-8 pt-6">
-            <Button
-              variant="ghost"
-              onClick={() => setConfirmCleanup(false)}
-              className="flex h-11 items-center gap-2 rounded-xl px-6 font-semibold text-muted-foreground text-xs uppercase tracking-widest hover:text-foreground"
-            >
-              CANCEL
-            </Button>
-            <Button
-              onClick={handleCleanup}
-              disabled={cleaning}
-              className="flex h-11 items-center gap-2 rounded-xl border-primary/20 bg-primary/10 px-6 font-semibold text-primary text-xs uppercase tracking-widest hover:bg-primary/20 hover:text-primary"
-            >
-              {cleaning ? 'RUNNING...' : 'RUN CLEANUP'}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={confirmRestart} onOpenChange={setConfirmRestart}>
-        <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-125 [&>button]:hidden">
-          <div className="flex flex-col p-8 pb-6">
-            <div className="flex items-start justify-between">
-              <div className="flex flex-col">
-                <DialogTitle className="font-bold text-2xl text-destructive tracking-tight">
-                  Restart Daemon
-                </DialogTitle>
-                <DialogDescription className="mt-1 font-bold text-[10px] text-muted-foreground uppercase tracking-[0.15em]">
-                  ALL SERVICES WILL BE BRIEFLY UNAVAILABLE.
-                </DialogDescription>
-              </div>
-              <DialogClose asChild>
-                <Button
-                  variant="ghost"
-                  className="font-medium text-foreground/80 text-sm hover:bg-transparent hover:text-foreground"
-                >
-                  CLOSE
-                </Button>
-              </DialogClose>
-            </div>
-          </div>
-
-          <div className="h-px w-full bg-border/50" />
-
-          <div className="flex items-center justify-end gap-6 p-8 pt-6">
-            <Button
-              variant="ghost"
-              onClick={() => setConfirmRestart(false)}
-              className="flex h-11 items-center gap-2 rounded-xl px-6 font-semibold text-muted-foreground text-xs uppercase tracking-widest hover:text-foreground"
-            >
-              CANCEL
-            </Button>
-            <Button
-              onClick={handleRestart}
-              disabled={restarting}
-              className="flex h-11 items-center gap-2 rounded-xl border-destructive/20 bg-destructive/10 px-6 font-semibold text-destructive text-xs uppercase tracking-widest hover:bg-destructive/20 hover:text-destructive"
-            >
-              {restarting ? 'RESTARTING...' : 'RESTART'}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <MaintenanceDialogs
+        confirmCleanup={confirmCleanup}
+        setConfirmCleanup={setConfirmCleanup}
+        cleaning={cleaning}
+        handleCleanup={handleCleanup}
+        confirmRestart={confirmRestart}
+        setConfirmRestart={setConfirmRestart}
+        restarting={restarting}
+        handleRestart={handleRestart}
+      />
     </div>
   );
 };

@@ -91,11 +91,9 @@ func (bm *BackupManager) buildRestoreCommand(cfg *models.BackupConfig) (string, 
 		}
 		return containerName, []string{"tar", "-xzf", "-", "-C", "/data"}, nil
 
-	} else if cfg.StorageID != "" {
-		return utils.NormalizeContainerName(cfg.StorageID), []string{"tar", "-xzf", "-", "-C", "/"}, nil
 	}
 
-	return "", nil, errors.New("backup config requires either databaseId or storageId")
+	return "", nil, errors.New("backup config requires databaseId")
 }
 
 func (bm *BackupManager) executeRestore(ctx context.Context, containerName string, restoreCmd []string, data []byte) error {

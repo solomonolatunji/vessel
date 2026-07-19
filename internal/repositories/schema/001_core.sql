@@ -76,25 +76,6 @@ CREATE TABLE IF NOT EXISTS databases (
             logical_replication INTEGER DEFAULT 0,
             project_id TEXT DEFAULT '');
 
-CREATE TABLE IF NOT EXISTS storage (
-			id TEXT PRIMARY KEY,
-			name TEXT UNIQUE NOT NULL,
-			type TEXT DEFAULT 'minio',
-			api_port INTEGER DEFAULT 9000,
-			console_port INTEGER DEFAULT 9001,
-			access_key TEXT NOT NULL,
-			encrypted_secret_key TEXT NOT NULL,
-			bucket_name TEXT NOT NULL,
-			volume_path TEXT NOT NULL,
-			container_id TEXT,
-			status TEXT DEFAULT 'stopped',
-			internal_dns TEXT,
-			external_dns TEXT,
-			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-		,
-			environment_id TEXT DEFAULT '',
-            project_id TEXT DEFAULT '');
 
 CREATE TABLE IF NOT EXISTS jobs (
 			id TEXT PRIMARY KEY,
@@ -119,17 +100,6 @@ CREATE TABLE IF NOT EXISTS user_git_providers (
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 			UNIQUE(user_id, provider)
-		);
-
-CREATE TABLE IF NOT EXISTS user_vercel_accounts (
-			id TEXT PRIMARY KEY,
-			user_id TEXT NOT NULL,
-			encrypted_access_token TEXT NOT NULL,
-			vercel_team_id TEXT, -- Vercel team ID if they authenticated a team, or NULL for personal account
-			account_name TEXT NOT NULL,
-			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-			UNIQUE(user_id, vercel_team_id)
 		);
 
 CREATE TABLE IF NOT EXISTS environments (
@@ -227,19 +197,14 @@ CREATE TABLE IF NOT EXISTS service_vars (
 			UNIQUE(service_id, key)
 		);
 
-CREATE TABLE IF NOT EXISTS project_webhooks (
+CREATE TABLE IF NOT EXISTS service_webhooks (
 			id TEXT PRIMARY KEY,
-			project_id TEXT NOT NULL,
-			provider TEXT DEFAULT 'github',
-			webhook_secret TEXT,
-			webhook_url TEXT,
-			auto_deploy BOOLEAN DEFAULT 1,
-			branch TEXT DEFAULT 'main',
-			created_at TEXT,
-			updated_at TEXT,
-			url TEXT DEFAULT '',
+			service_id TEXT NOT NULL REFERENCES app_services(id) ON DELETE CASCADE,
+			url TEXT NOT NULL,
 			event_types TEXT DEFAULT '',
-			include_pr_environments BOOLEAN DEFAULT FALSE
+			include_pr_environments BOOLEAN DEFAULT FALSE,
+			created_at DATETIME,
+			updated_at DATETIME
 		);
 
 CREATE TABLE IF NOT EXISTS serverless_functions_code (
@@ -389,29 +354,7 @@ CREATE TABLE IF NOT EXISTS github_apps (
 			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 		);
 
-CREATE TABLE IF NOT EXISTS gitlab_apps (
-			id TEXT PRIMARY KEY,
-			name TEXT NOT NULL,
-			app_id TEXT NOT NULL,
-			app_secret TEXT NOT NULL,
-			webhook_secret TEXT NOT NULL,
-			api_url TEXT NOT NULL DEFAULT 'https://gitlab.com',
-			is_public BOOLEAN DEFAULT FALSE,
-			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-		);
 
-CREATE TABLE IF NOT EXISTS bitbucket_apps (
-			id TEXT PRIMARY KEY,
-			name TEXT NOT NULL,
-			owner TEXT NOT NULL,
-			client_id TEXT NOT NULL,
-			client_secret TEXT NOT NULL,
-			webhook_secret TEXT NOT NULL,
-			is_public BOOLEAN DEFAULT FALSE,
-			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-		);
 
 CREATE TABLE IF NOT EXISTS oauth_providers (
 			id TEXT PRIMARY KEY,

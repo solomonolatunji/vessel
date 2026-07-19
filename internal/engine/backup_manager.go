@@ -114,10 +114,17 @@ func (bm *BackupManager) failBackupRecord(recID, errStr string) (*models.BackupR
 	_ = bm.store.UpdateBackupRecord(models.UpdateBackupRecordOpts{
 		ID:          recID,
 		Status:      models.BackupRecordStatusFailed,
-		Logs:        errStr,
+		Logs:        fmt.Sprintf("Failed: %s\n", errStr),
 		CompletedAt: time.Now().UTC().Format(time.RFC3339),
 	})
 	return nil, errors.New(errStr)
+}
+
+func (bm *BackupManager) DeleteBackupRecord(ctx context.Context, recordID string) {
+	rec, err := bm.store.GetBackupRecord(recordID)
+	if err == nil && rec != nil && rec.FilePath != "" {
+		_ = os.Remove(rec.FilePath)
+	}
 }
 
 func (bm *BackupManager) TriggerBackup(ctx context.Context, backupConfigID string) (*models.BackupRecord, error) {
@@ -138,18 +145,33 @@ func (bm *BackupManager) TriggerBackup(ctx context.Context, backupConfigID strin
 		return nil, fmt.Errorf("failed to create backup record: %w", err)
 	}
 
-	containerName, dumpCmd, fileExt, err := bm.buildDumpCommand(cfg)
-	if err != nil {
-		return bm.failBackupRecord(rec.ID, err.Error())
+	var dumpBytes []byte
+	var execLogs string
+	var fileExt string
+
+	if cfg.ProjectID == "global" {
+		dbPath := filepath.Join(utils.GetDataDir(), "vessl.db")
+		content, err := os.ReadFile(dbPath)
+		if err != nil {
+			return bm.failBackupRecord(rec.ID, fmt.Sprintf("failed to read global db: %v", err))
+		}
+		dumpBytes = content
+		fileExt = ".db"
+		execLogs = "Global database backed up successfully.\n"
+	} else {
+		containerName, dumpCmd, ext, err := bm.buildDumpCommand(cfg)
+		if err != nil {
+			return bm.failBackupRecord(rec.ID, err.Error())
+		}
+		fileExt = ext
+		dumpBytes, execLogs, err = bm.executeDump(ctx, containerName, dumpCmd, cfg.Name)
+		if err != nil {
+			return bm.failBackupRecord(rec.ID, err.Error())
+		}
 	}
 
 	fileName := fmt.Sprintf("backup_%s_%s%s", cfg.ID, time.Now().UTC().Format("20060102_150405"), fileExt)
 	filePath := filepath.Join(bm.backupDir, fileName)
-
-	dumpBytes, execLogs, err := bm.executeDump(ctx, containerName, dumpCmd, cfg.Name)
-	if err != nil {
-		return bm.failBackupRecord(rec.ID, err.Error())
-	}
 
 	if err := os.WriteFile(filePath, dumpBytes, 0o600); err != nil {
 		return bm.failBackupRecord(rec.ID, fmt.Sprintf("failed to write backup archive to disk: %v", err))
@@ -213,11 +235,9 @@ func (bm *BackupManager) buildDumpCommand(cfg *models.BackupConfig) (string, []s
 		}
 		return containerName, []string{"sh", "-c", "echo 'Generic volume snapshot'"}, ".tar.gz", nil
 
-	} else if cfg.StorageID != "" {
-		return utils.NormalizeContainerName(cfg.StorageID), []string{"tar", "-czf", "-", "/data"}, ".tar.gz", nil
 	}
 
-	return "", nil, "", errors.New("backup config requires either databaseId or storageId")
+	return "", nil, "", errors.New("backup config requires databaseId")
 }
 
 func (bm *BackupManager) executeDump(ctx context.Context, containerName string, dumpCmd []string, backupName string) ([]byte, string, error) {

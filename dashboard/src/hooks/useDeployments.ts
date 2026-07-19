@@ -15,8 +15,9 @@ export const useTrigger = () => {
       serviceId: string;
       payload?: Parameters<typeof deploymentsService.trigger>[1];
     }) => deploymentsService.trigger(payload.serviceId, payload.payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['deployments'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['deployments'] });
+      await queryClient.invalidateQueries({ queryKey: ['canvas'] });
     },
   });
 };
@@ -26,8 +27,9 @@ export const useRollback = () => {
   return useMutation({
     mutationFn: (payload: { deploymentId: string }) =>
       deploymentsService.rollback(payload.deploymentId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['deployments'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['deployments'] });
+      await queryClient.invalidateQueries({ queryKey: ['canvas'] });
     },
   });
 };

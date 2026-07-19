@@ -453,10 +453,12 @@ We will build the dashboard in distinct phases to ensure stability, proper data-
 - [x] Create `Users` management (`/settings/users`) and API Tokens (`/settings/api`).
 - [x] Build the `Maintenance` and `Updates` dashboards (`docker system prune`, `vessld` auto-updates).
 - [x] Finalize the `Migration` bundle logic (`.vessl` export/import functionality).
+- [x] Build Instance Settings (`/settings/general`), `Notifications` (`/settings/notifications`), and `OAuth` (`/settings/oauth`).
+- [ ] Implement `Backups` configuration.
 
 **Phase 6: Polish & Verification**
 
 - [ ] Strict Biome formatting (`npm run format:fix`) and type-checking across all components.
 - [ ] Audit all inputs and buttons to ensure minimalist "plain" design (no weird autofill backgrounds, sharp padding/margins).
 - [ ] Ensure all components are under 350 lines and correctly modularized in `src/features/`.
-      export TEST_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNvbG9tb25AdmVzc2wuZGV2IiwiZXhwIjoxNzg0NTUzNTM2LCJpYXQiOjE3ODQyOTQzMzYsImlzcyI6InZlc3NsLWF1dGgiLCJyb2xlIjoiYWRtaW4iLCJzdWIiOiI4MzZiMzllNi0zOWMwLTRiZTYtODAzMy1jNjc4YmY3MDEwMTAiLCJ0b3RwRW5hYmxlZCI6ZmFsc2V9.HNI7CWy2rv4pMa2ysbNMWkWjmDVOAHC6v0mHuQAcV-Y"
+      export TEST_TOKEN="<generate-via-script-or-env>"

@@ -17,10 +17,12 @@ export type ListOAuthProvidersResponse = BaseResponse<OAuthProviderConfig[]>;
 export type ListEnabledProvidersResponse = BaseResponse<OAuthProviderConfig[]>;
 
 export type SaveOAuthProviderRequest = {
+  id?: string;
   providerName: string;
   clientId: string;
   clientSecret?: string;
   baseUrl?: string;
+  redirectUri?: string;
   tenant?: string;
   enabled: boolean;
 };

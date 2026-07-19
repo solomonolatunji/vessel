@@ -21,12 +21,6 @@ export const setupSchema = z
 
     dashboardDomain: z.string().optional(),
     defaultWildcardDomain: z.string().optional(),
-
-    s3Skip: z.boolean().optional(),
-    s3AccountId: z.string().optional(),
-    s3Bucket: z.string().optional(),
-    s3AccessKeyId: z.string().optional(),
-    s3SecretAccessKey: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",

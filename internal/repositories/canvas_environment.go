@@ -24,20 +24,14 @@ func (r *CanvasRepo) GetEnvironmentCanvas(ctx context.Context, environmentID str
 	}
 	apps, _ := r.listAppServicesByEnvironment(ctx, environmentID)
 	dbs, _ := r.listDatabasesByEnvironment(ctx, environmentID)
-	storageItems, _ := r.listStorageByEnvironment(ctx, environmentID)
 	var dbsPtrs []*models.Database
 	for i := range dbs {
 		dbsPtrs = append(dbsPtrs, &dbs[i])
-	}
-	var storagePtrs []*models.Storage
-	for i := range storageItems {
-		storagePtrs = append(storagePtrs, &storageItems[i])
 	}
 	return &models.EnvironmentCanvas{
 		Environment: &env,
 		Apps:        apps,
 		Databases:   dbsPtrs,
-		Storage:     storagePtrs,
 	}, nil
 }
 
@@ -139,28 +133,4 @@ func (r *CanvasRepo) scanDatabases(ctx context.Context, query string, args ...an
 		dbs = make([]models.Database, 0)
 	}
 	return dbs, nil
-}
-
-func (r *CanvasRepo) listAllStorage() ([]models.Storage, error) {
-	return r.scanStorage(context.Background(), `SELECT id, COALESCE(project_id,'') as project_id, COALESCE(environment_id,'') as environment_id, name, type, api_port, console_port, access_key, bucket_name, volume_path, COALESCE(container_id,'') as container_id, status, COALESCE(internal_dns,'') as internal_dns, COALESCE(external_dns,'') as external_dns, created_at, updated_at FROM storage ORDER BY created_at DESC`)
-}
-
-func (r *CanvasRepo) listStorageByProject(projectID string) ([]models.Storage, error) {
-	return r.scanStorage(context.Background(), `SELECT id, COALESCE(project_id,'') as project_id, COALESCE(environment_id,'') as environment_id, name, type, api_port, console_port, access_key, bucket_name, volume_path, COALESCE(container_id,'') as container_id, status, COALESCE(internal_dns,'') as internal_dns, COALESCE(external_dns,'') as external_dns, created_at, updated_at FROM storage WHERE project_id = ? ORDER BY created_at DESC`, projectID)
-}
-
-func (r *CanvasRepo) listStorageByEnvironment(ctx context.Context, environmentID string) ([]models.Storage, error) {
-	return r.scanStorage(ctx, `SELECT id, COALESCE(project_id,'') as project_id, COALESCE(environment_id,'') as environment_id, name, type, api_port, console_port, access_key, bucket_name, volume_path, COALESCE(container_id,'') as container_id, status, COALESCE(internal_dns,'') as internal_dns, COALESCE(external_dns,'') as external_dns, created_at, updated_at FROM storage WHERE environment_id = ? ORDER BY created_at DESC`, environmentID)
-}
-
-func (r *CanvasRepo) scanStorage(ctx context.Context, query string, args ...any) ([]models.Storage, error) {
-	var items []models.Storage
-	err := r.db.SelectContext(ctx, &items, query, args...)
-	if err != nil {
-		return nil, err
-	}
-	if items == nil {
-		items = make([]models.Storage, 0)
-	}
-	return items, nil
 }

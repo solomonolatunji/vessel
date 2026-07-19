@@ -19,83 +19,26 @@ import (
 	"vessl.dev/vessl/internal/utils"
 )
 
+type deployArgs struct {
+	gitURL      string
+	imageRef    string
+	composePath string
+	archivePath string
+	projectID   string
+	branch      string
+	rootDir     string
+	port        int
+}
+
 func runDeploy(args []string) {
-	gitURL := ""
-	imageRef := ""
-	composePath := ""
-	archivePath := ""
-	projectID := ""
-	branch := "main"
-	rootDir := ""
-	port := 3000
+	dArgs := parseDeployArgs(args)
 
-	for i := 0; i < len(args); i++ {
-		switch args[i] {
-		case "--git", "-g":
-			if i+1 < len(args) {
-				gitURL = args[i+1]
-				i++
-			}
-		case "--image", "-i":
-			if i+1 < len(args) {
-				imageRef = args[i+1]
-				i++
-			}
-		case "--compose", "-c":
-			if i+1 < len(args) {
-				composePath = args[i+1]
-				i++
-			}
-		case "--archive", "-a":
-			if i+1 < len(args) {
-				archivePath = args[i+1]
-				i++
-			}
-		case "--project", "-p":
-			if i+1 < len(args) {
-				projectID = args[i+1]
-				i++
-			}
-		case "--branch", "-b":
-			if i+1 < len(args) {
-				branch = args[i+1]
-				i++
-			}
-		case "--dir", "-d":
-			if i+1 < len(args) {
-				rootDir = args[i+1]
-				i++
-			}
-		case "--template", "-t":
-			if i+1 < len(args) {
-				templateName := args[i+1]
-				gitURL = "https://github.com/vesslhq/vessl-examples.git"
-				branch = "main"
-				rootDir = templateName
-				i++
-			}
-		case "--port":
-			if i+1 < len(args) {
-				if p, err := parseUint(args[i+1]); err == nil {
-					port = p
-				}
-				i++
-			}
-		default:
-			if strings.HasPrefix(args[i], "http") || strings.HasPrefix(args[i], "git@") {
-				gitURL = args[i]
-			} else if strings.Contains(args[i], ":") || strings.Contains(args[i], "/") {
-				imageRef = args[i]
-			}
-		}
-	}
-
-	if gitURL == "" && imageRef == "" && composePath == "" && archivePath == "" {
+	if dArgs.gitURL == "" && dArgs.imageRef == "" && dArgs.composePath == "" && dArgs.archivePath == "" {
 		exitError("Usage: vessld deploy <git-url> | --template <t> | --image <img> | --compose <file> | --archive <file>")
 	}
 
 	count := 0
-	for _, v := range []bool{gitURL != "", imageRef != "", composePath != "", archivePath != ""} {
+	for _, v := range []bool{dArgs.gitURL != "", dArgs.imageRef != "", dArgs.composePath != "", dArgs.archivePath != ""} {
 		if v {
 			count++
 		}
@@ -117,6 +60,87 @@ func runDeploy(args []string) {
 	projectRepo := repositories.NewProjectRepo(db, envRepo)
 	settingsRepo := repositories.NewSettingsRepo(db)
 
+	appName := resolveAppName(dArgs.gitURL, dArgs.imageRef)
+
+	dArgs.projectID = selectOrCreateProject(projectRepo, dArgs.projectID)
+	envID := setupEnvironment(envRepo, dArgs.projectID)
+	svc := setupAppService(appRepo, dArgs.projectID, envID, appName, dArgs)
+
+	deployer := engine.NewDeployer(dockerClient, &dbDeployerStore{db: db, vault: vlt})
+
+	performDeployment(deployer, dockerClient, svc, dArgs, dataDir)
+	printDeploymentURL(settingsRepo, appName)
+}
+
+func parseDeployArgs(args []string) deployArgs {
+	d := deployArgs{
+		branch: "main",
+		port:   3000,
+	}
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--git", "-g":
+			if i+1 < len(args) {
+				d.gitURL = args[i+1]
+				i++
+			}
+		case "--image", "-i":
+			if i+1 < len(args) {
+				d.imageRef = args[i+1]
+				i++
+			}
+		case "--compose", "-c":
+			if i+1 < len(args) {
+				d.composePath = args[i+1]
+				i++
+			}
+		case "--archive", "-a":
+			if i+1 < len(args) {
+				d.archivePath = args[i+1]
+				i++
+			}
+		case "--project", "-p":
+			if i+1 < len(args) {
+				d.projectID = args[i+1]
+				i++
+			}
+		case "--branch", "-b":
+			if i+1 < len(args) {
+				d.branch = args[i+1]
+				i++
+			}
+		case "--dir", "-d":
+			if i+1 < len(args) {
+				d.rootDir = args[i+1]
+				i++
+			}
+		case "--template", "-t":
+			if i+1 < len(args) {
+				templateName := args[i+1]
+				d.gitURL = "https://github.com/vesslhq/vessl-examples.git"
+				d.branch = "main"
+				d.rootDir = templateName
+				i++
+			}
+		case "--port":
+			if i+1 < len(args) {
+				if p, err := parseUint(args[i+1]); err == nil {
+					d.port = p
+				}
+				i++
+			}
+		default:
+			if strings.HasPrefix(args[i], "http") || strings.HasPrefix(args[i], "git@") {
+				d.gitURL = args[i]
+			} else if strings.Contains(args[i], ":") || strings.Contains(args[i], "/") {
+				d.imageRef = args[i]
+			}
+		}
+	}
+	return d
+}
+
+func resolveAppName(gitURL, imageRef string) string {
 	appName := extractRepoName(gitURL)
 	if appName == "app" && imageRef != "" {
 		appName = imageRef
@@ -125,150 +149,146 @@ func runDeploy(args []string) {
 		}
 		appName = strings.Split(appName, ":")[0]
 	}
+	return appName
+}
 
-	if projectID == "" {
-		projects, _, _ := projectRepo.List(context.Background(), 1000, 0)
-		if len(projects) > 0 {
-			fmt.Println("📁 Select a project for this deployment:")
-			fmt.Println("  [0] Create a new project")
-			for i, p := range projects {
-				fmt.Printf("  [%d] %s (%s)\n", i+1, p.Name, p.ID[:8])
-			}
-			for {
-				fmt.Printf("Enter choice [0-%d]: ", len(projects))
-				var choice int
-				_, err := fmt.Scanln(&choice)
-				if err != nil || choice < 0 || choice > len(projects) {
-					fmt.Println("Invalid choice.")
-					continue
-				}
-				if choice > 0 {
-					projectID = projects[choice-1].ID
-					fmt.Printf("📁 Using project: %s (%s)\n", projects[choice-1].Name, projectID[:8])
-					break
-				} else {
-					break // choice == 0
-				}
-			}
+func selectOrCreateProject(projectRepo *repositories.ProjectRepo, projectID string) string {
+	if projectID != "" {
+		return projectID
+	}
+	projects, _, _ := projectRepo.List(context.Background(), 1000, 0)
+	if len(projects) > 0 {
+		fmt.Println("📁 Select a project for this deployment:")
+		fmt.Println("  [0] Create a new project")
+		for i, p := range projects {
+			fmt.Printf("  [%d] %s (%s)\n", i+1, p.Name, p.ID[:8])
 		}
-
-		if projectID == "" {
-			defaultName := utils.GenerateRandomName()
-			fmt.Printf("📁 New project name (press Enter to use '%s'): ", defaultName)
-			var newName string
-			fmt.Scanln(&newName)
-			newName = strings.TrimSpace(newName)
-			if newName == "" {
-				newName = defaultName
+		for {
+			fmt.Printf("Enter choice [0-%d]: ", len(projects))
+			var choice int
+			_, err := fmt.Scanln(&choice)
+			if err != nil || choice < 0 || choice > len(projects) {
+				fmt.Println("Invalid choice.")
+				continue
 			}
-			p := &models.ProjectConfig{
-				ID:        uuid.New().String(),
-				Name:      newName,
-				CreatedAt: time.Now(),
-				UpdatedAt: time.Now(),
+			if choice > 0 {
+				fmt.Printf("📁 Using project: %s (%s)\n", projects[choice-1].Name, projects[choice-1].ID[:8])
+				return projects[choice-1].ID
+			} else {
+				break
 			}
-			if err := projectRepo.Create(context.Background(), p); err != nil {
-				exitError("Failed to create project: %v", err)
-			}
-			projectID = p.ID
-			fmt.Printf("📁 Created project: %s (%s)\n", p.Name, projectID[:8])
 		}
 	}
 
+	defaultName := utils.GenerateRandomName()
+	fmt.Printf("📁 New project name (press Enter to use '%s'): ", defaultName)
+	var newName string
+	fmt.Scanln(&newName)
+	newName = strings.TrimSpace(newName)
+	if newName == "" {
+		newName = defaultName
+	}
+	p := &models.ProjectConfig{
+		ID:        uuid.New().String(),
+		Name:      newName,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+	if err := projectRepo.Create(context.Background(), p); err != nil {
+		exitError("Failed to create project: %v", err)
+	}
+	fmt.Printf("📁 Created project: %s (%s)\n", p.Name, p.ID[:8])
+	return p.ID
+}
+
+func setupEnvironment(envRepo *repositories.EnvironmentRepo, projectID string) string {
 	envs, _ := envRepo.ListByProject(context.Background(), projectID)
-	var envID string
 	if len(envs) > 0 {
-		envID = envs[0].ID
-	} else {
-		env := &models.EnvironmentConfig{
-			ID:        uuid.New().String(),
-			ProjectID: projectID,
-			Name:      "production",
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
-		}
-		if err := envRepo.Create(context.Background(), env); err != nil {
-			exitError("Failed to create environment: %v", err)
-		}
-		envID = env.ID
-		fmt.Println("  Created environment: production")
+		return envs[0].ID
 	}
+	env := &models.EnvironmentConfig{
+		ID:        uuid.New().String(),
+		ProjectID: projectID,
+		Name:      "production",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+	if err := envRepo.Create(context.Background(), env); err != nil {
+		exitError("Failed to create environment: %v", err)
+	}
+	fmt.Println("  Created environment: production")
+	return env.ID
+}
 
+func setupAppService(appRepo *repositories.AppServiceRepo, projectID, envID, appName string, dArgs deployArgs) *models.AppService {
 	apps, _ := appRepo.ListByProject(context.Background(), projectID)
-	var svc *models.AppService
 	for _, a := range apps {
 		if a.Name == appName {
-			svc = a
-			break
+			fmt.Printf("📦 Using existing app: %s (%s)\n", appName, a.ID[:8])
+			return a
 		}
 	}
-	if svc == nil {
-		svc = &models.AppService{
-			ID:            uuid.New().String(),
-			ProjectID:     projectID,
-			EnvironmentID: envID,
-			Name:          appName,
-			RepositoryURL: gitURL,
-			Branch:        branch,
-			RootDirectory: rootDir,
-			InternalPort:  port,
-			Status:        "created",
-			CreatedAt:     time.Now(),
-			UpdatedAt:     time.Now(),
-		}
-		if imageRef != "" {
-			svc.ImageRef = imageRef
-		}
-		if err := appRepo.Create(context.Background(), svc); err != nil {
-			exitError("Failed to create app: %v", err)
-		}
-		fmt.Printf("📦 Created app: %s (%s)\n", appName, svc.ID[:8])
-	} else {
-		fmt.Printf("📦 Using existing app: %s (%s)\n", appName, svc.ID[:8])
+
+	svc := &models.AppService{
+		ID:            uuid.New().String(),
+		ProjectID:     projectID,
+		EnvironmentID: envID,
+		Name:          appName,
+		RepositoryURL: dArgs.gitURL,
+		Branch:        dArgs.branch,
+		RootDirectory: dArgs.rootDir,
+		InternalPort:  dArgs.port,
+		Status:        "created",
+		CreatedAt:     time.Now(),
+		UpdatedAt:     time.Now(),
 	}
+	if dArgs.imageRef != "" {
+		svc.ImageRef = dArgs.imageRef
+	}
+	if err := appRepo.Create(context.Background(), svc); err != nil {
+		exitError("Failed to create app: %v", err)
+	}
+	fmt.Printf("📦 Created app: %s (%s)\n", appName, svc.ID[:8])
+	return svc
+}
 
-	deployer := engine.NewDeployer(dockerClient, &dbDeployerStore{db: db, vault: vlt})
-
+func performDeployment(deployer *engine.Deployer, dockerClient *client.Client, svc *models.AppService, dArgs deployArgs, dataDir string) {
 	switch {
-	case gitURL != "":
+	case dArgs.gitURL != "":
 		cloneDir := filepath.Join(dataDir, "builds", svc.ID)
 		_ = os.RemoveAll(cloneDir)
 		_ = os.MkdirAll(cloneDir, 0o755)
-		fmt.Printf("📥 Cloning %s (branch: %s)...\n", gitURL, branch)
-		cloneCmd := exec.Command("git", "clone", "--depth", "1", "--branch", branch, gitURL, cloneDir)
+		fmt.Printf("📥 Cloning %s (branch: %s)...\n", dArgs.gitURL, dArgs.branch)
+		cloneCmd := exec.Command("git", "clone", "--depth", "1", "--branch", dArgs.branch, dArgs.gitURL, cloneDir)
 		cloneCmd.Stdout = os.Stdout
 		cloneCmd.Stderr = os.Stderr
 		if err := cloneCmd.Run(); err != nil {
 			exitError("Git clone failed: %v", err)
-		}
-		project, err := projectRepo.Get(context.Background(), projectID)
-		if err != nil {
-			exitError("Failed to load project: %v", err)
 		}
 		fmt.Println("🔨 Building and deploying...")
 		srcDir := cloneDir
 		if svc.RootDirectory != "" {
 			srcDir = filepath.Join(cloneDir, svc.RootDirectory)
 		}
-		containerID, err := deployer.Deploy(context.Background(), project, srcDir, os.Stdout)
+		containerID, err := deployer.DeployAppService(context.Background(), svc, srcDir, os.Stdout)
 		if err != nil {
 			exitError("Deployment failed: %v", err)
 		}
 		fmt.Printf("\n✅ Deployed! Container: %s\n", containerID)
 
-	case imageRef != "":
-		fmt.Printf("🐳 Deploying image %s...\n", imageRef)
+	case dArgs.imageRef != "":
+		fmt.Printf("🐳 Deploying image %s...\n", dArgs.imageRef)
 		containerID, err := deployer.DeployImage(context.Background(), svc, os.Stdout)
 		if err != nil {
 			exitError("Image deploy failed: %v", err)
 		}
-		slog.Info("container started from image", "image", imageRef, "containerID", containerID)
+		slog.Info("container started from image", "image", dArgs.imageRef, "containerID", containerID)
 		fmt.Printf("\n✅ Deployed! Container: %s\n", containerID)
 
-	case composePath != "":
-		fmt.Printf("📦 Deploying compose file %s...\n", composePath)
+	case dArgs.composePath != "":
+		fmt.Printf("📦 Deploying compose file %s...\n", dArgs.composePath)
 		composeDeployer := engine.NewComposeDeployer(dockerClient)
-		services, err := composeDeployer.Deploy(context.Background(), composePath, projectID)
+		services, err := composeDeployer.Deploy(context.Background(), dArgs.composePath, dArgs.projectID)
 		if err != nil {
 			exitError("Compose deploy failed: %v", err)
 		}
@@ -277,12 +297,12 @@ func runDeploy(args []string) {
 			fmt.Printf("   - %s (%s)\n", s.Name, s.ContainerID[:12])
 		}
 
-	case archivePath != "":
-		fmt.Printf("📦 Deploying archive %s...\n", archivePath)
+	case dArgs.archivePath != "":
+		fmt.Printf("📦 Deploying archive %s...\n", dArgs.archivePath)
 		archiveDir := filepath.Join(dataDir, "builds", svc.ID, "archive")
 		_ = os.RemoveAll(archiveDir)
 		_ = os.MkdirAll(archiveDir, 0o755)
-		f, err := os.Open(archivePath)
+		f, err := os.Open(dArgs.archivePath)
 		if err != nil {
 			exitError("Failed to open archive: %v", err)
 		}
@@ -293,20 +313,18 @@ func runDeploy(args []string) {
 		f.Close()
 
 		srcDir := findSourceDir(archiveDir)
-		project, err := projectRepo.Get(context.Background(), projectID)
-		if err != nil {
-			exitError("Failed to load project: %v", err)
-		}
 		fmt.Println("🔨 Building and deploying...")
-		containerID, err := deployer.Deploy(context.Background(), project, srcDir, os.Stdout)
+		containerID, err := deployer.DeployAppService(context.Background(), svc, srcDir, os.Stdout)
 		if err != nil {
 			exitError("Deployment failed: %v", err)
 		}
 		fmt.Printf("\n✅ Deployed! Container: %s\n", containerID)
 	}
 
-	fmt.Printf("   App: %s (%s)\n", appName, svc.ID[:8])
+	fmt.Printf("   App: %s (%s)\n", svc.Name, svc.ID[:8])
+}
 
+func printDeploymentURL(settingsRepo *repositories.SettingsRepo, appName string) {
 	wildcard := ""
 	settings, err := settingsRepo.GetServerSettings(context.Background())
 	if err == nil {

@@ -10,11 +10,10 @@ import (
 
 type ServiceLinker struct {
 	databases repositories.DatabaseRepository
-	storages  repositories.StorageRepository
 }
 
-func NewServiceLinker(dbRepo repositories.DatabaseRepository, stRepo repositories.StorageRepository) *ServiceLinker {
-	return &ServiceLinker{databases: dbRepo, storages: stRepo}
+func NewServiceLinker(dbRepo repositories.DatabaseRepository) *ServiceLinker {
+	return &ServiceLinker{databases: dbRepo}
 }
 
 func buildDatabaseEnvVars(db *models.Database) map[string]string {
@@ -73,19 +72,6 @@ func buildDatabaseEnvVars(db *models.Database) map[string]string {
 	return vars
 }
 
-func buildStorageEnvVars(st *models.Storage) map[string]string {
-	vars := make(map[string]string)
-	if st.Type == "minio" {
-		vars["S3_ENDPOINT"] = fmt.Sprintf("http://%s:9000", st.InternalDNS)
-		vars["S3_ACCESS_KEY"] = st.AccessKey
-		vars["S3_SECRET_KEY"] = st.SecretKey
-		vars["S3_BUCKET"] = st.BucketName
-		vars["MINIO_URL"] = fmt.Sprintf("http://%s:9000", st.InternalDNS)
-		vars["MINIO_CONSOLE_URL"] = fmt.Sprintf("http://%s:9001", st.InternalDNS)
-	}
-	return vars
-}
-
 func (sl *ServiceLinker) GetLinkedEnvironmentVariables(ctx context.Context, projectID string) (map[string]string, error) {
 	envMap := make(map[string]string)
 	if projectID == "" {
@@ -101,15 +87,7 @@ func (sl *ServiceLinker) GetLinkedEnvironmentVariables(ctx context.Context, proj
 			envMap[k] = v
 		}
 	}
-	storages, err := sl.storages.ListByProject(ctx, projectID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to list linked storage for project %s: %w", projectID, err)
-	}
-	for _, st := range storages {
-		for k, v := range buildStorageEnvVars(st) {
-			envMap[k] = v
-		}
-	}
+
 	return envMap, nil
 }
 
@@ -128,17 +106,6 @@ func (sl *ServiceLinker) GetNamespacedVariables(ctx context.Context, projectID s
 		vars := buildDatabaseEnvVars(db)
 		if len(vars) > 0 {
 			registry[db.Name] = vars
-		}
-	}
-
-	storages, err := sl.storages.ListByProject(ctx, projectID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to list storages for interpolation: %w", err)
-	}
-	for _, st := range storages {
-		vars := buildStorageEnvVars(st)
-		if len(vars) > 0 {
-			registry[st.Name] = vars
 		}
 	}
 

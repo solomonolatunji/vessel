@@ -126,3 +126,31 @@ func (s *AppService) DeleteVariable(ctx context.Context, id string) error {
 	}
 	return s.varRepo.Delete(ctx, id)
 }
+
+func (s *AppService) CreateWebhook(ctx context.Context, w *models.Webhook) (*models.Webhook, error) {
+	if w == nil || w.ServiceID == "" || w.URL == "" {
+		return nil, errors.New("valid webhook with serviceId and url required")
+	}
+	if w.ID == "" {
+		w.ID = uuid.New().String()
+	}
+	w.CreatedAt = time.Now()
+	if err := s.appRepo.CreateWebhook(ctx, w); err != nil {
+		return nil, err
+	}
+	return w, nil
+}
+
+func (s *AppService) ListWebhooks(ctx context.Context, serviceID string) ([]*models.Webhook, error) {
+	if serviceID == "" {
+		return nil, errors.New("serviceId required")
+	}
+	return s.appRepo.ListWebhooksByService(ctx, serviceID)
+}
+
+func (s *AppService) DeleteWebhook(ctx context.Context, id, serviceID string) error {
+	if id == "" || serviceID == "" {
+		return errors.New("id and serviceId required")
+	}
+	return s.appRepo.DeleteWebhook(ctx, id, serviceID)
+}

@@ -123,35 +123,3 @@ func (s *GitAppsService) SaveGithubApp(ctx context.Context, app *models.GithubAp
 func (s *GitAppsService) DeleteGithubApp(ctx context.Context, id string) error {
 	return deleteApp(ctx, id, s.repo.DeleteGithubApp)
 }
-
-func (s *GitAppsService) ListGitlabApps(ctx context.Context) ([]models.GitlabApp, error) {
-	return listApps(ctx, s.repo.ListGitlabApps)
-}
-
-func (s *GitAppsService) GetGitlabApp(ctx context.Context, id string) (*models.GitlabApp, error) {
-	return getApp(ctx, id, s.repo.GetGitlabApp)
-}
-
-func (s *GitAppsService) SaveGitlabApp(ctx context.Context, app *models.GitlabApp) error {
-	return saveApp(ctx, app, func(a *models.GitlabApp) string { return a.ID }, func(a *models.GitlabApp, id string) { a.ID = id }, s.repo.SaveGitlabApp)
-}
-
-func (s *GitAppsService) DeleteGitlabApp(ctx context.Context, id string) error {
-	return deleteApp(ctx, id, s.repo.DeleteGitlabApp)
-}
-
-func (s *GitAppsService) ListBitbucketApps(ctx context.Context) ([]models.BitbucketApp, error) {
-	return listApps(ctx, s.repo.ListBitbucketApps)
-}
-
-func (s *GitAppsService) GetBitbucketApp(ctx context.Context, id string) (*models.BitbucketApp, error) {
-	return getApp(ctx, id, s.repo.GetBitbucketApp)
-}
-
-func (s *GitAppsService) SaveBitbucketApp(ctx context.Context, app *models.BitbucketApp) error {
-	return saveApp(ctx, app, func(a *models.BitbucketApp) string { return a.ID }, func(a *models.BitbucketApp, id string) { a.ID = id }, s.repo.SaveBitbucketApp)
-}
-
-func (s *GitAppsService) DeleteBitbucketApp(ctx context.Context, id string) error {
-	return deleteApp(ctx, id, s.repo.DeleteBitbucketApp)
-}

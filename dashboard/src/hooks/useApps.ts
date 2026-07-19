@@ -29,8 +29,9 @@ export const useCreateApp = () => {
       environmentId: string;
       payload: Parameters<typeof appsService.createApp>[1];
     }) => appsService.createApp(payload.environmentId, payload.payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['apps'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['apps'] });
+      await queryClient.invalidateQueries({ queryKey: ['canvas'] });
     },
   });
 };
@@ -42,8 +43,9 @@ export const useUpdateApp = () => {
       appId: string;
       payload: Parameters<typeof appsService.updateApp>[1];
     }) => appsService.updateApp(payload.appId, payload.payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['apps'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['apps'] });
+      await queryClient.invalidateQueries({ queryKey: ['canvas'] });
     },
   });
 };
@@ -52,8 +54,9 @@ export const useDeleteApp = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: { appId: string }) => appsService.deleteApp(payload.appId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['apps'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['apps'] });
+      await queryClient.invalidateQueries({ queryKey: ['canvas'] });
     },
   });
 };
@@ -62,8 +65,9 @@ export const useStopApp = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: { appId: string }) => appsService.stopApp(payload.appId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['apps'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['apps'] });
+      await queryClient.invalidateQueries({ queryKey: ['canvas'] });
     },
   });
 };
@@ -72,8 +76,9 @@ export const useRedeployApp = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: { appId: string }) => appsService.redeployApp(payload.appId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['apps'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['apps'] });
+      await queryClient.invalidateQueries({ queryKey: ['canvas'] });
     },
   });
 };
@@ -82,8 +87,9 @@ export const useRestartApp = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: { appId: string }) => appsService.restartApp(payload.appId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['apps'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['apps'] });
+      await queryClient.invalidateQueries({ queryKey: ['canvas'] });
     },
   });
 };

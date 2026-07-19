@@ -15,8 +15,8 @@ export const useSaveCode = () => {
       serviceId: string;
       payload: { codeContent: string; runtime?: string };
     }) => serverlessService.saveCode(payload.serviceId, payload.payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['serverless'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['serverless'] });
     },
   });
 };

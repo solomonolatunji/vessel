@@ -13,8 +13,8 @@ export const useConnect = () => {
   return useMutation({
     mutationFn: (payload: { payload: Parameters<typeof gitService.connect>[0] }) =>
       gitService.connect(payload.payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['git'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['git'] });
     },
   });
 };
@@ -23,8 +23,8 @@ export const useDisconnect = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: { provider: string }) => gitService.disconnect(payload.provider),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['git'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['git'] });
     },
   });
 };

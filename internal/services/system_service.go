@@ -15,6 +15,11 @@ import (
 	"vessl.dev/vessl/internal/models"
 )
 
+var (
+	procStatPath    = "/proc/stat"
+	procMeminfoPath = "/proc/meminfo"
+)
+
 type SystemService struct {
 	prevIdle  uint64
 	prevTotal uint64
@@ -83,7 +88,7 @@ func (s *SystemService) getCPUStats() models.CPUStats {
 }
 
 func readCPUTimes() (uint64, uint64) {
-	data, err := os.ReadFile("/proc/stat")
+	data, err := os.ReadFile(procStatPath)
 	if err != nil {
 		return 0, 0
 	}
@@ -107,7 +112,7 @@ func readCPUTimes() (uint64, uint64) {
 }
 
 func getMemoryStats() models.MemoryStats {
-	data, err := os.ReadFile("/proc/meminfo")
+	data, err := os.ReadFile(procMeminfoPath)
 	if err != nil {
 		return models.MemoryStats{}
 	}

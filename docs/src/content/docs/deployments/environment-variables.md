@@ -26,17 +26,12 @@ Example:
 DATABASE_URL=${postgres-db.POSTGRES_URL}
 ```
 
-That makes app configuration easier to keep correct after Railway imports, database recreation, or Vessl migration bundle restores.
+That makes app configuration easier to keep correct after database recreation, or Vessl migration bundle restores.
 
 ## `.env.example` Suggestions
 
 For GitHub repository services, Vessl can inspect `.env.example` variables from the selected branch and root directory. These suggestions help you remember required app variables without copying real secrets into source control.
 
-## Railway Imports
-
-Railway imports can copy service variables. The default import option excludes `RAILWAY_*` variables because they usually describe Railway's runtime, not the app's portable configuration.
-
-After a Railway import, Vessl syncs database variables for recreated database services so app services point at the Vessl-managed database URLs.
 
 ## Secret Handling
 

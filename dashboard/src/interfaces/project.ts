@@ -1,7 +1,6 @@
 import type { BaseResponse, PaginatedData } from './base';
 import type { Database } from './database';
 import type { AppService } from './deployment';
-import type { Storage } from './storage';
 
 export type MemberPermission = 'admin' | 'member' | 'viewer';
 export type MemberStatus = 'pending' | 'accepted';
@@ -51,7 +50,7 @@ export interface CanvasSummary {
   environmentsCount: number;
   appsCount: number;
   databasesCount: number;
-  storageCount: number;
+
   onlineServices: number;
   totalServices: number;
   serviceIcons: string[];
@@ -64,7 +63,6 @@ export interface EnvironmentCanvas {
   environment: EnvironmentConfig;
   apps: AppService[];
   databases: Database[];
-  storage: Storage[];
 }
 
 export interface CreateProjectRequest {

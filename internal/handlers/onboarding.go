@@ -8,7 +8,6 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/services"
 	"vessl.dev/vessl/internal/utils"
 )
@@ -70,12 +69,6 @@ type setupRequest struct {
 	Env setupEnv `json:"env"`
 
 	DefaultWildcardDomain string `json:"defaultWildcardDomain,omitempty"`
-
-	S3AccountID       string `json:"s3AccountId,omitempty"`
-	S3Bucket          string `json:"s3Bucket,omitempty"`
-	S3AccessKeyID     string `json:"s3AccessKeyId,omitempty"`
-	S3SecretAccessKey string `json:"s3SecretAccessKey,omitempty"`
-	S3Skip            bool   `json:"s3Skip,omitempty"`
 }
 
 // @Summary Complete onboarding setup
@@ -128,18 +121,6 @@ func (h *OnboardingHandler) Setup(c echo.Context) error {
 		if updated {
 			_ = h.settingsRepo.UpdateSettings(ctx, settings)
 		}
-	}
-
-	if !req.S3Skip && req.S3AccountID != "" && req.S3Bucket != "" && req.S3AccessKeyID != "" && req.S3SecretAccessKey != "" {
-		endpoint := fmt.Sprintf("https://%s.r2.cloudflarestorage.com", req.S3AccountID)
-		_ = h.backupService.CreateS3Destination(ctx, &models.S3Destination{
-			Name:            "Default R2 Backup",
-			Endpoint:        endpoint,
-			Bucket:          req.S3Bucket,
-			Region:          "auto",
-			AccessKeyID:     req.S3AccessKeyID,
-			SecretAccessKey: req.S3SecretAccessKey,
-		})
 	}
 
 	res := map[string]any{

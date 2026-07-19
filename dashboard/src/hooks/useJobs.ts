@@ -20,8 +20,9 @@ export const useCreateJob = () => {
   return useMutation({
     mutationFn: (payload: { payload: Parameters<typeof jobsService.createJob>[0] }) =>
       jobsService.createJob(payload.payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      await queryClient.invalidateQueries({ queryKey: ['canvas'] });
     },
   });
 };
@@ -30,8 +31,9 @@ export const useDeleteJob = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: { id: string }) => jobsService.deleteJob(payload.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      await queryClient.invalidateQueries({ queryKey: ['canvas'] });
     },
   });
 };
@@ -40,8 +42,9 @@ export const useTriggerJob = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: { id: string }) => jobsService.triggerJob(payload.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      await queryClient.invalidateQueries({ queryKey: ['canvas'] });
     },
   });
 };

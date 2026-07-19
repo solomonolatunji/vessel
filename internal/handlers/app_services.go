@@ -1,7 +1,10 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
+	"net/url"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 
@@ -30,6 +33,13 @@ func NewAppHandler(s *services.AppService, ps *services.ProjectService, d *engin
 }
 
 func (h *AppHandler) verifyProjectOwnership(c echo.Context, projectID string) error {
+	user := middleware.GetUserClaimsFromContext(c.Request().Context())
+	if user != nil && user.Role == "api" {
+		tokenProjectID, ok := c.Get("project_id").(string)
+		if ok && tokenProjectID != projectID {
+			return utils.Error(c, http.StatusForbidden, "token does not have access to this project")
+		}
+	}
 	_, err := h.projectService.GetProject(c.Request().Context(), projectID)
 	if err != nil {
 		return utils.Error(c, http.StatusNotFound, "project not found")
@@ -282,4 +292,119 @@ func (h *AppHandler) RestartService(c echo.Context) error {
 	existing.Status = models.AppServiceStatusRunning
 	_ = h.appService.UpdateAppService(c.Request().Context(), existing)
 	return utils.Success(c, "Service restarted successfully", existing)
+}
+
+// @Summary ListWebhooks endpoint
+// @Description ListWebhooks endpoint
+// @Tags Services
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Router /apps/{id}/webhooks [get]
+func (h *AppHandler) ListWebhooks(c echo.Context) error {
+	serviceID := c.Param("id")
+	if serviceID == "" {
+		return utils.Error(c, http.StatusBadRequest, "missing serviceId")
+	}
+	existing, err := h.appService.GetAppService(c.Request().Context(), serviceID)
+	if err != nil || existing == nil {
+		var notFoundErr *utils.NotFoundError
+		if err != nil && !errors.As(err, &notFoundErr) {
+			return utils.Error(c, http.StatusInternalServerError, "failed to look up app service")
+		}
+		return utils.Error(c, http.StatusNotFound, "app service not found")
+	}
+	if err := h.verifyProjectOwnership(c, existing.ProjectID); err != nil {
+		return err
+	}
+	list, err := h.appService.ListWebhooks(c.Request().Context(), serviceID)
+	if err != nil {
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
+	}
+	return utils.Success(c, "Operation successful", list)
+}
+
+// @Summary CreateWebhook endpoint
+// @Description CreateWebhook endpoint
+// @Tags Services
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Param request body models.Webhook true "Payload"
+// @Router /apps/{id}/webhooks [post]
+func (h *AppHandler) CreateWebhook(c echo.Context) error {
+	serviceID := c.Param("id")
+	if serviceID == "" {
+		return utils.Error(c, http.StatusBadRequest, "missing serviceId")
+	}
+	existing, err := h.appService.GetAppService(c.Request().Context(), serviceID)
+	if err != nil || existing == nil {
+		var notFoundErr *utils.NotFoundError
+		if err != nil && !errors.As(err, &notFoundErr) {
+			return utils.Error(c, http.StatusInternalServerError, "failed to look up app service")
+		}
+		return utils.Error(c, http.StatusNotFound, "app service not found")
+	}
+	if err := h.verifyProjectOwnership(c, existing.ProjectID); err != nil {
+		return err
+	}
+	var req models.CreateWebhookRequest
+	if err := c.Bind(&req); err != nil {
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
+	}
+	req.URL = strings.TrimSpace(req.URL)
+	if req.URL == "" {
+		return utils.Error(c, http.StatusBadRequest, "missing url")
+	}
+	parsedURL, err := url.Parse(req.URL)
+	if err != nil || !parsedURL.IsAbs() || (parsedURL.Scheme != "http" && parsedURL.Scheme != "https") {
+		return utils.Error(c, http.StatusBadRequest, "invalid webhook url: must be an absolute http/https url")
+	}
+	for _, et := range req.EventTypes {
+		if strings.Contains(et, ",") {
+			return utils.Error(c, http.StatusBadRequest, "event type cannot contain commas")
+		}
+	}
+	webhook := models.Webhook{
+		ServiceID:             serviceID,
+		URL:                   req.URL,
+		EventTypes:            req.EventTypes,
+		IncludePREnvironments: req.IncludePREnvironments,
+	}
+	created, err := h.appService.CreateWebhook(c.Request().Context(), &webhook)
+	if err != nil {
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
+	}
+	return utils.Created(c, "Created successfully", created)
+}
+
+// @Summary DeleteWebhook endpoint
+// @Description DeleteWebhook endpoint
+// @Tags Services
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Param webhookId path string true "webhookId"
+// @Router /apps/{id}/webhooks/{webhookId} [delete]
+func (h *AppHandler) DeleteWebhook(c echo.Context) error {
+	serviceID := c.Param("id")
+	webhookID := c.Param("webhookId")
+	if serviceID == "" || webhookID == "" {
+		return utils.Error(c, http.StatusBadRequest, "missing serviceId or webhookId")
+	}
+	existing, err := h.appService.GetAppService(c.Request().Context(), serviceID)
+	if err != nil || existing == nil {
+		var notFoundErr *utils.NotFoundError
+		if err != nil && !errors.As(err, &notFoundErr) {
+			return utils.Error(c, http.StatusInternalServerError, "failed to look up app service")
+		}
+		return utils.Error(c, http.StatusNotFound, "app service not found")
+	}
+	if err := h.verifyProjectOwnership(c, existing.ProjectID); err != nil {
+		return err
+	}
+	if err := h.appService.DeleteWebhook(c.Request().Context(), webhookID, serviceID); err != nil {
+		return utils.Error(c, http.StatusInternalServerError, err.Error())
+	}
+	return c.NoContent(http.StatusNoContent)
 }

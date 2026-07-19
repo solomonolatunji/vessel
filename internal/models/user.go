@@ -37,7 +37,7 @@ type PersonalAccessToken struct {
 	Prefix          string    `json:"prefix" db:"prefix"`
 	AccessLevel     string    `json:"accessLevel" db:"access_level"`
 	ProjectScope    string    `json:"projectScope" db:"project_scope"`
-	AllowedProjects *string   `json:"allowedProjects" db:"allowed_projects"` // JSON array of project IDs if specific
+	AllowedProjects *string   `json:"allowedProjects" db:"allowed_projects"`
 	ExpiresAt       time.Time `json:"expiresAt" db:"expires_at"`
 	CreatedAt       time.Time `json:"createdAt" db:"created_at"`
 }
@@ -51,7 +51,7 @@ type CreatePATRequest struct {
 	Name            string     `json:"name"`
 	AccessLevel     string     `json:"accessLevel"`
 	ProjectScope    string     `json:"projectScope"`
-	AllowedProjects []string   `json:"allowedProjects"` // Array of strings in the API
+	AllowedProjects []string   `json:"allowedProjects"`
 	ExpiresAt       *time.Time `json:"expiresAt"`
 }
 

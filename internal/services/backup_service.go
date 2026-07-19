@@ -37,8 +37,8 @@ func (s *BackupService) CreateConfig(ctx context.Context, cfg *models.BackupConf
 	if cfg.Schedule == "" {
 		cfg.Schedule = "0 2 * * *"
 	}
-	if cfg.RetentionDays == 0 {
-		cfg.RetentionDays = 7
+	if cfg.Timeout == 0 {
+		cfg.Timeout = 3600
 	}
 	cfg.CreatedAt = time.Now().UTC().Format(time.RFC3339)
 	cfg.UpdatedAt = cfg.CreatedAt
@@ -46,7 +46,28 @@ func (s *BackupService) CreateConfig(ctx context.Context, cfg *models.BackupConf
 		return err
 	}
 	if s.manager != nil {
-		_ = s.manager.RegisterBackup(cfg)
+		if err := s.manager.RegisterBackup(cfg); err != nil {
+			return fmt.Errorf("failed to register backup config: %w", err)
+		}
+	}
+	return nil
+}
+
+func (s *BackupService) UpdateConfig(ctx context.Context, cfg *models.BackupConfig) error {
+	if cfg == nil {
+		return errors.New("valid backup config required")
+	}
+	if cfg.Timeout == 0 {
+		cfg.Timeout = 3600
+	}
+	cfg.UpdatedAt = time.Now().UTC().Format(time.RFC3339)
+	if err := s.backupRepo.UpdateConfig(ctx, cfg); err != nil {
+		return err
+	}
+	if s.manager != nil {
+		if err := s.manager.RegisterBackup(cfg); err != nil {
+			return fmt.Errorf("failed to register updated backup config: %w", err)
+		}
 	}
 	return nil
 }
@@ -117,6 +138,23 @@ func (s *BackupService) ListRecordsByConfig(ctx context.Context, configID string
 		return nil, errors.New("config id required")
 	}
 	return s.backupRepo.ListRecordsByConfig(ctx, configID)
+}
+
+func (s *BackupService) GetRecord(ctx context.Context, recordID string) (*models.BackupRecord, error) {
+	if recordID == "" {
+		return nil, errors.New("record id required")
+	}
+	return s.backupRepo.GetRecordByID(ctx, recordID)
+}
+
+func (s *BackupService) DeleteRecord(ctx context.Context, recordID string) error {
+	if recordID == "" {
+		return errors.New("record id required")
+	}
+	if s.manager != nil {
+		s.manager.DeleteBackupRecord(ctx, recordID)
+	}
+	return s.backupRepo.DeleteRecord(ctx, recordID)
 }
 
 func (s *BackupService) RestoreBackup(ctx context.Context, recordID string) error {

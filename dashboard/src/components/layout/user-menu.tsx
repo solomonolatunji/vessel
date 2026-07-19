@@ -60,7 +60,7 @@ export function UserMenu({ collapsed }: UserMenuProps) {
 
           <div className="space-y-0.5 py-1.5">
             <Link
-              to={'/settings' as never}
+              to={'/profile' as never}
               onClick={() => setOpen(false)}
               className="group flex items-center gap-3 rounded-xl px-2.5 py-2 font-medium text-sidebar-foreground/60 text-sm transition-all duration-150 hover:bg-sidebar-accent hover:text-sidebar-foreground active:scale-[0.985]"
             >

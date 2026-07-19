@@ -9,9 +9,9 @@ import type {
 import { apiClient } from '#/lib/apiClient';
 import { handleApiError } from '#/lib/error';
 
-export interface ProjectWebhook {
+export interface ServiceWebhook {
   id: string;
-  projectId: string;
+  serviceId: string;
   url: string;
   eventTypes: string[];
   includePrEnvironments: boolean;
@@ -20,21 +20,21 @@ export interface ProjectWebhook {
 }
 
 export const projectSettingsService = {
-  listWebhooks: async (projectId: string): Promise<BaseResponse<ProjectWebhook[]>> => {
+  listWebhooks: async (serviceId: string): Promise<BaseResponse<ServiceWebhook[]>> => {
     try {
-      return await apiClient.get<BaseResponse<ProjectWebhook[]>>(`/projects/${projectId}/webhooks`);
+      return await apiClient.get<BaseResponse<ServiceWebhook[]>>(`/apps/${serviceId}/webhooks`);
     } catch (error) {
       throw handleApiError(error);
     }
   },
 
   createWebhook: async (
-    projectId: string,
+    serviceId: string,
     payload: CreateWebhookRequest
-  ): Promise<BaseResponse<ProjectWebhook>> => {
+  ): Promise<BaseResponse<ServiceWebhook>> => {
     try {
-      return await apiClient.post<BaseResponse<ProjectWebhook>>(
-        `/projects/${projectId}/webhooks`,
+      return await apiClient.post<BaseResponse<ServiceWebhook>>(
+        `/apps/${serviceId}/webhooks`,
         payload
       );
     } catch (error) {
@@ -42,9 +42,9 @@ export const projectSettingsService = {
     }
   },
 
-  deleteWebhook: async (projectId: string, id: string): Promise<void> => {
+  deleteWebhook: async (serviceId: string, id: string): Promise<void> => {
     try {
-      await apiClient.delete(`/projects/${projectId}/webhooks/${id}`);
+      await apiClient.delete(`/apps/${serviceId}/webhooks/${id}`);
     } catch (error) {
       throw handleApiError(error);
     }

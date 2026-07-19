@@ -64,7 +64,6 @@ Use manual backups:
 - Before imports.
 - Before application migrations.
 - Before database redeploys.
-- After a successful Railway import.
 - Before deleting old services or volumes.
 
 ## Backup Records

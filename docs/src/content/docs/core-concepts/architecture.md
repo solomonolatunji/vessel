@@ -44,7 +44,6 @@ Enabled automatic schedules run in the background for daily, weekly, or monthly 
 
 Vessl supports two migration paths:
 
-- Railway import, which reads Railway projects and recreates supported services in Vessl.
 - Vessl migration bundles, which export a whole Vessl instance into an encrypted `.vessl` file and restore it into another server.
 
-Those paths solve different problems. Railway import translates a Railway project into Vessl services. Vessl bundles move an Vessl instance between servers.
+Vessl bundles move a Vessl instance between servers.

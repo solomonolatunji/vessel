@@ -170,6 +170,95 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/apps/{id}/webhooks": {
+            "get": {
+                "description": "ListWebhooks endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Services"
+                ],
+                "summary": "ListWebhooks endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "post": {
+                "description": "CreateWebhook endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Services"
+                ],
+                "summary": "CreateWebhook endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Webhook"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/apps/{id}/webhooks/{webhookId}": {
+            "delete": {
+                "description": "DeleteWebhook endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Services"
+                ],
+                "summary": "DeleteWebhook endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "webhookId",
+                        "name": "webhookId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/audit-logs": {
             "get": {
                 "description": "Fetches audit logs for the dashboard",
@@ -514,6 +603,38 @@ const docTemplate = `{
                 ],
                 "responses": {}
             },
+            "put": {
+                "description": "Update Backup",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backups"
+                ],
+                "summary": "Update Backup",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Backup ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.BackupConfig"
+                        }
+                    }
+                ],
+                "responses": {}
+            },
             "delete": {
                 "description": "Delete Backup",
                 "consumes": [
@@ -531,6 +652,95 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Backup ID",
                         "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/backups/{id}/records": {
+            "get": {
+                "description": "ListRecords endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backups"
+                ],
+                "summary": "ListRecords endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/backups/{id}/records/{recordId}": {
+            "delete": {
+                "description": "Delete Backup Record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backups"
+                ],
+                "summary": "Delete Backup Record",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Backup ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Record ID",
+                        "name": "recordId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/backups/{id}/records/{recordId}/download": {
+            "get": {
+                "description": "Download Backup Record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/octet-stream"
+                ],
+                "tags": [
+                    "Backups"
+                ],
+                "summary": "Download Backup Record",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Backup ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Record ID",
+                        "name": "recordId",
                         "in": "path",
                         "required": true
                     }
@@ -1612,22 +1822,6 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/oauth/vercel/callback": {
-            "get": {
-                "description": "Callback endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Callback endpoint",
-                "responses": {}
-            }
-        },
         "/one-click": {
             "get": {
                 "description": "Returns available one-click deployable applications",
@@ -1722,6 +1916,38 @@ const docTemplate = `{
                         }
                     }
                 ],
+                "responses": {}
+            }
+        },
+        "/profile/email/request": {
+            "post": {
+                "description": "Request an OTP to change email",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "RequestEmailChange endpoint",
+                "responses": {}
+            }
+        },
+        "/profile/email/verify": {
+            "post": {
+                "description": "Verify the OTP to change email",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "VerifyEmailChange endpoint",
                 "responses": {}
             }
         },
@@ -1934,31 +2160,6 @@ const docTemplate = `{
                     "AppServices"
                 ],
                 "summary": "ListByProject endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/projects/{id}/deploy": {
-            "post": {
-                "description": "DeployProject endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "DeployProject endpoint",
                 "parameters": [
                     {
                         "type": "string",
@@ -2346,95 +2547,6 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/projects/{projectId}/webhooks": {
-            "get": {
-                "description": "ListWebhooks endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "ListWebhooks endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "projectId",
-                        "name": "projectId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "post": {
-                "description": "CreateWebhook endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "CreateWebhook endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "projectId",
-                        "name": "projectId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Payload",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Webhook"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/projects/{projectId}/webhooks/{id}": {
-            "delete": {
-                "description": "DeleteWebhook endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "DeleteWebhook endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "projectId",
-                        "name": "projectId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
         "/s3-destinations": {
             "get": {
                 "description": "ListS3Destinations endpoint",
@@ -2448,6 +2560,31 @@ const docTemplate = `{
                     "Backups"
                 ],
                 "summary": "ListS3Destinations endpoint",
+                "responses": {}
+            },
+            "post": {
+                "description": "CreateS3Destination endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backups"
+                ],
+                "summary": "CreateS3Destination endpoint",
+                "parameters": [
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.S3Destination"
+                        }
+                    }
+                ],
                 "responses": {}
             }
         },
@@ -2834,31 +2971,6 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/settings/git_apps/bitbucket/{id}": {
-            "delete": {
-                "description": "DeleteBitbucketApp endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "DeleteBitbucketApp endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
         "/settings/git_apps/github/manifest-callback": {
             "post": {
                 "description": "ExchangeGithubManifestCode endpoint",
@@ -2967,108 +3079,6 @@ const docTemplate = `{
                     "Settings"
                 ],
                 "summary": "DeployUpdate endpoint",
-                "responses": {}
-            }
-        },
-        "/storage": {
-            "post": {
-                "description": "CreateStorage endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Storage"
-                ],
-                "summary": "CreateStorage endpoint",
-                "parameters": [
-                    {
-                        "description": "Payload",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Storage"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/storage/{id}": {
-            "get": {
-                "description": "GetStorage endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Storage"
-                ],
-                "summary": "GetStorage endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/storage/{id}/start": {
-            "post": {
-                "description": "StartStorage endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Storage"
-                ],
-                "summary": "StartStorage endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/storage/{id}/stop": {
-            "post": {
-                "description": "StopStorage endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Storage"
-                ],
-                "summary": "StopStorage endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
                 "responses": {}
             }
         },
@@ -3187,71 +3197,6 @@ const docTemplate = `{
                     "System"
                 ],
                 "summary": "Run system cleanup",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
-        "/system/migration/railway/import": {
-            "post": {
-                "description": "Imports a project from Railway",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "System"
-                ],
-                "summary": "Import Railway Project",
-                "parameters": [
-                    {
-                        "description": "Import request",
-                        "name": "req",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.RailwayImportRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
-        "/system/migration/railway/projects": {
-            "get": {
-                "description": "Fetches projects from Railway API",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "System"
-                ],
-                "summary": "List Railway Projects",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Railway Personal API Token",
-                        "name": "token",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3406,47 +3351,6 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/vercel/projects": {
-            "get": {
-                "description": "ListProjects endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "ListProjects endpoint",
-                "responses": {}
-            }
-        },
-        "/vercel/projects/{id}/env": {
-            "get": {
-                "description": "GetProjectEnv endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "GetProjectEnv endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
         "/webhooks/git/services/{serviceId}": {
             "post": {
                 "description": "HandleServiceWebhook endpoint",
@@ -3465,31 +3369,6 @@ const docTemplate = `{
                         "type": "string",
                         "description": "serviceId",
                         "name": "serviceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/webhooks/git/{projectId}": {
-            "post": {
-                "description": "HandleProjectWebhook endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Webhooks"
-                ],
-                "summary": "HandleProjectWebhook endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "projectId",
-                        "name": "projectId",
                         "in": "path",
                         "required": true
                     }
@@ -3600,7 +3479,22 @@ const docTemplate = `{
         "handlers.CreatePATRequest": {
             "type": "object",
             "properties": {
+                "accessLevel": {
+                    "type": "string"
+                },
+                "allowedProjects": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "expiresAt": {
+                    "type": "string"
+                },
                 "name": {
+                    "type": "string"
+                },
+                "projectScope": {
                     "type": "string"
                 }
             }
@@ -3657,7 +3551,7 @@ const docTemplate = `{
         "handlers.UpdateProfileRequest": {
             "type": "object",
             "properties": {
-                "email": {
+                "name": {
                     "type": "string"
                 },
                 "role": {
@@ -3721,21 +3615,6 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
-                },
-                "s3AccessKeyId": {
-                    "type": "string"
-                },
-                "s3AccountId": {
-                    "type": "string"
-                },
-                "s3Bucket": {
-                    "type": "string"
-                },
-                "s3SecretAccessKey": {
-                    "type": "string"
-                },
-                "s3Skip": {
-                    "type": "boolean"
                 }
             }
         },
@@ -3844,14 +3723,35 @@ const docTemplate = `{
         "models.BackupConfig": {
             "type": "object",
             "properties": {
+                "backupEnabled": {
+                    "type": "boolean"
+                },
                 "createdAt": {
                     "type": "string"
                 },
                 "databaseId": {
                     "type": "string"
                 },
+                "dbPassword": {
+                    "type": "string"
+                },
+                "dbUser": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "disableLocal": {
+                    "type": "boolean"
+                },
                 "id": {
                     "type": "string"
+                },
+                "maxBackups": {
+                    "type": "integer"
+                },
+                "maxStorageGb": {
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"
@@ -3865,13 +3765,19 @@ const docTemplate = `{
                 "s3DestinationId": {
                     "type": "string"
                 },
+                "s3Enabled": {
+                    "type": "boolean"
+                },
                 "schedule": {
                     "type": "string"
                 },
                 "status": {
                     "$ref": "#/definitions/models.BackupConfigStatus"
                 },
-                "storageId": {
+                "timeout": {
+                    "type": "integer"
+                },
+                "timezone": {
                     "type": "string"
                 },
                 "updatedAt": {
@@ -4368,26 +4274,6 @@ const docTemplate = `{
                 }
             }
         },
-        "models.RailwayImportRequest": {
-            "type": "object",
-            "properties": {
-                "excludeRailwayVars": {
-                    "type": "boolean"
-                },
-                "importData": {
-                    "type": "boolean"
-                },
-                "projectId": {
-                    "type": "string"
-                },
-                "recreateDatabases": {
-                    "type": "boolean"
-                },
-                "token": {
-                    "type": "string"
-                }
-            }
-        },
         "models.RuntimeMode": {
             "type": "string",
             "enum": [
@@ -4411,6 +4297,9 @@ const docTemplate = `{
                 "createdAt": {
                     "type": "string"
                 },
+                "description": {
+                    "type": "string"
+                },
                 "endpoint": {
                     "type": "string"
                 },
@@ -4421,6 +4310,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "projectId": {
+                    "type": "string"
+                },
+                "provider": {
                     "type": "string"
                 },
                 "region": {
@@ -4473,9 +4365,6 @@ const docTemplate = `{
                 },
                 "disableTwoStepConfirmation": {
                     "type": "boolean"
-                },
-                "discordWebhookUrl": {
-                    "type": "string"
                 },
                 "diskUsageCron": {
                     "type": "string"
@@ -4550,86 +4439,6 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
-        },
-        "models.Storage": {
-            "type": "object",
-            "properties": {
-                "accessKey": {
-                    "type": "string"
-                },
-                "apiPort": {
-                    "type": "integer"
-                },
-                "bucketName": {
-                    "type": "string"
-                },
-                "consolePort": {
-                    "type": "integer"
-                },
-                "containerId": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "environmentId": {
-                    "type": "string"
-                },
-                "externalDns": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "internalDns": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "projectId": {
-                    "type": "string"
-                },
-                "secretKey": {
-                    "type": "string"
-                },
-                "status": {
-                    "$ref": "#/definitions/models.StorageStatus"
-                },
-                "type": {
-                    "$ref": "#/definitions/models.StorageType"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "volumePath": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.StorageStatus": {
-            "type": "string",
-            "enum": [
-                "running",
-                "stopped",
-                "error"
-            ],
-            "x-enum-varnames": [
-                "StorageStatusRunning",
-                "StorageStatusStopped",
-                "StorageStatusError"
-            ]
-        },
-        "models.StorageType": {
-            "type": "string",
-            "enum": [
-                "minio",
-                "s3"
-            ],
-            "x-enum-varnames": [
-                "StorageTypeMinIO",
-                "StorageTypeS3"
-            ]
         },
         "models.SystemStats": {
             "type": "object",
@@ -4754,7 +4563,7 @@ const docTemplate = `{
                 "includePrEnvironments": {
                     "type": "boolean"
                 },
-                "projectId": {
+                "serviceId": {
                     "type": "string"
                 },
                 "updatedAt": {

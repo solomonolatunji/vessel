@@ -17,9 +17,6 @@ import (
 )
 
 type ProjectSettingsRepository interface {
-	CreateWebhook(ctx context.Context, w *models.Webhook) error
-	ListWebhooksByProject(ctx context.Context, projectID string) ([]*models.Webhook, error)
-	DeleteWebhook(ctx context.Context, id, projectID string) error
 	CreateToken(ctx context.Context, t *models.ProjectToken, fullToken string) error
 	ListTokensByProject(ctx context.Context, projectID string) ([]*models.ProjectToken, error)
 	DeleteToken(ctx context.Context, id, projectID string) error
@@ -40,55 +37,6 @@ func NewProjectSettingsRepo(db *sql.DB) *ProjectSettingsRepo {
 	return &ProjectSettingsRepo{db: sqlx.NewDb(db, "sqlite")}
 }
 
-func (r *ProjectSettingsRepo) CreateWebhook(ctx context.Context, w *models.Webhook) error {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	if w.ID == "" {
-		w.ID = uuid.NewString()
-	}
-	now := time.Now().UTC()
-	w.CreatedAt = now
-	w.UpdatedAt = now
-	eventTypesStr := strings.Join(w.EventTypes, ",")
-	_, err := r.db.ExecContext(ctx,
-		`INSERT INTO project_webhooks (id, project_id, url, event_types, include_pr_environments, created_at, updated_at)
-		 VALUES (?, ?, ?, ?, ?, ?, ?)`,
-		w.ID, w.ProjectID, w.URL, eventTypesStr, w.IncludePREnvironments, w.CreatedAt, w.UpdatedAt)
-	if err != nil {
-		return fmt.Errorf("create webhook: %w", err)
-	}
-	return nil
-}
-
-func (r *ProjectSettingsRepo) ListWebhooksByProject(ctx context.Context, projectID string) ([]*models.Webhook, error) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	rows, err := r.db.QueryContext(ctx,
-		`SELECT id, project_id, url, event_types, include_pr_environments, created_at, updated_at
-		 FROM project_webhooks WHERE project_id = ? ORDER BY created_at DESC`, projectID)
-	if err != nil {
-		return nil, fmt.Errorf("list webhooks: %w", err)
-	}
-	defer rows.Close()
-	var out []*models.Webhook
-	for rows.Next() {
-		var w models.Webhook
-		var eventsStr string
-		var includePr int
-		if err := rows.Scan(&w.ID, &w.ProjectID, &w.URL, &eventsStr, &includePr, &w.CreatedAt, &w.UpdatedAt); err != nil {
-			return nil, fmt.Errorf("scan webhook: %w", err)
-		}
-		if eventsStr != "" {
-			w.EventTypes = strings.Split(eventsStr, ",")
-		} else {
-			w.EventTypes = []string{}
-		}
-		w.IncludePREnvironments = includePr == 1
-		out = append(out, &w)
-	}
-	return out, rows.Err()
-}
-
 func (r *ProjectSettingsRepo) deleteByIDAndProject(ctx context.Context, table, id, projectID, entityName string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -102,10 +50,6 @@ func (r *ProjectSettingsRepo) deleteByIDAndProject(ctx context.Context, table, i
 		return fmt.Errorf("%s not found", entityName)
 	}
 	return nil
-}
-
-func (r *ProjectSettingsRepo) DeleteWebhook(ctx context.Context, id, projectID string) error {
-	return r.deleteByIDAndProject(ctx, "project_webhooks", id, projectID, "webhook")
 }
 
 func (r *ProjectSettingsRepo) CreateToken(ctx context.Context, t *models.ProjectToken, fullToken string) error {

@@ -15,8 +15,8 @@ export const useCreate = () => {
       projectId: string;
       payload: { domainName: string; redirectTo?: string; pathPrefix?: string };
     }) => domainsService.create(payload.projectId, payload.payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['domains'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['domains'] });
     },
   });
 };
@@ -25,8 +25,8 @@ export const useDelete = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: { id: string }) => domainsService.delete(payload.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['domains'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['domains'] });
     },
   });
 };

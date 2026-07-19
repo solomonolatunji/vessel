@@ -13,7 +13,6 @@ type engineAdapter struct {
 	appRepo        repositories.AppServiceRepository
 	envRepo        repositories.EnvRepository
 	dbRepo         repositories.DatabaseRepository
-	storageRepo    repositories.StorageRepository
 	projectRepo    repositories.ProjectRepository
 	jobRepo        repositories.JobRepository
 	backupRepo     repositories.BackupRepository
@@ -27,7 +26,6 @@ func newEngineAdapter(
 	appRepo repositories.AppServiceRepository,
 	envRepo repositories.EnvRepository,
 	dbRepo repositories.DatabaseRepository,
-	storageRepo repositories.StorageRepository,
 	projectRepo repositories.ProjectRepository,
 	jobRepo repositories.JobRepository,
 	backupRepo repositories.BackupRepository,
@@ -40,7 +38,6 @@ func newEngineAdapter(
 		appRepo:        appRepo,
 		envRepo:        envRepo,
 		dbRepo:         dbRepo,
-		storageRepo:    storageRepo,
 		projectRepo:    projectRepo,
 		jobRepo:        jobRepo,
 		backupRepo:     backupRepo,
@@ -82,20 +79,6 @@ func (a *engineAdapter) UpdateDatabaseStatus(id string, status models.DatabaseSt
 
 func (a *engineAdapter) GetDatabase(id string) (*models.Database, error) {
 	return a.dbRepo.GetByID(context.Background(), id)
-}
-
-func (a *engineAdapter) UpdateStorageStatus(id string, status models.StorageStatus, containerID string) error {
-	st, err := a.storageRepo.GetByID(context.Background(), id)
-	if err != nil {
-		return err
-	}
-	st.Status = status
-	st.ContainerID = containerID
-	return a.storageRepo.Update(context.Background(), st)
-}
-
-func (a *engineAdapter) GetStorage(id string) (*models.Storage, error) {
-	return a.storageRepo.GetByID(context.Background(), id)
 }
 
 func (a *engineAdapter) ListJobs() ([]models.Job, error) {

@@ -100,17 +100,7 @@ type CreateProjectRequest struct {
 type (
 	SetEnvVarsRequest map[string]string
 	VarsRequest       map[string]string
-	Webhook           struct {
-		ID                    string    `json:"id" db:"id"`
-		ProjectID             string    `json:"projectId" db:"project_id"`
-		URL                   string    `json:"url" db:"url"`
-		EventTypes            []string  `json:"eventTypes" db:"-"`
-		IncludePREnvironments bool      `json:"includePrEnvironments" db:"include_pr_environments"`
-		CreatedAt             time.Time `json:"createdAt" db:"created_at"`
-		UpdatedAt             time.Time `json:"updatedAt" db:"updated_at"`
-	}
 )
-
 type ProjectToken struct {
 	ID            string     `json:"id" db:"id"`
 	ProjectID     string     `json:"projectId" db:"project_id"`
@@ -132,12 +122,6 @@ type ProjectMember struct {
 	Status     MemberStatus     `json:"status" db:"status"`
 	InvitedAt  time.Time        `json:"invitedAt" db:"invited_at"`
 	AcceptedAt time.Time        `json:"acceptedAt,omitempty" db:"accepted_at"`
-}
-
-type CreateWebhookRequest struct {
-	URL                   string   `json:"url"`
-	EventTypes            []string `json:"eventTypes"`
-	IncludePREnvironments bool     `json:"includePrEnvironments"`
 }
 
 type CreateTokenRequest struct {

@@ -226,11 +226,20 @@ type BackupConfig struct {
 	ID              string             `json:"id" db:"id"`
 	ProjectID       string             `json:"projectId" db:"project_id"`
 	DatabaseID      string             `json:"databaseId,omitempty" db:"database_id"`
-	StorageID       string             `json:"storageId,omitempty" db:"storage_id"`
 	S3DestinationID string             `json:"s3DestinationId,omitempty" db:"s3_destination_id"`
 	Name            string             `json:"name" db:"name"`
+	Description     string             `json:"description" db:"description"`
+	DbUser          string             `json:"dbUser" db:"db_user"`
+	DbPassword      string             `json:"dbPassword" db:"db_password"`
+	BackupEnabled   bool               `json:"backupEnabled" db:"backup_enabled"`
+	S3Enabled       bool               `json:"s3Enabled" db:"s3_enabled"`
+	DisableLocal    bool               `json:"disableLocal" db:"disable_local"`
 	Schedule        string             `json:"schedule" db:"schedule"`
+	Timezone        string             `json:"timezone" db:"timezone"`
+	Timeout         int                `json:"timeout" db:"timeout"`
 	RetentionDays   int                `json:"retentionDays" db:"retention_days"`
+	MaxBackups      int                `json:"maxBackups" db:"max_backups"`
+	MaxStorageGB    int                `json:"maxStorageGb" db:"max_storage_gb"`
 	Status          BackupConfigStatus `json:"status" db:"status"`
 	CreatedAt       string             `json:"createdAt" db:"created_at"`
 	UpdatedAt       string             `json:"updatedAt" db:"updated_at"`
@@ -264,6 +273,8 @@ type S3Destination struct {
 	ID              string `json:"id" db:"id"`
 	ProjectID       string `json:"projectId" db:"project_id"`
 	Name            string `json:"name" db:"name"`
+	Description     string `json:"description" db:"description"`
+	Provider        string `json:"provider" db:"provider"`
 	Endpoint        string `json:"endpoint" db:"endpoint"`
 	Bucket          string `json:"bucket" db:"bucket"`
 	Region          string `json:"region" db:"region"`

@@ -1,5 +1,5 @@
 import { Brain, Check, ChevronDown, Star } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -82,28 +82,49 @@ export function AISettings() {
   const updateSettings = useUpdateAISettings();
   const [editingId, setEditingId] = useState<string | null>(null);
 
+  const pendingSettings = React.useRef<Record<string, unknown> | null>(null);
+
+  React.useEffect(() => {
+    if (settings?.data && !updateSettings.isPending) {
+      pendingSettings.current = settings.data;
+    }
+  }, [settings?.data, updateSettings.isPending]);
+
   const defaultProvider = (settings?.data?.defaultProvider as string) || 'none';
 
   const handleSetDefault = (id: string) => {
-    updateSettings.mutate({ defaultProvider: id });
+    updateSettings.mutate({
+      ...(pendingSettings.current || settings?.data || {}),
+      defaultProvider: id,
+    });
   };
 
   const handleUpdateKey = (keyField: string, value: string) => {
-    updateSettings.mutate({ [keyField]: value });
+    updateSettings.mutate({
+      ...(pendingSettings.current || settings?.data || {}),
+      [keyField]: value,
+    });
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-6 pb-2 md:flex-row md:items-start">
-        <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-border/50 bg-card/40">
-            <Brain className="h-5 w-5 text-primary" />
+      <div className="mb-5 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary">
+            <Brain className="h-6 w-6" />
           </div>
-          <h1 className="font-bold text-3xl tracking-tight">AI</h1>
+          <div>
+            <h1 className="font-bold text-xl">AI</h1>
+            <p className="text-muted-foreground text-sm">
+              Configure built-in AI models and providers for your Vessl instance.
+            </p>
+          </div>
         </div>
-        <p className="font-bold text-[10px] text-muted-foreground uppercase tracking-widest">
-          DEFAULT <span className="text-foreground">{defaultProvider}</span>
-        </p>
+        <div className="flex shrink-0 items-center gap-4">
+          <p className="font-bold text-[10px] text-muted-foreground uppercase tracking-widest">
+            DEFAULT <span className="text-foreground">{defaultProvider}</span>
+          </p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -140,7 +161,7 @@ export function AISettings() {
                         <DropdownMenuTrigger asChild>
                           <button
                             type="button"
-                            className="flex max-w-[150px] cursor-pointer appearance-none items-center gap-1 truncate bg-transparent font-medium text-xs outline-none hover:text-foreground/80"
+                            className="flex max-w-37.5 cursor-pointer appearance-none items-center gap-1 truncate bg-transparent font-medium text-xs outline-none hover:text-foreground/80"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <span className="truncate">
@@ -150,7 +171,7 @@ export function AISettings() {
                             <ChevronDown className="h-3 w-3 shrink-0" />
                           </button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-[200px]">
+                        <DropdownMenuContent align="start" className="w-50">
                           {provider.models.map((m) => (
                             <DropdownMenuItem
                               key={m.id}
@@ -177,7 +198,7 @@ export function AISettings() {
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleSetDefault(provider.id);
+                    handleSetDefault(isDefault ? 'none' : provider.id);
                   }}
                   className="flex h-8 w-8 items-center justify-center rounded-md border border-border/50 bg-background/50 text-muted-foreground hover:text-foreground"
                 >
@@ -195,7 +216,7 @@ export function AISettings() {
                     type="password"
                     placeholder="sk-..."
                     defaultValue={currentKey}
-                    className="h-8 bg-background/50 font-mono text-xs"
+                    className="h-10 font-mono text-sm"
                     onBlur={(e) => {
                       if (e.target.value !== currentKey) {
                         handleUpdateKey(provider.keyField, e.target.value);

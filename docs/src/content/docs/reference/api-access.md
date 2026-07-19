@@ -62,7 +62,6 @@ Some endpoints always require a browser session and cannot be called with an API
 - `/api/system/*`
 - API key creation and revocation.
 - GitHub repository browsing endpoints such as `/api/github/repos`, `/api/github/branches`, and `/api/github/directories`.
-- Railway import endpoints under `/api/integrations/*`.
 - Onboarding, login, logout, and setup flows.
 
 GitHub webhooks and health checks keep their own public or signature-based behavior.

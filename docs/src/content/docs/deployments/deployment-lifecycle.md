@@ -11,7 +11,6 @@ Deployments can be created by:
 
 - Clicking `Deploy` in the service Deployments tab.
 - GitHub push webhooks for GitHub-connected services.
-- Railway import automation when `Auto-deploy services` is enabled.
 - Vessl migration import follow-up deployment queueing for restored active app services.
 
 Every deployment records its trigger.

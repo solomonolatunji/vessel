@@ -20,6 +20,7 @@ type Server struct {
 	router                 *echo.Echo
 	mcpBridge              *Bridge
 	authRateLimiter        *middleware.RateLimiter
+	otpRateLimiter         *middleware.RateLimiter
 	deployer               *engine.Deployer
 	traefikManager         *engine.TraefikManager
 	dockerClient           *client.Client
@@ -30,7 +31,6 @@ type Server struct {
 	dispatcherService      *core.DispatcherService
 	appServiceHandler      *handlers.AppHandler
 	dbHandler              *handlers.DatabaseHandler
-	storageHandler         *handlers.StorageHandler
 	jobHandler             *handlers.JobHandler
 	canvasHandler          *handlers.CanvasHandler
 	terminalHandler        *handlers.TerminalHandler
@@ -53,7 +53,6 @@ type Server struct {
 	projectEnvHandler      *handlers.ProjectEnvHandler
 	notificationHandler    *handlers.NotificationHandler
 	gitAppsHandler         *handlers.GitAppsHandler
-	vercelHandler          *handlers.VercelHandler
 	serverlessHandler      *handlers.ServerlessHandler
 	systemHandler          *handlers.SystemHandler
 	composeHandler         *handlers.ComposeHandler
@@ -61,7 +60,6 @@ type Server struct {
 	archiveHandler         *handlers.ArchiveHandler
 	migrationHandler       *handlers.MigrationHandler
 	onboardingHandler      *handlers.OnboardingHandler
-	railwayHandler         *handlers.RailwayHandler
 	dnsHandler             *handlers.DNSHandler
 	metricsHandler         *handlers.MetricsHandler
 	logHandler             *handlers.LogHandler

@@ -41,27 +41,3 @@ type GithubApp struct {
 	CreatedAt      time.Time `json:"createdAt" db:"created_at"`
 	UpdatedAt      time.Time `json:"updatedAt" db:"updated_at"`
 }
-
-type GitlabApp struct {
-	ID            string    `json:"id" db:"id"`
-	Name          string    `json:"name" db:"name"`
-	AppID         string    `json:"appId" db:"app_id"`
-	AppSecret     string    `json:"appSecret" db:"app_secret"`
-	WebhookSecret string    `json:"webhookSecret" db:"webhook_secret"`
-	APIURL        string    `json:"apiUrl" db:"api_url"`
-	IsPublic      bool      `json:"isPublic" db:"is_public"`
-	CreatedAt     time.Time `json:"createdAt" db:"created_at"`
-	UpdatedAt     time.Time `json:"updatedAt" db:"updated_at"`
-}
-
-type BitbucketApp struct {
-	ID            string    `json:"id" db:"id"`
-	Name          string    `json:"name" db:"name"`
-	Owner         string    `json:"owner" db:"owner"`
-	ClientID      string    `json:"clientId" db:"client_id"`
-	ClientSecret  string    `json:"clientSecret" db:"client_secret"`
-	WebhookSecret string    `json:"webhookSecret" db:"webhook_secret"`
-	IsPublic      bool      `json:"isPublic" db:"is_public"`
-	CreatedAt     time.Time `json:"createdAt" db:"created_at"`
-	UpdatedAt     time.Time `json:"updatedAt" db:"updated_at"`
-}

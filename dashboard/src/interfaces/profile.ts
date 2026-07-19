@@ -23,5 +23,13 @@ export interface ChangePasswordRequest {
   newPassword?: string;
 }
 
+export interface RequestEmailChangeRequest {
+  newEmail: string;
+}
+
+export interface VerifyEmailChangeRequest {
+  otp: string;
+}
+
 export type GetProfileResponse = BaseResponse<UserProfile>;
 export type UpdateProfileResponse = BaseResponse<UserProfile>;

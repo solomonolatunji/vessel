@@ -140,14 +140,49 @@ func (r *UserRepo) CreatePAT(ctx context.Context, pat *models.PersonalAccessToke
 func (r *UserRepo) ListPATs(ctx context.Context, userID string) ([]*models.PersonalAccessToken, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	var list []*models.PersonalAccessToken
-	err := r.db.SelectContext(ctx, &list, `SELECT id, user_id, name, prefix, access_level, project_scope, allowed_projects, expires_at, created_at FROM personal_access_tokens WHERE user_id = ? ORDER BY created_at DESC`, userID)
+
+	rows, err := r.db.QueryContext(ctx, `SELECT id, user_id, name, prefix, access_level, project_scope, allowed_projects, expires_at, created_at FROM personal_access_tokens WHERE user_id = ? ORDER BY created_at DESC`, userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list personal access tokens: %w", err)
 	}
-	if list == nil {
-		list = make([]*models.PersonalAccessToken, 0)
+	defer rows.Close()
+
+	var list []*models.PersonalAccessToken
+	for rows.Next() {
+		var (
+			id, uid, name, prefix, accessLevel, projectScope, createdAt string
+			allowedProjects, expiresAt                                  *string
+		)
+		if err := rows.Scan(&id, &uid, &name, &prefix, &accessLevel, &projectScope, &allowedProjects, &expiresAt, &createdAt); err != nil {
+			return nil, fmt.Errorf("failed to scan pat: %w", err)
+		}
+
+		cat, _ := time.Parse(time.RFC3339, createdAt)
+		var eat time.Time
+		if expiresAt != nil {
+			parsed, err := time.Parse(time.RFC3339, *expiresAt)
+			if err == nil {
+				eat = parsed
+			}
+		}
+
+		list = append(list, &models.PersonalAccessToken{
+			ID:              id,
+			UserID:          uid,
+			Name:            name,
+			Prefix:          prefix,
+			AccessLevel:     accessLevel,
+			ProjectScope:    projectScope,
+			AllowedProjects: allowedProjects,
+			ExpiresAt:       eat,
+			CreatedAt:       cat,
+		})
 	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
 	return list, nil
 }
 

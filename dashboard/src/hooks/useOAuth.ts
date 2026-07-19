@@ -25,8 +25,8 @@ export const useSaveOAuthProvider = () => {
   return useMutation({
     mutationFn: (payload: { payload: Parameters<typeof oauthService.saveProvider>[0] }) =>
       oauthService.saveProvider(payload.payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['oauth', 'providers'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: oauthKeys.all });
     },
   });
 };

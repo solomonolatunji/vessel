@@ -20,8 +20,11 @@ export const useCreateDatabase = () => {
   return useMutation({
     mutationFn: (payload: { payload: Parameters<typeof databasesService.createDatabase>[0] }) =>
       databasesService.createDatabase(payload.payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['databases'] });
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['databases'] }),
+        queryClient.invalidateQueries({ queryKey: ['canvas'] }),
+      ]);
     },
   });
 };
@@ -30,8 +33,11 @@ export const useDeleteDatabase = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: { id: string }) => databasesService.deleteDatabase(payload.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['databases'] });
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['databases'] }),
+        queryClient.invalidateQueries({ queryKey: ['canvas'] }),
+      ]);
     },
   });
 };
@@ -40,8 +46,11 @@ export const useStartDatabase = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: { id: string }) => databasesService.startDatabase(payload.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['databases'] });
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['databases'] }),
+        queryClient.invalidateQueries({ queryKey: ['canvas'] }),
+      ]);
     },
   });
 };
@@ -50,8 +59,11 @@ export const useStopDatabase = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: { id: string }) => databasesService.stopDatabase(payload.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['databases'] });
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['databases'] }),
+        queryClient.invalidateQueries({ queryKey: ['canvas'] }),
+      ]);
     },
   });
 };
@@ -60,8 +72,11 @@ export const useRestartDatabase = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: { id: string }) => databasesService.restartDatabase(payload.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['databases'] });
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['databases'] }),
+        queryClient.invalidateQueries({ queryKey: ['canvas'] }),
+      ]);
     },
   });
 };
@@ -73,8 +88,8 @@ export const useQueryDatabase = () => {
       id: string;
       payload: Parameters<typeof databasesService.queryDatabase>[1];
     }) => databasesService.queryDatabase(payload.id, payload.payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['databases'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['databases'] });
     },
   });
 };
@@ -105,8 +120,8 @@ export const useInsertTableRow = () => {
       table: string;
       payload: Parameters<typeof databasesService.insertTableRow>[2];
     }) => databasesService.insertTableRow(payload.id, payload.table, payload.payload),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (_, variables) => {
+      await queryClient.invalidateQueries({
         queryKey: ['databases', 'getTableData', variables.id, variables.table],
       });
     },
@@ -121,8 +136,8 @@ export const useUpdateTableRow = () => {
       table: string;
       payload: Parameters<typeof databasesService.updateTableRow>[2];
     }) => databasesService.updateTableRow(payload.id, payload.table, payload.payload),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (_, variables) => {
+      await queryClient.invalidateQueries({
         queryKey: ['databases', 'getTableData', variables.id, variables.table],
       });
     },
@@ -137,8 +152,8 @@ export const useDeleteTableRow = () => {
       table: string;
       payload?: Parameters<typeof databasesService.deleteTableRow>[2];
     }) => databasesService.deleteTableRow(payload.id, payload.table, payload.payload),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (_, variables) => {
+      await queryClient.invalidateQueries({
         queryKey: ['databases', 'getTableData', variables.id, variables.table],
       });
     },
@@ -152,9 +167,11 @@ export const useImportDatabase = () => {
       id: string;
       payload: Parameters<typeof databasesService.importDatabase>[1];
     }) => databasesService.importDatabase(payload.id, payload.payload),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['databases', 'getSchemas', variables.id] });
-      queryClient.invalidateQueries({ queryKey: ['databases', 'getTableData', variables.id] });
+    onSuccess: async (_, variables) => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['databases', 'getSchemas', variables.id] }),
+        queryClient.invalidateQueries({ queryKey: ['databases', 'getTableData', variables.id] }),
+      ]);
     },
   });
 };

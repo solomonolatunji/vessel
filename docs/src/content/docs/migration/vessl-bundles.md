@@ -3,7 +3,7 @@ title: Vessl Bundles
 description: Export and import encrypted Vessl migration bundles between servers.
 ---
 
-Vessl bundles move an Vessl instance from one server to another. They are different from Railway imports: a bundle is an Vessl-to-Vessl migration format.
+Vessl bundles move a Vessl instance from one server to another. A bundle is a Vessl-to-Vessl migration format.
 
 ## Export a Bundle
 
