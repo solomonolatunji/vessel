@@ -53,10 +53,7 @@ export const ImportModal = ({
                 <Database className="h-5 w-5 text-primary" />
                 Import Vessl
               </DialogTitle>
-              <DialogDescription className="mt-1.5 flex items-center gap-1.5 font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                <Database className="h-3 w-3" />
-                Restore an encrypted bundle
-              </DialogDescription>
+              <DialogDescription>Restore an encrypted bundle</DialogDescription>
             </div>
             <DialogClose asChild>
               <Button

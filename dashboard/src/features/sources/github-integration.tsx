@@ -285,10 +285,7 @@ export function GithubIntegration() {
                   <GithubIcon className="h-5 w-5 text-primary" />
                   {editingApp ? 'Edit GitHub App' : 'Connect GitHub App'}
                 </DialogTitle>
-                <DialogDescription className="mt-1.5 flex items-center gap-1.5 font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                  <GithubIcon className="h-3 w-3" />
-                  Configure Github Integration
-                </DialogDescription>
+                <DialogDescription>Configure Github Integration</DialogDescription>
               </div>
               <div className="flex items-center gap-3">
                 {!editingApp && (
@@ -465,10 +462,7 @@ export function GithubIntegration() {
                   <Trash className="h-5 w-5" />
                   Remove GitHub App
                 </DialogTitle>
-                <DialogDescription className="mt-1.5 flex items-center gap-1.5 font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                  <Trash className="h-3 w-3" />
-                  This will break existing deployments
-                </DialogDescription>
+                <DialogDescription>This will break existing deployments</DialogDescription>
               </div>
               <DialogClose asChild>
                 <Button

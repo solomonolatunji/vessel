@@ -164,10 +164,7 @@ export function Security2FASetup() {
                   <ShieldCheck className="h-5 w-5 text-primary" />
                   Setup Two-Factor Auth
                 </DialogTitle>
-                <DialogDescription className="mt-1.5 flex items-center gap-1.5 font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                  <ShieldCheck className="h-3 w-3" />
-                  Scan QR code & enter code
-                </DialogDescription>
+                <DialogDescription>Scan QR code & enter code</DialogDescription>
               </div>
               <DialogClose asChild>
                 <Button
@@ -229,10 +226,7 @@ export function Security2FASetup() {
                   <Trash2 className="h-5 w-5" />
                   Disable Two-Factor Auth
                 </DialogTitle>
-                <DialogDescription className="mt-1.5 flex items-center gap-1.5 font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                  <Trash2 className="h-3 w-3" />
-                  Confirm with authenticator app
-                </DialogDescription>
+                <DialogDescription>Confirm with authenticator app</DialogDescription>
               </div>
               <DialogClose asChild>
                 <Button

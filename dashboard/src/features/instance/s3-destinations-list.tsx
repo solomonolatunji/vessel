@@ -137,10 +137,7 @@ export function S3DestinationsList() {
                     <Database className="h-5 w-5 text-primary" />
                     New S3 Storage
                   </DialogTitle>
-                  <DialogDescription className="mt-1.5 flex items-center gap-1.5 font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                    <Database className="h-3 w-3" />
-                    Connect compatible S3 storage
-                  </DialogDescription>
+                  <DialogDescription>Connect compatible S3 storage</DialogDescription>
                 </div>
                 <DialogClose asChild>
                   <Button

@@ -98,6 +98,14 @@ func (s *OneClickService) DeployApp(ctx context.Context, appID, projectID, name 
 }
 
 func extractOneClickApp(id string, tmpl *engine.ComposeTemplate) *models.OneClickApp {
+	if tmpl.XVessl != nil && tmpl.XVessl.IsOneClick {
+		return &models.OneClickApp{
+			ID:          id,
+			Name:        tmpl.XVessl.Name,
+			Description: tmpl.XVessl.Description,
+			Port:        extractPort(tmpl),
+		}
+	}
 	for _, svc := range tmpl.Services {
 		if svc.XVessl != nil && svc.XVessl.IsOneClick {
 			return &models.OneClickApp{
@@ -112,6 +120,9 @@ func extractOneClickApp(id string, tmpl *engine.ComposeTemplate) *models.OneClic
 }
 
 func findOneClickMetadata(tmpl *engine.ComposeTemplate) *engine.VesslMetadata {
+	if tmpl.XVessl != nil && tmpl.XVessl.IsOneClick {
+		return tmpl.XVessl
+	}
 	for _, svc := range tmpl.Services {
 		if svc.XVessl != nil && svc.XVessl.IsOneClick {
 			return svc.XVessl
@@ -122,7 +133,10 @@ func findOneClickMetadata(tmpl *engine.ComposeTemplate) *engine.VesslMetadata {
 
 func extractPort(tmpl *engine.ComposeTemplate) int {
 	for _, svc := range tmpl.Services {
-		if svc.XVessl != nil && svc.XVessl.IsOneClick {
+		if svc.XVessl != nil && svc.XVessl.IsOneClick && len(svc.Ports) > 0 {
+			return parsePortFromString(svc.Ports)
+		}
+		if tmpl.XVessl != nil && tmpl.XVessl.IsOneClick && len(svc.Ports) > 0 {
 			return parsePortFromString(svc.Ports)
 		}
 	}

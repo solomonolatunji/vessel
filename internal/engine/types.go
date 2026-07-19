@@ -4,6 +4,7 @@ type ComposeTemplate struct {
 	Version  string                    `yaml:"version,omitempty"`
 	Services map[string]ComposeService `yaml:"services"`
 	Volumes  map[string]interface{}    `yaml:"volumes,omitempty"`
+	XVessl   *VesslMetadata            `yaml:"x-vessl,omitempty"`
 }
 
 type ComposeService struct {

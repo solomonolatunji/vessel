@@ -48,10 +48,7 @@ export function CreateProjectModal({
                   <FolderKanban className="h-5 w-5 text-primary" />
                   New Project
                 </DialogTitle>
-                <DialogDescription className="mt-1.5 flex items-center gap-1.5 font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                  <FolderKanban className="h-3 w-3" />
-                  Create the project first, then add services
-                </DialogDescription>
+                <DialogDescription>Create the project first, then add services</DialogDescription>
               </div>
               <DialogClose asChild>
                 <Button

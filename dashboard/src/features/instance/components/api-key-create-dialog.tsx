@@ -78,10 +78,7 @@ export function ApiKeyCreateDialog({ open, onOpenChange, onSuccess }: ApiKeyCrea
                 <Key className="h-5 w-5 text-primary" />
                 Create API key
               </DialogTitle>
-              <DialogDescription className="mt-1.5 flex items-center gap-1.5 font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                <Key className="h-3 w-3" />
-                Bearer token access
-              </DialogDescription>
+              <DialogDescription>Bearer token access</DialogDescription>
             </div>
             <DialogClose asChild>
               <Button className="font-medium text-foreground/80 text-sm hover:bg-transparent hover:text-foreground">

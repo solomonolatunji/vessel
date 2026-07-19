@@ -40,10 +40,7 @@ export function MaintenanceDialogs({
                   <Trash2 className="h-5 w-5 text-primary" />
                   Run Docker Cleanup
                 </DialogTitle>
-                <DialogDescription className="mt-1.5 flex items-center gap-1.5 font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                  <Trash2 className="h-3 w-3" />
-                  Removes unused images and volumes
-                </DialogDescription>
+                <DialogDescription>Removes unused images and volumes</DialogDescription>
               </div>
               <DialogClose asChild>
                 <Button
@@ -85,10 +82,7 @@ export function MaintenanceDialogs({
                   <RefreshCw className="h-5 w-5" />
                   Restart Daemon
                 </DialogTitle>
-                <DialogDescription className="mt-1.5 flex items-center gap-1.5 font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                  <RefreshCw className="h-3 w-3" />
-                  All services will be briefly unavailable
-                </DialogDescription>
+                <DialogDescription>All services will be briefly unavailable</DialogDescription>
               </div>
               <DialogClose asChild>
                 <Button

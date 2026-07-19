@@ -164,10 +164,7 @@ export function ProfileEmailForm() {
                   <Mail className="h-5 w-5 text-primary" />
                   Verify Email Change
                 </DialogTitle>
-                <DialogDescription className="mt-1.5 flex items-center gap-1.5 font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                  <Mail className="h-3 w-3" />
-                  Code sent to new email
-                </DialogDescription>
+                <DialogDescription>Code sent to new email</DialogDescription>
               </div>
               <DialogClose asChild>
                 <Button

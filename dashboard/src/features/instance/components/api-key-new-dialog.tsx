@@ -52,10 +52,7 @@ export function ApiKeyNewDialog({
                 <Key className="h-5 w-5 text-primary" />
                 New API key
               </DialogTitle>
-              <DialogDescription className="mt-1.5 flex items-center gap-1.5 font-mono font-semibold text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                <Key className="h-3 w-3" />
-                Shown only once
-              </DialogDescription>
+              <DialogDescription>Shown only once</DialogDescription>
             </div>
             <DialogClose asChild>
               <Button

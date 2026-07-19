@@ -28,6 +28,9 @@ func (h *CanvasHandler) ListCanvasSummaries(c echo.Context) error {
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
+	if summaries == nil {
+		summaries = make([]models.CanvasSummary, 0)
+	}
 	return utils.Success(c, "Operation successful", summaries)
 }
 

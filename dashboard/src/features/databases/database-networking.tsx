@@ -73,9 +73,16 @@ export function DatabaseNetworking({ database, onUpdate }: DatabaseNetworkingPro
             </div>
 
             <div className="space-y-2">
-              <label className="font-medium text-sm">Public TCP Endpoint</label>
+              <label htmlFor="public-endpoint" className="font-medium text-sm">
+                Public TCP Endpoint
+              </label>
               <div className="flex gap-2">
-                <Input readOnly value={database.publicEndpoint} className="font-mono" />
+                <Input
+                  id="public-endpoint"
+                  readOnly
+                  value={database.publicEndpoint}
+                  className="font-mono"
+                />
                 <Button variant="secondary" onClick={() => handleCopy(database.publicEndpoint!)}>
                   <Copy className="h-4 w-4" />
                 </Button>
