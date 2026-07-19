@@ -93,17 +93,17 @@ export function AISettings() {
   const defaultProvider = (settings?.data?.defaultProvider as string) || 'none';
 
   const handleSetDefault = (id: string) => {
-    updateSettings.mutate((prev: any) => ({
-      ...(prev || settings?.data),
+    updateSettings.mutate({
+      ...(pendingSettings.current || settings?.data || {}),
       defaultProvider: id,
-    }));
+    });
   };
 
   const handleUpdateKey = (keyField: string, value: string) => {
-    updateSettings.mutate((prev: any) => ({
-      ...(prev || settings?.data),
+    updateSettings.mutate({
+      ...(pendingSettings.current || settings?.data || {}),
       [keyField]: value,
-    }));
+    });
   };
 
   return (
