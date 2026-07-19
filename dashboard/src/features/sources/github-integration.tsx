@@ -68,13 +68,13 @@ export function GithubIntegration() {
         { code },
         {
           onSuccess: () => {
-            navigate({ to: '/dashboard/sources', replace: true });
+            navigate({ to: '/sources', replace: true });
             toast.success('GitHub App connected successfully!');
             setIsEditing(false);
             setEditingApp(null);
           },
           onError: (err) => {
-            navigate({ to: '/dashboard/sources', replace: true });
+            navigate({ to: '/sources', replace: true });
             toast.error(err.message || 'Failed to connect GitHub App');
           },
         }

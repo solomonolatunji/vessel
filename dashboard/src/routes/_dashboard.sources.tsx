@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { GithubIntegration } from '#/features/sources';
 
 export const Route = createFileRoute('/_dashboard/sources')({
-  validateSearch: (search: Record<string, unknown>) => {
+  validateSearch: (search: Record<string, unknown>): { code?: string } => {
     return {
       code: (search.code as string) || undefined,
     };

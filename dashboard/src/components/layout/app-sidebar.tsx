@@ -6,7 +6,6 @@ import {
   Globe,
   Key,
   LayoutDashboard,
-  LayoutTemplate,
   Network,
   PanelLeft,
   RefreshCw,
@@ -42,7 +41,6 @@ const navGroups: NavGroup[] = [
   {
     title: 'Discover',
     items: [
-      { title: 'Templates', url: '/templates', icon: LayoutTemplate },
       { title: 'Sources', url: '/sources', icon: Code },
       { title: 'AI', url: '/ai', icon: Bot },
     ],

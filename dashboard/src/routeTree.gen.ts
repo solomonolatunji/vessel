@@ -31,13 +31,13 @@ import { Route as DashboardProfileRouteImport } from './routes/_dashboard.profil
 import { Route as DashboardS3DestinationsRouteImport } from './routes/_dashboard.s3-destinations'
 import { Route as DashboardSettingsRouteImport } from './routes/_dashboard.settings'
 import { Route as DashboardSourcesRouteImport } from './routes/_dashboard.sources'
-import { Route as DashboardTemplatesRouteImport } from './routes/_dashboard.templates'
 import { Route as DashboardUpdatesRouteImport } from './routes/_dashboard.updates'
 import { Route as DashboardUsersRouteImport } from './routes/_dashboard.users'
 import { Route as DashboardProjectsProjectIdIndexRouteImport } from './routes/_dashboard.projects/$projectId.index'
 import { Route as DashboardProjectsProjectIdCanvasRouteImport } from './routes/_dashboard.projects/$projectId.canvas'
 import { Route as DashboardProjectsProjectIdComposeRouteImport } from './routes/_dashboard.projects/$projectId.compose'
 import { Route as DashboardProjectsProjectIdJobsRouteImport } from './routes/_dashboard.projects/$projectId.jobs'
+import { Route as DashboardProjectsProjectIdNewRouteImport } from './routes/_dashboard.projects/$projectId.new'
 import { Route as DashboardProjectsProjectIdSettingsRouteImport } from './routes/_dashboard.projects/$projectId.settings'
 import { Route as DashboardServicesServiceIdIndexRouteImport } from './routes/_dashboard.services/$serviceId.index'
 import { Route as DashboardServicesServiceIdBuildRouteImport } from './routes/_dashboard.services/$serviceId.build'
@@ -155,11 +155,6 @@ const DashboardSourcesRoute = DashboardSourcesRouteImport.update({
   path: '/sources',
   getParentRoute: () => DashboardRoute,
 } as any)
-const DashboardTemplatesRoute = DashboardTemplatesRouteImport.update({
-  id: '/templates',
-  path: '/templates',
-  getParentRoute: () => DashboardRoute,
-} as any)
 const DashboardUpdatesRoute = DashboardUpdatesRouteImport.update({
   id: '/updates',
   path: '/updates',
@@ -192,6 +187,12 @@ const DashboardProjectsProjectIdJobsRoute =
   DashboardProjectsProjectIdJobsRouteImport.update({
     id: '/projects/$projectId/jobs',
     path: '/projects/$projectId/jobs',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardProjectsProjectIdNewRoute =
+  DashboardProjectsProjectIdNewRouteImport.update({
+    id: '/projects/$projectId/new',
+    path: '/projects/$projectId/new',
     getParentRoute: () => DashboardRoute,
   } as any)
 const DashboardProjectsProjectIdSettingsRoute =
@@ -264,12 +265,12 @@ export interface FileRoutesByFullPath {
   '/s3-destinations': typeof DashboardS3DestinationsRoute
   '/settings': typeof DashboardSettingsRoute
   '/sources': typeof DashboardSourcesRoute
-  '/templates': typeof DashboardTemplatesRoute
   '/updates': typeof DashboardUpdatesRoute
   '/users': typeof DashboardUsersRoute
   '/projects/$projectId/canvas': typeof DashboardProjectsProjectIdCanvasRoute
   '/projects/$projectId/compose': typeof DashboardProjectsProjectIdComposeRoute
   '/projects/$projectId/jobs': typeof DashboardProjectsProjectIdJobsRoute
+  '/projects/$projectId/new': typeof DashboardProjectsProjectIdNewRoute
   '/projects/$projectId/settings': typeof DashboardProjectsProjectIdSettingsRoute
   '/services/$serviceId/build': typeof DashboardServicesServiceIdBuildRoute
   '/services/$serviceId/deployments': typeof DashboardServicesServiceIdDeploymentsRoute
@@ -301,12 +302,12 @@ export interface FileRoutesByTo {
   '/s3-destinations': typeof DashboardS3DestinationsRoute
   '/settings': typeof DashboardSettingsRoute
   '/sources': typeof DashboardSourcesRoute
-  '/templates': typeof DashboardTemplatesRoute
   '/updates': typeof DashboardUpdatesRoute
   '/users': typeof DashboardUsersRoute
   '/projects/$projectId/canvas': typeof DashboardProjectsProjectIdCanvasRoute
   '/projects/$projectId/compose': typeof DashboardProjectsProjectIdComposeRoute
   '/projects/$projectId/jobs': typeof DashboardProjectsProjectIdJobsRoute
+  '/projects/$projectId/new': typeof DashboardProjectsProjectIdNewRoute
   '/projects/$projectId/settings': typeof DashboardProjectsProjectIdSettingsRoute
   '/services/$serviceId/build': typeof DashboardServicesServiceIdBuildRoute
   '/services/$serviceId/deployments': typeof DashboardServicesServiceIdDeploymentsRoute
@@ -340,13 +341,13 @@ export interface FileRoutesById {
   '/_dashboard/s3-destinations': typeof DashboardS3DestinationsRoute
   '/_dashboard/settings': typeof DashboardSettingsRoute
   '/_dashboard/sources': typeof DashboardSourcesRoute
-  '/_dashboard/templates': typeof DashboardTemplatesRoute
   '/_dashboard/updates': typeof DashboardUpdatesRoute
   '/_dashboard/users': typeof DashboardUsersRoute
   '/_dashboard/': typeof DashboardIndexRoute
   '/_dashboard/projects/$projectId/canvas': typeof DashboardProjectsProjectIdCanvasRoute
   '/_dashboard/projects/$projectId/compose': typeof DashboardProjectsProjectIdComposeRoute
   '/_dashboard/projects/$projectId/jobs': typeof DashboardProjectsProjectIdJobsRoute
+  '/_dashboard/projects/$projectId/new': typeof DashboardProjectsProjectIdNewRoute
   '/_dashboard/projects/$projectId/settings': typeof DashboardProjectsProjectIdSettingsRoute
   '/_dashboard/services/$serviceId/build': typeof DashboardServicesServiceIdBuildRoute
   '/_dashboard/services/$serviceId/deployments': typeof DashboardServicesServiceIdDeploymentsRoute
@@ -380,12 +381,12 @@ export interface FileRouteTypes {
     | '/s3-destinations'
     | '/settings'
     | '/sources'
-    | '/templates'
     | '/updates'
     | '/users'
     | '/projects/$projectId/canvas'
     | '/projects/$projectId/compose'
     | '/projects/$projectId/jobs'
+    | '/projects/$projectId/new'
     | '/projects/$projectId/settings'
     | '/services/$serviceId/build'
     | '/services/$serviceId/deployments'
@@ -417,12 +418,12 @@ export interface FileRouteTypes {
     | '/s3-destinations'
     | '/settings'
     | '/sources'
-    | '/templates'
     | '/updates'
     | '/users'
     | '/projects/$projectId/canvas'
     | '/projects/$projectId/compose'
     | '/projects/$projectId/jobs'
+    | '/projects/$projectId/new'
     | '/projects/$projectId/settings'
     | '/services/$serviceId/build'
     | '/services/$serviceId/deployments'
@@ -455,13 +456,13 @@ export interface FileRouteTypes {
     | '/_dashboard/s3-destinations'
     | '/_dashboard/settings'
     | '/_dashboard/sources'
-    | '/_dashboard/templates'
     | '/_dashboard/updates'
     | '/_dashboard/users'
     | '/_dashboard/'
     | '/_dashboard/projects/$projectId/canvas'
     | '/_dashboard/projects/$projectId/compose'
     | '/_dashboard/projects/$projectId/jobs'
+    | '/_dashboard/projects/$projectId/new'
     | '/_dashboard/projects/$projectId/settings'
     | '/_dashboard/services/$serviceId/build'
     | '/_dashboard/services/$serviceId/deployments'
@@ -636,13 +637,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardSourcesRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/_dashboard/templates': {
-      id: '/_dashboard/templates'
-      path: '/templates'
-      fullPath: '/templates'
-      preLoaderRoute: typeof DashboardTemplatesRouteImport
-      parentRoute: typeof DashboardRoute
-    }
     '/_dashboard/updates': {
       id: '/_dashboard/updates'
       path: '/updates'
@@ -683,6 +677,13 @@ declare module '@tanstack/react-router' {
       path: '/projects/$projectId/jobs'
       fullPath: '/projects/$projectId/jobs'
       preLoaderRoute: typeof DashboardProjectsProjectIdJobsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/projects/$projectId/new': {
+      id: '/_dashboard/projects/$projectId/new'
+      path: '/projects/$projectId/new'
+      fullPath: '/projects/$projectId/new'
+      preLoaderRoute: typeof DashboardProjectsProjectIdNewRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/_dashboard/projects/$projectId/settings': {
@@ -774,13 +775,13 @@ interface DashboardRouteChildren {
   DashboardS3DestinationsRoute: typeof DashboardS3DestinationsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardSourcesRoute: typeof DashboardSourcesRoute
-  DashboardTemplatesRoute: typeof DashboardTemplatesRoute
   DashboardUpdatesRoute: typeof DashboardUpdatesRoute
   DashboardUsersRoute: typeof DashboardUsersRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardProjectsProjectIdCanvasRoute: typeof DashboardProjectsProjectIdCanvasRoute
   DashboardProjectsProjectIdComposeRoute: typeof DashboardProjectsProjectIdComposeRoute
   DashboardProjectsProjectIdJobsRoute: typeof DashboardProjectsProjectIdJobsRoute
+  DashboardProjectsProjectIdNewRoute: typeof DashboardProjectsProjectIdNewRoute
   DashboardProjectsProjectIdSettingsRoute: typeof DashboardProjectsProjectIdSettingsRoute
   DashboardServicesServiceIdBuildRoute: typeof DashboardServicesServiceIdBuildRoute
   DashboardServicesServiceIdDeploymentsRoute: typeof DashboardServicesServiceIdDeploymentsRoute
@@ -806,7 +807,6 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardS3DestinationsRoute: DashboardS3DestinationsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardSourcesRoute: DashboardSourcesRoute,
-  DashboardTemplatesRoute: DashboardTemplatesRoute,
   DashboardUpdatesRoute: DashboardUpdatesRoute,
   DashboardUsersRoute: DashboardUsersRoute,
   DashboardIndexRoute: DashboardIndexRoute,
@@ -814,6 +814,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardProjectsProjectIdComposeRoute:
     DashboardProjectsProjectIdComposeRoute,
   DashboardProjectsProjectIdJobsRoute: DashboardProjectsProjectIdJobsRoute,
+  DashboardProjectsProjectIdNewRoute: DashboardProjectsProjectIdNewRoute,
   DashboardProjectsProjectIdSettingsRoute:
     DashboardProjectsProjectIdSettingsRoute,
   DashboardServicesServiceIdBuildRoute: DashboardServicesServiceIdBuildRoute,
