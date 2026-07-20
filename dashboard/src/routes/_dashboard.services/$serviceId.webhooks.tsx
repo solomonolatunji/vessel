@@ -26,8 +26,11 @@ function WebhooksRoute() {
     try {
       const newToken = uuidv4();
       await updateApp({
-        ...app,
-        deployToken: newToken,
+        appId: serviceId,
+        payload: {
+          ...app,
+          deployToken: newToken,
+        },
       });
       toast.success('Generated new deploy token');
       queryClient.invalidateQueries({ queryKey: ['apps', 'getApp', serviceId] });
@@ -39,8 +42,11 @@ function WebhooksRoute() {
   const handleRevokeToken = async () => {
     try {
       await updateApp({
-        ...app,
-        deployToken: '',
+        appId: serviceId,
+        payload: {
+          ...app,
+          deployToken: '',
+        },
       });
       toast.success('Revoked deploy token');
       queryClient.invalidateQueries({ queryKey: ['apps', 'getApp', serviceId] });

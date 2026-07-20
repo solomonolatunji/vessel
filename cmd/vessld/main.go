@@ -62,6 +62,11 @@ func (a *dbDeployerStore) GetServerlessFunctionCode(serviceID string) (*models.S
 	return svlsRepo.GetCodeByServiceID(context.Background(), serviceID)
 }
 
+func (a *dbDeployerStore) UpdateAppService(app *models.AppService) error {
+	repo := repositories.NewAppServiceRepo(a.db)
+	return repo.Update(context.Background(), app)
+}
+
 func main() {
 	_ = godotenv.Load(".env")
 	mainCLI()

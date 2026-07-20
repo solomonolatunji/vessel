@@ -56,6 +56,8 @@ export interface AppService {
   cpuLimit?: number;
   memoryLimit?: number;
   enablePRPreviews: boolean;
+  icon?: string;
+  deployToken?: string;
 }
 
 export interface Deployment {
@@ -167,6 +169,9 @@ export interface UpdateAppServiceRequest {
   status: ServiceStatus;
   cpuLimit?: number;
   memoryLimit?: number;
+  icon?: string;
+  deployToken?: string;
+  enablePRPreviews?: boolean;
 }
 
 export interface TriggerDeploymentRequest {

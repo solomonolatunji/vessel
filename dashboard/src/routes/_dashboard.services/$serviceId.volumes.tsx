@@ -35,7 +35,7 @@ function ServiceVolumesRoute() {
   const { data: volumesResponse, isLoading: isLoadingVolumes } = useQuery({
     queryKey: ['volumes', 'service', serviceId],
     queryFn: async () => {
-      const res = await apiClient.get(`/apps/${serviceId}/volumes`);
+      const res: any = await apiClient.get(`/apps/${serviceId}/volumes`);
       return res.data;
     },
   });

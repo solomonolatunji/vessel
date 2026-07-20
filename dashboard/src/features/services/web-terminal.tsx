@@ -1,7 +1,8 @@
 import { FitAddon } from '@xterm/addon-fit';
+import { SearchAddon } from '@xterm/addon-search';
 import { WebLinksAddon } from '@xterm/addon-web-links';
 import { Terminal } from '@xterm/xterm';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { env } from '#/env';
 import '@xterm/xterm/css/xterm.css';
 import { authStore } from '#/stores/authStore';
@@ -12,6 +13,8 @@ interface WebTerminalProps {
 
 export function WebTerminal({ serviceId }: WebTerminalProps) {
   const terminalRef = useRef<HTMLDivElement>(null);
+  const searchAddonRef = useRef<SearchAddon | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     if (!terminalRef.current) return;
@@ -28,9 +31,12 @@ export function WebTerminal({ serviceId }: WebTerminalProps) {
 
     const fitAddon = new FitAddon();
     const webLinksAddon = new WebLinksAddon();
+    const searchAddon = new SearchAddon();
+    searchAddonRef.current = searchAddon;
 
     term.loadAddon(fitAddon);
     term.loadAddon(webLinksAddon);
+    term.loadAddon(searchAddon);
     term.open(terminalRef.current);
     fitAddon.fit();
 
@@ -78,7 +84,37 @@ export function WebTerminal({ serviceId }: WebTerminalProps) {
   return (
     <div className="flex h-full w-full flex-col overflow-hidden rounded-md border border-zinc-800 bg-zinc-950">
       <div className="flex items-center justify-between border-zinc-800 border-b bg-zinc-900 px-4 py-2">
-        <h3 className="font-medium text-sm text-zinc-300">Terminal Shell</h3>
+        <div className="flex items-center gap-4">
+          <h3 className="font-medium text-sm text-zinc-300">Terminal Shell</h3>
+          <div className="flex items-center gap-1 rounded-md border border-zinc-700 bg-zinc-950 px-2">
+            <input
+              type="text"
+              placeholder="Search output..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  searchAddonRef.current?.findNext(searchTerm);
+                }
+              }}
+              className="w-48 bg-transparent py-1 text-xs text-zinc-300 outline-none placeholder:text-zinc-500"
+            />
+            <button
+              type="button"
+              onClick={() => searchAddonRef.current?.findPrevious(searchTerm)}
+              className="px-1 text-xs text-zinc-400 hover:text-zinc-100"
+            >
+              ↑
+            </button>
+            <button
+              type="button"
+              onClick={() => searchAddonRef.current?.findNext(searchTerm)}
+              className="px-1 text-xs text-zinc-400 hover:text-zinc-100"
+            >
+              ↓
+            </button>
+          </div>
+        </div>
       </div>
       <div className="flex-1 overflow-hidden p-2" ref={terminalRef} />
     </div>

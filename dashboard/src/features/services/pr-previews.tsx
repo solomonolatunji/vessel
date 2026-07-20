@@ -1,5 +1,5 @@
 import { formatDistanceToNow } from 'date-fns';
-import { Activity, ExternalLink, GitPullRequest, Loader2 } from 'lucide-react';
+import { ExternalLink, GitPullRequest, Loader2 } from 'lucide-react';
 import { Badge } from '#/components/ui/badge';
 import { Button } from '#/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
@@ -29,7 +29,7 @@ export function PRPreviews({ serviceId }: { serviceId: string }) {
 
   const handleToggle = (checked: boolean) => {
     updateApp.mutate({
-      id: serviceId,
+      appId: serviceId,
       payload: {
         ...app,
         enablePRPreviews: checked,
@@ -40,14 +40,12 @@ export function PRPreviews({ serviceId }: { serviceId: string }) {
   const getStatusBadge = (status: PRPreviewStatus) => {
     switch (status) {
       case 'active':
-      case 'ready':
         return (
           <Badge variant="default" className="bg-green-500/10 text-green-500 hover:bg-green-500/20">
             Ready
           </Badge>
         );
       case 'building':
-      case 'pending':
         return (
           <Badge variant="secondary" className="bg-blue-500/10 text-blue-500 hover:bg-blue-500/20">
             Building
@@ -125,7 +123,7 @@ export function PRPreviews({ serviceId }: { serviceId: string }) {
                     <div className="flex items-center space-x-4">
                       {getStatusBadge(preview.status)}
 
-                      {preview.previewDomain && preview.status === 'READY' && (
+                      {preview.previewDomain && preview.status === 'active' && (
                         <Button variant="outline" size="sm" asChild>
                           <a
                             href={`https://${preview.previewDomain}`}

@@ -54,10 +54,10 @@ func (r *AppServiceRepo) Create(_ context.Context, svc *models.AppService) error
 		svc.InternalPort = 3000
 	}
 	_, err := r.db.Exec(
-		`INSERT INTO app_services (id, project_id, environment_id, name, repository_url, image_ref, branch, root_directory, runtime_mode, install_command, build_command, start_command, dockerfile_path, build_engine, internal_port, domain, static_output, health_check_path, container_id, status, replicas, cpu_limit, memory_limit, deploy_token, enable_pr_previews, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		`INSERT INTO app_services (id, project_id, environment_id, name, repository_url, image_ref, branch, root_directory, icon, runtime_mode, install_command, build_command, start_command, dockerfile_path, build_engine, internal_port, domain, static_output, health_check_path, container_id, status, replicas, cpu_limit, memory_limit, deploy_token, enable_pr_previews, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		svc.ID, svc.ProjectID, svc.EnvironmentID, svc.Name, svc.RepositoryURL, svc.ImageRef, svc.Branch,
-		svc.RootDirectory, svc.RuntimeMode, svc.InstallCommand, svc.BuildCommand, svc.StartCommand, svc.DockerfilePath, svc.BuildEngine,
+		svc.RootDirectory, svc.Icon, svc.RuntimeMode, svc.InstallCommand, svc.BuildCommand, svc.StartCommand, svc.DockerfilePath, svc.BuildEngine,
 		svc.InternalPort, svc.Domain, svc.StaticOutput, svc.HealthCheckPath, svc.ContainerID, svc.Status, svc.Replicas, svc.CPULimit, svc.MemoryLimit, svc.DeployToken, svc.EnablePRPreviews, svc.CreatedAt, svc.UpdatedAt,
 	)
 	if err != nil {
@@ -71,7 +71,7 @@ func (r *AppServiceRepo) GetByID(ctx context.Context, id string) (*models.AppSer
 	defer r.mu.RUnlock()
 	var svc models.AppService
 	err := r.db.GetContext(ctx, &svc,
-		`SELECT id, project_id, environment_id, name, repository_url, COALESCE(image_ref,'') AS image_ref, branch, root_directory, runtime_mode, COALESCE(install_command,'') AS install_command, build_command, start_command, dockerfile_path, build_engine, internal_port, domain, COALESCE(static_output,'') AS static_output, health_check_path, container_id, status, replicas, COALESCE(cpu_limit, 0) AS cpu_limit, COALESCE(memory_limit, 0) AS memory_limit, COALESCE(deploy_token,'') AS deploy_token, COALESCE(enable_pr_previews, 0) AS enable_pr_previews, created_at, updated_at
+		`SELECT id, project_id, environment_id, name, repository_url, COALESCE(image_ref,'') AS image_ref, branch, root_directory, COALESCE(icon,'git') AS icon, runtime_mode, COALESCE(install_command,'') AS install_command, build_command, start_command, dockerfile_path, build_engine, internal_port, domain, COALESCE(static_output,'') AS static_output, health_check_path, container_id, status, replicas, COALESCE(cpu_limit, 0) AS cpu_limit, COALESCE(memory_limit, 0) AS memory_limit, COALESCE(deploy_token,'') AS deploy_token, COALESCE(enable_pr_previews, 0) AS enable_pr_previews, created_at, updated_at
 		FROM app_services WHERE id = ?`, id,
 	)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -88,7 +88,7 @@ func (r *AppServiceRepo) ListByEnvironment(ctx context.Context, environmentID st
 	defer r.mu.RUnlock()
 	var list []*models.AppService
 	err := r.db.SelectContext(ctx, &list,
-		`SELECT id, project_id, environment_id, name, repository_url, COALESCE(image_ref,'') AS image_ref, branch, root_directory, runtime_mode, COALESCE(install_command,'') AS install_command, build_command, start_command, dockerfile_path, build_engine, internal_port, domain, COALESCE(static_output,'') AS static_output, health_check_path, container_id, status, replicas, COALESCE(cpu_limit, 0) AS cpu_limit, COALESCE(memory_limit, 0) AS memory_limit, COALESCE(deploy_token,'') AS deploy_token, COALESCE(enable_pr_previews, 0) AS enable_pr_previews, created_at, updated_at
+		`SELECT id, project_id, environment_id, name, repository_url, COALESCE(image_ref,'') AS image_ref, branch, root_directory, COALESCE(icon,'git') AS icon, runtime_mode, COALESCE(install_command,'') AS install_command, build_command, start_command, dockerfile_path, build_engine, internal_port, domain, COALESCE(static_output,'') AS static_output, health_check_path, container_id, status, replicas, COALESCE(cpu_limit, 0) AS cpu_limit, COALESCE(memory_limit, 0) AS memory_limit, COALESCE(deploy_token,'') AS deploy_token, COALESCE(enable_pr_previews, 0) AS enable_pr_previews, created_at, updated_at
 		FROM app_services WHERE environment_id = ? ORDER BY created_at ASC`, environmentID,
 	)
 	if err != nil {
@@ -105,7 +105,7 @@ func (r *AppServiceRepo) ListByProject(ctx context.Context, projectID string) ([
 	defer r.mu.RUnlock()
 	var list []*models.AppService
 	err := r.db.SelectContext(ctx, &list,
-		`SELECT id, project_id, environment_id, name, repository_url, COALESCE(image_ref,'') AS image_ref, branch, root_directory, runtime_mode, COALESCE(install_command,'') AS install_command, build_command, start_command, dockerfile_path, build_engine, internal_port, domain, COALESCE(static_output,'') AS static_output, health_check_path, container_id, status, replicas, COALESCE(cpu_limit, 0) AS cpu_limit, COALESCE(memory_limit, 0) AS memory_limit, COALESCE(deploy_token,'') AS deploy_token, COALESCE(enable_pr_previews, 0) AS enable_pr_previews, created_at, updated_at
+		`SELECT id, project_id, environment_id, name, repository_url, COALESCE(image_ref,'') AS image_ref, branch, root_directory, COALESCE(icon,'git') AS icon, runtime_mode, COALESCE(install_command,'') AS install_command, build_command, start_command, dockerfile_path, build_engine, internal_port, domain, COALESCE(static_output,'') AS static_output, health_check_path, container_id, status, replicas, COALESCE(cpu_limit, 0) AS cpu_limit, COALESCE(memory_limit, 0) AS memory_limit, COALESCE(deploy_token,'') AS deploy_token, COALESCE(enable_pr_previews, 0) AS enable_pr_previews, created_at, updated_at
 		FROM app_services WHERE project_id = ? ORDER BY created_at ASC`, projectID,
 	)
 	if err != nil {
@@ -122,7 +122,7 @@ func (r *AppServiceRepo) ListAll(ctx context.Context) ([]*models.AppService, err
 	defer r.mu.RUnlock()
 	var list []*models.AppService
 	err := r.db.SelectContext(ctx, &list,
-		`SELECT id, project_id, environment_id, name, repository_url, COALESCE(image_ref,'') AS image_ref, branch, root_directory, runtime_mode, COALESCE(install_command,'') AS install_command, build_command, start_command, dockerfile_path, build_engine, internal_port, domain, COALESCE(static_output,'') AS static_output, health_check_path, container_id, status, replicas, COALESCE(cpu_limit, 0) AS cpu_limit, COALESCE(memory_limit, 0) AS memory_limit, COALESCE(deploy_token,'') AS deploy_token, COALESCE(enable_pr_previews, 0) AS enable_pr_previews, created_at, updated_at
+		`SELECT id, project_id, environment_id, name, repository_url, COALESCE(image_ref,'') AS image_ref, branch, root_directory, COALESCE(icon,'git') AS icon, runtime_mode, COALESCE(install_command,'') AS install_command, build_command, start_command, dockerfile_path, build_engine, internal_port, domain, COALESCE(static_output,'') AS static_output, health_check_path, container_id, status, replicas, COALESCE(cpu_limit, 0) AS cpu_limit, COALESCE(memory_limit, 0) AS memory_limit, COALESCE(deploy_token,'') AS deploy_token, COALESCE(enable_pr_previews, 0) AS enable_pr_previews, created_at, updated_at
 		FROM app_services ORDER BY created_at ASC`,
 	)
 	if err != nil {
@@ -140,11 +140,11 @@ func (r *AppServiceRepo) Update(_ context.Context, svc *models.AppService) error
 	svc.UpdatedAt = time.Now().UTC()
 	_, err := r.db.Exec(
 		`UPDATE app_services SET
-		name = ?, repository_url = ?, image_ref = ?, branch = ?, root_directory = ?, runtime_mode = ?,
+		name = ?, repository_url = ?, image_ref = ?, branch = ?, root_directory = ?, icon = ?, runtime_mode = ?,
 		install_command = ?, build_command = ?, start_command = ?, dockerfile_path = ?, build_engine = ?,
 		internal_port = ?, domain = ?, static_output = ?, health_check_path = ?, container_id = ?, status = ?, replicas = ?, cpu_limit = ?, memory_limit = ?, deploy_token = ?, enable_pr_previews = ?, updated_at = ?
 		WHERE id = ?`,
-		svc.Name, svc.RepositoryURL, svc.ImageRef, svc.Branch, svc.RootDirectory, svc.RuntimeMode,
+		svc.Name, svc.RepositoryURL, svc.ImageRef, svc.Branch, svc.RootDirectory, svc.Icon, svc.RuntimeMode,
 		svc.InstallCommand, svc.BuildCommand, svc.StartCommand, svc.DockerfilePath, svc.BuildEngine,
 		svc.InternalPort, svc.Domain, svc.StaticOutput, svc.HealthCheckPath, svc.ContainerID, svc.Status, svc.Replicas, svc.CPULimit, svc.MemoryLimit, svc.DeployToken, svc.EnablePRPreviews, svc.UpdatedAt, svc.ID,
 	)

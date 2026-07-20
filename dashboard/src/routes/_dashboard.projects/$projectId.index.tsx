@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { Activity, Box, Database, Folder, Plus, Server } from 'lucide-react';
 import { Button } from '#/components/ui/button';
+import { ServiceIcon } from '#/components/ui/service-icon';
 import { useGetCanvasSummary, useGetEnvironmentCanvas } from '#/hooks/useCanvas';
 import { useGetProject } from '#/hooks/useProjects';
 
@@ -171,8 +172,12 @@ function ProjectOverviewComponent() {
                 className="group flex flex-col rounded-xl border bg-card p-5 transition-all hover:border-primary/50 hover:shadow-md"
               >
                 <div className="flex items-start justify-between">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg border bg-background/50 shadow-sm transition-colors group-hover:border-primary/20 group-hover:bg-primary/5">
-                    {getAppIcon(app.runtimeMode || app.sourceType)}
+                  <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-lg border bg-background/50 shadow-sm transition-colors group-hover:border-primary/20 group-hover:bg-primary/5">
+                    {app.icon && app.icon !== 'git' ? (
+                      <ServiceIcon icon={app.icon} className="h-8 w-8" />
+                    ) : (
+                      getAppIcon(app.runtimeMode || app.sourceType)
+                    )}
                   </div>
                   <StatusBadge status={app.status || app.deploymentStatus} />
                 </div>

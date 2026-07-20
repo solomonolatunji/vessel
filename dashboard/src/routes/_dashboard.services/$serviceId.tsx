@@ -17,6 +17,7 @@ import {
   Wrench,
 } from 'lucide-react';
 import { Button } from '#/components/ui/button';
+import { ServiceIcon } from '#/components/ui/service-icon';
 import { useGetApp } from '#/hooks/useApps';
 import { useGetDatabase } from '#/hooks/useDatabases';
 
@@ -79,6 +80,9 @@ function ServiceLayoutRoute() {
                 <ArrowLeft className="h-4 w-4" />
               </Link>
             </Button>
+            {app?.icon && app.icon !== 'git' && (
+              <ServiceIcon icon={app.icon} className="h-10 w-10 rounded-lg border" />
+            )}
             <div>
               <h1 className="font-bold text-xl">{resourceName}</h1>
               <p className="text-muted-foreground text-sm">

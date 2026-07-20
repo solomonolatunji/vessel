@@ -117,6 +117,7 @@ type AppService struct {
 	ImageRef         string           `json:"imageRef,omitempty" db:"image_ref"`
 	Branch           string           `json:"branch" db:"branch"`
 	RootDirectory    string           `json:"rootDirectory" db:"root_directory"`
+	Icon             string           `json:"icon" db:"icon"`
 	RuntimeMode      RuntimeMode      `json:"runtimeMode" db:"runtime_mode"`
 	InstallCommand   string           `json:"installCommand" db:"install_command"`
 	BuildCommand     string           `json:"buildCommand" db:"build_command"`

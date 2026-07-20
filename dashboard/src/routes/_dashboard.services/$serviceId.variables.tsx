@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute } from '@tanstack/react-router';
+import { Eye, EyeOff, Loader2, Plus, Trash } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -16,7 +17,7 @@ export const Route = createFileRoute('/_dashboard/services/$serviceId/variables'
 const variableSchema = z.object({
   key: z.string().min(1, 'Key is required'),
   value: z.string().min(1, 'Value is required'),
-  isSecret: z.boolean().default(false),
+  isSecret: z.boolean(),
 });
 
 type VariableFormValues = z.infer<typeof variableSchema>;

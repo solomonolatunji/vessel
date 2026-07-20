@@ -21,9 +21,12 @@ export function HealthcheckCard({ serviceId }: { serviceId: string }) {
     if (!app) return;
     try {
       await updateApp({
-        ...app,
-        internalPort: parseInt(internalPort, 10) || 3000,
-        healthCheckPath,
+        appId: serviceId,
+        payload: {
+          ...app,
+          internalPort: parseInt(internalPort, 10) || 3000,
+          healthCheckPath,
+        },
       });
       toast.success('Healthcheck settings saved');
       queryClient.invalidateQueries({ queryKey: ['apps', 'getApp', serviceId] });

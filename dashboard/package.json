@@ -20,6 +20,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@ai-sdk/react": "^4.0.34",
     "@hookform/resolvers": "^5.4.0",
     "@monaco-editor/react": "^4.7.0",
     "@t3-oss/env-core": "^0.13.11",

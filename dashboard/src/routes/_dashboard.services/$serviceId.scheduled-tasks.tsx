@@ -36,7 +36,7 @@ function ServiceJobsRoute() {
   const { data: jobsResponse, isLoading: isLoadingJobs } = useQuery({
     queryKey: ['jobs', 'service', serviceId],
     queryFn: async () => {
-      const res = await apiClient.get(`/jobs?serviceId=${serviceId}`);
+      const res: any = await apiClient.get(`/jobs?serviceId=${serviceId}`);
       return res.data;
     },
   });
