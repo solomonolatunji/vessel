@@ -52,7 +52,6 @@ function ServiceServerlessRoute() {
 
   const handleRuntimeChange = (newRuntime: string) => {
     setRuntime(newRuntime);
-    // Only replace code if it's currently a template or empty
     if (!code || Object.values(TEMPLATES).includes(code)) {
       setCode(TEMPLATES[newRuntime] || '');
     }

@@ -142,9 +142,8 @@ body {
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus,
   input:-webkit-autofill:active {
-    /* biome-ignore lint/complexity/noImportantStyles: Autofill overrides require !important */
-    -webkit-box-shadow: 0 0 0 30px var(--background) inset !important;
-    /* biome-ignore lint/complexity/noImportantStyles: Autofill overrides require !important */
+    background-color: transparent !important;
+    color: inherit !important;
     -webkit-text-fill-color: var(--foreground) !important;
     transition: background-color 5000s ease-in-out 0s;
   }

@@ -86,7 +86,7 @@ func (s *ProjectSettingsService) AddMemberByEmail(ctx context.Context, opts AddM
 		return nil, errors.New("valid member with projectId and email required")
 	}
 
-	u, err := s.authService.InviteUser(ctx, opts.Email, opts.OriginURL)
+	u, err := s.authService.InviteUser(ctx, opts.Email, models.UserRoleMember, opts.OriginURL)
 	if err != nil {
 		return nil, err
 	}

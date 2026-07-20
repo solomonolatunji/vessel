@@ -5,6 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/services"
 	"vessl.dev/vessl/internal/utils"
 )
@@ -141,6 +142,7 @@ func (h *AuthHandler) Logout(c echo.Context) error {
 
 type AdminInviteUserRequest struct {
 	Email string `json:"email"`
+	Role  string `json:"role"`
 }
 
 func (h *AuthHandler) AdminInviteUser(c echo.Context) error {
@@ -151,6 +153,9 @@ func (h *AuthHandler) AdminInviteUser(c echo.Context) error {
 	if req.Email == "" {
 		return utils.Error(c, http.StatusBadRequest, "email is required")
 	}
+	if req.Role == "" {
+		req.Role = string(models.UserRoleMember)
+	}
 
 	origin := c.Request().Header.Get("Origin")
 	if origin == "" {
@@ -160,7 +165,7 @@ func (h *AuthHandler) AdminInviteUser(c echo.Context) error {
 		origin = "http://localhost:3000" // Fallback
 	}
 
-	u, err := h.authService.InviteUser(c.Request().Context(), req.Email, origin)
+	u, err := h.authService.InviteUser(c.Request().Context(), req.Email, models.UserRole(req.Role), origin)
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}

@@ -14,7 +14,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     select: (state) => state.location.pathname,
   });
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: run on pathname change
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);

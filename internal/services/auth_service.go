@@ -76,8 +76,8 @@ func (a *AuthService) Register(ctx context.Context, name, email, password string
 		return nil, "", err
 	}
 	role := models.UserRoleMember
-	if isInitial {
-		role = models.UserRoleAdmin
+	if total == 0 {
+		role = models.UserRoleOwner
 	}
 	u := &models.User{
 		ID:           uuid.New().String(),
@@ -187,7 +187,7 @@ func (a *AuthService) ResetPassword(ctx context.Context, tokenStr, newPassword s
 	return nil
 }
 
-func (a *AuthService) InviteUser(ctx context.Context, email string, originUrl string) (*models.User, error) {
+func (a *AuthService) InviteUser(ctx context.Context, email string, role models.UserRole, originUrl string) (*models.User, error) {
 	if email == "" {
 		return nil, errors.New("email is required")
 	}
@@ -200,7 +200,7 @@ func (a *AuthService) InviteUser(ctx context.Context, email string, originUrl st
 		Email:        email,
 		Name:         strings.Split(email, "@")[0],
 		PasswordHash: "INVITED_NO_LOGIN_ALLOWED_MUST_RESET",
-		Role:         models.UserRoleMember,
+		Role:         role,
 		CreatedAt:    time.Now(),
 		UpdatedAt:    time.Now(),
 	}

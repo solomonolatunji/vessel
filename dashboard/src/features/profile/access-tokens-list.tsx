@@ -40,14 +40,12 @@ export function AccessTokensList() {
       const res = await createToken.mutateAsync({
         payload: {
           name: newTokenName,
-          accessLevel: 'read_write', // Default access level
-          projectScope: 'all', // Default scope
-          allowedProjects: [], // Default projects array
+          accessLevel: 'read_write',
+          projectScope: 'all',
+          allowedProjects: [],
         },
       });
-      // Depending on the API, the token itself might be returned here
-      // For security, it's typically only returned once
-      setCreatedToken((res as any)?.data?.token || 'token-created-successfully');
+      setCreatedToken((res as any)?.data?.plain || 'token-created-successfully');
     } catch (error) {
       console.error('Failed to create token', error);
     }

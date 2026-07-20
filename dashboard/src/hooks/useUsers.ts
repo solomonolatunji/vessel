@@ -19,9 +19,9 @@ const usersService = {
       throw handleApiError(err);
     }
   },
-  invite: async (email: string): Promise<User> => {
+  invite: async (payload: { email: string; role: string }): Promise<User> => {
     try {
-      const res = await apiClient.post<BaseResponse<User>>('/users/invite', { email });
+      const res = await apiClient.post<BaseResponse<User>>('/users/invite', payload);
       return res.data;
     } catch (err) {
       throw handleApiError(err);
@@ -43,7 +43,7 @@ export const useDeleteUser = () => {
 export const useInviteUser = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (email: string) => usersService.invite(email),
+    mutationFn: (payload: { email: string; role: string }) => usersService.invite(payload),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['users'] }),
   });
 };

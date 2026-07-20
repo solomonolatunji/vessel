@@ -33,12 +33,16 @@
       },
       "correctness": {
         "noUnusedImports": "warn",
-        "noInvalidPositionAtImportRule": "off"
+        "noInvalidPositionAtImportRule": "off",
+        "useExhaustiveDependencies": "off"
       },
       "suspicious": {
         "noArrayIndexKey": "off",
         "noShorthandPropertyOverrides": "off",
         "noExplicitAny": "off"
+      },
+      "complexity": {
+        "noImportantStyles": "off"
       },
       "nursery": {
         "useSortedClasses": {

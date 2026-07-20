@@ -312,7 +312,7 @@ func (d *Deployer) startContainer(ctx context.Context, opts StartContainerOpts) 
 		port = defaultAppPort()
 	}
 	if opts.App.StaticOutput != "" {
-		port = 80 // NGINX alpine default port
+		port = 80
 	}
 
 	replicas := opts.App.Replicas

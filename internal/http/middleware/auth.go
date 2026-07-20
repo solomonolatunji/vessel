@@ -251,8 +251,8 @@ func (g *AuthGuard) RequireRole(requiredRole models.UserRole) echo.MiddlewareFun
 			if err != nil {
 				return err
 			}
-			if userClaims.Role != requiredRole && userClaims.Role != models.UserRoleAdmin {
-				return utils.Error(c, http.StatusForbidden, "insufficient permissions")
+			if userClaims.Role != requiredRole && userClaims.Role != models.UserRoleAdmin && userClaims.Role != models.UserRoleOwner {
+				return utils.Error(c, http.StatusForbidden, "insufficient instance permissions")
 			}
 			c.Set("user", userClaims)
 			ctx := context.WithValue(c.Request().Context(), userClaimsKey, userClaims)
