@@ -1,13 +1,16 @@
 import { apiClient } from '#/lib/apiClient';
 
+import type { CreateAppServiceRequest } from '#/interfaces/deployment';
+import type { CreateDatabaseRequest } from '#/interfaces/database';
+
 export interface ComposeAnalyzeRequest {
   projectId: string;
   composeContent: string;
 }
 
 export interface ComposeAnalyzeResponse {
-  appServices: any[];
-  databases: any[];
+  appServices: CreateAppServiceRequest[];
+  databases: CreateDatabaseRequest[];
 }
 
 class ComposeService {
