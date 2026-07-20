@@ -71,7 +71,6 @@ type CanvasSummary struct {
 	EnvironmentsCount  int                `json:"environmentsCount"`
 	AppsCount          int                `json:"appsCount"`
 	DatabasesCount     int                `json:"databasesCount"`
-	StorageCount       int                `json:"storageCount"`
 	OnlineServices     int                `json:"onlineServices"`
 	TotalServices      int                `json:"totalServices"`
 	ServiceIcons       []string           `json:"serviceIcons"`
@@ -82,7 +81,6 @@ type EnvironmentCanvas struct {
 	Environment *EnvironmentConfig `json:"environment"`
 	Apps        []*AppService      `json:"apps"`
 	Databases   []*Database        `json:"databases"`
-	Storage     []*Storage         `json:"storage"`
 }
 
 type CreateProjectRequest struct {

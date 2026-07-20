@@ -20,12 +20,6 @@ type DatabaseDeployerStore interface {
 	GetDatabase(id string) (*models.Database, error)
 }
 
-type StorageDeployerStore interface {
-	GetServerSettings() (*models.ServerSettings, error)
-	UpdateStorageStatus(id string, status models.StorageStatus, containerID string) error
-	GetStorage(id string) (*models.Storage, error)
-}
-
 type CronManagerStore interface {
 	ListScheduledTasks() ([]models.ScheduledTask, error)
 	GetScheduledTask(id string) (*models.ScheduledTask, error)
