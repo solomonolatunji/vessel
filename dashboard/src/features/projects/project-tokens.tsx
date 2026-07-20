@@ -29,10 +29,10 @@ export function ProjectTokens({ projectId }: { projectId: string }) {
     try {
       const res = await createToken({
         projectId,
-        payload: { name },
+        payload: { name, environmentId: '', scopes: [] },
       });
       setName('');
-      setNewTokenValue(res?.data?.token_value || null);
+      setNewTokenValue((res?.data as any)?.token || null);
       toast.success('Token created successfully');
     } catch (err: any) {
       toast.error(err.message || 'Failed to create token');
@@ -109,7 +109,7 @@ export function ProjectTokens({ projectId }: { projectId: string }) {
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead>Created At</TableHead>
-              <TableHead className="w-[100px]"></TableHead>
+              <TableHead className="w-25"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

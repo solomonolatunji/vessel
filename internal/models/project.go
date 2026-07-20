@@ -21,9 +21,9 @@ const (
 type MemberPermission string
 
 const (
+	MemberPermissionOwner  MemberPermission = "owner"
 	MemberPermissionAdmin  MemberPermission = "admin"
 	MemberPermissionMember MemberPermission = "member"
-	MemberPermissionViewer MemberPermission = "viewer"
 )
 
 type MemberStatus string

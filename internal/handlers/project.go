@@ -71,7 +71,7 @@ func (h *ProjectHandler) CreateProject(c echo.Context) error {
 		_, _ = h.projectSettingsService.AddMemberByEmail(c.Request().Context(), services.AddMemberOpts{
 			ProjectID:  p.ID,
 			Email:      userClaims.Email,
-			Permission: models.MemberPermissionAdmin,
+			Permission: models.MemberPermissionOwner,
 		})
 	}
 

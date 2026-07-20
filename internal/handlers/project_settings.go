@@ -135,7 +135,7 @@ func (h *ProjectSettingsHandler) AddMember(c echo.Context) error {
 		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
 	if req.Permission == "" {
-		req.Permission = models.MemberPermissionViewer
+		req.Permission = models.MemberPermissionMember
 	}
 
 	scheme := "http"

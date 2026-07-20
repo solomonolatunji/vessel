@@ -235,7 +235,7 @@ func (g *AuthGuard) RequireProjectRole(minPermission models.MemberPermission) ec
 
 			// Validate permission level if necessary
 			// For now, if they are a member, we allow them. If minPermission is specific, we could enforce it.
-			if minPermission != "" && member.Permission != minPermission && member.Permission != models.MemberPermissionAdmin {
+			if minPermission != "" && member.Permission != minPermission && member.Permission != models.MemberPermissionAdmin && member.Permission != models.MemberPermissionOwner {
 				return utils.Error(c, http.StatusForbidden, "insufficient project permissions")
 			}
 
