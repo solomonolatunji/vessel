@@ -17,15 +17,16 @@ This is the Vessl monorepo — an open-source, self-hosted PaaS that turns any b
 ### Backend (`cmd/`, `internal/`)
 
 1. **Entrypoint** — `cmd/vessld/main.go`: HTTP server daemon, wires dependencies
-2. **API Handlers** — `internal/api/`: REST + WebSocket endpoints (projects, databases, env vars, git, terminal)
-3. **Orchestrator** — `internal/orchestrator/`: Multi-language build engine (Dockerfile, Railpack, Nixpacks), container lifecycle, zero-downtime deploys
-4. **Proxy** — `internal/proxy/`: Dynamic Caddy v2 reverse proxy config generation and hot-reload
-5. **Store** — `internal/store/`: SQLite repositories (projects, domains, env vars, users, invites) + AES-256-GCM `.env` vault
-6. **Middleware** — `internal/middleware/`: JWT auth guards, CORS
+2. **Models** — `internal/models/`: Domain structs, DTOs, database entities (no circular imports)
+3. **Repositories** — `internal/repositories/`: Database persistence, SQL interfaces, SQLite implementations
+4. **Services** — `internal/services/`: Business logic, external integrations
+5. **Handlers** — `internal/handlers/`: HTTP controllers, route handlers
+6. **HTTP Setup** — `internal/http/`: Server setup, routes, CORS, auth middleware
+7. **Engine** — `internal/engine/`: Container engine, Docker deployer, runtime management, cron, backup workers
 
 ### Dashboard (`dashboard/`)
 
-React 19 + TanStack Router + TanStack Query + Radix UI + Tailwind CSS v4. The self-hosted control panel where users deploy apps, manage databases, view logs, and configure settings.
+React 19 + TanStack Router + TanStack Query + Zustand + Radix UI + Tailwind CSS v4. The self-hosted control panel where users deploy apps, manage databases, view logs, and configure settings.
 
 ### Marketing Site (`web/`)
 
@@ -39,9 +40,9 @@ Astro 7 + Starlight. Documentation site with full-text search, sidebar navigatio
 
 ### Go & Architecture
 
-- **Feature/Domain Packaging (`internal/<domain>/`)**: Organize packages by domain/feature (`internal/auth/`, `internal/projects/`, `internal/cron/`) encapsulating `model.go`, `dto.go`, `handler.go`, `service.go`, `repository.go`, and `sqlite.go` in each domain. Avoid horizontal layers (`api/`, `store/`).
-- **Consumer-Defined Interfaces**: Define narrow `Repository` interfaces where they are _consumed_ (`Accept interfaces, return structs`) rather than where implemented (`sqlite.go` satisfies implicitly without `implements` clauses).
-- **Files**: `snake_case.go` — `container_manager.go`
+- **Layered Monolith Architecture (`internal/`)**: All Go code inside `internal/` must be organized by clean functional layers: `models/`, `repositories/`, `services/`, `handlers/`, `http/`, and `engine/`. Avoid domain-driven vertical slices.
+- **Consumer-Defined Interfaces**: Define narrow interfaces where they are _consumed_ (`Accept interfaces, return structs`).
+- **Files**: `snake_case.go` — `container_health.go`
 - **Packages**: short, lowercase, single word — `cron`, `auth`, `apikeys`
 - **No inline `//` comments** — only GoDoc when logic is non-obvious
 - **No GoDoc** on self-explanatory types (`// User represents a user`) or HTTP handlers
@@ -57,6 +58,9 @@ Astro 7 + Starlight. Documentation site with full-text search, sidebar navigatio
 - **One component per file**
 - Routes in `dashboard/src/routes/` (TanStack Router file conventions)
 - Do **not** edit `routeTree.gen.ts` by hand
+- **State Management:** Use standard Zustand (`create`) for global UI state. No wrappers, shortcuts, or legacy APIs.
+- **Data Tables:** Use `@tanstack/react-table` for data grid components.
+- **Telemetry:** Use `posthog-js` and `@posthog/react`. Integrations go in `dashboard/src/integrations/`.
 - Use `tailwind-merge` + `clsx` + `class-variance-authority` for class composition
 
 ### npm Workspace Scripts
@@ -67,13 +71,13 @@ Astro 7 + Starlight. Documentation site with full-text search, sidebar navigatio
 | `npm run dev:web`       | Start marketing site at `localhost:4321` |
 | `npm run dev:docs`      | Start docs at `localhost:4322`           |
 | `npm run build:all`     | Build all workspaces                     |
-| `npm run format:fix`    | Format all files with Prettier           |
+| `npm run format:fix`    | Format all files with Biome              |
 
 ## Navigation Tips
 
-- **Find an API handler**: `internal/api/<domain>_handler.go`
-- **Find a store repository**: `internal/store/<entity>_store.go`
-- **Find an orchestrator component**: `internal/orchestrator/<component>.go`
+- **Find a handler**: `internal/handlers/<domain>.go`
+- **Find a repository**: `internal/repositories/<entity>.go`
+- **Find a service**: `internal/services/<domain>.go`
 - **Find a dashboard route**: `dashboard/src/routes/` (TanStack Router file-based)
 - **Find a dashboard component**: `dashboard/src/components/<domain>/`
 - **Find a web page**: `web/src/pages/`

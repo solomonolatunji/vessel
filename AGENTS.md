@@ -23,7 +23,7 @@
 | Marketing (web)      | Astro 7, Tailwind CSS v4                                                     |
 | Docs                 | Astro 7, Starlight                                                           |
 | Backend              | Go (`cmd`, `internal/`)                                                      |
-| State (dashboard)    | TanStack Store, TanStack Query, Zod validation                               |
+| State (dashboard)    | Zustand, TanStack Query, Zod validation                                      |
 | Styling (dashboard)  | `tailwind-merge` + `clsx` + `class-variance-authority` for class composition |
 | Monorepo             | npm workspaces (`dashboard/`, `web/`, `docs/`)                               |
 
@@ -35,6 +35,9 @@
 - **Lib/utils** go in `dashboard/src/lib/`.
 - **Marketing pages** live in `web/src/pages/`, components in `web/src/components/`.
 - Use Tailwind CSS v4 `@theme` directives for design tokens; avoid custom CSS where Tailwind utilities suffice.
+- **State Management:** Use standard Zustand (`create`) for global UI state. No wrappers, shortcuts, or legacy APIs.
+- **Data Tables:** Use `@tanstack/react-table` for data grid components.
+- **Telemetry:** Use `posthog-js` and `@posthog/react`. Integrations go in `dashboard/src/integrations/`.
 - **Format strictly with Biome** (`npm run format:fix` / `biome check --write .`) and `go fmt ./...`. NEVER use Prettier (`npx prettier`).
 
 ## Go Conventions & Architecture
