@@ -22,16 +22,6 @@ func NewArchiveHandler(s *services.ArchiveService) *ArchiveHandler {
 	return &ArchiveHandler{service: s}
 }
 
-// @Summary Deploy from uploaded archive
-// @Description Upload a .tar.gz archive and deploy it as an application
-// @Tags Archive
-// @Accept multipart/form-data
-// @Produce json
-// @Param projectId formData string false "Project ID"
-// @Param name formData string false "App name"
-// @Param file formData file true "Archive file (.tar.gz)"
-// @Success 200 {object} map[string]any
-// @Router /deploy/archive [post]
 func (h *ArchiveHandler) DeployArchive(c echo.Context) error {
 	projectID := c.FormValue("projectId")
 	appName := c.FormValue("name")

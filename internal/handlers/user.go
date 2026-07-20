@@ -48,14 +48,6 @@ type CreatePATRequest struct {
 	ExpiresAt       *time.Time `json:"expiresAt"`
 }
 
-// @Summary ListUsers endpoint
-// @Description ListUsers endpoint
-// @Tags Users
-// @Accept json
-// @Produce json
-// @Param page query int false "Page number"
-// @Param limit query int false "Items per page"
-// @Router /users [get]
 func (h *UserHandler) ListUsers(c echo.Context) error {
 	page, _ := strconv.Atoi(c.QueryParam("page"))
 	if page < 1 {
@@ -95,13 +87,6 @@ type ChangePasswordRequest struct {
 	NewPassword string `json:"newPassword" validate:"required"`
 }
 
-// @Summary ChangePassword endpoint
-// @Description ChangePassword endpoint
-// @Tags Users
-// @Accept json
-// @Produce json
-// @Param request body handlers.ChangePasswordRequest true "Payload"
-// @Router /profile/password [put]
 func (h *UserHandler) ChangePassword(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -120,12 +105,6 @@ func (h *UserHandler) ChangePassword(c echo.Context) error {
 	return utils.Success(c, "Password changed successfully", nil)
 }
 
-// @Summary GetProfile endpoint
-// @Description GetProfile endpoint
-// @Tags Users
-// @Accept json
-// @Produce json
-// @Router /profile [get]
 func (h *UserHandler) GetProfile(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -140,13 +119,6 @@ func (h *UserHandler) GetProfile(c echo.Context) error {
 	return utils.Success(c, "Profile retrieved", &uCopy)
 }
 
-// @Summary UpdateProfile endpoint
-// @Description UpdateProfile endpoint
-// @Tags Users
-// @Accept json
-// @Produce json
-// @Param request body handlers.UpdateProfileRequest true "Payload"
-// @Router /profile [put]
 func (h *UserHandler) UpdateProfile(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -174,12 +146,6 @@ func (h *UserHandler) UpdateProfile(c echo.Context) error {
 	return utils.Success(c, "Profile updated", &uCopy)
 }
 
-// @Summary RequestEmailChange endpoint
-// @Description Request an OTP to change email
-// @Tags Users
-// @Accept json
-// @Produce json
-// @Router /profile/email/request [post]
 func (h *UserHandler) RequestEmailChange(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -209,12 +175,6 @@ func (h *UserHandler) RequestEmailChange(c echo.Context) error {
 	return utils.Success(c, "OTP sent to new email address", nil)
 }
 
-// @Summary VerifyEmailChange endpoint
-// @Description Verify the OTP to change email
-// @Tags Users
-// @Accept json
-// @Produce json
-// @Router /profile/email/verify [post]
 func (h *UserHandler) VerifyEmailChange(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -243,13 +203,6 @@ func (h *UserHandler) VerifyEmailChange(c echo.Context) error {
 	return utils.Success(c, "Email updated successfully", nil)
 }
 
-// @Summary CreatePAT endpoint
-// @Description CreatePAT endpoint
-// @Tags Users
-// @Accept json
-// @Produce json
-// @Param request body handlers.CreatePATRequest true "Payload"
-// @Router /profile/tokens [post]
 func (h *UserHandler) CreatePAT(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -269,12 +222,6 @@ func (h *UserHandler) CreatePAT(c echo.Context) error {
 	})
 }
 
-// @Summary ListPATs endpoint
-// @Description ListPATs endpoint
-// @Tags Users
-// @Accept json
-// @Produce json
-// @Router /profile/tokens [get]
 func (h *UserHandler) ListPATs(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -287,13 +234,6 @@ func (h *UserHandler) ListPATs(c echo.Context) error {
 	return utils.Success(c, "Tokens retrieved successfully", pats)
 }
 
-// @Summary DeletePAT endpoint
-// @Description DeletePAT endpoint
-// @Tags Users
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Router /profile/tokens/{id} [delete]
 func (h *UserHandler) DeletePAT(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {

@@ -18,11 +18,6 @@ func NewCanvasHandler(s *services.CanvasService) *CanvasHandler {
 	return &CanvasHandler{canvasService: s}
 }
 
-// @Summary ListCanvasSummaries endpoint
-// @Description ListCanvasSummaries endpoint
-// @Tags Canvas
-// @Accept json
-// @Produce json
 func (h *CanvasHandler) ListCanvasSummaries(c echo.Context) error {
 	summaries, err := h.canvasService.ListSummaries(c.Request().Context())
 	if err != nil {
@@ -34,13 +29,6 @@ func (h *CanvasHandler) ListCanvasSummaries(c echo.Context) error {
 	return utils.Success(c, "Operation successful", summaries)
 }
 
-// @Summary GetCanvasSummary endpoint
-// @Description GetCanvasSummary endpoint
-// @Tags Projects
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Router /projects/{id}/summary [get]
 func (h *CanvasHandler) GetCanvasSummary(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -53,13 +41,6 @@ func (h *CanvasHandler) GetCanvasSummary(c echo.Context) error {
 	return utils.Success(c, "Operation successful", summary)
 }
 
-// @Summary GetEnvironmentCanvas endpoint
-// @Description GetEnvironmentCanvas endpoint
-// @Tags Environments
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Router /environments/{id}/canvas [get]
 func (h *CanvasHandler) GetEnvironmentCanvas(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {

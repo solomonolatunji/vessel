@@ -22,13 +22,6 @@ type TestNotificationRequest struct {
 	Provider string `json:"provider"`
 }
 
-// @Summary TestNotification endpoint
-// @Description TestNotification endpoint
-// @Tags Settings
-// @Accept json
-// @Produce json
-// @Param request body handlers.TestNotificationRequest true "Payload"
-// @Router /settings/notifications/test [post]
 func (h *NotificationHandler) TestNotification(c echo.Context) error {
 	if c.Request().Method != http.MethodPost {
 		return utils.Error(c, http.StatusMethodNotAllowed, "Method not allowed")

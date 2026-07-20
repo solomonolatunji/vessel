@@ -19,12 +19,6 @@ func NewSystemHandler(s *services.SystemService) *SystemHandler {
 	return &SystemHandler{service: s}
 }
 
-// @Summary Get system stats
-// @Description Returns CPU, memory, disk usage, and uptime for the host server
-// @Tags System
-// @Produce json
-// @Success 200 {object} models.SystemStats
-// @Router /system/stats [get]
 func (h *SystemHandler) GetStats(c echo.Context) error {
 	stats, err := h.service.GetStats()
 	if err != nil {
@@ -33,12 +27,6 @@ func (h *SystemHandler) GetStats(c echo.Context) error {
 	return utils.Success(c, "System stats", stats)
 }
 
-// @Summary Restart the Vessl daemon
-// @Description Triggers a restart of the Vessl daemon (admin only)
-// @Tags System
-// @Produce json
-// @Success 200 {object} map[string]any
-// @Router /system/restart [post]
 func (h *SystemHandler) Restart(c echo.Context) error {
 	go func() {
 		if _, err := exec.LookPath("docker"); err == nil {
@@ -52,12 +40,6 @@ func (h *SystemHandler) Restart(c echo.Context) error {
 	return utils.Success(c, "Restart initiated", map[string]string{"status": "restarting"})
 }
 
-// @Summary Run system cleanup
-// @Description Prunes unused docker images, containers, volumes, and networks
-// @Tags System
-// @Produce json
-// @Success 200 {object} map[string]any
-// @Router /system/maintenance/cleanup [post]
 func (h *SystemHandler) Cleanup(c echo.Context) error {
 	if err := h.service.Cleanup(); err != nil {
 		return utils.Error(c, 500, "Cleanup failed")

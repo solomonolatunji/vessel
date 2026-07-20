@@ -1,6 +1,6 @@
 ---
 title: Integrations
-description: Connect Vessl with Git providers, OAuth, Vercel, and external services.
+description: Connect Vessl with Git providers, OAuth, Analytics, and external services.
 ---
 
 Vessl integrates with popular development tools and services.
@@ -58,19 +58,16 @@ For enterprise SSO, configure a custom OpenID Connect provider:
 2. Enter the issuer URL, client ID, and client secret.
 3. Map the user claims (name, email, avatar).
 
-## Vercel Import
+## Analytics & Telemetry
 
-Import projects from Vercel with one click:
+Integrate analytics to monitor platform usage and performance:
 
-1. Go to **Projects → Import from Vercel**.
-2. Authenticate with your Vercel account.
-3. Select a Vercel project to import.
-4. Vessl pulls the project configuration and environment variables.
-5. Deploy the imported project to your Vessl instance.
+### PostHog
 
-### Environment Variables from Vercel
+Vessl supports PostHog for product analytics and telemetry.
 
-During import, Vessl retrieves all environment variables from your Vercel project and makes them available in the Vessl dashboard for review before deployment.
+1. Configure your PostHog integration in `dashboard/src/integrations/`.
+2. The platform automatically tracks page views, user sessions, and key interactions using `@posthog/react` and `posthog-js`.
 
 ## Outgoing Webhooks
 

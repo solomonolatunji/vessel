@@ -18,15 +18,6 @@ func NewLogHandler(ls *services.LogService) *LogHandler {
 	return &LogHandler{logService: ls}
 }
 
-// @Summary Get Historical Logs
-// @Description Fetches historical logs from Loki for a specific service
-// @Tags Logs
-// @Accept json
-// @Produce json
-// @Param serviceId path string true "Service ID"
-// @Param range query string false "Time range (e.g., 24h, 7d)"
-// @Param limit query int false "Max lines to fetch"
-// @Router /services/{serviceId}/logs/historical [get]
 func (h *LogHandler) GetHistoricalLogs(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	if serviceID == "" {
@@ -41,7 +32,7 @@ func (h *LogHandler) GetHistoricalLogs(c echo.Context) error {
 	limitParam := c.QueryParam("limit")
 	limit, err := strconv.Atoi(limitParam)
 	if err != nil || limit <= 0 {
-		limit = 1000 // default limit
+		limit = 1000
 	}
 
 	end := time.Now()

@@ -46,14 +46,6 @@ type ComposeAnalyzeRequest struct {
 	ProjectID      string `json:"projectId"`
 }
 
-// @Summary Analyze a docker-compose file
-// @Description Parses a docker-compose.yml and returns the Vessl resources that would be created
-// @Tags Compose
-// @Accept json
-// @Produce json
-// @Param request body ComposeAnalyzeRequest true "Compose content to analyze"
-// @Success 200 {object} map[string]any
-// @Router /compose/analyze [post]
 func (h *ComposeHandler) Analyze(c echo.Context) error {
 	var req ComposeAnalyzeRequest
 	if err := c.Bind(&req); err != nil {
@@ -72,15 +64,6 @@ func (h *ComposeHandler) Analyze(c echo.Context) error {
 	return utils.Success(c, "Compose analyzed", result)
 }
 
-// @Summary Deploy a docker-compose file
-// @Description Parses and deploys all services defined in a docker-compose.yml
-// @Tags Compose
-// @Accept multipart/form-data
-// @Produce json
-// @Param projectId formData string false "Project ID (optional, uses default if empty)"
-// @Param file formData file true "docker-compose.yml file"
-// @Success 200 {object} map[string]any
-// @Router /compose/deploy [post]
 func (h *ComposeHandler) Deploy(c echo.Context) error {
 	user := middleware.GetUserClaimsFromContext(c.Request().Context())
 	if user == nil {

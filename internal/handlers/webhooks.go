@@ -10,13 +10,6 @@ import (
 	"vessl.dev/vessl/internal/utils"
 )
 
-// @Summary ListWebhooks endpoint
-// @Description ListWebhooks endpoint
-// @Tags Services
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Router /apps/{id}/webhooks [get]
 func (h *AppHandler) ListWebhooks(c echo.Context) error {
 	serviceID := c.Param("id")
 	if serviceID == "" {
@@ -40,14 +33,6 @@ func (h *AppHandler) ListWebhooks(c echo.Context) error {
 	return utils.Success(c, "Operation successful", list)
 }
 
-// @Summary CreateWebhook endpoint
-// @Description CreateWebhook endpoint
-// @Tags Services
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Param request body models.CreateWebhookRequest true "Payload"
-// @Router /apps/{id}/webhooks [post]
 func (h *AppHandler) CreateWebhook(c echo.Context) error {
 	serviceID := c.Param("id")
 	if serviceID == "" {
@@ -86,14 +71,6 @@ func (h *AppHandler) CreateWebhook(c echo.Context) error {
 	return utils.Created(c, "Created successfully", created)
 }
 
-// @Summary DeleteWebhook endpoint
-// @Description DeleteWebhook endpoint
-// @Tags Services
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Param webhookId path string true "webhookId"
-// @Router /apps/{id}/webhooks/{webhookId} [delete]
 func (h *AppHandler) DeleteWebhook(c echo.Context) error {
 	serviceID := c.Param("id")
 	webhookID := c.Param("webhookId")

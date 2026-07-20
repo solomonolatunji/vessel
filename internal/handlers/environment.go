@@ -19,13 +19,6 @@ func NewEnvironmentHandler(s *services.EnvironmentService) *EnvironmentHandler {
 	return &EnvironmentHandler{envService: s}
 }
 
-// @Summary ListByProject endpoint
-// @Description ListByProject endpoint
-// @Tags Environments
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Router /projects/{id}/environments [get]
 func (h *EnvironmentHandler) ListByProject(c echo.Context) error {
 	projectID := c.Param("id")
 	if projectID == "" {
@@ -38,13 +31,6 @@ func (h *EnvironmentHandler) ListByProject(c echo.Context) error {
 	return utils.Success(c, "Operation successful", envs)
 }
 
-// @Summary Create endpoint
-// @Description Create endpoint
-// @Tags Environments
-// @Accept json
-// @Produce json
-// @Param request body models.EnvironmentConfig true "Payload"
-// @Router /projects/{id}/environments [post]
 func (h *EnvironmentHandler) Create(c echo.Context) error {
 	projectID := c.Param("id")
 	if projectID == "" {
@@ -65,13 +51,6 @@ func (h *EnvironmentHandler) Create(c echo.Context) error {
 	return utils.Created(c, "Created successfully", created)
 }
 
-// @Summary Delete Environment
-// @Description Delete Environment
-// @Tags Environments
-// @Accept json
-// @Produce json
-// @Param id path string true "Environment ID"
-// @Router /environments/{id} [delete]
 func (h *EnvironmentHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {

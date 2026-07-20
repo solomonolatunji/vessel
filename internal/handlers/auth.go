@@ -34,13 +34,6 @@ type RegisterRequest struct {
 	Password string `json:"password"`
 }
 
-// @Summary Forgot Password endpoint
-// @Description Forgot Password endpoint
-// @Tags Auth
-// @Accept json
-// @Produce json
-// @Param request body ForgotPasswordRequest true "Forgot password credentials"
-// @Router /auth/forgot-password [post]
 func (h *AuthHandler) ForgotPassword(c echo.Context) error {
 	var payload ForgotPasswordRequest
 	if err := c.Bind(&payload); err != nil {
@@ -65,13 +58,6 @@ type ResetPasswordRequest struct {
 	NewPassword string `json:"newPassword"`
 }
 
-// @Summary Reset Password endpoint
-// @Description Reset Password endpoint
-// @Tags Auth
-// @Accept json
-// @Produce json
-// @Param request body ResetPasswordRequest true "Reset password credentials"
-// @Router /auth/reset-password [post]
 func (h *AuthHandler) ResetPassword(c echo.Context) error {
 	var payload ResetPasswordRequest
 	if err := c.Bind(&payload); err != nil {
@@ -84,13 +70,6 @@ func (h *AuthHandler) ResetPassword(c echo.Context) error {
 	return utils.Success(c, "Password reset successful", nil)
 }
 
-// @Summary Register endpoint
-// @Description Register endpoint
-// @Tags Auth
-// @Accept json
-// @Produce json
-// @Param request body RegisterRequest true "Registration credentials"
-// @Router /auth/signup [post]
 func (h *AuthHandler) Register(c echo.Context) error {
 	var payload RegisterRequest
 	if err := c.Bind(&payload); err != nil {
@@ -111,13 +90,6 @@ func (h *AuthHandler) Register(c echo.Context) error {
 	})
 }
 
-// @Summary Login endpoint
-// @Description Login endpoint
-// @Tags Auth
-// @Accept json
-// @Produce json
-// @Param request body AuthRequest true "Login credentials"
-// @Router /auth/signin [post]
 func (h *AuthHandler) Login(c echo.Context) error {
 	var payload AuthRequest
 	if err := c.Bind(&payload); err != nil {
@@ -137,12 +109,6 @@ func (h *AuthHandler) Login(c echo.Context) error {
 	})
 }
 
-// @Summary Logout endpoint
-// @Description Logout endpoint
-// @Tags Auth
-// @Accept json
-// @Produce json
-// @Router /auth/logout [post]
 func (h *AuthHandler) Logout(c echo.Context) error {
 	ClearAuthCookie(c)
 	return utils.Success(c, "Logged out successfully", nil)
@@ -170,7 +136,7 @@ func (h *AuthHandler) AdminInviteUser(c echo.Context) error {
 		origin = c.Request().Header.Get("Referer")
 	}
 	if origin == "" {
-		origin = "http://localhost:3000" // Fallback
+		origin = "http://localhost:3000"
 	}
 
 	u, err := h.authService.InviteUser(c.Request().Context(), req.Email, models.UserRole(req.Role), origin)

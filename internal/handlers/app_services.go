@@ -47,14 +47,6 @@ func (h *AppHandler) verifyProjectOwnership(c echo.Context, projectID string) er
 	return nil
 }
 
-// @Summary Create endpoint
-// @Description Create endpoint
-// @Tags AppServices
-// @Accept json
-// @Produce json
-// @Param id path string true "Environment ID"
-// @Param request body models.AppService true "Payload"
-// @Router /environments/{id}/apps [post]
 func (h *AppHandler) Create(c echo.Context) error {
 	envID := c.Param("id")
 	var req models.AppService
@@ -79,7 +71,6 @@ func (h *AppHandler) Create(c echo.Context) error {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
 
-	// Auto-generate default domain
 	domainName := utils.GenerateAppDomain(req.Name, "", "")
 	_, _ = h.envService.CreateDomain(c.Request().Context(), &models.DomainConfig{
 		ServiceID:  created.ID,
@@ -104,13 +95,6 @@ func (h *AppHandler) Create(c echo.Context) error {
 	return utils.Created(c, "Created successfully", created)
 }
 
-// @Summary ListByEnvironment endpoint
-// @Description ListByEnvironment endpoint
-// @Tags AppServices
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Router /environments/{id}/apps [get]
 func (h *AppHandler) ListByEnvironment(c echo.Context) error {
 	envID := c.Param("id")
 	apps, err := h.appService.ListByEnvironment(c.Request().Context(), envID)
@@ -131,13 +115,6 @@ func (h *AppHandler) ListByEnvironment(c echo.Context) error {
 	return utils.Success(c, "Operation successful", apps)
 }
 
-// @Summary ListByProject endpoint
-// @Description ListByProject endpoint
-// @Tags AppServices
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Router /projects/{id}/apps [get]
 func (h *AppHandler) ListByProject(c echo.Context) error {
 	projectID := c.Param("id")
 	if err := h.verifyProjectOwnership(c, projectID); err != nil {
@@ -150,13 +127,6 @@ func (h *AppHandler) ListByProject(c echo.Context) error {
 	return utils.Success(c, "Operation successful", apps)
 }
 
-// @Summary Get App Service
-// @Description Get App Service
-// @Tags AppServices
-// @Accept json
-// @Produce json
-// @Param id path string true "App ID"
-// @Router /apps/{id} [get]
 func (h *AppHandler) Get(c echo.Context) error {
 	id := c.Param("id")
 	svc, err := h.appService.GetAppService(c.Request().Context(), id)
@@ -169,14 +139,6 @@ func (h *AppHandler) Get(c echo.Context) error {
 	return utils.Success(c, "Operation successful", svc)
 }
 
-// @Summary Update App Service
-// @Description Update App Service
-// @Tags AppServices
-// @Accept json
-// @Produce json
-// @Param id path string true "App ID"
-// @Param request body models.AppService true "Payload"
-// @Router /apps/{id} [put]
 func (h *AppHandler) Update(c echo.Context) error {
 	id := c.Param("id")
 	existing, err := h.appService.GetAppService(c.Request().Context(), id)
@@ -215,13 +177,6 @@ func (h *AppHandler) Update(c echo.Context) error {
 	return utils.Success(c, "Operation successful", existing)
 }
 
-// @Summary Delete App Service
-// @Description Delete App Service
-// @Tags AppServices
-// @Accept json
-// @Produce json
-// @Param id path string true "App ID"
-// @Router /apps/{id} [delete]
 func (h *AppHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	existing, err := h.appService.GetAppService(c.Request().Context(), id)
@@ -237,13 +192,6 @@ func (h *AppHandler) Delete(c echo.Context) error {
 	return c.NoContent(http.StatusNoContent)
 }
 
-// @Summary Stop App Service
-// @Description Stops all containers belonging to this app service
-// @Tags AppServices
-// @Accept json
-// @Produce json
-// @Param id path string true "App ID"
-// @Router /apps/{id}/stop [post]
 func (h *AppHandler) StopService(c echo.Context) error {
 	id := c.Param("id")
 	existing, err := h.appService.GetAppService(c.Request().Context(), id)
@@ -261,13 +209,6 @@ func (h *AppHandler) StopService(c echo.Context) error {
 	return utils.Success(c, "Service stopped successfully", existing)
 }
 
-// @Summary Redeploy App Service
-// @Description Creates a new deployment for this app service using the same branch/commit as the last deployment
-// @Tags AppServices
-// @Accept json
-// @Produce json
-// @Param id path string true "App ID"
-// @Router /apps/{id}/redeploy [post]
 func (h *AppHandler) RedeployService(c echo.Context) error {
 	id := c.Param("id")
 	existing, err := h.appService.GetAppService(c.Request().Context(), id)
@@ -296,13 +237,6 @@ func (h *AppHandler) RedeployService(c echo.Context) error {
 	return utils.Accepted(c, "Redeployment triggered", created)
 }
 
-// @Summary Restart App Service
-// @Description Restarts all containers belonging to this app service
-// @Tags AppServices
-// @Accept json
-// @Produce json
-// @Param id path string true "App ID"
-// @Router /apps/{id}/restart [post]
 func (h *AppHandler) RestartService(c echo.Context) error {
 	id := c.Param("id")
 	existing, err := h.appService.GetAppService(c.Request().Context(), id)

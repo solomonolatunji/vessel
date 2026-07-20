@@ -23,14 +23,6 @@ func NewProjectHandler(s *services.ProjectService, pss *services.ProjectSettings
 	return &ProjectHandler{projectService: s, projectSettingsService: pss}
 }
 
-// @Summary ListProjects endpoint
-// @Description ListProjects endpoint
-// @Tags Projects
-// @Accept json
-// @Produce json
-// @Param page query int false "Page number"
-// @Param limit query int false "Items per page"
-// @Router /projects [get]
 func (h *ProjectHandler) ListProjects(c echo.Context) error {
 	page, _ := strconv.Atoi(c.QueryParam("page"))
 	if page < 1 {
@@ -50,13 +42,6 @@ func (h *ProjectHandler) ListProjects(c echo.Context) error {
 	return utils.Paginated(c, "Operation successful", projects, total, page, limit)
 }
 
-// @Summary CreateProject endpoint
-// @Description CreateProject endpoint
-// @Tags Projects
-// @Accept json
-// @Produce json
-// @Param request body models.CreateProjectRequest true "Payload"
-// @Router /projects [post]
 func (h *ProjectHandler) CreateProject(c echo.Context) error {
 	var req models.CreateProjectRequest
 	if err := c.Bind(&req); err != nil {
@@ -89,13 +74,6 @@ func (h *ProjectHandler) CreateProject(c echo.Context) error {
 	return utils.Created(c, "Created successfully", p)
 }
 
-// @Summary GetProject endpoint
-// @Description GetProject endpoint
-// @Tags Projects
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Router /projects/{id} [get]
 func (h *ProjectHandler) GetProject(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -111,13 +89,6 @@ func (h *ProjectHandler) GetProject(c echo.Context) error {
 	return utils.Success(c, "Operation successful", p)
 }
 
-// @Summary DeleteProject endpoint
-// @Description DeleteProject endpoint
-// @Tags Projects
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Router /projects/{id} [delete]
 func (h *ProjectHandler) DeleteProject(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {

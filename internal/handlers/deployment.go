@@ -31,15 +31,6 @@ func NewDeploymentHandler(ds *services.DeploymentService, as *services.AppServic
 	}
 }
 
-// @Summary ListServiceDeployments endpoint
-// @Description ListServiceDeployments endpoint
-// @Tags AppServices
-// @Accept json
-// @Produce json
-// @Param serviceId path string true "serviceId"
-// @Param page query int false "Page number"
-// @Param limit query int false "Items per page"
-// @Router /services/{serviceId}/deployments [get]
 func (h *DeploymentHandler) ListServiceDeployments(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	if serviceID == "" {
@@ -63,13 +54,6 @@ func (h *DeploymentHandler) ListServiceDeployments(c echo.Context) error {
 	return utils.Paginated(c, "Deployments retrieved", deps, total, page, limit)
 }
 
-// @Summary Trigger Deployment
-// @Description Trigger Deployment
-// @Tags Deployments
-// @Accept json
-// @Produce json
-// @Param serviceId path string true "Service ID"
-// @Router /services/{serviceId}/deploy [post]
 func (h *DeploymentHandler) Trigger(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	if serviceID == "" {
@@ -108,13 +92,6 @@ func (h *DeploymentHandler) Trigger(c echo.Context) error {
 	return utils.Accepted(c, "Deployment created", created)
 }
 
-// @Summary Rollback endpoint
-// @Description Rollback endpoint
-// @Tags Deployments
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Router /deployments/{id}/rollback [post]
 func (h *DeploymentHandler) Rollback(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -155,13 +132,6 @@ func (h *DeploymentHandler) Rollback(c echo.Context) error {
 	return utils.Accepted(c, "Rollback created", created)
 }
 
-// @Summary GetLogs endpoint
-// @Description GetLogs endpoint
-// @Tags Deployments
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Router /deployments/{id}/logs [get]
 func (h *DeploymentHandler) GetLogs(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -178,13 +148,6 @@ func (h *DeploymentHandler) GetLogs(c echo.Context) error {
 	})
 }
 
-// @Summary GetMetrics endpoint
-// @Description GetMetrics endpoint
-// @Tags AppServices
-// @Accept json
-// @Produce json
-// @Param serviceId path string true "serviceId"
-// @Router /services/{serviceId}/metrics [get]
 func (h *DeploymentHandler) GetMetrics(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	if serviceID == "" {
@@ -209,13 +172,6 @@ func (h *DeploymentHandler) GetMetrics(c echo.Context) error {
 	return utils.Success(c, "Operation successful", metrics)
 }
 
-// @Summary Explain Deployment Failure
-// @Description Analyzes build logs with AI to explain why a deployment failed
-// @Tags Deployments
-// @Accept json
-// @Produce json
-// @Param id path string true "Deployment ID"
-// @Router /deployments/{id}/explain [get]
 func (h *DeploymentHandler) ExplainFailure(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -230,13 +186,6 @@ func (h *DeploymentHandler) ExplainFailure(c echo.Context) error {
 	return utils.Success(c, "AI Analysis completed", explanation)
 }
 
-// @Summary List PR Previews
-// @Description List active PR previews for a service
-// @Tags Deployments
-// @Accept json
-// @Produce json
-// @Param serviceId path string true "serviceId"
-// @Router /services/{serviceId}/previews [get]
 func (h *DeploymentHandler) ListPRPreviews(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	if serviceID == "" {

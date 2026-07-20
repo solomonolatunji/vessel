@@ -21,12 +21,6 @@ func NewBackupHandler(s *services.BackupService) *BackupHandler {
 	return &BackupHandler{backupService: s}
 }
 
-// @Summary List Backups
-// @Description List Backups
-// @Tags Backups
-// @Accept json
-// @Produce json
-// @Router /backups [get]
 func (h *BackupHandler) List(c echo.Context) error {
 	list, err := h.backupService.ListConfigs(c.Request().Context())
 	if err != nil {
@@ -38,13 +32,6 @@ func (h *BackupHandler) List(c echo.Context) error {
 	return utils.Success(c, "Operation successful", list)
 }
 
-// @Summary Create Backup
-// @Description Create Backup
-// @Tags Backups
-// @Accept json
-// @Produce json
-// @Param request body models.BackupConfig true "Payload"
-// @Router /backups [post]
 func (h *BackupHandler) Create(c echo.Context) error {
 	var cfg models.BackupConfig
 	if err := c.Bind(&cfg); err != nil {
@@ -56,14 +43,6 @@ func (h *BackupHandler) Create(c echo.Context) error {
 	return utils.Created(c, "Created successfully", cfg)
 }
 
-// @Summary Update Backup
-// @Description Update Backup
-// @Tags Backups
-// @Accept json
-// @Produce json
-// @Param id path string true "Backup ID"
-// @Param request body models.BackupConfig true "Payload"
-// @Router /backups/{id} [put]
 func (h *BackupHandler) Update(c echo.Context) error {
 	id := c.Param("id")
 
@@ -152,13 +131,6 @@ func (h *BackupHandler) Update(c echo.Context) error {
 	return utils.Success(c, "Updated successfully", existing)
 }
 
-// @Summary Get Backup
-// @Description Get Backup
-// @Tags Backups
-// @Accept json
-// @Produce json
-// @Param id path string true "Backup ID"
-// @Router /backups/{id} [get]
 func (h *BackupHandler) Get(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -176,13 +148,6 @@ func (h *BackupHandler) Get(c echo.Context) error {
 	return utils.Success(c, "Operation successful", cfg)
 }
 
-// @Summary Delete Backup
-// @Description Delete Backup
-// @Tags Backups
-// @Accept json
-// @Produce json
-// @Param id path string true "Backup ID"
-// @Router /backups/{id} [delete]
 func (h *BackupHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -194,13 +159,6 @@ func (h *BackupHandler) Delete(c echo.Context) error {
 	return c.NoContent(http.StatusNoContent)
 }
 
-// @Summary Trigger endpoint
-// @Description Trigger endpoint
-// @Tags Backups
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Router /backups/{id}/trigger [post]
 func (h *BackupHandler) Trigger(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -213,13 +171,6 @@ func (h *BackupHandler) Trigger(c echo.Context) error {
 	return utils.Success(c, "Operation successful", rec)
 }
 
-// @Summary ListRecords endpoint
-// @Description ListRecords endpoint
-// @Tags Backups
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Router /backups/{id}/records [get]
 func (h *BackupHandler) ListRecords(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -232,14 +183,6 @@ func (h *BackupHandler) ListRecords(c echo.Context) error {
 	return utils.Success(c, "Operation successful", recs)
 }
 
-// @Summary Download Backup Record
-// @Description Download Backup Record
-// @Tags Backups
-// @Accept json
-// @Produce application/octet-stream
-// @Param id path string true "Backup ID"
-// @Param recordId path string true "Record ID"
-// @Router /backups/{id}/records/{recordId}/download [get]
 func (h *BackupHandler) DownloadRecord(c echo.Context) error {
 	id := c.Param("id")
 	recordID := c.Param("recordId")
@@ -267,14 +210,6 @@ func (h *BackupHandler) DownloadRecord(c echo.Context) error {
 	return c.Attachment(rec.FilePath, filepath.Base(rec.FilePath))
 }
 
-// @Summary Delete Backup Record
-// @Description Delete Backup Record
-// @Tags Backups
-// @Accept json
-// @Produce json
-// @Param id path string true "Backup ID"
-// @Param recordId path string true "Record ID"
-// @Router /backups/{id}/records/{recordId} [delete]
 func (h *BackupHandler) DeleteRecord(c echo.Context) error {
 	id := c.Param("id")
 	recordID := c.Param("recordId")
@@ -302,13 +237,6 @@ func (h *BackupHandler) DeleteRecord(c echo.Context) error {
 	return c.NoContent(http.StatusNoContent)
 }
 
-// @Summary Restore endpoint
-// @Description Restore endpoint
-// @Tags Backups
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Router /backups/{id}/restore [post]
 func (h *BackupHandler) Restore(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -321,12 +249,6 @@ func (h *BackupHandler) Restore(c echo.Context) error {
 	return utils.Success(c, "Backup successfully restored", nil)
 }
 
-// @Summary ListS3Destinations endpoint
-// @Description ListS3Destinations endpoint
-// @Tags Backups
-// @Accept json
-// @Produce json
-// @Router /s3-destinations [get]
 func (h *BackupHandler) ListS3Destinations(c echo.Context) error {
 	list, err := h.backupService.ListS3Destinations(c.Request().Context())
 	if err != nil {
@@ -335,13 +257,6 @@ func (h *BackupHandler) ListS3Destinations(c echo.Context) error {
 	return utils.Success(c, "Operation successful", list)
 }
 
-// @Summary CreateS3Destination endpoint
-// @Description CreateS3Destination endpoint
-// @Tags Backups
-// @Accept json
-// @Produce json
-// @Param request body models.S3Destination true "Payload"
-// @Router /s3-destinations [post]
 func (h *BackupHandler) CreateS3Destination(c echo.Context) error {
 	var dest models.S3Destination
 	if err := c.Bind(&dest); err != nil {
@@ -353,13 +268,6 @@ func (h *BackupHandler) CreateS3Destination(c echo.Context) error {
 	return utils.Created(c, "Created successfully", dest)
 }
 
-// @Summary DeleteS3Destination endpoint
-// @Description DeleteS3Destination endpoint
-// @Tags Backups
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Router /s3-destinations/{id} [delete]
 func (h *BackupHandler) DeleteS3Destination(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {

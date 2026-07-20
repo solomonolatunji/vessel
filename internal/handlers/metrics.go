@@ -17,14 +17,6 @@ func NewMetricsHandler(ms *services.MetricsService) *MetricsHandler {
 	return &MetricsHandler{metricsService: ms}
 }
 
-// @Summary Get Historical Metrics
-// @Description Fetches 24h/7d performance graphs from TSDB
-// @Tags Metrics
-// @Accept json
-// @Produce json
-// @Param serviceId path string true "Service ID"
-// @Param range query string false "Time range (e.g., 24h, 7d)"
-// @Router /services/{serviceId}/metrics/historical [get]
 func (h *MetricsHandler) GetHistoricalMetrics(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	if serviceID == "" {

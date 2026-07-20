@@ -8,13 +8,6 @@ import (
 	"vessl.dev/vessl/internal/utils"
 )
 
-// @Summary ListVolumes endpoint
-// @Description ListVolumes endpoint
-// @Tags ServiceVolumes
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Router /apps/{id}/volumes [get]
 func (h *AppHandler) ListVolumes(c echo.Context) error {
 	serviceID := c.Param("id")
 	if serviceID == "" {
@@ -33,14 +26,6 @@ func (h *AppHandler) ListVolumes(c echo.Context) error {
 	return utils.Success(c, "Operation successful", list)
 }
 
-// @Summary CreateVolume endpoint
-// @Description CreateVolume endpoint
-// @Tags ServiceVolumes
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Param request body models.ServiceVolume true "Payload"
-// @Router /apps/{id}/volumes [post]
 func (h *AppHandler) CreateVolume(c echo.Context) error {
 	serviceID := c.Param("id")
 	if serviceID == "" {
@@ -65,14 +50,6 @@ func (h *AppHandler) CreateVolume(c echo.Context) error {
 	return utils.Success(c, "Operation successful", created)
 }
 
-// @Summary DeleteVolume endpoint
-// @Description DeleteVolume endpoint
-// @Tags ServiceVolumes
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Param volumeId path string true "volumeId"
-// @Router /apps/{id}/volumes/{volumeId} [delete]
 func (h *AppHandler) DeleteVolume(c echo.Context) error {
 	serviceID := c.Param("id")
 	volumeID := c.Param("volumeId")

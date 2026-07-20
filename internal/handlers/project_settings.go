@@ -19,13 +19,6 @@ func NewProjectSettingsHandler(s *services.ProjectSettingsService) *ProjectSetti
 	return &ProjectSettingsHandler{settingsService: s}
 }
 
-// @Summary ListTokens endpoint
-// @Description ListTokens endpoint
-// @Tags Projects
-// @Accept json
-// @Produce json
-// @Param projectId path string true "projectId"
-// @Router /projects/{projectId}/tokens [get]
 func (h *ProjectSettingsHandler) ListTokens(c echo.Context) error {
 	projectID := c.Param("projectId")
 	if projectID == "" {
@@ -38,14 +31,6 @@ func (h *ProjectSettingsHandler) ListTokens(c echo.Context) error {
 	return utils.Success(c, "Operation successful", list)
 }
 
-// @Summary CreateToken endpoint
-// @Description CreateToken endpoint
-// @Tags Projects
-// @Accept json
-// @Produce json
-// @Param projectId path string true "projectId"
-// @Param request body models.CreateTokenRequest true "Payload"
-// @Router /projects/{projectId}/tokens [post]
 func (h *ProjectSettingsHandler) CreateToken(c echo.Context) error {
 	projectID := c.Param("projectId")
 	if projectID == "" {
@@ -78,14 +63,6 @@ func (h *ProjectSettingsHandler) CreateToken(c echo.Context) error {
 	})
 }
 
-// @Summary DeleteToken endpoint
-// @Description DeleteToken endpoint
-// @Tags Projects
-// @Accept json
-// @Produce json
-// @Param projectId path string true "projectId"
-// @Param id path string true "id"
-// @Router /projects/{projectId}/tokens/{id} [delete]
 func (h *ProjectSettingsHandler) DeleteToken(c echo.Context) error {
 	projectID := c.Param("projectId")
 	id := c.Param("id")
@@ -98,13 +75,6 @@ func (h *ProjectSettingsHandler) DeleteToken(c echo.Context) error {
 	return c.NoContent(http.StatusNoContent)
 }
 
-// @Summary ListMembers endpoint
-// @Description ListMembers endpoint
-// @Tags Project Settings
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Router /projects/{projectId}/members [get]
 func (h *ProjectSettingsHandler) ListMembers(c echo.Context) error {
 	projectID := c.Param("projectId")
 	if projectID == "" {
@@ -117,14 +87,6 @@ func (h *ProjectSettingsHandler) ListMembers(c echo.Context) error {
 	return utils.Success(c, "Operation successful", list)
 }
 
-// @Summary AddMember endpoint
-// @Description AddMember endpoint
-// @Tags Projects
-// @Accept json
-// @Produce json
-// @Param projectId path string true "projectId"
-// @Param request body models.AddMemberRequest true "Payload"
-// @Router /projects/{projectId}/members [post]
 func (h *ProjectSettingsHandler) AddMember(c echo.Context) error {
 	projectID := c.Param("projectId")
 	if projectID == "" {
@@ -157,21 +119,6 @@ func (h *ProjectSettingsHandler) AddMember(c echo.Context) error {
 	return utils.Created(c, "Created successfully", added)
 }
 
-// @Summary RemoveMember endpoint
-// @Description RemoveMember endpoint
-// @Tags Project Settings
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Param userId path string true "userId"
-// @Summary Remove Project Member
-// @Description Remove Project Member
-// @Tags Projects
-// @Accept json
-// @Produce json
-// @Param projectId path string true "Project ID"
-// @Param id path string true "User ID"
-// @Router /projects/{projectId}/members/{id} [delete]
 func (h *ProjectSettingsHandler) RemoveMember(c echo.Context) error {
 	projectID := c.Param("projectId")
 	id := c.Param("id")

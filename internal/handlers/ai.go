@@ -53,13 +53,6 @@ func (h *AISettingsHandler) DiagnoseLogs(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Invalid request")
 	}
 
-	// This is a stubbed response for the AI diagnostics.
-	// The Vercel AI SDK expects a plain text response for useCompletion if not streaming,
-	// or Server-Sent Events if streaming. We will just return plain text for simplicity.
-
-	// Real implementation would use h.aiSettingsService to grab an API key and
-	// hit an LLM with the provided logs.
-
 	mockDiagnosis := `I analyzed your logs. 
 Based on the output provided, here is what I found:
 1. No critical errors detected in the last few lines.

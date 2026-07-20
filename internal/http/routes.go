@@ -6,18 +6,11 @@ import (
 	"path/filepath"
 
 	"github.com/labstack/echo/v4"
-	echoSwagger "github.com/swaggo/echo-swagger"
 	"vessl.dev/vessl/dashboard"
-	_ "vessl.dev/vessl/docs"
 )
 
 func (s *Server) registerRoutes() {
 	apiGroup := s.router.Group("/api")
-
-	s.router.GET("/docs", func(c echo.Context) error {
-		return c.Redirect(http.StatusMovedPermanently, "/docs/index.html")
-	})
-	s.router.GET("/docs/*", echoSwagger.WrapHandler)
 
 	authGroup := apiGroup.Group("")
 	authGroup.Use(s.authGuard.RequireAuth())

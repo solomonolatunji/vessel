@@ -18,13 +18,6 @@ func NewProjectEnvHandler(s *services.EnvironmentService) *ProjectEnvHandler {
 	return &ProjectEnvHandler{envService: s}
 }
 
-// @Summary GetVars endpoint
-// @Description GetVars endpoint
-// @Tags Projects
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Router /projects/{id}/env [get]
 func (h *ProjectEnvHandler) GetVars(c echo.Context) error {
 	projectID := c.Param("id")
 	if projectID == "" {
@@ -40,13 +33,6 @@ func (h *ProjectEnvHandler) GetVars(c echo.Context) error {
 	return utils.Success(c, "Operation successful", vars)
 }
 
-// @Summary SetVars endpoint
-// @Description SetVars endpoint
-// @Tags Projects
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Router /projects/{id}/env [put]
 func (h *ProjectEnvHandler) SetVars(c echo.Context) error {
 	projectID := c.Param("id")
 	if projectID == "" {

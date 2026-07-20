@@ -21,13 +21,6 @@ func NewServiceVarHandler(s *services.AppService, audit *services.AuditService, 
 	return &ServiceVarHandler{appService: s, auditService: audit, envSugg: envSugg}
 }
 
-// @Summary List Service Variables
-// @Description List Service Variables
-// @Tags AppServices
-// @Accept json
-// @Produce json
-// @Param serviceId path string true "Service ID"
-// @Router /services/{serviceId}/variables [get]
 func (h *ServiceVarHandler) List(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	list, err := h.appService.ListVariablesByService(c.Request().Context(), serviceID)
@@ -37,14 +30,6 @@ func (h *ServiceVarHandler) List(c echo.Context) error {
 	return utils.Success(c, "Operation successful", list)
 }
 
-// @Summary Create Service Variable
-// @Description Create Service Variable
-// @Tags AppServices
-// @Accept json
-// @Produce json
-// @Param serviceId path string true "Service ID"
-// @Param request body models.Variable true "Payload"
-// @Router /services/{serviceId}/variables [post]
 func (h *ServiceVarHandler) Create(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	var req models.Variable
@@ -77,15 +62,6 @@ func (h *ServiceVarHandler) Create(c echo.Context) error {
 	return utils.Created(c, "Created successfully", created)
 }
 
-// @Summary Update Service Variable
-// @Description Update Service Variable
-// @Tags AppServices
-// @Accept json
-// @Produce json
-// @Param serviceId path string true "Service ID"
-// @Param id path string true "Variable ID"
-// @Param request body models.Variable true "Payload"
-// @Router /services/{serviceId}/variables/{id} [put]
 func (h *ServiceVarHandler) Update(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	id := c.Param("id")
@@ -113,14 +89,6 @@ func (h *ServiceVarHandler) Update(c echo.Context) error {
 	return utils.Success(c, "Operation successful", req)
 }
 
-// @Summary Delete Service Variable
-// @Description Delete Service Variable
-// @Tags AppServices
-// @Accept json
-// @Produce json
-// @Param serviceId path string true "Service ID"
-// @Param id path string true "Variable ID"
-// @Router /services/{serviceId}/variables/{id} [delete]
 func (h *ServiceVarHandler) Delete(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	id := c.Param("id")
@@ -141,13 +109,6 @@ func (h *ServiceVarHandler) Delete(c echo.Context) error {
 	return utils.Success(c, "Deleted successfully", nil)
 }
 
-// @Summary Suggest Service Variables
-// @Description Scan repository for .env.example and suggest variables
-// @Tags AppServices
-// @Accept json
-// @Produce json
-// @Param serviceId path string true "Service ID"
-// @Router /services/{serviceId}/env-suggestions [get]
 func (h *ServiceVarHandler) Suggest(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	svc, err := h.appService.GetAppService(c.Request().Context(), serviceID)
@@ -161,7 +122,6 @@ func (h *ServiceVarHandler) Suggest(c echo.Context) error {
 
 	suggestions, err := h.envSugg.SuggestEnvVars(c.Request().Context(), svc.RepositoryURL, svc.Branch, svc.RootDirectory)
 	if err != nil {
-		// Just return empty array if we can't scan, maybe it's not a github repo or lacks permissions
 		return utils.Success(c, "No suggestions available", []interface{}{})
 	}
 

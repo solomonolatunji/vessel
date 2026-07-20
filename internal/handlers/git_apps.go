@@ -78,13 +78,6 @@ func deleteAppHandler(del deleteFunc) echo.HandlerFunc {
 	}
 }
 
-// @Summary ExchangeGithubManifestCode endpoint
-// @Description ExchangeGithubManifestCode endpoint
-// @Tags Settings
-// @Accept json
-// @Produce json
-// @Param request body handlers.GitAppsManifestRequest true "Payload"
-// @Router /settings/git_apps/github/manifest-callback [post]
 func (h *GitAppsHandler) ExchangeGithubManifestCode(c echo.Context) error {
 	var payload GitAppsManifestRequest
 
@@ -104,40 +97,18 @@ func (h *GitAppsHandler) ExchangeGithubManifestCode(c echo.Context) error {
 	return utils.Success(c, "Operation successful", app)
 }
 
-// @Summary ListGithubApps endpoint
-// @Description ListGithubApps endpoint
-// @Tags Settings
-// @Accept json
-// @Produce json
 func (h *GitAppsHandler) ListGithubApps(c echo.Context) error {
 	return listAppsHandler(h.gitAppsService.ListGithubApps)(c)
 }
 
-// @Summary GetGithubApp endpoint
-// @Description GetGithubApp endpoint
-// @Tags Settings
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
 func (h *GitAppsHandler) GetGithubApp(c echo.Context) error {
 	return getAppHandler(h.gitAppsService.GetGithubApp)(c)
 }
 
-// @Summary SaveGithubApp endpoint
-// @Description SaveGithubApp endpoint
-// @Tags Settings
-// @Accept json
-// @Produce json
 func (h *GitAppsHandler) SaveGithubApp(c echo.Context) error {
 	return saveAppHandler(h.gitAppsService.SaveGithubApp)(c)
 }
 
-// @Summary DeleteGithubApp endpoint
-// @Description DeleteGithubApp endpoint
-// @Tags Settings
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
 func (h *GitAppsHandler) DeleteGithubApp(c echo.Context) error {
 	return deleteAppHandler(h.gitAppsService.DeleteGithubApp)(c)
 }

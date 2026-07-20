@@ -34,11 +34,6 @@ func maskSettingsSecrets(s *models.ServerSettings) {
 	}
 }
 
-// @Summary GetSettings endpoint
-// @Description GetSettings endpoint
-// @Tags Settings
-// @Accept json
-// @Produce json
 func (h *SettingsHandler) GetSettings(c echo.Context) error {
 	s, err := h.settingsService.GetSettings(c.Request().Context())
 	if err != nil {
@@ -50,12 +45,6 @@ func (h *SettingsHandler) GetSettings(c echo.Context) error {
 	return utils.Success(c, "Operation successful", masked)
 }
 
-// @Summary GetPublicSettings endpoint
-// @Description Get public settings for the frontend (e.g., if registration is enabled)
-// @Tags Settings
-// @Accept json
-// @Produce json
-// @Router /system/public [get]
 func (h *SettingsHandler) GetPublicSettings(c echo.Context) error {
 	s, err := h.settingsService.GetSettings(c.Request().Context())
 	if err != nil {
@@ -75,13 +64,6 @@ func (h *SettingsHandler) GetPublicSettings(c echo.Context) error {
 	return utils.Success(c, "Operation successful", publicSettings)
 }
 
-// @Summary UpdateSettings endpoint
-// @Description UpdateSettings endpoint
-// @Tags Settings
-// @Accept json
-// @Produce json
-// @Param request body models.ServerSettings true "Payload"
-// @Router /settings [put]
 func (h *SettingsHandler) UpdateSettings(c echo.Context) error {
 	h.mu.Lock()
 	defer h.mu.Unlock()

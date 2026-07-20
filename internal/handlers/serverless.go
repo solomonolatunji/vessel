@@ -24,13 +24,6 @@ type SaveCodeRequest struct {
 	CodeContent string `json:"codeContent"`
 }
 
-// @Summary SaveCode endpoint
-// @Description SaveCode endpoint
-// @Tags AppServices
-// @Accept json
-// @Produce json
-// @Param serviceId path string true "serviceId"
-// @Router /services/{serviceId}/serverless/code [post]
 func (h *ServerlessHandler) SaveCode(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	if serviceID == "" {
@@ -52,13 +45,6 @@ func (h *ServerlessHandler) SaveCode(c echo.Context) error {
 	})
 }
 
-// @Summary GetCode endpoint
-// @Description GetCode endpoint
-// @Tags AppServices
-// @Accept json
-// @Produce json
-// @Param serviceId path string true "serviceId"
-// @Router /services/{serviceId}/serverless/code [get]
 func (h *ServerlessHandler) GetCode(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	if serviceID == "" {

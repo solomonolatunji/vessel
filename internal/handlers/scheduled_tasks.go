@@ -19,12 +19,6 @@ func NewScheduledTaskHandler(s *services.ScheduledTaskService) *ScheduledTaskHan
 	return &ScheduledTaskHandler{scheduledTaskService: s}
 }
 
-// @Summary ListProjectScheduledTasks endpoint
-// @Description ListProjectScheduledTasks endpoint
-// @Tags ScheduledTasks
-// @Accept json
-// @Produce json
-// @Router /scheduled-tasks [get]
 func (h *ScheduledTaskHandler) ListProjectScheduledTasks(c echo.Context) error {
 	projectID := c.QueryParam("projectId")
 	serviceID := c.QueryParam("serviceId")
@@ -44,13 +38,6 @@ func (h *ScheduledTaskHandler) ListProjectScheduledTasks(c echo.Context) error {
 	return utils.Success(c, "Operation successful", tasks)
 }
 
-// @Summary Create endpoint
-// @Description Create endpoint
-// @Tags ScheduledTasks
-// @Accept json
-// @Produce json
-// @Param request body models.ScheduledTask true "Payload"
-// @Router /scheduled-tasks [post]
 func (h *ScheduledTaskHandler) Create(c echo.Context) error {
 	var j models.ScheduledTask
 	if err := c.Bind(&j); err != nil {
@@ -63,13 +50,6 @@ func (h *ScheduledTaskHandler) Create(c echo.Context) error {
 	return utils.Created(c, "Created successfully", created)
 }
 
-// @Summary Get ScheduledTask
-// @Description Get ScheduledTask
-// @Tags ScheduledTasks
-// @Accept json
-// @Produce json
-// @Param id path string true "ScheduledTask ID"
-// @Router /scheduled-tasks/{id} [get]
 func (h *ScheduledTaskHandler) Get(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -82,13 +62,6 @@ func (h *ScheduledTaskHandler) Get(c echo.Context) error {
 	return utils.Success(c, "Operation successful", j)
 }
 
-// @Summary Delete ScheduledTask
-// @Description Delete ScheduledTask
-// @Tags ScheduledTasks
-// @Accept json
-// @Produce json
-// @Param id path string true "ScheduledTask ID"
-// @Router /scheduled-tasks/{id} [delete]
 func (h *ScheduledTaskHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -100,13 +73,6 @@ func (h *ScheduledTaskHandler) Delete(c echo.Context) error {
 	return c.NoContent(http.StatusNoContent)
 }
 
-// @Summary Run endpoint
-// @Description Run endpoint
-// @Tags ScheduledTasks
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Router /scheduled-tasks/{id}/trigger [post]
 func (h *ScheduledTaskHandler) Run(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {

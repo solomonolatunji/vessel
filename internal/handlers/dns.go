@@ -18,13 +18,6 @@ func NewDNSHandler(dnsService *services.DNSService) *DNSHandler {
 	return &DNSHandler{dnsService: dnsService}
 }
 
-// @Summary Create a DNS Record
-// @Description Create a generic DNS record (A, CNAME, TXT, etc.)
-// @Tags DNS
-// @Accept json
-// @Produce json
-// @Param request body models.CreateDNSRecordRequest true "Payload"
-// @Router /dns [post]
 func (h *DNSHandler) Create(c echo.Context) error {
 	var req models.CreateDNSRecordRequest
 	if err := c.Bind(&req); err != nil {
@@ -39,13 +32,6 @@ func (h *DNSHandler) Create(c echo.Context) error {
 	return utils.Created(c, "DNS record created successfully", record)
 }
 
-// @Summary List DNS Records
-// @Description List all DNS records for a specific domain
-// @Tags DNS
-// @Accept json
-// @Produce json
-// @Param domain query string true "Domain Name"
-// @Router /dns [get]
 func (h *DNSHandler) List(c echo.Context) error {
 	domain := c.QueryParam("domain")
 
@@ -57,14 +43,6 @@ func (h *DNSHandler) List(c echo.Context) error {
 	return utils.Success(c, "DNS records fetched successfully", records)
 }
 
-// @Summary Update a DNS Record
-// @Description Update an existing DNS record
-// @Tags DNS
-// @Accept json
-// @Produce json
-// @Param id path string true "Record ID"
-// @Param request body models.UpdateDNSRecordRequest true "Payload"
-// @Router /dns/{id} [put]
 func (h *DNSHandler) Update(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
@@ -84,13 +62,6 @@ func (h *DNSHandler) Update(c echo.Context) error {
 	return utils.Success(c, "DNS record updated successfully", record)
 }
 
-// @Summary Delete a DNS Record
-// @Description Delete an existing DNS record
-// @Tags DNS
-// @Accept json
-// @Produce json
-// @Param id path string true "Record ID"
-// @Router /dns/{id} [delete]
 func (h *DNSHandler) Delete(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {

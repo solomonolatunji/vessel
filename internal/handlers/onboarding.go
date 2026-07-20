@@ -25,12 +25,6 @@ func NewOnboardingHandler(
 	}
 }
 
-// @Summary Check if onboarding is required
-// @Description Returns true if no users exist in the system, indicating setup is needed
-// @Tags System
-// @Produce json
-// @Success 200 {object} map[string]any
-// @Router /system/setup-status [get]
 func (h *OnboardingHandler) SetupStatus(c echo.Context) error {
 	count, err := h.userService.CountUsers(c.Request().Context())
 	if err != nil {
@@ -43,14 +37,6 @@ func (h *OnboardingHandler) SetupStatus(c echo.Context) error {
 	})
 }
 
-// @Summary Complete onboarding setup
-// @Description Creates the first user and optionally configures initial settings
-// @Tags System
-// @Accept json
-// @Produce json
-// @Param request body services.SetupRequest true "Setup details"
-// @Success 200 {object} map[string]any
-// @Router /system/setup [post]
 func (h *OnboardingHandler) Setup(c echo.Context) error {
 	ctx := c.Request().Context()
 

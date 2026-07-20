@@ -48,13 +48,6 @@ func NewWebhookHandler(
 	}
 }
 
-// @Summary HandleServiceWebhook endpoint
-// @Description HandleServiceWebhook endpoint
-// @Tags Webhooks
-// @Accept json
-// @Produce json
-// @Param serviceId path string true "serviceId"
-// @Router /webhooks/git/services/{serviceId} [post]
 func (h *WebhookHandler) HandleServiceWebhook(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	if serviceID == "" {
@@ -104,14 +97,6 @@ func verifyHMAC(payload []byte, secret, signature string) bool {
 	return hmac.Equal([]byte(expectedMAC), []byte(signature))
 }
 
-// @Summary HandleGitHubWebhook endpoint
-// @Description HandleGitHubWebhook endpoint
-// @Tags Webhooks
-// @Accept json
-// @Produce json
-// @Param serviceId path string true "serviceId"
-// @Param request body models.GithubWebhookPayload true "Payload"
-// @Router /webhooks/github/services/{serviceId} [post]
 func (h *WebhookHandler) HandleGitHubWebhook(c echo.Context) error {
 	serviceID := c.Param("serviceId")
 	if serviceID == "" {

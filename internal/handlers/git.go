@@ -19,13 +19,6 @@ func NewGitHandler(s *services.GitService) *GitHandler {
 	return &GitHandler{gitService: s}
 }
 
-// @Summary Connect endpoint
-// @Description Connect endpoint
-// @Tags Git
-// @Accept json
-// @Produce json
-// @Param request body models.GitConnectRequest true "Payload"
-// @Router /git/connect [post]
 func (h *GitHandler) Connect(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -42,12 +35,6 @@ func (h *GitHandler) Connect(c echo.Context) error {
 	return utils.Created(c, "Created successfully", gp)
 }
 
-// @Summary Status endpoint
-// @Description Status endpoint
-// @Tags Git
-// @Accept json
-// @Produce json
-// @Router /git/status [get]
 func (h *GitHandler) Status(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -60,13 +47,6 @@ func (h *GitHandler) Status(c echo.Context) error {
 	return utils.Success(c, "Operation successful", status)
 }
 
-// @Summary Disconnect endpoint
-// @Description Disconnect endpoint
-// @Tags Git
-// @Accept json
-// @Produce json
-// @Param provider path string true "provider"
-// @Router /git/connect/{provider} [delete]
 func (h *GitHandler) Disconnect(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {
@@ -82,12 +62,6 @@ func (h *GitHandler) Disconnect(c echo.Context) error {
 	return utils.Success(c, "Operation successful", map[string]string{"status": "disconnected"})
 }
 
-// @Summary ListRepos endpoint
-// @Description ListRepos endpoint
-// @Tags Git
-// @Accept json
-// @Produce json
-// @Router /git/repos [get]
 func (h *GitHandler) ListRepos(c echo.Context) error {
 	userID := ExtractUserID(c)
 	if userID == "" {

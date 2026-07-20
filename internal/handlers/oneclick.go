@@ -23,24 +23,10 @@ type oneClickDeployRequest struct {
 	Name      string `json:"name" form:"name"`
 }
 
-// @Summary List one-click apps
-// @Description Returns available one-click deployable applications
-// @Tags OneClick
-// @Produce json
-// @Success 200 {object} map[string]any
-// @Router /one-click [get]
 func (h *OneClickHandler) List(c echo.Context) error {
 	return utils.Success(c, "Available one-click apps", h.service.ListApps())
 }
 
-// @Summary Deploy a one-click app
-// @Description Deploys a pre-configured application from template
-// @Tags OneClick
-// @Accept json
-// @Produce json
-// @Param request body oneClickDeployRequest true "Deployment details"
-// @Success 200 {object} map[string]any
-// @Router /one-click/deploy [post]
 func (h *OneClickHandler) Deploy(c echo.Context) error {
 	var req oneClickDeployRequest
 	if err := c.Bind(&req); err != nil {
