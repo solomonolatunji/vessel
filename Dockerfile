@@ -15,7 +15,7 @@ COPY dashboard/ ./dashboard/
 RUN npm run build:dashboard
 
 # Stage 2: Build the static Go daemon (`vessld`)
-FROM golang:1.24-alpine AS daemon-builder
+FROM golang:1.25-alpine AS daemon-builder
 WORKDIR /src
 
 # Install git and certificates

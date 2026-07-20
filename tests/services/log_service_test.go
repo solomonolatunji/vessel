@@ -10,7 +10,7 @@ import (
 
 func TestLogService_GetHistoricalLogs_InvalidHost(t *testing.T) {
 	svc := services.NewLogService()
-	
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 	defer cancel()
 

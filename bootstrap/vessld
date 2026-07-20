@@ -12,8 +12,8 @@ YELLOW="\033[0;33m"
 RED="\033[0;31m"
 NC="\033[0m"
 
-if [ ! -f "$VESSL_DIR/docker-compose.yml" ] && [ ! -f "./docker-compose.yml" ]; then
-  echo -e "${RED}❌ No Vessl installation found.${NC} Expected docker-compose.yml in $VESSL_DIR or current directory."
+if [ ! -f "$VESSL_DIR/docker-compose.yml" ] && [ ! -f "./docker-compose.yml" ] && [ ! -f "./docker/docker-compose.yml" ]; then
+  echo -e "${RED}❌ No Vessl installation found.${NC} Expected docker-compose.yml in $VESSL_DIR, current directory, or ./docker/docker-compose.yml."
   exit 1
 fi
 

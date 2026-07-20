@@ -67,9 +67,11 @@ func (m *mockAppRepo) DeleteWebhook(ctx context.Context, id, serviceID string) e
 
 type mockVarRepo struct{}
 
-func (m *mockVarRepo) Create(ctx context.Context, v *models.Variable) error           { return nil }
-func (m *mockVarRepo) Update(ctx context.Context, v *models.Variable) error           { return nil }
-func (m *mockVarRepo) GetByID(ctx context.Context, id string) (*models.Variable, error) { return nil, nil }
+func (m *mockVarRepo) Create(ctx context.Context, v *models.Variable) error { return nil }
+func (m *mockVarRepo) Update(ctx context.Context, v *models.Variable) error { return nil }
+func (m *mockVarRepo) GetByID(ctx context.Context, id string) (*models.Variable, error) {
+	return nil, nil
+}
 func (m *mockVarRepo) ListByService(ctx context.Context, serviceID string) ([]*models.Variable, error) {
 	return nil, nil
 }
