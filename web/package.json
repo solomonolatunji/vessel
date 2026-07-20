@@ -17,6 +17,8 @@
     "deploy": "npm run build && wrangler pages deploy dist/ --project-name vessl-web"
   },
   "dependencies": {
+    "@iconify-json/lucide": "^1.2.118",
+    "@iconify-json/simple-icons": "^1.2.91",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.1.1",
     "astro-icon": "^1.1.5",

@@ -1,11 +1,3 @@
-// @title Vessl API
-// @version 1.0
-// @description Vessl API Documentation
-// @host localhost:8080
-// @BasePath /api
-// @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization
 package main
 
 import (
