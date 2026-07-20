@@ -53,7 +53,6 @@ var backupCreateCmd = &cobra.Command{
 
 		client := getClient()
 		req := &models.BackupConfig{
-			ProjectID:  projectID,
 			DatabaseID: databaseID,
 			Name:       name,
 			Schedule:   schedule,

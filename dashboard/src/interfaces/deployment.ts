@@ -23,6 +23,13 @@ export type DeploymentStatus =
 export type JobStatus = 'active' | 'inactive' | 'running' | 'completed' | 'failed' | 'error';
 export type PRPreviewStatus = 'active' | 'inactive' | 'building' | 'failed';
 
+export interface EnvExampleVariableSuggestion {
+  key: string;
+  value: string;
+  label: string;
+  sourcePath: string;
+}
+
 export interface AppService {
   id: string;
   projectId: string;

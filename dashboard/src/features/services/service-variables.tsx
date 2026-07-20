@@ -3,8 +3,9 @@ import { useState } from 'react';
 import { Button } from '#/components/ui/button';
 import { Input } from '#/components/ui/input';
 import { useCreate, useDelete, useEnvSuggestions, useList } from '#/hooks/useServices';
+import type { AppService, EnvExampleVariableSuggestion, Variable } from '#/interfaces/deployment';
 
-export function ServiceVariables({ app }: { app: any }) {
+export function ServiceVariables({ app }: { app: AppService }) {
   const { data, isLoading } = useList(app.id);
   const [scanEnabled, setScanEnabled] = useState(false);
   const { data: suggestionsData, isLoading: isScanning } = useEnvSuggestions(app.id, scanEnabled);
@@ -20,7 +21,7 @@ export function ServiceVariables({ app }: { app: any }) {
 
   // Filter out suggestions that already exist in vars
   const availableSuggestions = suggestions.filter(
-    (s: any) => !vars.find((v: any) => v.key === s.key)
+    (s: EnvExampleVariableSuggestion) => !vars.find((v: Variable) => v.key === s.key)
   );
 
   return (
@@ -46,7 +47,7 @@ export function ServiceVariables({ app }: { app: any }) {
             <p className="text-gray-500 text-sm">No environment variables configured</p>
           </div>
         ) : (
-          vars.map((v: any) => (
+          vars.map((v: Variable) => (
             <div
               key={v.id}
               className="flex items-center justify-between rounded border bg-white p-3 shadow-sm"
@@ -96,7 +97,7 @@ export function ServiceVariables({ app }: { app: any }) {
 
           {availableSuggestions.length > 0 && (
             <div className="mt-4 space-y-2 border-slate-200 border-t pt-4">
-              {availableSuggestions.map((s: any) => (
+              {availableSuggestions.map((s: EnvExampleVariableSuggestion) => (
                 <div
                   key={s.key}
                   className="flex items-center justify-between rounded border border-slate-200 bg-white p-2 text-sm"
