@@ -11,6 +11,7 @@ import (
 	"vessl.dev/vessl/internal/http/middleware"
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/services"
+	"vessl.dev/vessl/internal/telemetry"
 )
 
 type ProjectHandler struct {
@@ -72,6 +73,16 @@ func (h *ProjectHandler) CreateProject(c echo.Context) error {
 			ProjectID:  p.ID,
 			Email:      userClaims.Email,
 			Permission: models.MemberPermissionOwner,
+		})
+
+		telemetry.Track(userClaims.Email, "project_created", map[string]interface{}{
+			"project_id": p.ID,
+			"name":       p.Name,
+		})
+	} else {
+		telemetry.Track("anonymous", "project_created", map[string]interface{}{
+			"project_id": p.ID,
+			"name":       p.Name,
 		})
 	}
 

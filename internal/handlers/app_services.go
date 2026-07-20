@@ -11,6 +11,7 @@ import (
 	"vessl.dev/vessl/internal/http/middleware"
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/services"
+	"vessl.dev/vessl/internal/telemetry"
 )
 
 type AppHandler struct {
@@ -83,6 +84,21 @@ func (h *AppHandler) Create(c echo.Context) error {
 	_, _ = h.envService.CreateDomain(c.Request().Context(), &models.DomainConfig{
 		ServiceID:  created.ID,
 		DomainName: domainName,
+	})
+
+	user := middleware.GetUserClaimsFromContext(c.Request().Context())
+	distinctID := "anonymous"
+	if user != nil {
+		distinctID = user.Email
+	}
+	sourceType := "github"
+	if created.ImageRef != "" {
+		sourceType = "docker_image"
+	}
+	telemetry.Track(distinctID, "app_created", map[string]interface{}{
+		"app_id": created.ID,
+		"name":   created.Name,
+		"type":   sourceType,
 	})
 
 	return utils.Created(c, "Created successfully", created)

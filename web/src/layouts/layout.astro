@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Footer from '../components/footer.astro';
 import Header from '../components/header.astro';
+import PosthogTracking from '../components/posthog-tracking.astro';
 
 interface Props {
   title?: string;
@@ -30,6 +31,7 @@ const {
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <PosthogTracking />
   </head>
   <body class="bg-(--color-background) text-(--color-foreground) font-sans antialiased overflow-x-hidden max-w-[100vw]">
 

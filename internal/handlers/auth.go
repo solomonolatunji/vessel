@@ -7,6 +7,7 @@ import (
 
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/services"
+	"vessl.dev/vessl/internal/telemetry"
 	"vessl.dev/vessl/internal/utils"
 )
 
@@ -100,6 +101,10 @@ func (h *AuthHandler) Register(c echo.Context) error {
 		return utils.Error(c, http.StatusBadRequest, err.Error())
 	}
 	SetAuthCookie(c, token)
+	telemetry.Track(u.Email, "user_signed_up", map[string]interface{}{
+		"email": u.Email,
+		"name":  u.Name,
+	})
 	return utils.Success(c, "Registration successful", map[string]any{
 		"token": token,
 		"user":  u,
@@ -123,6 +128,9 @@ func (h *AuthHandler) Login(c echo.Context) error {
 		return utils.Error(c, http.StatusUnauthorized, err.Error())
 	}
 	SetAuthCookie(c, token)
+	telemetry.Track(u.Email, "user_logged_in", map[string]interface{}{
+		"email": u.Email,
+	})
 	return utils.Success(c, "Login successful", map[string]any{
 		"token": token,
 		"user":  u,

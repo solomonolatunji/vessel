@@ -11,6 +11,8 @@ export const env = createEnv({
   client: {
     VITE_APP_TITLE: z.string().min(1).optional(),
     VITE_API_URL: z.string().optional().default('/api'),
+    VITE_PUBLIC_POSTHOG_KEY: z.string().optional(),
+    VITE_PUBLIC_POSTHOG_HOST: z.string().optional(),
   },
 
   runtimeEnv: import.meta.env,

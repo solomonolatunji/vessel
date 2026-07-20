@@ -30,6 +30,7 @@ import (
 	"vessl.dev/vessl/internal/models"
 	"vessl.dev/vessl/internal/repositories"
 	"vessl.dev/vessl/internal/services"
+	"vessl.dev/vessl/internal/telemetry"
 	"vessl.dev/vessl/internal/utils"
 )
 
@@ -103,6 +104,14 @@ func startServer() {
 	slog.Info("booting daemon", "version", vesslVersion, "os", runtime.GOOS, "arch", runtime.GOARCH)
 	dataDir, db, vlt := initDataDir()
 	defer db.Close()
+
+	telemetry.Init()
+	defer telemetry.Close()
+	telemetry.Track("system", "daemon_start", map[string]interface{}{
+		"version": vesslVersion,
+		"os":      runtime.GOOS,
+		"arch":    runtime.GOARCH,
+	})
 
 	dockerClient, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {

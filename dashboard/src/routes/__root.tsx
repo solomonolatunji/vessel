@@ -3,6 +3,7 @@ import { createRootRouteWithContext, HeadContent, Outlet } from '@tanstack/react
 import { ThemeProvider } from '#/components/theme-provider';
 import { Toaster } from '#/components/ui/sonner';
 import { TooltipProvider } from '#/components/ui/tooltip';
+import { PostHogProvider } from '#/integrations/posthog-provider';
 
 interface MyRouterContext {
   queryClient: QueryClient;
@@ -24,11 +25,13 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 function RootDocument() {
   return (
     <ThemeProvider>
-      <HeadContent />
-      <TooltipProvider>
-        <Outlet />
-      </TooltipProvider>
-      <Toaster />
+      <PostHogProvider>
+        <HeadContent />
+        <TooltipProvider>
+          <Outlet />
+        </TooltipProvider>
+        <Toaster />
+      </PostHogProvider>
     </ThemeProvider>
   );
 }
