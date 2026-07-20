@@ -3,10 +3,10 @@ import { Button } from '#/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card';
 import { Input } from '#/components/ui/input';
 import { Label } from '#/components/ui/label';
-import { useCreate, useDelete, useListByProject } from '#/hooks/useDomains';
+import { useCreate, useDelete, useListByService } from '#/hooks/useDomains';
 
-export function ProjectDomains({ projectId }: { projectId: string }) {
-  const { data: domainsRes, isLoading } = useListByProject(projectId);
+export function ServiceDomains({ serviceId }: { serviceId: string }) {
+  const { data: domainsRes, isLoading } = useListByService(serviceId);
   const createDomain = useCreate();
   const deleteDomain = useDelete();
 
@@ -15,7 +15,7 @@ export function ProjectDomains({ projectId }: { projectId: string }) {
   const handleCreate = () => {
     if (!newDomain.trim()) return;
     createDomain.mutate(
-      { projectId, payload: { domainName: newDomain } },
+      { serviceId, payload: { domainName: newDomain } },
       { onSuccess: () => setNewDomain('') }
     );
   };

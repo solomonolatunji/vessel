@@ -44,10 +44,10 @@ var domainsAddCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add a domain to a project",
 	Run: func(cmd *cobra.Command, args []string) {
-		projectID, _ := cmd.Flags().GetString("project")
+		serviceID, _ := cmd.Flags().GetString("service")
 		domainName, _ := cmd.Flags().GetString("domain")
-		if projectID == "" || domainName == "" {
-			fmt.Println("Error: --project and --domain flags are required")
+		if serviceID == "" || domainName == "" {
+			fmt.Println("Error: --service and --domain flags are required")
 			os.Exit(1)
 		}
 
@@ -57,12 +57,12 @@ var domainsAddCmd = &cobra.Command{
 		client := getClient()
 		req := &models.DomainConfig{
 			DomainName: domainName,
-			ProjectID:  projectID,
+			ServiceID:  serviceID,
 			RedirectTo: redirectTo,
 			PathPrefix: pathPrefix,
 		}
 
-		created, err := client.AddDomain(projectID, req)
+		created, err := client.AddDomain(serviceID, req)
 		if err != nil {
 			fmt.Printf("Error adding domain: %v\n", err)
 			os.Exit(1)

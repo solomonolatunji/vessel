@@ -117,16 +117,16 @@ func runDomains(args []string) {
 
 	switch cmd {
 	case "list":
-		projectID := ""
+		serviceID := ""
 		for i := 1; i < len(args); i++ {
-			if args[i] == "--project" && i+1 < len(args) {
-				projectID = args[i+1]
+			if args[i] == "--service" && i+1 < len(args) {
+				serviceID = args[i+1]
 			}
 		}
-		if projectID == "" {
-			exitError("--project <id> is required")
+		if serviceID == "" {
+			exitError("--service <id> is required")
 		}
-		domains, err := domainRepo.ListByProject(context.Background(), projectID)
+		domains, err := domainRepo.ListByService(context.Background(), serviceID)
 		if err != nil {
 			exitError("Failed to list domains: %v", err)
 		}
@@ -140,21 +140,21 @@ func runDomains(args []string) {
 
 	case "add":
 		if len(args) < 2 {
-			exitError("Usage: vessld domain:add <domain> --project <id>")
+			exitError("Usage: vessld domain:add <domain> --service <id>")
 		}
 		domain := args[1]
-		projectID := ""
+		serviceID := ""
 		for i := 2; i < len(args); i++ {
-			if args[i] == "--project" && i+1 < len(args) {
-				projectID = args[i+1]
+			if args[i] == "--service" && i+1 < len(args) {
+				serviceID = args[i+1]
 			}
 		}
-		if projectID == "" {
-			exitError("--project <id> is required")
+		if serviceID == "" {
+			exitError("--service <id> is required")
 		}
 		cfg := &models.DomainConfig{
 			ID:         uuid.New().String(),
-			ProjectID:  projectID,
+			ServiceID:  serviceID,
 			DomainName: domain,
 			CreatedAt:  time.Now(),
 			UpdatedAt:  time.Now(),

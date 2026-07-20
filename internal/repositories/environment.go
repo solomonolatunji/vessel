@@ -23,7 +23,7 @@ type EnvironmentRepository interface {
 }
 
 type DomainRepository interface {
-	ListByProject(ctx context.Context, projectID string) ([]models.DomainConfig, error)
+	ListByService(ctx context.Context, serviceID string) ([]models.DomainConfig, error)
 	ListAll(ctx context.Context) ([]models.DomainConfig, error)
 	Create(ctx context.Context, d *models.DomainConfig) error
 	Delete(ctx context.Context, id string) error
@@ -100,9 +100,9 @@ func NewDomainRepo(db *sql.DB) *DomainRepo {
 	return &DomainRepo{db: sqlx.NewDb(db, "sqlite")}
 }
 
-func (r *DomainRepo) ListByProject(_ context.Context, projectID string) ([]models.DomainConfig, error) {
+func (r *DomainRepo) ListByService(ctx context.Context, serviceID string) ([]models.DomainConfig, error) {
 	var domains []models.DomainConfig
-	err := r.db.Select(&domains, `SELECT id, project_id, domain_name, redirect_to, ssl_cert_status, path_prefix, created_at, updated_at FROM domains WHERE project_id = ? ORDER BY domain_name ASC`, projectID)
+	err := r.db.Select(&domains, `SELECT id, service_id, domain_name, redirect_to, ssl_cert_status, path_prefix, created_at, updated_at FROM domains WHERE service_id = ? ORDER BY domain_name ASC`, serviceID)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +114,7 @@ func (r *DomainRepo) ListByProject(_ context.Context, projectID string) ([]model
 
 func (r *DomainRepo) ListAll(ctx context.Context) ([]models.DomainConfig, error) {
 	var domains []models.DomainConfig
-	err := r.db.Select(&domains, `SELECT id, project_id, domain_name, redirect_to, ssl_cert_status, path_prefix, created_at, updated_at FROM domains ORDER BY domain_name ASC`)
+	err := r.db.Select(&domains, `SELECT id, service_id, domain_name, redirect_to, ssl_cert_status, path_prefix, created_at, updated_at FROM domains ORDER BY domain_name ASC`)
 	if err != nil {
 		return nil, err
 	}
@@ -132,8 +132,8 @@ func (r *DomainRepo) Create(_ context.Context, d *models.DomainConfig) error {
 	d.CreatedAt = now
 	d.UpdatedAt = now
 	_, err := r.db.Exec(
-		`INSERT INTO domains (id, project_id, domain_name, redirect_to, ssl_cert_status, path_prefix, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-		d.ID, d.ProjectID, d.DomainName, d.RedirectTo, d.SSLCertStatus, d.PathPrefix, d.CreatedAt, d.UpdatedAt,
+		`INSERT INTO domains (id, service_id, domain_name, redirect_to, ssl_cert_status, path_prefix, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+		d.ID, d.ServiceID, d.DomainName, d.RedirectTo, d.SSLCertStatus, d.PathPrefix, d.CreatedAt, d.UpdatedAt,
 	)
 	return err
 }

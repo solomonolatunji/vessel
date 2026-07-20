@@ -83,8 +83,8 @@ func (s *Server) registerProjectRoutes(apiGroup, authGroup *echo.Group) {
 	authGroup.GET("/projects/:id", s.projectHandler.GetProject)
 	authGroup.DELETE("/projects/:id", s.projectHandler.DeleteProject)
 
-	authGroup.GET("/projects/:id/domains", s.domainHandler.ListByProject)
-	authGroup.POST("/projects/:id/domains", s.domainHandler.Create)
+	authGroup.GET("/services/:id/domains", s.domainHandler.ListByService)
+	authGroup.POST("/services/:id/domains", s.domainHandler.Create)
 	authGroup.DELETE("/domains/:id", s.domainHandler.Delete)
 	authGroup.GET("/projects/:id/env", s.projectEnvHandler.GetVars, s.authGuard.RequireScope("env:read"))
 	authGroup.PUT("/projects/:id/env", s.projectEnvHandler.SetVars, s.authGuard.RequireScope("env:write"))

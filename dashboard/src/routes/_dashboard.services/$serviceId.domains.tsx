@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { Loader2 } from 'lucide-react';
 import { useGetApp } from '#/hooks/useApps';
+import { ServiceDomains } from '#/features/services/service-domains';
 
 export const Route = createFileRoute('/_dashboard/services/$serviceId/domains')({
   component: ServiceDomainsRoute,
@@ -27,7 +28,7 @@ function ServiceDomainsRoute() {
   return (
     <div className="space-y-6">
       <h1 className="font-bold text-2xl">Domains</h1>
-      <p>Domain management for {app.name} is coming soon.</p>
+      <ServiceDomains serviceId={serviceId} />
     </div>
   );
 }

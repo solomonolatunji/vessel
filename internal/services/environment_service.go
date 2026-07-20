@@ -66,8 +66,8 @@ func (s *EnvironmentService) DeleteEnvironment(ctx context.Context, id string) e
 }
 
 func (s *EnvironmentService) CreateDomain(ctx context.Context, d *models.DomainConfig) (*models.DomainConfig, error) {
-	if d == nil || d.ProjectID == "" || d.DomainName == "" {
-		return nil, errors.New("valid domain with projectId and domainName required")
+	if d == nil || d.ServiceID == "" || d.DomainName == "" {
+		return nil, errors.New("valid domain with serviceId and domainName required")
 	}
 	if d.ID == "" {
 		d.ID = uuid.New().String()
@@ -89,11 +89,11 @@ func (s *EnvironmentService) CreateDomain(ctx context.Context, d *models.DomainC
 	return d, nil
 }
 
-func (s *EnvironmentService) ListDomainsByProject(ctx context.Context, projectID string) ([]models.DomainConfig, error) {
-	if projectID == "" {
-		return nil, errors.New("project id required")
+func (s *EnvironmentService) ListDomainsByService(ctx context.Context, serviceID string) ([]models.DomainConfig, error) {
+	if serviceID == "" {
+		return nil, errors.New("service id required")
 	}
-	return s.domainRepo.ListByProject(ctx, projectID)
+	return s.domainRepo.ListByService(ctx, serviceID)
 }
 
 func (s *EnvironmentService) ListAllDomains(ctx context.Context) ([]models.DomainConfig, error) {

@@ -35,7 +35,7 @@ const (
 
 type DomainConfig struct {
 	ID            string        `json:"id" db:"id"`
-	ProjectID     string        `json:"projectId" db:"project_id"`
+	ServiceID     string        `json:"serviceId" db:"service_id"`
 	DomainName    string        `json:"domainName" db:"domain_name"`
 	RedirectTo    string        `json:"redirectTo,omitempty" db:"redirect_to"`
 	SSLCertStatus SSLCertStatus `json:"sslCertStatus" db:"ssl_cert_status"`

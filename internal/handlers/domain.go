@@ -19,19 +19,19 @@ func NewDomainHandler(s *services.EnvironmentService) *DomainHandler {
 	return &DomainHandler{envService: s}
 }
 
-// @Summary List domains by project
-// @Description List domains by project
-// @Tags Projects
+// @Summary List domains by service
+// @Description List domains by service
+// @Tags Services
 // @Accept json
 // @Produce json
-// @Param id path string true "Project ID"
-// @Router /projects/{id}/domains [get]
-func (h *DomainHandler) ListByProject(c echo.Context) error {
-	projectID := c.Param("id")
-	if projectID == "" {
-		return utils.Error(c, http.StatusBadRequest, "missing project id parameter")
+// @Param id path string true "Service ID"
+// @Router /services/{id}/domains [get]
+func (h *DomainHandler) ListByService(c echo.Context) error {
+	serviceID := c.Param("id")
+	if serviceID == "" {
+		return utils.Error(c, http.StatusBadRequest, "missing service id parameter")
 	}
-	domains, err := h.envService.ListDomainsByProject(c.Request().Context(), projectID)
+	domains, err := h.envService.ListDomainsByService(c.Request().Context(), serviceID)
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
@@ -40,22 +40,22 @@ func (h *DomainHandler) ListByProject(c echo.Context) error {
 
 // @Summary Create domain
 // @Description Create domain
-// @Tags Projects
+// @Tags Services
 // @Accept json
 // @Produce json
-// @Param id path string true "Project ID"
+// @Param id path string true "Service ID"
 // @Param request body models.DomainConfig true "Payload"
-// @Router /projects/{id}/domains [post]
+// @Router /services/{id}/domains [post]
 func (h *DomainHandler) Create(c echo.Context) error {
-	projectID := c.Param("id")
-	if projectID == "" {
-		return utils.Error(c, http.StatusBadRequest, "missing project id parameter")
+	serviceID := c.Param("id")
+	if serviceID == "" {
+		return utils.Error(c, http.StatusBadRequest, "missing service id parameter")
 	}
 	var d models.DomainConfig
 	if err := c.Bind(&d); err != nil {
 		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
-	d.ProjectID = projectID
+	d.ServiceID = serviceID
 	if d.DomainName == "" {
 		return utils.Error(c, http.StatusBadRequest, "domainName is required")
 	}

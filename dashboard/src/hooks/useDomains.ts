@@ -1,10 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { domainsService } from '#/services/domains';
 
-export const useListByProject = (projectId: string) => {
+export const useListByService = (serviceId: string) => {
   return useQuery({
-    queryKey: ['domains', 'listByProject', projectId].filter(Boolean),
-    queryFn: () => domainsService.listByProject(projectId),
+    queryKey: ['domains', 'listByService', serviceId].filter(Boolean),
+    queryFn: () => domainsService.listByService(serviceId),
   });
 };
 
@@ -12,9 +12,9 @@ export const useCreate = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: {
-      projectId: string;
+      serviceId: string;
       payload: { domainName: string; redirectTo?: string; pathPrefix?: string };
-    }) => domainsService.create(payload.projectId, payload.payload),
+    }) => domainsService.create(payload.serviceId, payload.payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['domains'] });
     },

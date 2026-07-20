@@ -4,21 +4,21 @@ import { apiClient } from '#/lib/apiClient';
 import { handleApiError } from '#/lib/error';
 
 export const domainsService = {
-  listByProject: async (projectId: string): Promise<BaseResponse<DomainConfig[]>> => {
+  listByService: async (serviceId: string): Promise<BaseResponse<DomainConfig[]>> => {
     try {
-      return await apiClient.get<BaseResponse<DomainConfig[]>>(`/projects/${projectId}/domains`);
+      return await apiClient.get<BaseResponse<DomainConfig[]>>(`/services/${serviceId}/domains`);
     } catch (error) {
       throw handleApiError(error);
     }
   },
 
   create: async (
-    projectId: string,
+    serviceId: string,
     payload: { domainName: string; redirectTo?: string; pathPrefix?: string }
   ): Promise<BaseResponse<DomainConfig>> => {
     try {
       return await apiClient.post<BaseResponse<DomainConfig>>(
-        `/projects/${projectId}/domains`,
+        `/services/${serviceId}/domains`,
         payload
       );
     } catch (error) {
