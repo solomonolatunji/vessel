@@ -1,0 +1,53 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+<section class="py-24 border-y border-border bg-surface/30 backdrop-blur-sm relative">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-extrabold text-foreground mb-4">How it works</h2>
+      <p class="text-muted-foreground text-sm max-w-xl mx-auto">A secure, hybrid architecture. Vessl Cloud never touches your code or data—it only orchestrates the daemon.</p>
+    </div>
+
+    <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 relative">
+
+      
+      <!-- Step 1 -->
+      <div class="bg-background/80 backdrop-blur-md border border-border rounded-xl p-6 w-full max-w-xs text-center shadow-lg relative">
+        <div class="size-12 mx-auto bg-surface border border-border rounded-lg flex items-center justify-center mb-4 text-primary">
+          <Icon name="lucide:server" class="size-6" />
+        </div>
+        <h3 class="font-bold text-foreground mb-2">1. Your Server</h3>
+        <p class="text-xs text-muted-foreground leading-relaxed">Runs the &lt;30MB open-source daemon. Manages Docker, Traefik, and your actual databases &amp; apps.</p>
+      </div>
+
+      <!-- Arrow 1 -->
+      <div class="md:rotate-0 rotate-90 text-primary">
+        <Icon name="lucide:arrow-right" class="size-6 md:size-8" />
+      </div>
+
+      <!-- Step 2 -->
+      <div class="bg-primary/5 backdrop-blur-md border border-primary/30 rounded-xl p-6 w-full max-w-xs text-center shadow-lg shadow-primary/5 relative">
+        <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-primary text-white text-[10px] font-bold rounded-full uppercase tracking-wider">Encrypted</div>
+        <div class="size-12 mx-auto bg-primary/10 border border-primary/20 rounded-lg flex items-center justify-center mb-4 text-primary">
+          <Icon name="lucide:lock" class="size-6" />
+        </div>
+        <h3 class="font-bold text-foreground mb-2">2. Yamux Tunnel</h3>
+        <p class="text-xs text-muted-foreground leading-relaxed">The daemon dials out to Vessl Cloud. No port forwarding, no VPNs. Your server remains completely dark to the public internet.</p>
+      </div>
+
+      <!-- Arrow 2 -->
+      <div class="md:rotate-0 rotate-90 text-primary">
+        <Icon name="lucide:arrow-right" class="size-6 md:size-8" />
+      </div>
+
+      <!-- Step 3 -->
+      <div class="bg-background/80 backdrop-blur-md border border-border rounded-xl p-6 w-full max-w-xs text-center shadow-lg relative">
+        <div class="size-12 mx-auto bg-surface border border-border rounded-lg flex items-center justify-center mb-4 text-primary">
+          <Icon name="lucide:cloud" class="size-6" />
+        </div>
+        <h3 class="font-bold text-foreground mb-2">3. Vessl Cloud</h3>
+        <p class="text-xs text-muted-foreground leading-relaxed">The control plane. View logs, manage deployments, track metrics, and manage team access from a beautiful web dashboard.</p>
+      </div>
+    </div>
+  </div>
+</section>

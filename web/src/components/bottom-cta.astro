@@ -1,0 +1,27 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+<section class="py-24 md:py-32 relative overflow-hidden">
+  <!-- Glow -->
+  <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--color-primary)_0%,transparent_60%)] opacity-15 pointer-events-none z-0"></div>
+  
+  <div class="max-w-4xl mx-auto px-6 relative z-10 text-center">
+    <h2 class="text-4xl md:text-5xl font-extrabold text-foreground tracking-tight mb-6 text-balance">
+      Ready to own your infrastructure?
+    </h2>
+    <p class="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">
+      Stop renting Heroku dynos. Take back control with an open-source daemon and a powerful fleet control plane. Deploy your first app in 60 seconds.
+    </p>
+    
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <div class="flex items-center gap-2 rounded-lg border border-border bg-background/80 backdrop-blur-md px-5 py-3.5 font-mono text-sm w-full sm:w-auto shadow-xl">
+        <span class="text-primary font-bold shrink-0">$</span>
+        <code class="text-foreground">curl -fsSL https://get.vessl.dev | sh</code>
+      </div>
+      <a href="https://app.vessl.dev" class="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 rounded-lg bg-primary hover:bg-primary-hover text-white font-semibold transition-colors shadow-lg shadow-primary/25">
+        <Icon name="lucide:cloud" class="size-5" />
+        Get Cloud
+      </a>
+    </div>
+  </div>
+</section>
