@@ -30,6 +30,15 @@ func NewAppService(
 }
 
 func (s *AppService) CreateAppService(ctx context.Context, svc *models.AppService) (*models.AppService, error) {
+	if svc == nil {
+		return nil, errors.New("app service is nil")
+	}
+	if svc.ProjectID == "" {
+		return nil, errors.New("project id is required")
+	}
+	if svc.Name == "" {
+		return nil, errors.New("name is required")
+	}
 	if svc.ID == "" {
 		svc.ID = uuid.New().String()
 	}
@@ -88,6 +97,9 @@ func (s *AppService) ListByProject(ctx context.Context, projectID string) ([]*mo
 }
 
 func (s *AppService) UpdateAppService(ctx context.Context, svc *models.AppService) error {
+	if svc == nil {
+		return errors.New("app service is nil")
+	}
 	if svc.ID == "" {
 		return errors.New("valid service required for update")
 	}
@@ -148,8 +160,14 @@ func (s *AppService) DeleteVariable(ctx context.Context, id string) error {
 }
 
 func (s *AppService) CreateWebhook(ctx context.Context, w *models.Webhook) (*models.Webhook, error) {
+	if w == nil {
+		return nil, errors.New("webhook is nil")
+	}
 	if w.ServiceID == "" {
 		return nil, errors.New("serviceId is required")
+	}
+	if w.URL == "" {
+		return nil, errors.New("URL is required")
 	}
 
 	if w.ID == "" {

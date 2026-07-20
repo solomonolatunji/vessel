@@ -1,7 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { Copy, RefreshCw, Trash2, Webhook } from 'lucide-react';
-import { useState } from 'react';
 import { toast } from 'sonner';
 import { v4 as uuidv4 } from 'uuid';
 import { Button } from '#/components/ui/button';
@@ -32,8 +31,8 @@ function WebhooksRoute() {
       });
       toast.success('Generated new deploy token');
       queryClient.invalidateQueries({ queryKey: ['apps', 'getApp', serviceId] });
-    } catch (error) {
-      toast.error('Failed to generate token');
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to generate token');
     }
   };
 
@@ -45,8 +44,8 @@ function WebhooksRoute() {
       });
       toast.success('Revoked deploy token');
       queryClient.invalidateQueries({ queryKey: ['apps', 'getApp', serviceId] });
-    } catch (error) {
-      toast.error('Failed to revoke token');
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to revoke token');
     }
   };
 

@@ -40,8 +40,8 @@ export function ResourceLimitsCard({ app }: ResourceLimitsProps) {
         },
       });
       toast.success('Resource limits updated');
-    } catch (error) {
-      toast.error('Failed to update resource limits');
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to update resource limits');
     }
   };
 

@@ -17,6 +17,13 @@ definitions:
     - newPassword
     - oldPassword
     type: object
+  handlers.ComposeAnalyzeRequest:
+    properties:
+      composeContent:
+        type: string
+      projectId:
+        type: string
+    type: object
   handlers.CreatePATRequest:
     properties:
       accessLevel:
@@ -84,30 +91,6 @@ definitions:
       projectId:
         type: string
     type: object
-  handlers.setupEnv:
-    properties:
-      dashboardUrl:
-        type: string
-      dataDir:
-        type: string
-      jwtSecret:
-        type: string
-      port:
-        type: integer
-    type: object
-  handlers.setupRequest:
-    properties:
-      defaultWildcardDomain:
-        type: string
-      email:
-        type: string
-      env:
-        $ref: '#/definitions/handlers.setupEnv'
-      name:
-        type: string
-      password:
-        type: string
-    type: object
   models.AddMemberRequest:
     properties:
       email:
@@ -125,7 +108,11 @@ definitions:
         $ref: '#/definitions/models.BuildEngine'
       containerId:
         type: string
+      cpuLimit:
+        type: number
       createdAt:
+        type: string
+      deployToken:
         type: string
       dockerfilePath:
         type: string
@@ -142,6 +129,8 @@ definitions:
       installCommand:
         type: string
       internalPort:
+        type: integer
+      memoryLimit:
         type: integer
       name:
         type: string
@@ -163,6 +152,10 @@ definitions:
         $ref: '#/definitions/models.AppServiceStatus'
       updatedAt:
         type: string
+      volumes:
+        items:
+          $ref: '#/definitions/models.ServiceVolume'
+        type: array
     type: object
   models.AppServiceStatus:
     enum:
@@ -201,8 +194,6 @@ definitions:
       maxStorageGb:
         type: integer
       name:
-        type: string
-      projectId:
         type: string
       retentionDays:
         type: integer
@@ -423,9 +414,9 @@ definitions:
         type: string
       pathPrefix:
         type: string
-      projectId:
-        type: string
       redirectTo:
+        type: string
+      serviceId:
         type: string
       sslCertStatus:
         $ref: '#/definitions/models.SSLCertStatus'
@@ -486,55 +477,16 @@ definitions:
       sourceUrl:
         type: string
     type: object
-  models.Job:
-    properties:
-      command:
-        type: string
-      createdAt:
-        type: string
-      id:
-        type: string
-      lastOutput:
-        type: string
-      lastRunAt:
-        type: string
-      name:
-        type: string
-      projectId:
-        type: string
-      schedule:
-        type: string
-      status:
-        $ref: '#/definitions/models.JobStatus'
-      updatedAt:
-        type: string
-    type: object
-  models.JobStatus:
-    enum:
-    - active
-    - inactive
-    - running
-    - completed
-    - failed
-    - error
-    type: string
-    x-enum-varnames:
-    - JobStatusActive
-    - JobStatusInactive
-    - JobStatusRunning
-    - JobStatusCompleted
-    - JobStatusFailed
-    - JobStatusError
   models.MemberPermission:
     enum:
+    - owner
     - admin
     - member
-    - viewer
     type: string
     x-enum-varnames:
+    - MemberPermissionOwner
     - MemberPermissionAdmin
     - MemberPermissionMember
-    - MemberPermissionViewer
   models.MemoryStats:
     properties:
       freeMb:
@@ -593,8 +545,6 @@ definitions:
         type: string
       name:
         type: string
-      projectId:
-        type: string
       provider:
         type: string
       region:
@@ -612,6 +562,30 @@ definitions:
     - SSLCertStatusPending
     - SSLCertStatusIssued
     - SSLCertStatusFailed
+  models.ScheduledTask:
+    properties:
+      command:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+      lastOutput:
+        type: string
+      lastRunAt:
+        type: string
+      name:
+        type: string
+      schedule:
+        type: string
+      serviceId:
+        type: string
+      status:
+        description: active, paused
+        type: string
+      updatedAt:
+        type: string
+    type: object
   models.ServerSettings:
     properties:
       autoUpdateEnabled:
@@ -681,6 +655,19 @@ definitions:
       updatedAt:
         type: string
     type: object
+  models.ServiceVolume:
+    properties:
+      containerPath:
+        type: string
+      createdAt:
+        type: string
+      hostPath:
+        type: string
+      id:
+        type: string
+      serviceId:
+        type: string
+    type: object
   models.SystemStats:
     properties:
       cpu:
@@ -713,23 +700,27 @@ definitions:
     type: object
   models.UpdateDatabaseRequest:
     properties:
+      cpuLimit:
+        type: number
       customArgs:
         type: string
       externalDns:
         type: string
       logicalReplication:
         type: boolean
+      memoryLimit:
+        type: integer
     type: object
   models.UserRole:
     enum:
+    - owner
     - admin
     - member
-    - viewer
     type: string
     x-enum-varnames:
+    - UserRoleOwner
     - UserRoleAdmin
     - UserRoleMember
-    - UserRoleViewer
   models.Variable:
     properties:
       createdAt:
@@ -749,6 +740,30 @@ definitions:
       updatedAt:
         type: string
       value:
+        type: string
+    type: object
+  services.SetupEnv:
+    properties:
+      dashboardUrl:
+        type: string
+      dataDir:
+        type: string
+      jwtSecret:
+        type: string
+      port:
+        type: integer
+    type: object
+  services.SetupRequest:
+    properties:
+      defaultWildcardDomain:
+        type: string
+      email:
+        type: string
+      env:
+        $ref: '#/definitions/services.SetupEnv'
+      name:
+        type: string
+      password:
         type: string
     type: object
 host: localhost:8080
@@ -865,6 +880,67 @@ paths:
       summary: Stop App Service
       tags:
       - AppServices
+  /apps/{id}/volumes:
+    get:
+      consumes:
+      - application/json
+      description: ListVolumes endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: ListVolumes endpoint
+      tags:
+      - ServiceVolumes
+    post:
+      consumes:
+      - application/json
+      description: CreateVolume endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.ServiceVolume'
+      produces:
+      - application/json
+      responses: {}
+      summary: CreateVolume endpoint
+      tags:
+      - ServiceVolumes
+  /apps/{id}/volumes/{volumeId}:
+    delete:
+      consumes:
+      - application/json
+      description: DeleteVolume endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: volumeId
+        in: path
+        name: volumeId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: DeleteVolume endpoint
+      tags:
+      - ServiceVolumes
   /apps/{id}/webhooks:
     get:
       consumes:
@@ -1292,6 +1368,30 @@ paths:
       summary: Trigger endpoint
       tags:
       - Backups
+  /compose/analyze:
+    post:
+      consumes:
+      - application/json
+      description: Parses a docker-compose.yml and returns the Vessl resources that
+        would be created
+      parameters:
+      - description: Compose content to analyze
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.ComposeAnalyzeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Analyze a docker-compose file
+      tags:
+      - Compose
   /compose/deploy:
     post:
       consumes:
@@ -1659,6 +1759,23 @@ paths:
       summary: Deploy from uploaded archive
       tags:
       - Archive
+  /deployments/{id}/explain:
+    get:
+      consumes:
+      - application/json
+      description: Analyzes build logs with AI to explain why a deployment failed
+      parameters:
+      - description: Deployment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Explain Deployment Failure
+      tags:
+      - Deployments
   /deployments/{id}/logs:
     get:
       consumes:
@@ -1856,6 +1973,20 @@ paths:
       summary: GetEnvironmentCanvas endpoint
       tags:
       - Environments
+  /examples:
+    get:
+      description: Returns available example applications from GitHub
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: List example apps
+      tags:
+      - Examples
   /git/connect:
     post:
       consumes:
@@ -1913,84 +2044,6 @@ paths:
       summary: Status endpoint
       tags:
       - Git
-  /jobs:
-    get:
-      consumes:
-      - application/json
-      description: ListProjectJobs endpoint
-      produces:
-      - application/json
-      responses: {}
-      summary: ListProjectJobs endpoint
-      tags:
-      - Jobs
-    post:
-      consumes:
-      - application/json
-      description: Create endpoint
-      parameters:
-      - description: Payload
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/models.Job'
-      produces:
-      - application/json
-      responses: {}
-      summary: Create endpoint
-      tags:
-      - Jobs
-  /jobs/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete Job
-      parameters:
-      - description: Job ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: Delete Job
-      tags:
-      - Jobs
-    get:
-      consumes:
-      - application/json
-      description: Get Job
-      parameters:
-      - description: Job ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: Get Job
-      tags:
-      - Jobs
-  /jobs/{id}/trigger:
-    post:
-      consumes:
-      - application/json
-      description: Run endpoint
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: Run endpoint
-      tags:
-      - Jobs
   /one-click:
     get:
       description: Returns available one-click deployable applications
@@ -2228,45 +2281,6 @@ paths:
       summary: ListByProject endpoint
       tags:
       - AppServices
-  /projects/{id}/domains:
-    get:
-      consumes:
-      - application/json
-      description: List domains by project
-      parameters:
-      - description: Project ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: List domains by project
-      tags:
-      - Projects
-    post:
-      consumes:
-      - application/json
-      description: Create domain
-      parameters:
-      - description: Project ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Payload
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/models.DomainConfig'
-      produces:
-      - application/json
-      responses: {}
-      summary: Create domain
-      tags:
-      - Projects
   /projects/{id}/env:
     get:
       consumes:
@@ -2533,6 +2547,123 @@ paths:
       summary: DeleteS3Destination endpoint
       tags:
       - Backups
+  /scheduled-tasks:
+    get:
+      consumes:
+      - application/json
+      description: ListProjectScheduledTasks endpoint
+      produces:
+      - application/json
+      responses: {}
+      summary: ListProjectScheduledTasks endpoint
+      tags:
+      - ScheduledTasks
+    post:
+      consumes:
+      - application/json
+      description: Create endpoint
+      parameters:
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.ScheduledTask'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create endpoint
+      tags:
+      - ScheduledTasks
+  /scheduled-tasks/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete ScheduledTask
+      parameters:
+      - description: ScheduledTask ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete ScheduledTask
+      tags:
+      - ScheduledTasks
+    get:
+      consumes:
+      - application/json
+      description: Get ScheduledTask
+      parameters:
+      - description: ScheduledTask ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Get ScheduledTask
+      tags:
+      - ScheduledTasks
+  /scheduled-tasks/{id}/trigger:
+    post:
+      consumes:
+      - application/json
+      description: Run endpoint
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Run endpoint
+      tags:
+      - ScheduledTasks
+  /services/{id}/domains:
+    get:
+      consumes:
+      - application/json
+      description: List domains by service
+      parameters:
+      - description: Service ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: List domains by service
+      tags:
+      - Services
+    post:
+      consumes:
+      - application/json
+      description: Create domain
+      parameters:
+      - description: Service ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.DomainConfig'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create domain
+      tags:
+      - Services
   /services/{serviceId}/deploy:
     post:
       consumes:
@@ -2573,6 +2704,23 @@ paths:
       - application/json
       responses: {}
       summary: ListServiceDeployments endpoint
+      tags:
+      - AppServices
+  /services/{serviceId}/env-suggestions:
+    get:
+      consumes:
+      - application/json
+      description: Scan repository for .env.example and suggest variables
+      parameters:
+      - description: Service ID
+        in: path
+        name: serviceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Suggest Service Variables
       tags:
       - AppServices
   /services/{serviceId}/logs/historical:
@@ -2976,7 +3124,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handlers.setupRequest'
+          $ref: '#/definitions/services.SetupRequest'
       produces:
       - application/json
       responses:

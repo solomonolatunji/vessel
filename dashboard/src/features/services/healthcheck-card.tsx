@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '#/components/ui/button';
@@ -27,8 +27,8 @@ export function HealthcheckCard({ serviceId }: { serviceId: string }) {
       });
       toast.success('Healthcheck settings saved');
       queryClient.invalidateQueries({ queryKey: ['apps', 'getApp', serviceId] });
-    } catch (error) {
-      toast.error('Failed to save healthcheck settings');
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to save healthcheck settings');
     }
   };
 

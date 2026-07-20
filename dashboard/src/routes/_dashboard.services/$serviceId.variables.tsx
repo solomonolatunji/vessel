@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute } from '@tanstack/react-router';
-import { Edit, Eye, EyeOff, Loader2, Plus, Trash } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -8,12 +7,7 @@ import { z } from 'zod';
 import { Button } from '#/components/ui/button';
 import { Input } from '#/components/ui/input';
 import { Switch } from '#/components/ui/switch';
-import {
-  useCreateVariable,
-  useDeleteVariable,
-  useListVariables,
-  useUpdateVariable,
-} from '#/hooks/useApps';
+import { useCreateVariable, useDeleteVariable, useListVariables } from '#/hooks/useApps';
 
 export const Route = createFileRoute('/_dashboard/services/$serviceId/variables')({
   component: VariablesTab,
@@ -49,8 +43,8 @@ function VariablesTab() {
       await createVar({ appId: serviceId, payload: data });
       toast.success('Variable created successfully');
       form.reset();
-    } catch (error) {
-      toast.error('Failed to create variable');
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to create variable');
     }
   };
 
@@ -59,8 +53,8 @@ function VariablesTab() {
     try {
       await deleteVar({ appId: serviceId, varId });
       toast.success('Variable deleted successfully');
-    } catch (error) {
-      toast.error('Failed to delete variable');
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to delete variable');
     }
   };
 

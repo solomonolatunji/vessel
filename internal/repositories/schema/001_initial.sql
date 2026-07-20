@@ -387,7 +387,7 @@ CREATE TABLE IF NOT EXISTS oauth_providers (
 
 -- CREATE INDEX IF NOT EXISTS idx_domains_project_id ON domains(project_id);
 CREATE INDEX IF NOT EXISTS idx_env_vars_project_id ON env_vars(project_id);
-CREATE INDEX IF NOT EXISTS idx_jobs_project_id ON jobs(project_id);
+CREATE INDEX IF NOT EXISTS idx_scheduled_tasks_service_id ON scheduled_tasks(service_id);
 CREATE INDEX IF NOT EXISTS idx_user_git_providers_user_id ON user_git_providers(user_id);
 CREATE INDEX IF NOT EXISTS idx_environments_project_id ON environments(project_id);
 CREATE INDEX IF NOT EXISTS idx_app_services_project_id ON app_services(project_id);

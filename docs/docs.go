@@ -170,6 +170,95 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/apps/{id}/volumes": {
+            "get": {
+                "description": "ListVolumes endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceVolumes"
+                ],
+                "summary": "ListVolumes endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "post": {
+                "description": "CreateVolume endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceVolumes"
+                ],
+                "summary": "CreateVolume endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ServiceVolume"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/apps/{id}/volumes/{volumeId}": {
+            "delete": {
+                "description": "DeleteVolume endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ServiceVolumes"
+                ],
+                "summary": "DeleteVolume endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "volumeId",
+                        "name": "volumeId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/apps/{id}/webhooks": {
             "get": {
                 "description": "ListWebhooks endpoint",
@@ -798,6 +887,41 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/compose/analyze": {
+            "post": {
+                "description": "Parses a docker-compose.yml and returns the Vessl resources that would be created",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Compose"
+                ],
+                "summary": "Analyze a docker-compose file",
+                "parameters": [
+                    {
+                        "description": "Compose content to analyze",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ComposeAnalyzeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/compose/deploy": {
             "post": {
                 "description": "Parses and deploys all services defined in a docker-compose.yml",
@@ -1335,6 +1459,31 @@ const docTemplate = `{
                 }
             }
         },
+        "/deployments/{id}/explain": {
+            "get": {
+                "description": "Analyzes build logs with AI to explain why a deployment failed",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Deployments"
+                ],
+                "summary": "Explain Deployment Failure",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Deployment ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/deployments/{id}/logs": {
             "get": {
                 "description": "GetLogs endpoint",
@@ -1624,6 +1773,27 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/examples": {
+            "get": {
+                "description": "Returns available example applications from GitHub",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Examples"
+                ],
+                "summary": "List example apps",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/git/connect": {
             "post": {
                 "description": "Connect endpoint",
@@ -1705,120 +1875,6 @@ const docTemplate = `{
                     "Git"
                 ],
                 "summary": "Status endpoint",
-                "responses": {}
-            }
-        },
-        "/jobs": {
-            "get": {
-                "description": "ListProjectJobs endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Jobs"
-                ],
-                "summary": "ListProjectJobs endpoint",
-                "responses": {}
-            },
-            "post": {
-                "description": "Create endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Jobs"
-                ],
-                "summary": "Create endpoint",
-                "parameters": [
-                    {
-                        "description": "Payload",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Job"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/jobs/{id}": {
-            "get": {
-                "description": "Get Job",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Jobs"
-                ],
-                "summary": "Get Job",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Job ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "delete": {
-                "description": "Delete Job",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Jobs"
-                ],
-                "summary": "Delete Job",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Job ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/jobs/{id}/trigger": {
-            "post": {
-                "description": "Run endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Jobs"
-                ],
-                "summary": "Run endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
                 "responses": {}
             }
         },
@@ -2167,63 +2223,6 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/projects/{id}/domains": {
-            "get": {
-                "description": "List domains by project",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "List domains by project",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Project ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "post": {
-                "description": "Create domain",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "Create domain",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Project ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Payload",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.DomainConfig"
-                        }
                     }
                 ],
                 "responses": {}
@@ -2613,6 +2612,177 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/scheduled-tasks": {
+            "get": {
+                "description": "ListProjectScheduledTasks endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ScheduledTasks"
+                ],
+                "summary": "ListProjectScheduledTasks endpoint",
+                "responses": {}
+            },
+            "post": {
+                "description": "Create endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ScheduledTasks"
+                ],
+                "summary": "Create endpoint",
+                "parameters": [
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ScheduledTask"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/scheduled-tasks/{id}": {
+            "get": {
+                "description": "Get ScheduledTask",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ScheduledTasks"
+                ],
+                "summary": "Get ScheduledTask",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ScheduledTask ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "delete": {
+                "description": "Delete ScheduledTask",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ScheduledTasks"
+                ],
+                "summary": "Delete ScheduledTask",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ScheduledTask ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/scheduled-tasks/{id}/trigger": {
+            "post": {
+                "description": "Run endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ScheduledTasks"
+                ],
+                "summary": "Run endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/services/{id}/domains": {
+            "get": {
+                "description": "List domains by service",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Services"
+                ],
+                "summary": "List domains by service",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Service ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "post": {
+                "description": "Create domain",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Services"
+                ],
+                "summary": "Create domain",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Service ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DomainConfig"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/services/{serviceId}/deploy": {
             "post": {
                 "description": "Trigger Deployment",
@@ -2670,6 +2840,31 @@ const docTemplate = `{
                         "description": "Items per page",
                         "name": "limit",
                         "in": "query"
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/services/{serviceId}/env-suggestions": {
+            "get": {
+                "description": "Scan repository for .env.example and suggest variables",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AppServices"
+                ],
+                "summary": "Suggest Service Variables",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Service ID",
+                        "name": "serviceId",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -3265,7 +3460,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.setupRequest"
+                            "$ref": "#/definitions/services.SetupRequest"
                         }
                     }
                 ],
@@ -3476,6 +3671,17 @@ const docTemplate = `{
                 }
             }
         },
+        "handlers.ComposeAnalyzeRequest": {
+            "type": "object",
+            "properties": {
+                "composeContent": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "string"
+                }
+            }
+        },
         "handlers.CreatePATRequest": {
             "type": "object",
             "properties": {
@@ -3581,43 +3787,6 @@ const docTemplate = `{
                 }
             }
         },
-        "handlers.setupEnv": {
-            "type": "object",
-            "properties": {
-                "dashboardUrl": {
-                    "type": "string"
-                },
-                "dataDir": {
-                    "type": "string"
-                },
-                "jwtSecret": {
-                    "type": "string"
-                },
-                "port": {
-                    "type": "integer"
-                }
-            }
-        },
-        "handlers.setupRequest": {
-            "type": "object",
-            "properties": {
-                "defaultWildcardDomain": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "env": {
-                    "$ref": "#/definitions/handlers.setupEnv"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                }
-            }
-        },
         "models.AddMemberRequest": {
             "type": "object",
             "properties": {
@@ -3644,7 +3813,13 @@ const docTemplate = `{
                 "containerId": {
                     "type": "string"
                 },
+                "cpuLimit": {
+                    "type": "number"
+                },
                 "createdAt": {
+                    "type": "string"
+                },
+                "deployToken": {
                     "type": "string"
                 },
                 "dockerfilePath": {
@@ -3669,6 +3844,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "internalPort": {
+                    "type": "integer"
+                },
+                "memoryLimit": {
                     "type": "integer"
                 },
                 "name": {
@@ -3700,6 +3878,12 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
+                },
+                "volumes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ServiceVolume"
+                    }
                 }
             }
         },
@@ -3754,9 +3938,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
-                    "type": "string"
-                },
-                "projectId": {
                     "type": "string"
                 },
                 "retentionDays": {
@@ -4074,10 +4255,10 @@ const docTemplate = `{
                 "pathPrefix": {
                     "type": "string"
                 },
-                "projectId": {
+                "redirectTo": {
                     "type": "string"
                 },
-                "redirectTo": {
+                "serviceId": {
                     "type": "string"
                 },
                 "sslCertStatus": {
@@ -4172,71 +4353,17 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Job": {
-            "type": "object",
-            "properties": {
-                "command": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "lastOutput": {
-                    "type": "string"
-                },
-                "lastRunAt": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "projectId": {
-                    "type": "string"
-                },
-                "schedule": {
-                    "type": "string"
-                },
-                "status": {
-                    "$ref": "#/definitions/models.JobStatus"
-                },
-                "updatedAt": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.JobStatus": {
-            "type": "string",
-            "enum": [
-                "active",
-                "inactive",
-                "running",
-                "completed",
-                "failed",
-                "error"
-            ],
-            "x-enum-varnames": [
-                "JobStatusActive",
-                "JobStatusInactive",
-                "JobStatusRunning",
-                "JobStatusCompleted",
-                "JobStatusFailed",
-                "JobStatusError"
-            ]
-        },
         "models.MemberPermission": {
             "type": "string",
             "enum": [
+                "owner",
                 "admin",
-                "member",
-                "viewer"
+                "member"
             ],
             "x-enum-varnames": [
+                "MemberPermissionOwner",
                 "MemberPermissionAdmin",
-                "MemberPermissionMember",
-                "MemberPermissionViewer"
+                "MemberPermissionMember"
             ]
         },
         "models.MemoryStats": {
@@ -4326,9 +4453,6 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "projectId": {
-                    "type": "string"
-                },
                 "provider": {
                     "type": "string"
                 },
@@ -4352,6 +4476,42 @@ const docTemplate = `{
                 "SSLCertStatusIssued",
                 "SSLCertStatusFailed"
             ]
+        },
+        "models.ScheduledTask": {
+            "type": "object",
+            "properties": {
+                "command": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lastOutput": {
+                    "type": "string"
+                },
+                "lastRunAt": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "schedule": {
+                    "type": "string"
+                },
+                "serviceId": {
+                    "type": "string"
+                },
+                "status": {
+                    "description": "active, paused",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
         },
         "models.ServerSettings": {
             "type": "object",
@@ -4457,6 +4617,26 @@ const docTemplate = `{
                 }
             }
         },
+        "models.ServiceVolume": {
+            "type": "object",
+            "properties": {
+                "containerPath": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "hostPath": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "serviceId": {
+                    "type": "string"
+                }
+            }
+        },
         "models.SystemStats": {
             "type": "object",
             "properties": {
@@ -4506,6 +4686,9 @@ const docTemplate = `{
         "models.UpdateDatabaseRequest": {
             "type": "object",
             "properties": {
+                "cpuLimit": {
+                    "type": "number"
+                },
                 "customArgs": {
                     "type": "string"
                 },
@@ -4514,20 +4697,23 @@ const docTemplate = `{
                 },
                 "logicalReplication": {
                     "type": "boolean"
+                },
+                "memoryLimit": {
+                    "type": "integer"
                 }
             }
         },
         "models.UserRole": {
             "type": "string",
             "enum": [
+                "owner",
                 "admin",
-                "member",
-                "viewer"
+                "member"
             ],
             "x-enum-varnames": [
+                "UserRoleOwner",
                 "UserRoleAdmin",
-                "UserRoleMember",
-                "UserRoleViewer"
+                "UserRoleMember"
             ]
         },
         "models.Variable": {
@@ -4558,6 +4744,43 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "services.SetupEnv": {
+            "type": "object",
+            "properties": {
+                "dashboardUrl": {
+                    "type": "string"
+                },
+                "dataDir": {
+                    "type": "string"
+                },
+                "jwtSecret": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "integer"
+                }
+            }
+        },
+        "services.SetupRequest": {
+            "type": "object",
+            "properties": {
+                "defaultWildcardDomain": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "env": {
+                    "$ref": "#/definitions/services.SetupEnv"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
                     "type": "string"
                 }
             }
