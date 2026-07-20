@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { composeService, type ComposeAnalyzeRequest } from '#/services/compose';
+import { type ComposeAnalyzeRequest, composeService } from '#/services/compose';
 
 export const useAnalyzeCompose = () => {
   return useMutation({

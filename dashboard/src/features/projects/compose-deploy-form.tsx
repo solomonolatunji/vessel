@@ -75,15 +75,15 @@ services:
             />
           </div>
           <div className="flex justify-end gap-2 p-4 pb-0">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={handleAnalyze}
               disabled={analyzeMutation.isPending || !composeText.trim()}
             >
               <Search className="mr-2 h-4 w-4" />
               {analyzeMutation.isPending ? 'Analyzing...' : 'Analyze'}
             </Button>
-            <Button 
+            <Button
               onClick={handleDeploy}
               disabled={deployMutation.isPending || !composeText.trim() || !analysisResult}
             >
