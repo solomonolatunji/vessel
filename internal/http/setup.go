@@ -151,13 +151,15 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 
 	bridge := NewBridge(projectService, appService, databaseService)
 
-	authGuard := middleware.NewAuthGuard(tokenService, settingsService, projectSettingsService)
+	authGuard := middleware.NewAuthGuard(tokenService, settingsService, projectSettingsService, projectSettingsRepo)
 
-	appHandler := handlers.NewAppHandler(appService, projectService, deployer, deploymentService)
+	appHandler := handlers.NewAppHandler(appService, projectService, deployer, deploymentService, environmentService)
 	databaseHandler := handlers.NewDatabaseHandler(databaseService, projectService)
 	jobHandler := handlers.NewJobHandler(jobService)
 	canvasHandler := handlers.NewCanvasHandler(canvasService)
 	terminalHandler := handlers.NewTerminalHandler(dockerClient, tokenService, appService)
+	projectHandler := handlers.NewProjectHandler(projectService, projectSettingsService)
+	environmentHandler := handlers.NewEnvironmentHandler(environmentService)
 	deploymentHandler := handlers.NewDeploymentHandler(deploymentService, appService, auditService, aiAnalysisService)
 	serviceVarHandler := handlers.NewServiceVarHandler(appService, auditService, envSuggestionService)
 	projectSettingsHandler := handlers.NewProjectSettingsHandler(projectSettingsService)
@@ -171,8 +173,7 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	oAuthHandler := handlers.NewOAuthHandler(oAuthService)
 	gitHandler := handlers.NewGitHandler(gitService)
 	webhookHandler := handlers.NewWebhookHandler(gitService, projectService, appService, deploymentService, prPreviewService, gitAppsService)
-	projectHandler := handlers.NewProjectHandler(projectService)
-	environmentHandler := handlers.NewEnvironmentHandler(environmentService)
+
 	domainHandler := handlers.NewDomainHandler(environmentService)
 	projectEnvHandler := handlers.NewProjectEnvHandler(environmentService)
 	notificationHandler := handlers.NewNotificationHandler(notificationService)

@@ -122,14 +122,24 @@ function ProjectOverviewComponent() {
             )}
           </div>
         </div>
-        <Button
-          size="lg"
-          className="shadow-sm"
-          onClick={() => navigate({ to: '/projects/$projectId/new', params: { projectId } })}
-        >
-          <Plus className="mr-2 h-5 w-5" />
-          New Resource
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="lg"
+            className="shadow-sm"
+            onClick={() => navigate({ to: '/projects/$projectId/settings', params: { projectId } })}
+          >
+            Settings
+          </Button>
+          <Button
+            size="lg"
+            className="shadow-sm"
+            onClick={() => navigate({ to: '/projects/$projectId/new', params: { projectId } })}
+          >
+            <Plus className="mr-2 h-5 w-5" />
+            New Resource
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-4">

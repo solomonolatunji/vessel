@@ -8,14 +8,14 @@ CREATE TABLE IF NOT EXISTS projects (
 
 CREATE TABLE IF NOT EXISTS domains (
 			id TEXT PRIMARY KEY,
-			project_id TEXT NOT NULL,
+			service_id TEXT NOT NULL,
 			domain_name TEXT UNIQUE NOT NULL,
 			redirect_to TEXT,
 			ssl_cert_status TEXT DEFAULT 'pending',
 			path_prefix TEXT DEFAULT '/',
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-			FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+			FOREIGN KEY (service_id) REFERENCES app_services(id) ON DELETE CASCADE
 		);
 
 CREATE TABLE IF NOT EXISTS users (

@@ -18,14 +18,16 @@ type AppHandler struct {
 	projectService    *services.ProjectService
 	deployer          *engine.Deployer
 	deploymentService *services.DeploymentService
+	envService        *services.EnvironmentService
 }
 
-func NewAppHandler(s *services.AppService, ps *services.ProjectService, d *engine.Deployer, ds *services.DeploymentService) *AppHandler {
+func NewAppHandler(s *services.AppService, ps *services.ProjectService, d *engine.Deployer, ds *services.DeploymentService, es *services.EnvironmentService) *AppHandler {
 	return &AppHandler{
 		appService:        s,
 		projectService:    ps,
 		deployer:          d,
 		deploymentService: ds,
+		envService:        es,
 	}
 }
 
@@ -75,6 +77,14 @@ func (h *AppHandler) Create(c echo.Context) error {
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
+
+	// Auto-generate default domain
+	domainName := utils.GenerateAppDomain(req.Name, "", "")
+	_, _ = h.envService.CreateDomain(c.Request().Context(), &models.DomainConfig{
+		ServiceID:  created.ID,
+		DomainName: domainName,
+	})
+
 	return utils.Created(c, "Created successfully", created)
 }
 

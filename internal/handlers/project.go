@@ -14,11 +14,12 @@ import (
 )
 
 type ProjectHandler struct {
-	projectService *services.ProjectService
+	projectService         *services.ProjectService
+	projectSettingsService *services.ProjectSettingsService
 }
 
-func NewProjectHandler(s *services.ProjectService) *ProjectHandler {
-	return &ProjectHandler{projectService: s}
+func NewProjectHandler(s *services.ProjectService, pss *services.ProjectSettingsService) *ProjectHandler {
+	return &ProjectHandler{projectService: s, projectSettingsService: pss}
 }
 
 // @Summary ListProjects endpoint
@@ -64,6 +65,16 @@ func (h *ProjectHandler) CreateProject(c echo.Context) error {
 	if err != nil {
 		return utils.Error(c, http.StatusInternalServerError, err.Error())
 	}
+
+	userClaims, ok := c.Get("user").(*models.UserClaims)
+	if ok && userClaims != nil {
+		_, _ = h.projectSettingsService.AddMemberByEmail(c.Request().Context(), services.AddMemberOpts{
+			ProjectID:  p.ID,
+			Email:      userClaims.Email,
+			Permission: models.MemberPermissionAdmin,
+		})
+	}
+
 	return utils.Created(c, "Created successfully", p)
 }
 

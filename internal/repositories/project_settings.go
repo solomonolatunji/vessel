@@ -23,6 +23,7 @@ type ProjectSettingsRepository interface {
 	GetTokenByHash(ctx context.Context, tokenHash string) (*models.ProjectToken, error)
 	UpdateTokenLastUsed(ctx context.Context, id string) error
 	AddMember(ctx context.Context, m *models.ProjectMember) error
+	GetMember(ctx context.Context, projectID, userID string) (*models.ProjectMember, error)
 	ListMembers(ctx context.Context, projectID string) ([]*models.ProjectMember, error)
 	RemoveMember(ctx context.Context, id, projectID string) error
 	AcceptAllInvitesForUser(ctx context.Context, userID string) error
@@ -180,6 +181,29 @@ func (r *ProjectSettingsRepo) AddMember(ctx context.Context, m *models.ProjectMe
 		return fmt.Errorf("add member: %w", err)
 	}
 	return nil
+}
+
+func (r *ProjectSettingsRepo) GetMember(ctx context.Context, projectID, userID string) (*models.ProjectMember, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	row := r.db.QueryRowContext(ctx,
+		`SELECT id, project_id, user_id, email, permission, status, invited_at, accepted_at
+		 FROM project_members WHERE project_id = ? AND user_id = ?`, projectID, userID)
+	var m models.ProjectMember
+	var invitedAt, acceptedAt sql.NullString
+	if err := row.Scan(&m.ID, &m.ProjectID, &m.UserID, &m.Email, &m.Permission, &m.Status, &invitedAt, &acceptedAt); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("get project member: %w", err)
+	}
+	if invitedAt.Valid {
+		m.InvitedAt, _ = time.Parse(time.RFC3339, invitedAt.String)
+	}
+	if acceptedAt.Valid {
+		m.AcceptedAt, _ = time.Parse(time.RFC3339, acceptedAt.String)
+	}
+	return &m, nil
 }
 
 func (r *ProjectSettingsRepo) ListMembers(ctx context.Context, projectID string) ([]*models.ProjectMember, error) {

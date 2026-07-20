@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { Loader2 } from 'lucide-react';
-import { useGetApp } from '#/hooks/useApps';
 import { ServiceDomains } from '#/features/services/service-domains';
+import { useGetApp } from '#/hooks/useApps';
 
 export const Route = createFileRoute('/_dashboard/services/$serviceId/domains')({
   component: ServiceDomainsRoute,

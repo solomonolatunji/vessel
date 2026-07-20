@@ -28,14 +28,19 @@ type ProjectTokenProvider interface {
 	UpdateTokenLastUsed(ctx context.Context, id string) error
 }
 
-type AuthGuard struct {
-	TokenService  *services.TokenService
-	Settings      SettingsProvider
-	ProjectTokens ProjectTokenProvider
+type ProjectMemberProvider interface {
+	GetMember(ctx context.Context, projectID, userID string) (*models.ProjectMember, error)
 }
 
-func NewAuthGuard(ts *services.TokenService, sp SettingsProvider, pt ProjectTokenProvider) *AuthGuard {
-	return &AuthGuard{TokenService: ts, Settings: sp, ProjectTokens: pt}
+type AuthGuard struct {
+	TokenService   *services.TokenService
+	Settings       SettingsProvider
+	ProjectTokens  ProjectTokenProvider
+	ProjectMembers ProjectMemberProvider
+}
+
+func NewAuthGuard(ts *services.TokenService, sp SettingsProvider, pt ProjectTokenProvider, pm ProjectMemberProvider) *AuthGuard {
+	return &AuthGuard{TokenService: ts, Settings: sp, ProjectTokens: pt, ProjectMembers: pm}
 }
 
 func (g *AuthGuard) checkIPAllowlist(c echo.Context) error {
@@ -190,6 +195,50 @@ func (g *AuthGuard) RequireScope(requiredScope string) echo.MiddlewareFunc {
 					return utils.Error(c, http.StatusForbidden, "missing required scope: "+requiredScope)
 				}
 			}
+			return next(c)
+		}
+	}
+}
+
+func (g *AuthGuard) RequireProjectRole(minPermission models.MemberPermission) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			userClaims, ok := c.Get("user").(*models.UserClaims)
+			if !ok || userClaims == nil {
+				return utils.Error(c, http.StatusUnauthorized, "unauthorized")
+			}
+
+			// Admin API keys or instance admins bypass project-level checks
+			if userClaims.Role == "admin" {
+				return next(c)
+			}
+
+			projectID := c.Param("projectId")
+			if projectID == "" {
+				projectID = c.Param("id") // fallback if route uses :id instead of :projectId
+			}
+			if projectID == "" {
+				return utils.Error(c, http.StatusBadRequest, "missing project id")
+			}
+
+			if g.ProjectMembers == nil {
+				return utils.Error(c, http.StatusInternalServerError, "project members provider not configured")
+			}
+
+			member, err := g.ProjectMembers.GetMember(c.Request().Context(), projectID, userClaims.UserID)
+			if err != nil {
+				return utils.Error(c, http.StatusInternalServerError, "failed to verify project membership")
+			}
+			if member == nil {
+				return utils.Error(c, http.StatusForbidden, "you do not have access to this project")
+			}
+
+			// Validate permission level if necessary
+			// For now, if they are a member, we allow them. If minPermission is specific, we could enforce it.
+			if minPermission != "" && member.Permission != minPermission && member.Permission != models.MemberPermissionAdmin {
+				return utils.Error(c, http.StatusForbidden, "insufficient project permissions")
+			}
+
 			return next(c)
 		}
 	}

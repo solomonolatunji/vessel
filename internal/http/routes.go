@@ -80,23 +80,30 @@ func (s *Server) registerUserRoutes(apiGroup, authGroup *echo.Group) {
 func (s *Server) registerProjectRoutes(apiGroup, authGroup *echo.Group) {
 	authGroup.GET("/projects", s.projectHandler.ListProjects)
 	authGroup.POST("/projects", s.projectHandler.CreateProject)
-	authGroup.GET("/projects/:id", s.projectHandler.GetProject)
-	authGroup.DELETE("/projects/:id", s.projectHandler.DeleteProject)
+
+	// Project-specific routes that require membership
+	projectAuth := s.authGuard.RequireProjectRole("")
+
+	authGroup.GET("/projects/:id", s.projectHandler.GetProject, projectAuth)
+	authGroup.DELETE("/projects/:id", s.projectHandler.DeleteProject, projectAuth)
 
 	authGroup.GET("/services/:id/domains", s.domainHandler.ListByService)
 	authGroup.POST("/services/:id/domains", s.domainHandler.Create)
 	authGroup.DELETE("/domains/:id", s.domainHandler.Delete)
-	authGroup.GET("/projects/:id/env", s.projectEnvHandler.GetVars, s.authGuard.RequireScope("env:read"))
-	authGroup.PUT("/projects/:id/env", s.projectEnvHandler.SetVars, s.authGuard.RequireScope("env:write"))
-	authGroup.POST("/projects/:id/environments", s.environmentHandler.Create)
-	authGroup.GET("/projects/:id/environments", s.environmentHandler.ListByProject)
-	authGroup.GET("/projects/:id/apps", s.appServiceHandler.ListByProject)
-	authGroup.GET("/projects/:projectId/tokens", s.projectSettingsHandler.ListTokens, s.authGuard.RequireScope("env:read"))
-	authGroup.POST("/projects/:projectId/tokens", s.projectSettingsHandler.CreateToken, s.authGuard.RequireScope("env:write"))
-	authGroup.DELETE("/projects/:projectId/tokens/:id", s.projectSettingsHandler.DeleteToken, s.authGuard.RequireScope("env:write"))
-	authGroup.GET("/projects/:projectId/members", s.projectSettingsHandler.ListMembers)
-	authGroup.POST("/projects/:projectId/members", s.projectSettingsHandler.AddMember)
-	authGroup.DELETE("/projects/:projectId/members/:id", s.projectSettingsHandler.RemoveMember)
+
+	authGroup.GET("/projects/:id/env", s.projectEnvHandler.GetVars, projectAuth, s.authGuard.RequireScope("env:read"))
+	authGroup.PUT("/projects/:id/env", s.projectEnvHandler.SetVars, projectAuth, s.authGuard.RequireScope("env:write"))
+	authGroup.POST("/projects/:id/environments", s.environmentHandler.Create, projectAuth)
+	authGroup.GET("/projects/:id/environments", s.environmentHandler.ListByProject, projectAuth)
+	authGroup.GET("/projects/:id/apps", s.appServiceHandler.ListByProject, projectAuth)
+
+	authGroup.GET("/projects/:projectId/tokens", s.projectSettingsHandler.ListTokens, projectAuth, s.authGuard.RequireScope("env:read"))
+	authGroup.POST("/projects/:projectId/tokens", s.projectSettingsHandler.CreateToken, projectAuth, s.authGuard.RequireScope("env:write"))
+	authGroup.DELETE("/projects/:projectId/tokens/:id", s.projectSettingsHandler.DeleteToken, projectAuth, s.authGuard.RequireScope("env:write"))
+
+	authGroup.GET("/projects/:projectId/members", s.projectSettingsHandler.ListMembers, projectAuth)
+	authGroup.POST("/projects/:projectId/members", s.projectSettingsHandler.AddMember, projectAuth)
+	authGroup.DELETE("/projects/:projectId/members/:id", s.projectSettingsHandler.RemoveMember, projectAuth)
 }
 
 func (s *Server) registerDatabaseRoutes(authGroup *echo.Group) {
