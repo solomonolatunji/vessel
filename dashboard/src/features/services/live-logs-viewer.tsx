@@ -77,7 +77,7 @@ export function LiveLogsViewer({ serviceId, deploymentId }: LiveLogsViewerProps)
   }, [serviceId, deploymentId]);
 
   return (
-    <div className="flex h-[500px] w-full flex-col overflow-hidden rounded-md border border-zinc-800 bg-zinc-950">
+    <div className="flex h-125 w-full flex-col overflow-hidden rounded-md border border-zinc-800 bg-zinc-950">
       <div className="flex items-center justify-between border-zinc-800 border-b bg-zinc-900 px-4 py-2">
         <div className="flex items-center gap-4">
           <h3 className="font-medium text-sm text-zinc-300">Live Logs</h3>

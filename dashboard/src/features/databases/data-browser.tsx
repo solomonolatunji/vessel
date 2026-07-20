@@ -45,13 +45,13 @@ export function DataBrowser({ databaseId }: Props) {
   const rows = tableData?.data || [];
 
   return (
-    <Card className="flex h-full min-h-[500px] flex-col">
+    <Card className="flex h-full min-h-125 flex-col">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <div className="space-y-1">
           <CardTitle>Data Browser</CardTitle>
           <CardDescription>View and manage records in your database tables.</CardDescription>
         </div>
-        <div className="w-[250px]">
+        <div className="w-62.5">
           <Select
             value={selectedTable}
             onValueChange={setSelectedTable}
@@ -116,12 +116,12 @@ export function DataBrowser({ databaseId }: Props) {
                   <TableRow key={i}>
                     {selectedSchema
                       ? selectedSchema.columns.map((col) => (
-                          <TableCell key={col.name} className="max-w-[300px] truncate">
+                          <TableCell key={col.name} className="max-w-75 truncate">
                             {String(row[col.name] ?? '')}
                           </TableCell>
                         ))
                       : Object.values(row).map((val, j) => (
-                          <TableCell key={j} className="max-w-[300px] truncate">
+                          <TableCell key={j} className="max-w-75 truncate">
                             {String(val ?? '')}
                           </TableCell>
                         ))}

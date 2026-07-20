@@ -34,7 +34,7 @@ export function AIDiagnoseDialog({ logs }: AIDiagnoseDialogProps) {
           <span className="text-xs">AI Diagnose</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="border-zinc-800 bg-zinc-950 sm:max-w-[600px]">
+      <DialogContent className="border-zinc-800 bg-zinc-950 sm:max-w-150">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-zinc-100">
             <Bot className="h-5 w-5 text-blue-500" />
@@ -45,7 +45,7 @@ export function AIDiagnoseDialog({ logs }: AIDiagnoseDialogProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex max-h-[400px] min-h-[200px] flex-col gap-4 overflow-y-auto py-4">
+        <div className="flex max-h-100 min-h-50 flex-col gap-4 overflow-y-auto py-4">
           {!completion && !isLoading && !error && (
             <div className="flex h-full flex-col items-center justify-center gap-3 text-zinc-500">
               <Sparkles className="h-8 w-8 opacity-50" />

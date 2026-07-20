@@ -97,7 +97,7 @@ export function TableDataGrid({ databaseId }: TableDataGridProps) {
             </div>
 
             <Select value={activeTable} onValueChange={setSelectedTable} disabled={isLoadingSchema}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-45">
                 <SelectValue placeholder="Select a table" />
               </SelectTrigger>
               <SelectContent>
@@ -155,7 +155,7 @@ export function TableDataGrid({ databaseId }: TableDataGridProps) {
                   className="cursor-pointer hover:bg-muted/50"
                 >
                   {columns.map((col) => (
-                    <TableCell key={col} className="max-w-[200px] truncate whitespace-nowrap">
+                    <TableCell key={col} className="max-w-50 truncate whitespace-nowrap">
                       {row[col] !== null ? (
                         String(row[col])
                       ) : (

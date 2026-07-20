@@ -75,7 +75,7 @@ export function DatabaseList() {
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Volume:</span>
-              <span className="max-w-[120px] truncate font-mono text-xs" title={db.volumePath}>
+              <span className="max-w-30 truncate font-mono text-xs" title={db.volumePath}>
                 {db.volumePath}
               </span>
             </div>

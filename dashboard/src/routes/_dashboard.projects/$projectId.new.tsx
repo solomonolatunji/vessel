@@ -39,7 +39,7 @@ function NewResourcePage() {
       </div>
 
       <Tabs defaultValue="resources" className="w-full">
-        <TabsList className="mb-6 grid w-full max-w-[600px] grid-cols-3">
+        <TabsList className="mb-6 grid w-full max-w-150 grid-cols-3">
           <TabsTrigger value="resources">Resources</TabsTrigger>
           <TabsTrigger value="one-click">One-Click Apps</TabsTrigger>
           <TabsTrigger value="examples">Example Projects</TabsTrigger>

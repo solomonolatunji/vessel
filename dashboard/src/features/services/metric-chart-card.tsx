@@ -46,10 +46,10 @@ export function MetricChartCard({
       <CardContent>
         {isLoading ? (
           <div className="space-y-2">
-            <Skeleton className="h-[160px] w-full rounded-lg" />
+            <Skeleton className="h-40 w-full rounded-lg" />
           </div>
         ) : data.length === 0 ? (
-          <div className="flex h-[160px] items-center justify-center text-muted-foreground text-sm">
+          <div className="flex h-40 items-center justify-center text-muted-foreground text-sm">
             No data available
           </div>
         ) : (

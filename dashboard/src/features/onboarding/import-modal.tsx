@@ -45,7 +45,7 @@ export const ImportModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-[600px] [&>button]:hidden">
+      <DialogContent className="gap-0 border-border/50 bg-card/95 p-0 backdrop-blur-xl sm:max-w-150 [&>button]:hidden">
         <div className="px-5 pt-5 pb-4">
           <div className="flex items-start justify-between">
             <div className="flex flex-col">

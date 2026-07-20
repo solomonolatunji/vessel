@@ -67,7 +67,7 @@ function DeploymentsPage() {
                 setSelectedServiceId('');
               }}
             >
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="w-50">
                 <SelectValue placeholder="Select Project" />
               </SelectTrigger>
               <SelectContent>
@@ -84,7 +84,7 @@ function DeploymentsPage() {
               onValueChange={setSelectedServiceId}
               disabled={!selectedProjectId || apps.length === 0}
             >
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="w-50">
                 <SelectValue placeholder="Select App" />
               </SelectTrigger>
               <SelectContent>
@@ -128,7 +128,7 @@ function DeploymentsPage() {
                   <TableRow key={deployment.id}>
                     <TableCell className="font-medium">{deployment.status}</TableCell>
                     <TableCell>{deployment.branch || '-'}</TableCell>
-                    <TableCell className="max-w-[100px] truncate font-mono text-xs">
+                    <TableCell className="max-w-25 truncate font-mono text-xs">
                       {deployment.commitHash ? deployment.commitHash.substring(0, 7) : '-'}
                     </TableCell>
                     <TableCell>{deployment.trigger || '-'}</TableCell>

@@ -63,7 +63,7 @@ export function SqlStudio({ databaseId }: SqlStudioProps) {
             Run Query
           </Button>
         </CardHeader>
-        <div className="min-h-[200px] flex-1">
+        <div className="min-h-50 flex-1">
           <MonacoEditor
             height="100%"
             language="sql"

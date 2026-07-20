@@ -39,7 +39,7 @@ export function NavItem({
       rel={item.external ? 'noopener noreferrer' : undefined}
     >
       {!collapsed && isActive && (
-        <div className="absolute top-1/2 -left-2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-primary" />
+        <div className="absolute top-1/2 -left-2 h-5 w-0.75 -translate-y-1/2 rounded-r-full bg-primary" />
       )}
 
       <div

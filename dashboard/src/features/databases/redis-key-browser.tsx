@@ -98,7 +98,7 @@ export function RedisKeyBrowser({ databaseId }: RedisKeyBrowserProps) {
               <TableHead>Type</TableHead>
               <TableHead>Value Summary</TableHead>
               <TableHead>TTL</TableHead>
-              <TableHead className="w-[100px]"></TableHead>
+              <TableHead className="w-25"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

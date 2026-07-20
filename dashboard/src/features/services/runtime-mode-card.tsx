@@ -93,7 +93,7 @@ export function RuntimeModeCard({ serviceId, initialData }: RuntimeModeCardProps
               type="number"
               value={internalPort}
               onChange={(e) => setInternalPort(parseInt(e.target.value, 10))}
-              className="max-w-[200px]"
+              className="max-w-50"
             />
             <p className="text-xs text-zinc-500">
               The port your application server listens on (e.g., 3000, 8080).

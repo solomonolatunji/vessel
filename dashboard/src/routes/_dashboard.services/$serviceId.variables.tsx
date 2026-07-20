@@ -134,7 +134,7 @@ function VariablesTab() {
           <div>Key</div>
           <div>Value</div>
           <div>Type</div>
-          <div className="w-[100px] text-right">Actions</div>
+          <div className="w-25 text-right">Actions</div>
         </div>
         <div className="divide-y">
           {variables.length === 0 ? (
