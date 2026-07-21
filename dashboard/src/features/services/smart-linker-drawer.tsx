@@ -101,7 +101,7 @@ export function SmartLinkerDrawer({
                       onClick={() => {
                         const host = db.internalDns || 'localhost';
                         const port = db.port;
-                        const url = `${db.engine}://${db.dbUser}:${db.dbPassword}@${host}:${port}/${db.name}`;
+                        const url = `${db.engine}://${db.username}:${db.password}@${host}:${port}/${db.databaseName}`;
                         onLinkVariable('DATABASE_URL', url);
                         setIsOpen(false);
                       }}
