@@ -112,7 +112,7 @@ function ServiceVolumesRoute() {
               <div className="space-y-2">
                 <Label>Host Path / Volume Name</Label>
                 <Input
-                  placeholder="e.g., /opt/vessl/data or my-app-data"
+                  placeholder="e.g., /opt/codedock/data or my-app-data"
                   value={hostPath}
                   onChange={(e) => setHostPath(e.target.value)}
                   className="font-mono"

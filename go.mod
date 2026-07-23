@@ -1,4 +1,4 @@
-module vessl.dev/vessl
+module codedock.dev/codedock
 
 go 1.25.11
 

@@ -9,13 +9,13 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"vessl.dev/vessl/internal/utils"
+	"codedock.dev/codedock/internal/utils"
 
-	"vessl.dev/vessl/internal/engine"
-	"vessl.dev/vessl/internal/http/middleware"
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/services"
-	"vessl.dev/vessl/internal/telemetry"
+	"codedock.dev/codedock/internal/engine"
+	"codedock.dev/codedock/internal/http/middleware"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/services"
+	"codedock.dev/codedock/internal/telemetry"
 )
 
 type AppHandler struct {

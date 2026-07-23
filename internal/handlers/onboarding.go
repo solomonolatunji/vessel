@@ -7,8 +7,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"vessl.dev/vessl/internal/services"
-	"vessl.dev/vessl/internal/utils"
+	"codedock.dev/codedock/internal/services"
+	"codedock.dev/codedock/internal/utils"
 )
 
 type OnboardingHandler struct {
@@ -57,7 +57,7 @@ func (h *OnboardingHandler) Setup(c echo.Context) error {
 
 	SetAuthCookie(c, token)
 	c.SetCookie(&http.Cookie{
-		Name:     "vessl_refresh_token",
+		Name:     "codedock_refresh_token",
 		Value:    refreshToken,
 		Path:     "/",
 		HttpOnly: true,

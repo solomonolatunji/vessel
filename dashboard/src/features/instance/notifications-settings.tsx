@@ -193,7 +193,7 @@ export const NotificationsSettings = () => {
         <div>
           <h2 className="font-semibold text-lg">Notification Channels</h2>
           <p className="text-muted-foreground text-sm">
-            Configure where Vessl sends alerts for deployments, errors, and system events.
+            Configure where Codedock sends alerts for deployments, errors, and system events.
           </p>
         </div>
         <div className="flex items-center gap-4">
@@ -343,7 +343,7 @@ export const NotificationsSettings = () => {
             <Input
               value={form.smtpFromName ?? ''}
               onChange={(e) => set('smtpFromName', e.target.value)}
-              placeholder="Vessl"
+              placeholder="Codedock"
               className="text-xs"
             />
           </div>

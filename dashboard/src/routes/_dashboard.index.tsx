@@ -25,7 +25,7 @@ function DashboardIndex() {
           </div>
           <div>
             <h1 className="font-bold text-xl">Projects</h1>
-            <p className="text-muted-foreground text-sm">Manage your Vessl projects.</p>
+            <p className="text-muted-foreground text-sm">Manage your Codedock projects.</p>
           </div>
         </div>
 

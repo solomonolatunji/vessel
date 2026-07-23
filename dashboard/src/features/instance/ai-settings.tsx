@@ -114,7 +114,7 @@ export function AISettings() {
           <div>
             <h1 className="font-bold text-xl">AI</h1>
             <p className="text-muted-foreground text-sm">
-              Configure built-in AI models and providers for your Vessl instance.
+              Configure built-in AI models and providers for your Codedock instance.
             </p>
           </div>
         </div>

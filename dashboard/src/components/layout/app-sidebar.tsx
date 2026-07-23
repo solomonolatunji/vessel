@@ -61,7 +61,7 @@ const navGroups: NavGroup[] = [
 const bottomNav = [
   {
     title: 'Docs',
-    url: 'https://docs.vessl.com',
+    url: 'https://docs.codedock.com',
     icon: ScrollText,
     external: true,
   },
@@ -98,7 +98,7 @@ export function AppSidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: A
             <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-all duration-150">
               <Cloud className="h-4 w-4 text-primary" />
             </div>
-            <span className="truncate font-medium text-sidebar-foreground text-sm">Vessl</span>
+            <span className="truncate font-medium text-sidebar-foreground text-sm">Codedock</span>
           </div>
           <button
             type="button"
@@ -120,7 +120,7 @@ export function AppSidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: A
               {!collapsed && (
                 <>
                   <span className="flex-1 truncate font-medium text-sidebar-foreground text-sm">
-                    Vessl
+                    Codedock
                   </span>
                   <span className="rounded bg-sidebar-accent/80 px-1.5 py-0.5 font-medium text-[10px] text-muted-foreground">
                     v0.1

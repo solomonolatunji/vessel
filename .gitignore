@@ -1,7 +1,7 @@
 # Binaries & builds
-/vessld
-/vesslcloud
-/vessl-cli
+/codedockd
+/codedockcloud
+/codedock-cli
 *.exe
 *.exe~
 *.dll
@@ -12,8 +12,8 @@ dist/
 build/
 
 # Runtime data & secrets
-data/vessl.db*
-**/data/vessl.db*
+data/codedock.db*
+**/data/codedock.db*
 data/backups/
 data/caddy/
 data/builds/

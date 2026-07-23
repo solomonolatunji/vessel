@@ -9,10 +9,10 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"vessl.dev/vessl/internal/utils"
+	"codedock.dev/codedock/internal/utils"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/services"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/services"
 )
 
 type OAuthHandler struct {
@@ -91,7 +91,7 @@ func (h *OAuthHandler) OAuthCallback(c echo.Context) error {
 	}
 	SetAuthCookie(c, token)
 	c.SetCookie(&http.Cookie{
-		Name:     "vessl_refresh_token",
+		Name:     "codedock_refresh_token",
 		Value:    refreshToken,
 		Path:     "/",
 		HttpOnly: true,

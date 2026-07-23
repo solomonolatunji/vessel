@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"time"
 
+	"codedock.dev/codedock/internal/services"
+	"codedock.dev/codedock/internal/utils"
 	"github.com/labstack/echo/v4"
-	"vessl.dev/vessl/internal/services"
-	"vessl.dev/vessl/internal/utils"
 )
 
 type MetricsHandler struct {

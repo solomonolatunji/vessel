@@ -12,7 +12,7 @@ import { Icon } from 'astro-icon/components';
         </div>
         <h2 class="text-3xl md:text-4xl font-extrabold text-foreground leading-tight">Push to deploy. No CI pipelines required.</h2>
         <p class="text-muted-foreground text-lg leading-relaxed">
-          Connect your GitHub, GitLab, or Gitea repositories. Vessl detects your stack (Node, Go, Python, etc.), builds the image locally via Railpack, and deploys it. Zero YAML required.
+          Connect your GitHub, GitLab, or Gitea repositories. Codedock detects your stack (Node, Go, Python, etc.), builds the image locally via Railpack, and deploys it. Zero YAML required.
         </p>
         <ul class="space-y-3 pt-4">
           {['Automatic PR preview environments', 'Instant rollbacks to previous commits', 'Build logs streamed live to the dashboard'].map(t => (
@@ -30,10 +30,10 @@ import { Icon } from 'astro-icon/components';
             <span>Terminal</span>
           </div>
           <div class="bg-background rounded-lg p-4 font-mono text-xs text-muted-foreground space-y-2 border border-border">
-            <p><span class="text-green-400">vessl</span> <span class="text-foreground">build:</span> Detected Node.js application</p>
+            <p><span class="text-green-400">codedock</span> <span class="text-foreground">build:</span> Detected Node.js application</p>
             <p><span class="text-blue-400">docker</span> <span class="text-foreground">layer:</span> Resolving package.json dependencies...</p>
             <p><span class="text-blue-400">docker</span> <span class="text-foreground">layer:</span> Running npm install</p>
-            <p><span class="text-green-400">vessl</span> <span class="text-foreground">deploy:</span> Starting container app_web_1</p>
+            <p><span class="text-green-400">codedock</span> <span class="text-foreground">deploy:</span> Starting container app_web_1</p>
             <p><span class="text-primary">traefik</span> <span class="text-foreground">router:</span> Requesting Let's Encrypt SSL certificate</p>
             <p class="text-green-400 font-bold pt-2">✓ Deployed to https://app.acme.com in 14s</p>
           </div>
@@ -50,7 +50,7 @@ import { Icon } from 'astro-icon/components';
         </div>
         <h2 class="text-3xl md:text-4xl font-extrabold text-foreground leading-tight">Stateful services, handled.</h2>
         <p class="text-muted-foreground text-lg leading-relaxed">
-          Deploying Postgres or Redis is easy. Keeping them safe is hard. Vessl provisions your databases and automatically streams encrypted backups to your own S3 bucket.
+          Deploying Postgres or Redis is easy. Keeping them safe is hard. Codedock provisions your databases and automatically streams encrypted backups to your own S3 bucket.
         </p>
         <ul class="space-y-3 pt-4">
           {['Point-in-time automated snapshots', 'Zero-downtime volume mounts', 'Bring your own AWS/R2 bucket'].map(t => (

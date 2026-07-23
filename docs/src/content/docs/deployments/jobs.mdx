@@ -5,11 +5,11 @@ description: Schedule and run recurring tasks and commands.
 
 import { Steps } from '@astrojs/starlight/components';
 
-Vessl allows you to define and schedule Cron Jobs to run commands on a recurring basis within your project environments.
+Codedock allows you to define and schedule Cron Jobs to run commands on a recurring basis within your project environments.
 
 ## Creating a Job
 
-You can create a job directly from the Vessl dashboard:
+You can create a job directly from the Codedock dashboard:
 
 <Steps>
 1. Navigate to your project.
@@ -23,7 +23,7 @@ You can create a job directly from the Vessl dashboard:
 
 ## Execution Context
 
-When a job triggers, Vessl provisions a temporary container environment with access to:
+When a job triggers, Codedock provisions a temporary container environment with access to:
 
 - Your project's environment variables.
 - Linked databases via standard connection strings (e.g., `DATABASE_URL`).
@@ -38,4 +38,4 @@ In the Jobs tab, you can view:
 - **Last Run At** timestamp.
 - **Last Output** for debugging issues from the most recent execution.
 
-Vessl will automatically alert you via your configured Notification channels (Discord, Slack, Email) if a scheduled job fails to execute properly.
+Codedock will automatically alert you via your configured Notification channels (Discord, Slack, Email) if a scheduled job fails to execute properly.

@@ -55,7 +55,7 @@
 - **File naming:** lowercase snake_case (`container_health.go`).
 - **Package naming:** short, lowercase, single word (`cron`, `auth`, `apikeys`).
 - **Error handling:** always check errors; wrap with `fmt.Errorf("context: %w", err)`.
-- **No global state.** Pass dependencies via struct fields — wire up in `cmd/vessld/main.go`.
+- **No global state.** Pass dependencies via struct fields — wire up in `cmd/codedockd/main.go`.
 - **JSON tags** on every exported struct field.
 - Use `modernc.org/sqlite` (CGO-free) for SQLite. No `database/sql` driver imports for `mattn/go-sqlite3`.
 - Use official `github.com/docker/docker/client` for Docker SDK. Use `gorilla/websocket` for WebSocket upgrades.

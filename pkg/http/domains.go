@@ -6,7 +6,7 @@ import (
 	"io"
 	nethttp "net/http"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.dev/codedock/internal/models"
 )
 
 // ListDomains retrieves the domains for a service.

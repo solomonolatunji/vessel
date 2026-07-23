@@ -1,4 +1,4 @@
-x-vessl:
+x-codedock:
   is_one_click: true
   name: Supabase Studio
   description: Open-source Firebase alternative

@@ -117,8 +117,8 @@ export function S3DestinationsList() {
           <div>
             <h1 className="font-bold text-xl">S3 Destinations</h1>
             <p className="text-muted-foreground text-sm">
-              Manage your S3 compatible storage connections. Store credentials in Vessl to use them
-              as database backup targets.
+              Manage your S3 compatible storage connections. Store credentials in Codedock to use
+              them as database backup targets.
             </p>
           </div>
         </div>
@@ -154,12 +154,12 @@ export function S3DestinationsList() {
               <p className="mb-5 text-muted-foreground text-sm">
                 For more details, please visit the{' '}
                 <a
-                  href="https://docs.vessl.dev"
+                  href="https://docs.codedock.dev"
                   className="text-primary underline"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  Vessl Docs
+                  Codedock Docs
                 </a>
                 .
               </p>

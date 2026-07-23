@@ -42,44 +42,44 @@ jobs:
           mkdir -p dist
 
           # ---------------------------------------------------------
-          # 1. Build the server daemon (vessld)
+          # 1. Build the server daemon (codedockd)
           # Server only runs on Linux, so we only build for Linux
           # ---------------------------------------------------------
           for GOARCH in amd64 arm64; do
-            echo "Building vessld for linux/$GOARCH..."
-            GOOS=linux GOARCH=$GOARCH go build -ldflags="-s -w -X main.vesslVersion=$VERSION" -o dist/vessld_linux_$GOARCH ./cmd/vessld
+            echo "Building codedockd for linux/$GOARCH..."
+            GOOS=linux GOARCH=$GOARCH go build -ldflags="-s -w -X main.codedockVersion=$VERSION" -o dist/codedockd_linux_$GOARCH ./cmd/codedockd
 
             # Compress
-            tar -czf dist/vessld_linux_$GOARCH.tar.gz -C dist vessld_linux_$GOARCH
-            rm dist/vessld_linux_$GOARCH
+            tar -czf dist/codedockd_linux_$GOARCH.tar.gz -C dist codedockd_linux_$GOARCH
+            rm dist/codedockd_linux_$GOARCH
           done
 
           # ---------------------------------------------------------
-          # 2. Build the remote client CLI (vessl)
+          # 2. Build the remote client CLI (codedock)
           # Client runs on laptops, so we build for Mac, Linux, Windows
           # ---------------------------------------------------------
           # macOS
           for GOARCH in amd64 arm64; do
-            echo "Building vessl for darwin/$GOARCH..."
-            GOOS=darwin GOARCH=$GOARCH go build -ldflags="-s -w -X main.version=$VERSION" -o dist/vessl ./cmd/vessl
-            tar -czf dist/vessl_darwin_$GOARCH.tar.gz -C dist vessl
-            rm dist/vessl
+            echo "Building codedock for darwin/$GOARCH..."
+            GOOS=darwin GOARCH=$GOARCH go build -ldflags="-s -w -X main.version=$VERSION" -o dist/codedock ./cmd/codedock
+            tar -czf dist/codedock_darwin_$GOARCH.tar.gz -C dist codedock
+            rm dist/codedock
           done
 
           # Linux
           for GOARCH in amd64 arm64; do
-            echo "Building vessl for linux/$GOARCH..."
-            GOOS=linux GOARCH=$GOARCH go build -ldflags="-s -w -X main.version=$VERSION" -o dist/vessl ./cmd/vessl
-            tar -czf dist/vessl_linux_$GOARCH.tar.gz -C dist vessl
-            rm dist/vessl
+            echo "Building codedock for linux/$GOARCH..."
+            GOOS=linux GOARCH=$GOARCH go build -ldflags="-s -w -X main.version=$VERSION" -o dist/codedock ./cmd/codedock
+            tar -czf dist/codedock_linux_$GOARCH.tar.gz -C dist codedock
+            rm dist/codedock
           done
 
           # Windows
           for GOARCH in amd64 arm64; do
-            echo "Building vessl for windows/$GOARCH..."
-            GOOS=windows GOARCH=$GOARCH go build -ldflags="-s -w -X main.version=$VERSION" -o dist/vessl.exe ./cmd/vessl
-            zip -j dist/vessl_windows_$GOARCH.zip dist/vessl.exe
-            rm dist/vessl.exe
+            echo "Building codedock for windows/$GOARCH..."
+            GOOS=windows GOARCH=$GOARCH go build -ldflags="-s -w -X main.version=$VERSION" -o dist/codedock.exe ./cmd/codedock
+            zip -j dist/codedock_windows_$GOARCH.zip dist/codedock.exe
+            rm dist/codedock.exe
           done
 
       - name: Create GitHub Release

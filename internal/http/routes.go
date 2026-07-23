@@ -4,10 +4,10 @@ import (
 	"os"
 	"path/filepath"
 
+	"codedock.dev/codedock/dashboard"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/utils"
 	"github.com/labstack/echo/v4"
-	"vessl.dev/vessl/dashboard"
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/utils"
 )
 
 func (s *Server) registerRoutes() {
@@ -286,7 +286,7 @@ func (s *Server) registerMiscRoutes(apiGroup, authGroup *echo.Group) {
 }
 
 func (s *Server) setupSPAFallback() {
-	staticDir := os.Getenv("VESSL_STATIC_DIR")
+	staticDir := os.Getenv("CODEDOCK_STATIC_DIR")
 
 	if staticDir != "" {
 		if stat, err := os.Stat(staticDir); err == nil && stat.IsDir() {

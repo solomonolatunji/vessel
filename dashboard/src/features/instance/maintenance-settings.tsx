@@ -334,7 +334,7 @@ export const MaintenancePage = () => {
               </span>
             </div>
             <div className="flex justify-between p-4">
-              <span className="text-muted-foreground">Vessl data</span>
+              <span className="text-muted-foreground">Codedock data</span>
               <span className="font-mono">1.81 MB</span>
             </div>
             <div className="flex justify-between p-4">

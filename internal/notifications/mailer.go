@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/smtp"
 
-	"vessl.dev/vessl/internal/services"
+	"codedock.dev/codedock/internal/services"
 )
 
 type MailerService struct {

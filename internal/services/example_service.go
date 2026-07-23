@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.dev/codedock/internal/models"
 )
 
 type ExampleService struct {
@@ -31,7 +31,7 @@ func (s *ExampleService) ListExamples() ([]models.ExampleApp, error) {
 	}
 
 	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Get("https://api.github.com/repos/vesslhq/vessl-examples/contents")
+	resp, err := client.Get("https://api.github.com/repos/buildwithtechx/codedock-examples/contents")
 	if err != nil {
 		if len(cached) > 0 {
 			return cached, nil

@@ -1,9 +1,9 @@
 ---
 title: Integrations
-description: Connect Vessl with Git providers, OAuth, Analytics, and external services.
+description: Connect Codedock with Git providers, OAuth, Analytics, and external services.
 ---
 
-Vessl integrates with popular development tools and services.
+Codedock integrates with popular development tools and services.
 
 ## Git Providers
 
@@ -20,7 +20,7 @@ Connect GitHub or GitLab for automatic deployments from repository pushes.
 
 1. Go to **Settings → Git Apps → GitLab**.
 2. Enter your GitLab instance URL and application credentials.
-3. Configure the webhook URL pointing to your Vessl instance.
+3. Configure the webhook URL pointing to your Codedock instance.
 
 ### Bitbucket App
 
@@ -44,7 +44,7 @@ Configure OAuth providers for login:
 2. Click **Add Provider**.
 3. Select the provider type (GitHub, Google, GitLab, custom).
 4. Enter the **Client ID** and **Client Secret** from the provider.
-5. Set the **Redirect URI** to your Vessl OAuth callback URL.
+5. Set the **Redirect URI** to your Codedock OAuth callback URL.
 
 ### Enabling Providers
 
@@ -64,14 +64,14 @@ Integrate analytics to monitor platform usage and performance:
 
 ### PostHog
 
-Vessl supports PostHog for product analytics and telemetry.
+Codedock supports PostHog for product analytics and telemetry.
 
 1. Configure your PostHog integration in `dashboard/src/integrations/`.
 2. The platform automatically tracks page views, user sessions, and key interactions using `@posthog/react` and `posthog-js`.
 
 ## Outgoing Webhooks
 
-Vessl can send webhook notifications to external services when events occur:
+Codedock can send webhook notifications to external services when events occur:
 
 ### Event Types
 

@@ -29,10 +29,10 @@ type ServiceMetricsOpts struct {
 }
 
 func (s *MetricsService) GetServiceMetrics(ctx context.Context, opts ServiceMetricsOpts) (map[string]any, error) {
-	cpuQuery := fmt.Sprintf(`rate(container_cpu_usage_seconds_total{container_label_vessl_service="%s"}[5m])`, opts.ServiceID)
-	memQuery := fmt.Sprintf(`container_memory_usage_bytes{container_label_vessl_service="%s"}`, opts.ServiceID)
-	netRxQuery := fmt.Sprintf(`rate(container_network_receive_bytes_total{container_label_vessl_service="%s"}[5m])`, opts.ServiceID)
-	netTxQuery := fmt.Sprintf(`rate(container_network_transmit_bytes_total{container_label_vessl_service="%s"}[5m])`, opts.ServiceID)
+	cpuQuery := fmt.Sprintf(`rate(container_cpu_usage_seconds_total{container_label_codedock_service="%s"}[5m])`, opts.ServiceID)
+	memQuery := fmt.Sprintf(`container_memory_usage_bytes{container_label_codedock_service="%s"}`, opts.ServiceID)
+	netRxQuery := fmt.Sprintf(`rate(container_network_receive_bytes_total{container_label_codedock_service="%s"}[5m])`, opts.ServiceID)
+	netTxQuery := fmt.Sprintf(`rate(container_network_transmit_bytes_total{container_label_codedock_service="%s"}[5m])`, opts.ServiceID)
 
 	cpuData, err := s.queryRange(ctx, cpuQuery, opts.Start, opts.End, opts.Step)
 	if err != nil {

@@ -1,7 +1,7 @@
 package notifications
 
 import (
-	"vessl.dev/vessl/internal/models"
+	"codedock.dev/codedock/internal/models"
 )
 
 func SendPushoverNotification(appToken, userKey string, event *models.NotificationEvent) error {

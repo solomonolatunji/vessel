@@ -14,7 +14,7 @@ RUN npm ci
 COPY dashboard/ ./dashboard/
 RUN npm run build:dashboard
 
-# Stage 2: Build the static Go daemon (`vessld`)
+# Stage 2: Build the static Go daemon (`codedockd`)
 FROM golang:1.25-alpine AS daemon-builder
 WORKDIR /src
 
@@ -35,27 +35,27 @@ COPY --from=dashboard-builder /app/dashboard/dist ./dashboard/dist
 ARG VERSION=dev
 
 # Build self-contained binary with CGO disabled and inject the version
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags="-w -s -X main.vesslVersion=${VERSION}" -o /vessld ./cmd/vessld
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags="-w -s -X main.codedockVersion=${VERSION}" -o /codedockd ./cmd/codedockd
 
 # Stage 3: Minimal Production Runtime
 FROM alpine:3.21 AS production
-WORKDIR /var/www/vessl
+WORKDIR /var/www/codedock
 
 # Install ca-certificates, docker-cli, git, and openssh-client for container orchestration and git cloning
 RUN apk add --no-cache ca-certificates tzdata docker-cli git openssh-client curl
 
 # Copy binary from daemon-builder
-COPY --from=daemon-builder /vessld /usr/local/bin/vessld
+COPY --from=daemon-builder /codedockd /usr/local/bin/codedockd
 
 # Ensure data directory exists
-RUN mkdir -p /var/www/vessl/data
+RUN mkdir -p /var/www/codedock/data
 
 # Environment variables
 ENV PORT=8080 \
-    VESSL_DATA_DIR=/var/www/vessl/data
+    CODEDOCK_DATA_DIR=/var/www/codedock/data
 
 EXPOSE 8080 80 443
 
-VOLUME ["/var/www/vessl/data"]
+VOLUME ["/var/www/codedock/data"]
 
-ENTRYPOINT ["vessld"]
+ENTRYPOINT ["codedockd"]

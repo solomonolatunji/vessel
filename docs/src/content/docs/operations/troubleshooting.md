@@ -8,15 +8,15 @@ Start with the page that owns the failing workflow, then use server logs for the
 ## Useful Server Logs
 
 ```bash
-sudo journalctl -u vessl -f
-cd /opt/vessl && sudo docker compose logs -f traefik buildkit
+sudo journalctl -u codedock -f
+cd /opt/codedock && sudo docker compose logs -f traefik buildkit
 ```
 
-Deployment logs show Vessl's job-level view. Runtime logs show container output. Server logs show the underlying control plane, Traefik, and BuildKit behavior.
+Deployment logs show Codedock's job-level view. Runtime logs show container output. Server logs show the underlying control plane, Traefik, and BuildKit behavior.
 
 ## BuildKit Is Unavailable
 
-Vessl source builds need BuildKit at the configured `BUILDKIT_HOST`, usually `tcp://127.0.0.1:1234`.
+Codedock source builds need BuildKit at the configured `BUILDKIT_HOST`, usually `tcp://127.0.0.1:1234`.
 
 Check:
 
@@ -60,7 +60,7 @@ Common causes:
 
 - Railway returned only a `.railway.internal` database URL.
 - Public networking is not enabled on the Railway database.
-- The target Vessl database is not deployed.
+- The target Codedock database is not deployed.
 - TimescaleDB extension versions differ.
 - The target PostgreSQL major version is older than the source.
 

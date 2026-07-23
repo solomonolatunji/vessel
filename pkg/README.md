@@ -1,17 +1,17 @@
-# `pkg` — Vessl SDK
+# `pkg` — Codedock SDK
 
-This directory contains the public Go packages that power the `vessl` remote CLI. You can import them directly to build your own tooling on top of a self-hosted Vessl server — CI/CD scripts, GitHub Actions, Terraform providers, custom dashboards, etc.
+This directory contains the public Go packages that power the `codedock` remote CLI. You can import them directly to build your own tooling on top of a self-hosted Codedock server — CI/CD scripts, GitHub Actions, Terraform providers, custom dashboards, etc.
 
 ## Packages
 
 ### `pkg/http` — API Client
 
-A typed HTTP client for the Vessl API. Handles authentication, request building, and response decoding.
+A typed HTTP client for the Codedock API. Handles authentication, request building, and response decoding.
 
 ```go
-import vesslhttp "vessl.dev/vessl/pkg/http"
+import codedockhttp "codedock.dev/codedock/pkg/http"
 
-client := vesslhttp.NewClient("https://your-server.com", "your-jwt-token")
+client := codedockhttp.NewClient("https://your-server.com", "your-jwt-token")
 ```
 
 #### Auth
@@ -100,10 +100,10 @@ metrics, err     := client.GetServiceMetrics("service-id")
 
 ### `pkg/config` — Credential Store
 
-Manages saved server credentials on the local filesystem at `~/.vessl/config.json`.
+Manages saved server credentials on the local filesystem at `~/.codedock/config.json`.
 
 ```go
-import "vessl.dev/vessl/pkg/config"
+import "codedock.dev/codedock/pkg/config"
 ```
 
 #### Load saved config
@@ -127,7 +127,7 @@ err := config.Save(&config.Config{
 
 ```go
 path, err := config.GetConfigPath()
-// e.g. /home/user/.vessl/config.json
+// e.g. /home/user/.codedock/config.json
 ```
 
 ## Full Example
@@ -138,17 +138,17 @@ package main
 import (
     "fmt"
 
-    "vessl.dev/vessl/pkg/config"
-    vesslhttp "vessl.dev/vessl/pkg/http"
+    "codedock.dev/codedock/pkg/config"
+    codedockhttp "codedock.dev/codedock/pkg/http"
 )
 
 func main() {
     cfg, err := config.Load()
     if err != nil || cfg.Token == "" {
-        panic("run 'vessl login' first")
+        panic("run 'codedock login' first")
     }
 
-    client := vesslhttp.NewClient(cfg.ServerURL, cfg.Token)
+    client := codedockhttp.NewClient(cfg.ServerURL, cfg.Token)
 
     projects, err := client.ListProjects()
     if err != nil {

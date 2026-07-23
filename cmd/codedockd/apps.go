@@ -8,13 +8,13 @@ import (
 
 	"github.com/google/uuid"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/repositories"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/repositories"
 )
 
 func runApps(args []string) {
 	if len(args) < 1 {
-		fmt.Println("Usage: vessld apps:<command> [args]")
+		fmt.Println("Usage: codedockd apps:<command> [args]")
 		fmt.Println("")
 		fmt.Println("Commands:")
 		fmt.Println("  list                  List all apps")
@@ -52,7 +52,7 @@ func runApps(args []string) {
 
 	case "show":
 		if len(args) < 2 {
-			exitError("Usage: vessld apps:show <id>")
+			exitError("Usage: codedockd apps:show <id>")
 		}
 		app, err := appRepo.GetByID(context.Background(), args[1])
 		if err != nil {
@@ -79,7 +79,7 @@ func runApps(args []string) {
 
 	case "create":
 		if len(args) < 2 {
-			exitError("Usage: vessld apps:create <name> --project <id> [--env <id>] [--port <n>]")
+			exitError("Usage: codedockd apps:create <name> --project <id> [--env <id>] [--port <n>]")
 		}
 		name := args[1]
 		projectID := ""
@@ -135,7 +135,7 @@ func runApps(args []string) {
 
 	case "destroy":
 		if len(args) < 2 {
-			exitError("Usage: vessld apps:destroy <id>")
+			exitError("Usage: codedockd apps:destroy <id>")
 		}
 		app, err := appRepo.GetByID(context.Background(), args[1])
 		if err != nil {

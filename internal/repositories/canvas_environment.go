@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"time"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/utils"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/utils"
 )
 
 func (r *CanvasRepo) GetEnvironmentCanvas(ctx context.Context, environmentID string) (*models.EnvironmentCanvas, error) {

@@ -8,13 +8,13 @@ import (
 
 	"github.com/google/uuid"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/repositories"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/repositories"
 )
 
 func runDeployments(args []string) {
 	if len(args) < 1 {
-		fmt.Println("Usage: vessld deployment:<command> [args]")
+		fmt.Println("Usage: codedockd deployment:<command> [args]")
 		fmt.Println("")
 		fmt.Println("Commands:")
 		fmt.Println("  list --service <id>     List deployments for a service")
@@ -57,7 +57,7 @@ func runDeployments(args []string) {
 
 	case "show":
 		if len(args) < 2 {
-			exitError("Usage: vessld deployment:show <id>")
+			exitError("Usage: codedockd deployment:show <id>")
 		}
 		d, err := deployRepo.GetByID(context.Background(), args[1])
 		if err != nil {
@@ -76,7 +76,7 @@ func runDeployments(args []string) {
 
 	case "logs":
 		if len(args) < 2 {
-			exitError("Usage: vessld deployment:logs <deployment-id>")
+			exitError("Usage: codedockd deployment:logs <deployment-id>")
 		}
 		d, err := deployRepo.GetByID(context.Background(), args[1])
 		if err != nil {
@@ -99,7 +99,7 @@ func runDeployments(args []string) {
 
 func runDomains(args []string) {
 	if len(args) < 1 {
-		fmt.Println("Usage: vessld domain:<command> [args]")
+		fmt.Println("Usage: codedockd domain:<command> [args]")
 		fmt.Println("")
 		fmt.Println("Commands:")
 		fmt.Println("  list --project <id>           List all domains for a project")
@@ -140,7 +140,7 @@ func runDomains(args []string) {
 
 	case "add":
 		if len(args) < 2 {
-			exitError("Usage: vessld domain:add <domain> --service <id>")
+			exitError("Usage: codedockd domain:add <domain> --service <id>")
 		}
 		domain := args[1]
 		serviceID := ""
@@ -166,7 +166,7 @@ func runDomains(args []string) {
 
 	case "remove":
 		if len(args) < 2 {
-			exitError("Usage: vessld domain:remove <id>")
+			exitError("Usage: codedockd domain:remove <id>")
 		}
 		if err := domainRepo.Delete(context.Background(), args[1]); err != nil {
 			exitError("Failed to remove domain: %v", err)

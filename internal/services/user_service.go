@@ -11,9 +11,9 @@ import (
 	"crypto/sha256"
 	"github.com/google/uuid"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/repositories"
-	"vessl.dev/vessl/internal/utils"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/repositories"
+	"codedock.dev/codedock/internal/utils"
 )
 
 type UserService struct {

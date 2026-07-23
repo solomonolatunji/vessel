@@ -17,16 +17,16 @@ const getInitialAuth = () => {
     return { token: null, refreshToken: null, user: null, isAuthenticated: false };
   }
 
-  const storedToken = localStorage.getItem('vessl_auth_token');
-  const storedRefreshToken = localStorage.getItem('vessl_refresh_token');
-  const storedUser = localStorage.getItem('vessl_auth_user');
+  const storedToken = localStorage.getItem('codedock_auth_token');
+  const storedRefreshToken = localStorage.getItem('codedock_refresh_token');
+  const storedUser = localStorage.getItem('codedock_auth_user');
   let parsedUser = null;
   if (storedUser) {
     try {
       parsedUser = JSON.parse(storedUser);
     } catch (e) {
       console.error('Failed to parse stored user:', e);
-      localStorage.removeItem('vessl_auth_user');
+      localStorage.removeItem('codedock_auth_user');
     }
   }
 
@@ -51,21 +51,21 @@ export const useAuthStore = create<AuthState>((set) => ({
 if (isBrowser) {
   useAuthStore.subscribe((state) => {
     if (state.token) {
-      localStorage.setItem('vessl_auth_token', state.token);
+      localStorage.setItem('codedock_auth_token', state.token);
     } else {
-      localStorage.removeItem('vessl_auth_token');
+      localStorage.removeItem('codedock_auth_token');
     }
 
     if (state.refreshToken) {
-      localStorage.setItem('vessl_refresh_token', state.refreshToken);
+      localStorage.setItem('codedock_refresh_token', state.refreshToken);
     } else {
-      localStorage.removeItem('vessl_refresh_token');
+      localStorage.removeItem('codedock_refresh_token');
     }
 
     if (state.user) {
-      localStorage.setItem('vessl_auth_user', JSON.stringify(state.user));
+      localStorage.setItem('codedock_auth_user', JSON.stringify(state.user));
     } else {
-      localStorage.removeItem('vessl_auth_user');
+      localStorage.removeItem('codedock_auth_user');
     }
   });
 }

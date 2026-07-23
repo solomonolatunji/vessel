@@ -84,7 +84,7 @@ export const DnsSettings = () => {
           <div>
             <h1 className="font-bold text-xl">API credentials</h1>
             <p className="text-muted-foreground text-sm">
-              Vessl manages your domains using various DNS providers. You can add your API
+              Codedock manages your domains using various DNS providers. You can add your API
               credentials here.
             </p>
           </div>

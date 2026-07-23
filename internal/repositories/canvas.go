@@ -8,7 +8,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.dev/codedock/internal/models"
 )
 
 type CanvasRepository interface {

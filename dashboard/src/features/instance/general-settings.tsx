@@ -141,11 +141,14 @@ export const GeneralSettings = () => {
           <Input
             value={form.siteName ?? ''}
             onChange={(e) => set('siteName', e.target.value)}
-            placeholder="Vessl"
+            placeholder="Codedock"
             className="text-sm"
           />
         </Row>
-        <Row label="Dashboard Domain" description="The domain Vessl control panel is served from.">
+        <Row
+          label="Dashboard Domain"
+          description="The domain Codedock control panel is served from."
+        >
           <Input
             value={form.dashboardDomain ?? ''}
             onChange={(e) => set('dashboardDomain', e.target.value)}
@@ -279,7 +282,10 @@ export const GeneralSettings = () => {
             className="font-mono text-xs"
           />
         </Row>
-        <Row label="Telemetry" description="Send anonymous usage statistics to help improve Vessl.">
+        <Row
+          label="Telemetry"
+          description="Send anonymous usage statistics to help improve Codedock."
+        >
           <Switch
             checked={form.telemetryEnabled}
             onCheckedChange={(v) => set('telemetryEnabled', v)}

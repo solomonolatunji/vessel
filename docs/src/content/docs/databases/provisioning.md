@@ -3,7 +3,7 @@ title: Database Provisioning
 description: Managed database engines with one-click provisioning and connection string injection.
 ---
 
-Spin up managed databases directly from the Vessl dashboard. Each database runs in its own Docker container with persistent volumes, automatic health checks, and daily backups.
+Spin up managed databases directly from the Codedock dashboard. Each database runs in its own Docker container with persistent volumes, automatic health checks, and daily backups.
 
 ## Supported Engines
 
@@ -51,17 +51,17 @@ Spin up managed databases directly from the Vessl dashboard. Each database runs 
 4. Optionally set a custom name and port.
 5. Click **Create**.
 
-Vessl provisions the container, creates a default database and user, and mounts a persistent volume at `/var/lib/data`.
+Codedock provisions the container, creates a default database and user, and mounts a persistent volume at `/var/lib/data`.
 
 ## Connection Strings
 
 Once created, the connection string is automatically injected into every service in the same project:
 
 ```
-DATABASE_URL=postgresql://vessl:<password>@<service-name>:5432/vessl
-TIMESCALE_URL=postgresql://vessl:<password>@<service-name>:5432/vessl
+DATABASE_URL=postgresql://codedock:<password>@<service-name>:5432/codedock
+TIMESCALE_URL=postgresql://codedock:<password>@<service-name>:5432/codedock
 REDIS_URL=redis://<service-name>:6379
-MONGO_URL=mongodb://vessl:<password>@<service-name>:27017/vessl
+MONGO_URL=mongodb://codedock:<password>@<service-name>:27017/codedock
 ```
 
 You can also find the connection details on the database's detail page in the dashboard.
@@ -77,6 +77,6 @@ Databases can be started and stopped from the dashboard. Stopping a database fre
 Each database has sensible defaults:
 
 - **Port**: Assigned from the engine's default port range
-- **Username**: `vessl`
-- **Database name**: `vessl`
+- **Username**: `codedock`
+- **Database name**: `codedock`
 - **Data volume**: Persisted at `<data-dir>/databases/<id>/`

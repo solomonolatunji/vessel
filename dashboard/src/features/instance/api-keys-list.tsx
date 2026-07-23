@@ -62,7 +62,7 @@ export function ApiKeysList() {
             </div>
             <h3 className="mt-4 font-bold text-foreground text-lg tracking-tight">No API keys</h3>
             <p className="mt-1 max-w-sm text-center text-muted-foreground text-sm">
-              Create an API key to access Vessl programmatically.
+              Create an API key to access Codedock programmatically.
             </p>
             <Button onClick={() => setIsCreateOpen(true)} className="mt-6 gap-2">
               <Plus className="h-4 w-4" />

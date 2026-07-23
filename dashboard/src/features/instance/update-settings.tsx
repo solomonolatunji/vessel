@@ -40,10 +40,10 @@ export const UpdatesPage = () => {
             <RefreshCw className="h-6 w-6" />
           </div>
           <div>
-            <h1 className="font-bold text-xl">Vessl release channel</h1>
+            <h1 className="font-bold text-xl">Codedock release channel</h1>
             <p className="text-muted-foreground text-sm">
-              Compare this install with the official Vessl releases, review changelogs, and update
-              the daemon when you are ready.
+              Compare this install with the official Codedock releases, review changelogs, and
+              update the daemon when you are ready.
             </p>
           </div>
         </div>
@@ -74,7 +74,7 @@ export const UpdatesPage = () => {
           <p className="font-bold text-[10px] text-muted-foreground uppercase tracking-[0.15em]">
             REPOSITORY
           </p>
-          <p className="font-mono text-sm">vesslhq/vessl</p>
+          <p className="font-mono text-sm">buildwithtechx/codedock</p>
         </div>
         <div className="flex flex-col justify-center space-y-2 rounded-2xl border border-border/50 bg-card/40 p-6">
           <p className="font-bold text-[10px] text-muted-foreground uppercase tracking-[0.15em]">
@@ -103,7 +103,7 @@ export const UpdatesPage = () => {
           </div>
           <div className="space-y-2">
             <h2 className="font-bold text-2xl tracking-tight">
-              {hasUpdate ? 'Update available' : 'Vessl is up to date'}
+              {hasUpdate ? 'Update available' : 'Codedock is up to date'}
             </h2>
             <p className="text-muted-foreground text-sm">
               {hasUpdate

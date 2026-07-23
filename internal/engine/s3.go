@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.dev/codedock/internal/models"
 )
 
 type S3Error struct {

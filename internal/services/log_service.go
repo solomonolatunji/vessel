@@ -72,7 +72,7 @@ func (s *LogService) buildLokiURL(opts HistoricalLogsOpts) string {
 		return ""
 	}
 
-	query := fmt.Sprintf(`{container_label_vessl_service="%s"}`, opts.ServiceID)
+	query := fmt.Sprintf(`{container_label_codedock_service="%s"}`, opts.ServiceID)
 	u, _ := url.Parse(s.lokiURL + "/loki/api/v1/query_range")
 	q := u.Query()
 	q.Set("query", query)

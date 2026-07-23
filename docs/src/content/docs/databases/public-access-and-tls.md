@@ -7,7 +7,7 @@ Database services can be private to the server or exposed through generated publ
 
 ## Public Hostnames
 
-When a root domain is configured, Vessl generates database hostnames from the service name. The service settings show the hostname and connection target.
+When a root domain is configured, Codedock generates database hostnames from the service name. The service settings show the hostname and connection target.
 
 Example:
 
@@ -25,13 +25,13 @@ For custom public domains, add the hostname to the service and point an `A` reco
 
 ## PostgreSQL TLS Assets
 
-For PostgreSQL-family services, Vessl prepares TLS assets used by public database access. Those assets are stored under the Vessl data directory and are included in Vessl migration bundles when present.
+For PostgreSQL-family services, Codedock prepares TLS assets used by public database access. Those assets are stored under the Codedock data directory and are included in Codedock migration bundles when present.
 
-After an Vessl bundle import, check restored database hostnames and redeploy services if you need to refresh runtime containers with the restored assets.
+After an Codedock bundle import, check restored database hostnames and redeploy services if you need to refresh runtime containers with the restored assets.
 
 ## Logical Replication
 
-PostgreSQL-family database services can enable logical replication. When enabled, Vessl deploys Postgres with:
+PostgreSQL-family database services can enable logical replication. When enabled, Codedock deploys Postgres with:
 
 ```txt
 wal_level=logical

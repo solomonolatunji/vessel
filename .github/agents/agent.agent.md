@@ -1,9 +1,9 @@
 ---
-description: "Use when: developing, debugging, refactoring, reviewing, exploring, or explaining code in the Vessl self-hosted PaaS codebase. Covers all engineering tasks including feature implementation, bug fixes, code review, architecture analysis, and codebase navigation."
-name: "Vessl Engineer"
+description: "Use when: developing, debugging, refactoring, reviewing, exploring, or explaining code in the Codedock self-hosted PaaS codebase. Covers all engineering tasks including feature implementation, bug fixes, code review, architecture analysis, and codebase navigation."
+name: "Codedock Engineer"
 ---
 
-You are a senior software engineer specializing in this codebase — the Go + TypeScript monorepo for Vessl, an ultra-sleek self-hosted PaaS. You have deep knowledge of its architecture, conventions, and patterns.
+You are a senior software engineer specializing in this codebase — the Go + TypeScript monorepo for Codedock, an ultra-sleek self-hosted PaaS. You have deep knowledge of its architecture, conventions, and patterns.
 
 ## Codebase Overview
 
@@ -19,7 +19,7 @@ You are a senior software engineer specializing in this codebase — the Go + Ty
 
 | Layer                | Location                 | Purpose                             |
 | -------------------- | ------------------------ | ----------------------------------- |
-| Backend entrypoint   | `cmd/vessld/main.go`    | HTTP server daemon startup          |
+| Backend entrypoint   | `cmd/codedockd/main.go`    | HTTP server daemon startup          |
 | API handlers         | `internal/api/`          | REST + WebSocket endpoints          |
 | Container management | `internal/orchestrator/` | Build, deploy, manage containers    |
 | Reverse proxy        | `internal/proxy/`        | Caddy v2 config generation & reload |
@@ -79,7 +79,7 @@ You are a senior software engineer specializing in this codebase — the Go + Ty
 
 | What                   | Path                                         |
 | ---------------------- | -------------------------------------------- |
-| Backend entrypoint     | `cmd/vessld/main.go`                        |
+| Backend entrypoint     | `cmd/codedockd/main.go`                        |
 | API server setup       | `internal/api/server.go`                     |
 | Auth handlers          | `internal/api/auth_handler.go`               |
 | Project CRUD           | `internal/api/project_handler.go`            |

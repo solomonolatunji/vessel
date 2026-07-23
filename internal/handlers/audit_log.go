@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"strconv"
 
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/services"
+	"codedock.dev/codedock/internal/utils"
 	"github.com/labstack/echo/v4"
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/services"
-	"vessl.dev/vessl/internal/utils"
 )
 
 type AuditLogHandler struct {

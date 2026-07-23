@@ -1,8 +1,8 @@
-# Contributing to Vessl 🛰️
+# Contributing to Codedock 🛰️
 
 > "First, thanks for considering contributing. It really means a lot!"
 
-Ask for guidance on our [Discord server](https://discord.gg/vessl) in `#contribute`.
+Ask for guidance on our [Discord server](https://discord.gg/codedock) in `#contribute`.
 
 ---
 
@@ -12,7 +12,7 @@ Ask for guidance on our [Discord server](https://discord.gg/vessl) in `#contribu
 2. [Verify Installation](#2-verify-installation)
 3. [Fork and Clone](#3-fork-and-clone)
 4. [Environment Variables](#4-environment-variables)
-5. [Start Vessl](#5-start-vessl)
+5. [Start Codedock](#5-start-codedock)
 6. [Start Developing](#6-start-developing)
 7. [Pull Requests](#7-pull-requests)
 8. [Development Notes](#8-development-notes)
@@ -74,13 +74,13 @@ npm --version
 
 ## 3. Fork and Clone
 
-1. Fork [vessl](https://github.com/vesslhq/vessl) on GitHub.
+1. Fork [codedock](https://github.com/buildwithtechx/codedock) on GitHub.
 2. Clone your fork:
 
 ```bash
-git clone https://github.com/<your-username>/vessl.git
-cd vessl
-git remote add upstream https://github.com/vesslhq/vessl.git
+git clone https://github.com/<your-username>/codedock.git
+cd codedock
+git remote add upstream https://github.com/buildwithtechx/codedock.git
 ```
 
 ---
@@ -94,13 +94,13 @@ cp .env.example .env
 | Variable           | Default          | Description                    |
 | ------------------ | ---------------- | ------------------------------ |
 | `PORT`             | `8080`           | Daemon HTTP port               |
-| `VESSL_DATA_DIR`   | `data`           | SQLite DB + vault storage      |
-| `VESSL_STATIC_DIR` | `dashboard/dist` | Built dashboard files          |
-| `VESSL_TLS_EMAIL`  | —                | Let's Encrypt email (optional) |
+| `CODEDOCK_DATA_DIR`   | `data`           | SQLite DB + vault storage      |
+| `CODEDOCK_STATIC_DIR` | `dashboard/dist` | Built dashboard files          |
+| `CODEDOCK_TLS_EMAIL`  | —                | Let's Encrypt email (optional) |
 
 ---
 
-## 5. Start Vessl
+## 5. Start Codedock
 
 Two terminals needed — daemon + dashboard.
 
@@ -196,7 +196,7 @@ tsc --noEmit
 - **No comments allowed.** Code must be self-explanatory.
 - JSON tags on every exported struct field.
 - Snake_case for file names, single-word package names.
-- SQLite via `modernc.org/sqlite` (CGO-free). Migrations auto-run on startup in `cmd/vessld/main.go`.
+- SQLite via `modernc.org/sqlite` (CGO-free). Migrations auto-run on startup in `cmd/codedockd/main.go`.
 
 ### Dashboard Conventions
 
@@ -214,7 +214,7 @@ tsc --noEmit
 
 | Problem                   | Fix                                                      |
 | ------------------------- | -------------------------------------------------------- |
-| Daemon won't start        | Delete `data/vessl.db` and restart (schema auto-creates) |
+| Daemon won't start        | Delete `data/codedock.db` and restart (schema auto-creates) |
 | Dashboard can't reach API | Ensure daemon runs on `:8080`                            |
 | Port conflict             | Change `PORT` in `.env`                                  |
 | Build errors after pull   | `go mod tidy` + `npm install`                            |
@@ -225,7 +225,7 @@ tsc --noEmit
 
 ```bash
 # Stop daemon (Ctrl+C), then:
-rm -f data/vessl.db data/.vault_key
+rm -f data/codedock.db data/.vault_key
 go run ./cmd
 ```
 
@@ -239,5 +239,5 @@ Include:
 
 - `uname -r` (kernel version)
 - `docker --version`
-- `vessld` logs (run with `--debug` for verbose)
+- `codedockd` logs (run with `--debug` for verbose)
 - Steps to reproduce

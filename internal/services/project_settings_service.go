@@ -10,8 +10,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/repositories"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/repositories"
 )
 
 type ProjectSettingsService struct {

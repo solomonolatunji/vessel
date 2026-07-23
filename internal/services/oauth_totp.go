@@ -21,7 +21,7 @@ func GenerateTOTPSecret() (string, error) {
 }
 
 func GenerateTOTPQRUri(accountName, secret string) string {
-	issuer := "Vessl"
+	issuer := "Codedock"
 	return fmt.Sprintf(
 		"otpauth://totp/%s:%s?secret=%s&issuer=%s",
 		url.QueryEscape(issuer),

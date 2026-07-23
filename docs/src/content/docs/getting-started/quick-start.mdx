@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-description: Deploy your first application on Vessl.
+description: Deploy your first application on Codedock.
 ---
 
 import { Steps, Tabs, TabItem, Aside } from '@astrojs/starlight/components';
@@ -19,7 +19,7 @@ import { Steps, Tabs, TabItem, Aside } from '@astrojs/starlight/components';
 
 </Steps>
 
-<Aside>Vessl clones the repo, builds the image, and runs a health check before routing traffic.</Aside>
+<Aside>Codedock clones the repo, builds the image, and runs a health check before routing traffic.</Aside>
 
 ### One-Click Databases
 
@@ -32,20 +32,20 @@ import { Steps, Tabs, TabItem, Aside } from '@astrojs/starlight/components';
 
 </Steps>
 
-<Aside>Vessl provisions the container with persistent volumes and injects the connection string into your apps automatically.</Aside>
+<Aside>Codedock provisions the container with persistent volumes and injects the connection string into your apps automatically.</Aside>
 
 ### From a Template
 
-Deploy a ready-made starter from the [vessl-examples](https://github.com/vesslhq/vessl-examples) repository:
+Deploy a ready-made starter from the [codedock-examples](https://github.com/buildwithtechx/codedock-examples) repository:
 
 ```sh
-vessld deploy --template go-fiber
-vessld deploy --template node-express
-vessld deploy --template python-fastapi
-vessld deploy --template nextjs
+codedockd deploy --template go-fiber
+codedockd deploy --template node-express
+codedockd deploy --template python-fastapi
+codedockd deploy --template nextjs
 ```
 
-This clones the template, builds it, and deploys it in one step. Browse all available templates at **[github.com/vesslhq/vessl-examples](https://github.com/vesslhq/vessl-examples)**.
+This clones the template, builds it, and deploys it in one step. Browse all available templates at **[github.com/buildwithtechx/codedock-examples](https://github.com/buildwithtechx/codedock-examples)**.
 
 ## What's Next
 

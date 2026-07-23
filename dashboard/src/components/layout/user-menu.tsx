@@ -77,7 +77,7 @@ export function UserMenu({ collapsed }: UserMenuProps) {
             <button
               type="button"
               onClick={() => {
-                window.open('https://github.com/anomalyco/vessl', '_blank');
+                window.open('https://github.com/anomalyco/codedock', '_blank');
                 setOpen(false);
               }}
               className="group flex w-full items-center gap-3 rounded-xl px-2.5 py-2 font-medium text-sidebar-foreground/60 text-sm transition-all duration-150 hover:bg-sidebar-accent hover:text-sidebar-foreground active:scale-[0.985]"
@@ -103,7 +103,7 @@ export function UserMenu({ collapsed }: UserMenuProps) {
             <button
               type="button"
               onClick={() => {
-                window.open('https://github.com/anomalyco/vessl/issues', '_blank');
+                window.open('https://github.com/anomalyco/codedock/issues', '_blank');
                 setOpen(false);
               }}
               className="group flex w-full items-center gap-3 rounded-xl px-2.5 py-2 font-medium text-sidebar-foreground/60 text-sm transition-all duration-150 hover:bg-sidebar-accent hover:text-sidebar-foreground active:scale-[0.985]"

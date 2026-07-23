@@ -12,7 +12,7 @@ import (
 	"syscall"
 	"time"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.dev/codedock/internal/models"
 )
 
 var (

@@ -16,7 +16,7 @@ const tableRows = [
   { feature: 'Notification Channels', sh: true, cloud: true },
   { feature: 'Codebase', sh: 'MIT open source', cloud: 'MIT open source' },
   { feature: 'Daemon Hosting', sh: 'Your server', cloud: 'Your server' },
-  { feature: 'Control Plane', sh: 'Local dashboard', cloud: 'Managed (app.vessl.dev)' },
+  { feature: 'Control Plane', sh: 'Local dashboard', cloud: 'Managed (app.codedock.dev)' },
   { feature: 'Fleet Management', sh: '—', cloud: true },
   { feature: 'Usage Metering + Alerts', sh: '—', cloud: true },
   { feature: 'Yamux Tunnel Handshake', sh: 'Manual token', cloud: 'Managed' },
@@ -27,11 +27,11 @@ const tableRows = [
 const faqs = [
   {
     q: 'Do Cloud features replace the self-hosted daemon?',
-    a: 'No. Vessl Cloud is a control plane — your apps still run on your server via the Vessl daemon. Cloud adds fleet management, usage metering, and team billing on top. The daemon itself is unchanged.',
+    a: 'No. Codedock Cloud is a control plane — your apps still run on your server via the Codedock daemon. Cloud adds fleet management, usage metering, and team billing on top. The daemon itself is unchanged.',
   },
   {
-    q: "What exactly runs on my server vs. Vessl's infrastructure?",
-    a: 'Everything that matters — Docker containers, Traefik proxy, databases, backups — runs on your machine. Vessl Cloud only stores metadata: deployment history, team config, and usage metrics. We never touch your data.',
+    q: "What exactly runs on my server vs. Codedock's infrastructure?",
+    a: 'Everything that matters — Docker containers, Traefik proxy, databases, backups — runs on your machine. Codedock Cloud only stores metadata: deployment history, team config, and usage metrics. We never touch your data.',
   },
   {
     q: 'Is the self-hosted edition actually free forever, or will you change your mind?',
@@ -39,7 +39,7 @@ const faqs = [
   },
   {
     q: 'Can I move from Cloud back to pure self-hosted?',
-    a: "Yes. It's a config change — point your daemon at your own dashboard instead of app.vessl.dev. No vendor lock-in, no export-import dance.",
+    a: "Yes. It's a config change — point your daemon at your own dashboard instead of app.codedock.dev. No vendor lock-in, no export-import dance.",
   },
   {
     q: 'How does billing work when I add more servers?',
@@ -53,8 +53,8 @@ const faqs = [
 ---
 
 <Layout
-  title="Pricing — Vessl"
-  description="Self-hosted is MIT-licensed and free forever. Vessl Cloud adds fleet management and metering from $5/month."
+  title="Pricing — Codedock"
+  description="Self-hosted is MIT-licensed and free forever. Codedock Cloud adds fleet management and metering from $5/month."
 >
   <div class="max-w-5xl mx-auto px-6">
 
@@ -104,7 +104,7 @@ const faqs = [
           ))}
         </ul>
 
-        <a href="https://docs.vessl.dev/self-host" target="_blank" class="mt-8 flex items-center justify-center gap-2 py-3.5 rounded-lg border border-border bg-background hover:bg-border text-foreground font-semibold text-sm transition-colors">
+        <a href="https://docs.codedock.dev/self-host" target="_blank" class="mt-8 flex items-center justify-center gap-2 py-3.5 rounded-lg border border-border bg-background hover:bg-border text-foreground font-semibold text-sm transition-colors">
           <Icon name="lucide:book" class="size-4 text-primary" />
           Read the Docs
         </a>
@@ -157,10 +157,10 @@ const faqs = [
 
         <div class="flex items-start gap-2 mt-4 p-3 rounded-lg bg-background border border-border text-xs text-muted-foreground relative">
           <Icon name="lucide:info" class="size-3.5 text-primary shrink-0 mt-0.5" />
-          Your apps run on <em>your</em> servers. Vessl Cloud only manages the control plane.
+          Your apps run on <em>your</em> servers. Codedock Cloud only manages the control plane.
         </div>
 
-        <a href="https://app.vessl.dev/register" class="mt-6 flex items-center justify-center gap-2 py-3.5 rounded-lg bg-primary hover:bg-primary-hover text-white font-semibold text-sm transition-colors relative">
+        <a href="https://app.codedock.dev/register" class="mt-6 flex items-center justify-center gap-2 py-3.5 rounded-lg bg-primary hover:bg-primary-hover text-white font-semibold text-sm transition-colors relative">
           Start 14-day trial
           <Icon name="lucide:arrow-right" class="size-4" />
         </a>

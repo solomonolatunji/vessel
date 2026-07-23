@@ -33,7 +33,7 @@ export const ImportModal = ({
       formData.append('bundle', selectedFile);
       formData.append('passphrase', passphrase);
       await importSystem(formData);
-      toast.success('Successfully imported Vessl bundle!');
+      toast.success('Successfully imported Codedock bundle!');
       onOpenChange(false);
       setFileName('');
       setPassphrase('');
@@ -51,7 +51,7 @@ export const ImportModal = ({
             <div className="flex flex-col">
               <DialogTitle className="flex items-center gap-2 font-bold text-foreground text-xl tracking-tight">
                 <Database className="h-5 w-5 text-primary" />
-                Import Vessl
+                Import Codedock
               </DialogTitle>
               <DialogDescription>Restore an encrypted bundle</DialogDescription>
             </div>
@@ -79,12 +79,12 @@ export const ImportModal = ({
             <div className="relative flex h-10 w-full items-center gap-3 rounded-lg border border-border/50 bg-background/80 px-3 transition-all duration-300 focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20 hover:bg-background">
               <CloudUpload className="h-4 w-4 text-muted-foreground" />
               <span className="truncate font-mono text-foreground/90 text-sm">
-                {fileName || 'Choose .vessl file'}
+                {fileName || 'Choose .codedock file'}
               </span>
               <Input
                 id="migrationBundle"
                 type="file"
-                accept=".vessl"
+                accept=".codedock"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (file) {

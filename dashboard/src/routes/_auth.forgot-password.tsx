@@ -26,7 +26,7 @@ function ForgotPasswordPage() {
           </div>
           <div>
             <p className="text-muted-foreground/70 text-xs uppercase tracking-wider">
-              VESSL ACCESS
+              CODEDOCK ACCESS
             </p>
             <p className="font-semibold text-foreground text-lg tracking-tight">Reset password</p>
           </div>

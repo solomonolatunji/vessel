@@ -10,9 +10,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"vessl.dev/vessl/internal/engine"
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/repositories"
+	"codedock.dev/codedock/internal/engine"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/repositories"
 )
 
 const bundleManifestVersion = "1"
@@ -40,7 +40,7 @@ func (s *MigrationService) Export(ctx context.Context, passphrase string) ([]byt
 	if err != nil {
 		return nil, fmt.Errorf("sqlite dump failed: %w", err)
 	}
-	files["vessl.db.sql"] = sqliteData
+	files["codedock.db.sql"] = sqliteData
 
 	dbs, err := s.dbRepo.List(ctx)
 	if err != nil {
@@ -103,7 +103,7 @@ func (s *MigrationService) Import(ctx context.Context, bundleData []byte, passph
 		return nil, fmt.Errorf("failed to parse manifest: %w", err)
 	}
 
-	if sqlData, ok := files["vessl.db.sql"]; ok {
+	if sqlData, ok := files["codedock.db.sql"]; ok {
 		if err := s.restoreSQLite(sqlData); err != nil {
 			return nil, fmt.Errorf("sqlite restore failed: %w", err)
 		}
@@ -133,7 +133,7 @@ func (s *MigrationService) Import(ctx context.Context, bundleData []byte, passph
 }
 
 func (s *MigrationService) dumpSQLite() ([]byte, error) {
-	dbPath := filepath.Join(s.dataDir, "vessl.db")
+	dbPath := filepath.Join(s.dataDir, "codedock.db")
 	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
 		return nil, fmt.Errorf("sqlite db not found at %s", dbPath)
 	}
@@ -149,7 +149,7 @@ func (s *MigrationService) dumpSQLite() ([]byte, error) {
 }
 
 func (s *MigrationService) restoreSQLite(sqlData []byte) error {
-	dbPath := filepath.Join(s.dataDir, "vessl.db")
+	dbPath := filepath.Join(s.dataDir, "codedock.db")
 	backupPath := dbPath + ".bak"
 	_ = os.Rename(dbPath, backupPath)
 
@@ -234,7 +234,7 @@ func (s *MigrationService) restoreDatabase(_ context.Context, db *models.Databas
 		if ext != ".rdb" {
 			return fmt.Errorf("redis restore only supports .rdb format")
 		}
-		copyCmd := exec.Command("docker", "cp", "-", fmt.Sprintf("%s:/tmp/vessl-import.rdb", containerName))
+		copyCmd := exec.Command("docker", "cp", "-", fmt.Sprintf("%s:/tmp/codedock-import.rdb", containerName))
 		copyCmd.Stdin = bytes.NewReader(data)
 		if err := copyCmd.Run(); err != nil {
 			return err

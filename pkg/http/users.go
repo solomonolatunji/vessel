@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.dev/codedock/internal/models"
 )
 
 func (c *Client) Me() (*models.User, error) {

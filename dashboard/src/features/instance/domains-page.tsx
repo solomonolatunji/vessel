@@ -114,7 +114,7 @@ export const DomainsPage = () => {
           description="Point your custom domain's A record to this server's IP address."
         >
           <Input
-            placeholder="vessl.example.com"
+            placeholder="codedock.example.com"
             value={formData.dashboardDomain}
             onChange={(e) => setFormData({ ...formData, dashboardDomain: e.target.value })}
             className="font-mono"

@@ -1,13 +1,13 @@
 ---
 title: Environment Variables
-description: Add variables, use database suggestions, and understand how Vessl keeps secrets scoped to services.
+description: Add variables, use database suggestions, and understand how Codedock keeps secrets scoped to services.
 ---
 
 Environment variables belong to a service. Add them during service creation or from the Variables tab after the service exists.
 
 ## Adding Variables
 
-You can add variables one at a time or paste multiple `.env` lines. Vessl understands lines like:
+You can add variables one at a time or paste multiple `.env` lines. Codedock understands lines like:
 
 ```txt
 DATABASE_URL=postgres://user:password@host:5432/app
@@ -18,7 +18,7 @@ Lines starting with `#` are ignored. Duplicate keys are replaced by the latest p
 
 ## Database Suggestions
 
-When a project has database services, Vessl suggests variables for app services in that project. Suggestions reference the database service instead of freezing one old URL.
+When a project has database services, Codedock suggests variables for app services in that project. Suggestions reference the database service instead of freezing one old URL.
 
 Example:
 
@@ -26,16 +26,16 @@ Example:
 DATABASE_URL=${postgres-db.POSTGRES_URL}
 ```
 
-That makes app configuration easier to keep correct after database recreation, or Vessl migration bundle restores.
+That makes app configuration easier to keep correct after database recreation, or Codedock migration bundle restores.
 
 ## `.env.example` Suggestions
 
-For GitHub repository services, Vessl can inspect `.env.example` variables from the selected branch and root directory. These suggestions help you remember required app variables without copying real secrets into source control.
+For GitHub repository services, Codedock can inspect `.env.example` variables from the selected branch and root directory. These suggestions help you remember required app variables without copying real secrets into source control.
 
 
 ## Secret Handling
 
-Values are masked in the UI. Treat Vessl service variables as runtime secrets and avoid using them as documentation. Keep source-controlled examples in `.env.example` without secret values.
+Values are masked in the UI. Treat Codedock service variables as runtime secrets and avoid using them as documentation. Keep source-controlled examples in `.env.example` without secret values.
 
 ## Good Patterns
 

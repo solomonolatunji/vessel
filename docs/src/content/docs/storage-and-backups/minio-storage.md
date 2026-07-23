@@ -1,9 +1,9 @@
 ---
 title: Storage
-description: S3-compatible object storage with MinIO, managed directly from Vessl.
+description: S3-compatible object storage with MinIO, managed directly from Codedock.
 ---
 
-Vessl provides one-click S3-compatible object storage using MinIO. Each storage instance is an isolated MinIO container with persistent volumes.
+Codedock provides one-click S3-compatible object storage using MinIO. Each storage instance is an isolated MinIO container with persistent volumes.
 
 ## Creating a Storage Bucket
 
@@ -14,7 +14,7 @@ Vessl provides one-click S3-compatible object storage using MinIO. Each storage 
    - **Port**: The S3 API port (default: 9000).
 4. Click **Create**.
 
-Vessl provisions a MinIO container with the following defaults:
+Codedock provisions a MinIO container with the following defaults:
 
 - **Access Key**: Auto-generated
 - **Secret Key**: Auto-generated
@@ -45,7 +45,7 @@ aws s3 --endpoint-url http://<service-name>:9000 ls
 ### MinIO Client (mc)
 
 ```sh
-mc alias set vessl http://<service-name>:9000 <access-key> <secret-key>
+mc alias set codedock http://<service-name>:9000 <access-key> <secret-key>
 ```
 
 ### Node.js (AWS SDK)
@@ -84,11 +84,11 @@ Storage instances can be started and stopped from the dashboard. Stopping preser
 
 ### Console UI
 
-MinIO includes a web-based console at port 9001. Access it directly or via your Vessl dashboard.
+MinIO includes a web-based console at port 9001. Access it directly or via your Codedock dashboard.
 
 ## Backups
 
-Storage data is included in Vessl's backup system. Configure S3-to-S3 backups for offsite replication:
+Storage data is included in Codedock's backup system. Configure S3-to-S3 backups for offsite replication:
 
 1. Go to **Backups → S3 Destinations**.
 2. Add an external S3-compatible destination.

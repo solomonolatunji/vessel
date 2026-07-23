@@ -5,7 +5,7 @@ const serverRows = [
   { k: 'HOST', v: 'prod-eu-1.acme.com' },
   { k: 'AGENT', v: 'v0.5.1' },
   { k: 'PROXY', v: 'traefik v3.1' },
-  { k: 'NETWORK', v: 'vessl-network' },
+  { k: 'NETWORK', v: 'codedock-network' },
   { k: 'TUNNEL', v: 'yamux / active', accent: true },
 ];
 
@@ -37,13 +37,13 @@ const capabilities = [
 
     <!-- Description -->
     <p class="mt-6 text-muted-foreground text-base md:text-lg leading-relaxed mx-auto max-w-2xl">
-      Imagine having the ease of a cloud but with your own servers. Vessl is a sub-30MB daemon that turns any Linux server into a full deployment platform—with zero vendor lock-in.
+      Imagine having the ease of a cloud but with your own servers. Codedock is a sub-30MB daemon that turns any Linux server into a full deployment platform—with zero vendor lock-in.
     </p>
 
     <!-- Install command strip -->
     <div class="mt-10 mx-auto max-w-lg flex items-center gap-2 rounded-lg border border-border bg-background/80 backdrop-blur-md px-4 py-3 font-mono text-sm">
       <span class="text-(--color-primary) font-bold shrink-0">$</span>
-      <code class="flex-1 text-left text-foreground truncate text-[0.8rem]">curl -fsSL https://get.vessl.dev | sh</code>
+      <code class="flex-1 text-left text-foreground truncate text-[0.8rem]">curl -fsSL https://get.codedock.dev | sh</code>
       <button id="copy-btn" aria-label="Copy install command" class="shrink-0 p-1.5 rounded text-muted-foreground hover:text-foreground hover:bg-border transition-colors">
         <Icon id="copy-icon" name="lucide:copy" class="size-3.5" />
       </button>
@@ -52,7 +52,7 @@ const capabilities = [
     <!-- CTA buttons -->
     <div class="mt-6 flex flex-row items-start justify-center gap-3 sm:gap-4">
       <div class="flex flex-col items-center">
-        <a href="https://app.vessl.dev" class="flex items-center justify-center gap-2 px-6 sm:px-10 py-3.5 rounded-lg font-semibold text-sm bg-background/80 backdrop-blur-md hover:bg-border border border-border text-foreground transition-colors whitespace-nowrap">
+        <a href="https://app.codedock.dev" class="flex items-center justify-center gap-2 px-6 sm:px-10 py-3.5 rounded-lg font-semibold text-sm bg-background/80 backdrop-blur-md hover:bg-border border border-border text-foreground transition-colors whitespace-nowrap">
           <Icon name="lucide:cloud" class="size-4 text-(--color-primary)" />
           Cloud
         </a>
@@ -61,7 +61,7 @@ const capabilities = [
         </p>
       </div>
       <div class="flex flex-col items-center">
-        <a href="https://docs.vessl.dev/self-host" target="_blank" class="flex items-center justify-center gap-2 px-6 sm:px-10 py-3.5 rounded-lg font-semibold text-sm bg-background/80 backdrop-blur-md hover:bg-border border border-border text-foreground transition-colors whitespace-nowrap">
+        <a href="https://docs.codedock.dev/self-host" target="_blank" class="flex items-center justify-center gap-2 px-6 sm:px-10 py-3.5 rounded-lg font-semibold text-sm bg-background/80 backdrop-blur-md hover:bg-border border border-border text-foreground transition-colors whitespace-nowrap">
           <Icon name="lucide:server" class="size-4 text-(--color-primary)" />
           Self-hosted
         </a>
@@ -74,7 +74,7 @@ const capabilities = [
     <!-- Terminal panel -->
     <div class="mt-12 rounded-xl border border-border bg-background/80 backdrop-blur-md overflow-hidden text-left font-mono text-xs shadow-2xl relative z-10">
       <div class="flex items-center justify-between px-4 py-3 border-b border-border bg-background/40">
-        <span class="text-muted-foreground text-[10px] font-bold uppercase tracking-widest">vessl daemon</span>
+        <span class="text-muted-foreground text-[10px] font-bold uppercase tracking-widest">codedock daemon</span>
         <span class="flex items-center gap-1.5 text-green-400 text-[10px] font-semibold">
           <span class="size-1.5 rounded-full bg-green-400 animate-pulse"></span>
           CONNECTED
@@ -113,7 +113,7 @@ const capabilities = [
   const icon = document.getElementById('copy-icon');
   const original = icon?.innerHTML;
   btn?.addEventListener('click', () => {
-    navigator.clipboard.writeText('curl -fsSL https://get.vessl.dev | sh');
+    navigator.clipboard.writeText('curl -fsSL https://get.codedock.dev | sh');
     if (icon) icon.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
     setTimeout(() => {
       if (icon && original) icon.innerHTML = original;

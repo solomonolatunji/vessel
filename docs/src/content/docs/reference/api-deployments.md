@@ -8,8 +8,8 @@ Deployment endpoints queue, inspect, abort, and stream deployment work.
 All examples assume:
 
 ```bash
-export VESSL_URL="https://pilot.example.com"
-export VESSL_API_KEY="ap_..."
+export CODEDOCK_URL="https://pilot.example.com"
+export CODEDOCK_API_KEY="ap_..."
 ```
 
 ## Create Deployment
@@ -25,8 +25,8 @@ Project scope: service project must be visible to the key.
 Example:
 
 ```bash
-curl -X POST "$VESSL_URL/api/services/svc_web/deployments" \
-  -H "Authorization: Bearer $VESSL_API_KEY"
+curl -X POST "$CODEDOCK_URL/api/services/svc_web/deployments" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY"
 ```
 
 Response:
@@ -61,8 +61,8 @@ Project scope: service project must be visible to the key.
 Example:
 
 ```bash
-curl "$VESSL_URL/api/services/svc_web/deployments" \
-  -H "Authorization: Bearer $VESSL_API_KEY"
+curl "$CODEDOCK_URL/api/services/svc_web/deployments" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY"
 ```
 
 Response:
@@ -76,8 +76,8 @@ Response:
       "commitSha": "abc1234",
       "status": "running",
       "trigger": "manual",
-      "imageTag": "vessl-svc_web-dep_123",
-      "containerName": "vessl-svc_web-stable",
+      "imageTag": "codedock-svc_web-dep_123",
+      "containerName": "codedock-svc_web-stable",
       "startedAt": "2026-06-10T08:45:00.000Z",
       "finishedAt": "2026-06-10T08:46:00.000Z",
       "createdAt": "2026-06-10T08:45:00.000Z"
@@ -99,8 +99,8 @@ Project scope: deployment service project must be visible to the key.
 Example:
 
 ```bash
-curl -X POST "$VESSL_URL/api/deployments/dep_123/abort" \
-  -H "Authorization: Bearer $VESSL_API_KEY"
+curl -X POST "$CODEDOCK_URL/api/deployments/dep_123/abort" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY"
 ```
 
 Response:
@@ -111,7 +111,7 @@ Response:
 }
 ```
 
-If the deployment cannot be aborted, Vessl returns `409`.
+If the deployment cannot be aborted, Codedock returns `409`.
 
 ## Deployment Logs
 
@@ -126,8 +126,8 @@ Project scope: deployment service project must be visible to the key.
 Example:
 
 ```bash
-curl "$VESSL_URL/api/deployments/dep_123/logs" \
-  -H "Authorization: Bearer $VESSL_API_KEY"
+curl "$CODEDOCK_URL/api/deployments/dep_123/logs" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY"
 ```
 
 Response:
@@ -168,8 +168,8 @@ This endpoint returns Server-Sent Events.
 Example:
 
 ```bash
-curl -N "$VESSL_URL/api/deployments/dep_123/stream" \
-  -H "Authorization: Bearer $VESSL_API_KEY"
+curl -N "$CODEDOCK_URL/api/deployments/dep_123/stream" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY"
 ```
 
 Events:
@@ -200,8 +200,8 @@ This endpoint streams logs from the running container.
 Example:
 
 ```bash
-curl -N "$VESSL_URL/api/services/svc_web/runtime-logs/stream" \
-  -H "Authorization: Bearer $VESSL_API_KEY"
+curl -N "$CODEDOCK_URL/api/services/svc_web/runtime-logs/stream" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY"
 ```
 
 Events:

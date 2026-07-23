@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	codedockhttp "codedock.dev/codedock/pkg/http"
 	"github.com/spf13/cobra"
-	vesslhttp "vessl.dev/vessl/pkg/http"
 )
 
 var composeCmd = &cobra.Command{
@@ -28,7 +28,7 @@ var composeAnalyzeCmd = &cobra.Command{
 		client := getClient()
 		projectID, _ := cmd.Flags().GetString("project")
 
-		req := &vesslhttp.ComposeAnalyzeRequest{
+		req := &codedockhttp.ComposeAnalyzeRequest{
 			ProjectID:      projectID,
 			ComposeContent: string(content),
 		}

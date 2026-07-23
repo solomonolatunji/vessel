@@ -4,17 +4,17 @@ import starlight from '@astrojs/starlight';
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: 'https://docs.vessl.dev',
+  site: 'https://docs.codedock.dev',
   integrations: [
     starlight({
-      title: 'Vessl Docs',
+      title: 'Codedock Docs',
       favicon: '/favicon.svg',
       customCss: ['./src/styles/theme.css'],
       sidebar: [
         {
           label: 'Start here',
           items: [
-            { label: 'Vessl Docs', slug: 'index' },
+            { label: 'Codedock Docs', slug: 'index' },
             { label: 'Installation', slug: 'getting-started/installation' },
             { label: 'Browser Onboarding', slug: 'getting-started/onboarding' },
             { label: 'Quick Start', slug: 'getting-started/quick-start' },
@@ -83,7 +83,7 @@ export default defineConfig({
         },
         {
           label: 'Migration',
-          items: [{ label: 'Vessl Bundles', slug: 'migration/vessl-bundles' }],
+          items: [{ label: 'Codedock Bundles', slug: 'migration/codedock-bundles' }],
         },
         {
           label: 'Operations',
@@ -125,7 +125,9 @@ export default defineConfig({
         SiteTitle: './src/components/docs-site-title.astro',
         ThemeSelect: './src/components/docs-theme-select.astro',
       },
-      social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/vesslhq/vessl' }],
+      social: [
+        { icon: 'github', label: 'GitHub', href: 'https://github.com/buildwithtechx/codedock' },
+      ],
     }),
   ],
 });

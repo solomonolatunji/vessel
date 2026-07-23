@@ -1,5 +1,5 @@
 /**
- * A lightweight fetch wrapper for interacting with the Vessl Go Daemon API.
+ * A lightweight fetch wrapper for interacting with the Codedock Go Daemon API.
  * Designed to be used seamlessly with TanStack Query.
  */
 

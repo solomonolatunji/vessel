@@ -2,7 +2,7 @@ version: "3.8"
 services:
   nats:
     image: nats:2-alpine
-    x-vessl:
+    x-codedock:
       is_database: true
       connection_string: "nats://${host}:${port}"
     ports:

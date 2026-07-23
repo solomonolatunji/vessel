@@ -13,9 +13,9 @@ import (
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.dev/codedock/internal/models"
 
-	"vessl.dev/vessl/internal/utils"
+	"codedock.dev/codedock/internal/utils"
 )
 
 type DatabaseDeployer struct {
@@ -36,10 +36,10 @@ func (d *DatabaseDeployer) SpinUp(ctx context.Context, dbConfig *models.Database
 	}
 
 	if utils.IsDryRun() {
-		return fmt.Sprintf("vessl-db-%s-dryrun", dbConfig.Name), nil
+		return fmt.Sprintf("codedock-db-%s-dryrun", dbConfig.Name), nil
 	}
 
-	containerName := utils.NormalizeContainerName(fmt.Sprintf("vessl-db-%s", dbConfig.Name))
+	containerName := utils.NormalizeContainerName(fmt.Sprintf("codedock-db-%s", dbConfig.Name))
 	_ = d.dockerClient.ContainerRemove(ctx, containerName, container.RemoveOptions{Force: true})
 
 	imageName, envVars, cmd, containerMountPath, err := d.buildContainerConfig(dbConfig)
@@ -53,7 +53,7 @@ func (d *DatabaseDeployer) SpinUp(ctx context.Context, dbConfig *models.Database
 		_ = pullResp.Close()
 	}
 
-	if err := utils.EnsureVesslNetwork(ctx, d.dockerClient); err != nil {
+	if err := utils.EnsureCodedockNetwork(ctx, d.dockerClient); err != nil {
 		return "", fmt.Errorf("failed to ensure Docker network: %w", err)
 	}
 
@@ -154,7 +154,7 @@ func (d *DatabaseDeployer) buildContainerConfig(dbConfig *models.Database) (stri
 }
 
 func (d *DatabaseDeployer) createContainerSettings(dbConfig *models.Database, containerName, imageName string, envVars, cmd []string, containerMountPath string) (*container.Config, *container.HostConfig, *network.NetworkingConfig) {
-	volumeName := fmt.Sprintf("vessl-db-data-%s", dbConfig.ID)
+	volumeName := fmt.Sprintf("codedock-db-data-%s", dbConfig.ID)
 
 	labels := make(map[string]string)
 	if dbConfig.ExternalDNS != "" {
@@ -217,7 +217,7 @@ func (d *DatabaseDeployer) Stop(ctx context.Context, dbID string) error {
 	if err != nil || dbConfig == nil {
 		return utils.NewNotFoundError("Database", dbID)
 	}
-	containerName := utils.NormalizeContainerName(fmt.Sprintf("vessl-db-%s", dbConfig.Name))
+	containerName := utils.NormalizeContainerName(fmt.Sprintf("codedock-db-%s", dbConfig.Name))
 	_ = d.dockerClient.ContainerRemove(ctx, containerName, container.RemoveOptions{Force: true})
 	return d.store.UpdateDatabaseStatus(dbID, models.DatabaseStatusStopped, "")
 }
@@ -230,7 +230,7 @@ func (d *DatabaseDeployer) ImportData(ctx context.Context, dbConfig *models.Data
 		return nil
 	}
 
-	containerName := utils.NormalizeContainerName(fmt.Sprintf("vessl-db-%s", dbConfig.Name))
+	containerName := utils.NormalizeContainerName(fmt.Sprintf("codedock-db-%s", dbConfig.Name))
 
 	switch strings.ToLower(string(dbConfig.Engine)) {
 	case "postgres":

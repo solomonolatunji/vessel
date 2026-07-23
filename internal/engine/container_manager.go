@@ -12,8 +12,8 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/utils"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/utils"
 )
 
 type ContainerManager struct {
@@ -206,7 +206,7 @@ func validateHostPath(path string, serviceID string) error {
 			return fmt.Errorf("forbidden path")
 		}
 	}
-	expectedPrefix := fmt.Sprintf("/data/vessl/%s/", serviceID)
+	expectedPrefix := fmt.Sprintf("/data/codedock/%s/", serviceID)
 	if !strings.HasPrefix(path, expectedPrefix) {
 		return fmt.Errorf("must start with %s", expectedPrefix)
 	}

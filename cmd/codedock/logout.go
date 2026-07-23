@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"os"
 
+	"codedock.dev/codedock/pkg/config"
 	"github.com/spf13/cobra"
-	"vessl.dev/vessl/pkg/config"
 )
 
 var logoutCmd = &cobra.Command{
 	Use:   "logout",
-	Short: "Log out of your Vessl account and clear credentials",
+	Short: "Log out of your Codedock account and clear credentials",
 	Run: func(cmd *cobra.Command, args []string) {
 		cfg, err := config.Load()
 		if err == nil && cfg.Token != "" && cfg.ServerURL != "" {

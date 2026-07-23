@@ -1,9 +1,9 @@
 {
-  "name": "vessl",
+  "name": "codedock",
   "private": true,
   "version": "0.1.0",
   "description": "Self-hosted PaaS — turn any bare-metal VPS into your own private Vercel & Railway.",
-  "license": "Vessl Source-Available License",
+  "license": "Codedock Source-Available License",
   "workspaces": [
     "dashboard",
     "web",

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"vessl.dev/vessl/internal/services"
+	"codedock.dev/codedock/internal/services"
 )
 
 func TestLogService_GetHistoricalLogs_InvalidHost(t *testing.T) {

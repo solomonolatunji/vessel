@@ -176,7 +176,7 @@ services:
               {analysisResult.appServices?.length === 0 &&
                 analysisResult.databases?.length === 0 && (
                   <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-600 dark:border-yellow-900 dark:bg-yellow-950/20 dark:text-yellow-400">
-                    No recognizable services found. Vessl looks for valid image names or build
+                    No recognizable services found. Codedock looks for valid image names or build
                     directives to generate AppServices and Databases.
                   </div>
                 )}

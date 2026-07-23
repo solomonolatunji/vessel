@@ -13,7 +13,7 @@ export const StepRuntime = () => {
     <div className="slide-in-from-right-4 animate-in duration-300">
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <div className="space-y-1.5 md:col-span-2">
-          <Label className="font-medium text-foreground/90 text-sm">VESSL_JWT_SECRET</Label>
+          <Label className="font-medium text-foreground/90 text-sm">CODEDOCK_JWT_SECRET</Label>
           <Input
             {...register('env.jwtSecret')}
             placeholder="Generated if blank or enter a 32-character secret"
@@ -25,7 +25,7 @@ export const StepRuntime = () => {
         </div>
 
         <div className="space-y-1.5">
-          <Label className="font-medium text-foreground/90 text-sm">VESSL_DATA_DIR</Label>
+          <Label className="font-medium text-foreground/90 text-sm">CODEDOCK_DATA_DIR</Label>
           <Input
             {...register('env.dataDir')}
             className="h-11 rounded-xl border-border bg-card px-4 text-sm transition-all duration-300 focus:border-primary/50 focus:ring-1 focus:ring-primary/50"
@@ -48,7 +48,7 @@ export const StepRuntime = () => {
         </div>
 
         <div className="space-y-1.5 md:col-span-2">
-          <Label className="font-medium text-foreground/90 text-sm">VESSL_DASHBOARD_URL</Label>
+          <Label className="font-medium text-foreground/90 text-sm">CODEDOCK_DASHBOARD_URL</Label>
           <Input
             {...register('env.dashboardUrl')}
             placeholder="http://localhost:3000"

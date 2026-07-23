@@ -1,9 +1,9 @@
 {
-  "name": "@vessl/dashboard",
+  "name": "@codedock/dashboard",
   "private": true,
   "version": "0.1.0",
-  "description": "Vessl control panel GUI — React 19, TanStack Router, Tailwind CSS v4.",
-  "license": "Vessl Source-Available License",
+  "description": "Codedock control panel GUI — React 19, TanStack Router, Tailwind CSS v4.",
+  "license": "Codedock Source-Available License",
   "type": "module",
   "imports": {
     "#/*": "./src/*"

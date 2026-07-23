@@ -10,8 +10,8 @@ import (
 	"net/http"
 	"time"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/repositories"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/repositories"
 )
 
 type AIAnalysisService struct {
@@ -131,7 +131,7 @@ func buildPrompt(d *models.Deployment, s *models.AppService) string {
 		logs = logs[len(logs)-maxLogChars:]
 	}
 
-	return fmt.Sprintf(`You are helping diagnose a failed Vessl deployment.
+	return fmt.Sprintf(`You are helping diagnose a failed Codedock deployment.
 
 Explain the failure in plain, specific language for the app owner. Focus on what happened and the smallest likely fix.
 

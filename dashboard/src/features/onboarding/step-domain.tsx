@@ -15,7 +15,7 @@ export const StepDomain = () => {
           </Label>
           <Input
             id="dashboardDomain"
-            placeholder="app.vessl.dev"
+            placeholder="app.codedock.dev"
             className="h-11 rounded-xl border-border bg-background/80 px-4 text-sm transition-all duration-300 focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
             {...register('dashboardDomain')}
           />
@@ -26,7 +26,7 @@ export const StepDomain = () => {
           </Label>
           <Input
             id="defaultWildcardDomain"
-            placeholder="vessl.dev"
+            placeholder="codedock.dev"
             className="h-11 rounded-xl border-border bg-background/80 px-4 text-sm transition-all duration-300 focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
             {...register('defaultWildcardDomain')}
           />

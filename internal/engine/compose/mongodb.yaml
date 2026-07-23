@@ -2,7 +2,7 @@ version: "3.8"
 services:
   mongodb:
     image: mongo:7.0
-    x-vessl:
+    x-codedock:
       is_database: true
       connection_string: "mongodb://${db.username}:${db.password}@${host}:${port}/${db.database_name}?authSource=admin"
       backup:

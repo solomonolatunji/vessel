@@ -7,20 +7,20 @@ import (
 	"strings"
 	"syscall"
 
+	"codedock.dev/codedock/pkg/config"
+	"codedock.dev/codedock/pkg/http"
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
-	"vessl.dev/vessl/pkg/config"
-	"vessl.dev/vessl/pkg/http"
 )
 
 var loginCmd = &cobra.Command{
 	Use:   "login",
-	Short: "Authenticate with your Vessl server",
-	Long:  `Authenticate your CLI with a self-hosted Vessl server instance.`,
+	Short: "Authenticate with your Codedock server",
+	Long:  `Authenticate your CLI with a self-hosted Codedock server instance.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		reader := bufio.NewReader(os.Stdin)
 
-		fmt.Print("Vessl Server URL (e.g. https://api.yourdomain.com): ")
+		fmt.Print("Codedock Server URL (e.g. https://api.yourdomain.com): ")
 		serverURL, _ := reader.ReadString('\n')
 		serverURL = strings.TrimSpace(serverURL)
 		serverURL = strings.TrimSuffix(serverURL, "/")

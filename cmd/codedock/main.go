@@ -11,9 +11,9 @@ import (
 var version = "dev"
 
 var rootCmd = &cobra.Command{
-	Use:   "vessl",
-	Short: "Vessl CLI - Manage your self-hosted Vessl server",
-	Long:  `A command line interface to authenticate and deploy applications to your Vessl self-hosted PaaS.`,
+	Use:   "codedock",
+	Short: "Codedock CLI - Manage your self-hosted Codedock server",
+	Long:  `A command line interface to authenticate and deploy applications to your Codedock self-hosted PaaS.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help()
 	},
@@ -21,9 +21,9 @@ var rootCmd = &cobra.Command{
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Print the vessl CLI version",
+	Short: "Print the codedock CLI version",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("vessl %s %s/%s\n", version, runtime.GOOS, runtime.GOARCH)
+		fmt.Printf("codedock %s %s/%s\n", version, runtime.GOOS, runtime.GOARCH)
 	},
 }
 

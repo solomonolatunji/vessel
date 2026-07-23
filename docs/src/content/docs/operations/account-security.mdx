@@ -1,15 +1,15 @@
 ---
 title: Account Security
-description: Secure your Vessl account with Two-Factor Authentication (TOTP) and Personal Access Tokens.
+description: Secure your Codedock account with Two-Factor Authentication (TOTP) and Personal Access Tokens.
 ---
 
 import { Steps } from '@astrojs/starlight/components';
 
-Vessl provides built-in tools to secure your user account and authorize external CLI and API access.
+Codedock provides built-in tools to secure your user account and authorize external CLI and API access.
 
 ## Two-Factor Authentication (TOTP)
 
-Protect your Vessl account from unauthorized access by enabling Two-Factor Authentication (2FA) using a Time-based One-Time Password (TOTP) application like Authy, Google Authenticator, or 1Password.
+Protect your Codedock account from unauthorized access by enabling Two-Factor Authentication (2FA) using a Time-based One-Time Password (TOTP) application like Authy, Google Authenticator, or 1Password.
 
 ### Enabling TOTP
 
@@ -25,7 +25,7 @@ Once enabled, you will be prompted to enter a TOTP code during every login.
 
 ## Personal Access Tokens (PATs)
 
-Personal Access Tokens allow you to authenticate with the Vessl CLI or directly against the Vessl REST API without using your email and password. 
+Personal Access Tokens allow you to authenticate with the Codedock CLI or directly against the Codedock REST API without using your email and password. 
 
 ### Creating a Token
 
@@ -41,14 +41,14 @@ Personal Access Tokens allow you to authenticate with the Vessl CLI or directly 
 
 ### Using a Token with the CLI
 
-To authenticate your local Vessl CLI using a Personal Access Token:
+To authenticate your local Codedock CLI using a Personal Access Token:
 
 ```bash
-vessl login --token vpt_xxx...
+codedock login --token vpt_xxx...
 ```
 
 You can also use PATs to authenticate manual API requests by passing them in the `Authorization` header:
 
 ```bash
-curl -H "Authorization: Bearer vpt_xxx..." http://your-vessl-instance:8080/api/projects
+curl -H "Authorization: Bearer vpt_xxx..." http://your-codedock-instance:8080/api/projects
 ```

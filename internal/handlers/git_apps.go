@@ -6,9 +6,9 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"vessl.dev/vessl/internal/utils"
+	"codedock.dev/codedock/internal/utils"
 
-	"vessl.dev/vessl/internal/services"
+	"codedock.dev/codedock/internal/services"
 )
 
 type GitAppsHandler struct {

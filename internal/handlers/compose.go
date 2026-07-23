@@ -7,11 +7,11 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"vessl.dev/vessl/internal/http/middleware"
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/repositories"
-	"vessl.dev/vessl/internal/services"
-	"vessl.dev/vessl/internal/utils"
+	"codedock.dev/codedock/internal/http/middleware"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/repositories"
+	"codedock.dev/codedock/internal/services"
+	"codedock.dev/codedock/internal/utils"
 )
 
 type ComposeHandler struct {

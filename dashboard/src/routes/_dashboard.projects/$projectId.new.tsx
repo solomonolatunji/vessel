@@ -165,7 +165,7 @@ function NewResourcePage() {
               </div>
               <h3 className="mt-4 font-bold text-foreground text-lg tracking-tight">No examples</h3>
               <p className="mt-1 max-w-sm text-center text-muted-foreground text-sm">
-                Could not load examples from TechX/vessl-examples.
+                Could not load examples from TechX/codedock-examples.
               </p>
             </div>
           ) : (

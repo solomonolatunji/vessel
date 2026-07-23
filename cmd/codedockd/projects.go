@@ -7,13 +7,13 @@ import (
 
 	"github.com/google/uuid"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/repositories"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/repositories"
 )
 
 func runProjects(args []string) {
 	if len(args) < 1 {
-		fmt.Println("Usage: vessld project:<command> [args]")
+		fmt.Println("Usage: codedockd project:<command> [args]")
 		fmt.Println("")
 		fmt.Println("Commands:")
 		fmt.Println("  list                 List all projects")
@@ -44,7 +44,7 @@ func runProjects(args []string) {
 
 	case "show":
 		if len(args) < 2 {
-			exitError("Usage: vessld project:show <id>")
+			exitError("Usage: codedockd project:show <id>")
 		}
 		p, err := projectRepo.Get(context.Background(), args[1])
 		if err != nil {
@@ -65,7 +65,7 @@ func runProjects(args []string) {
 
 	case "create":
 		if len(args) < 2 {
-			exitError("Usage: vessld project:create <name>")
+			exitError("Usage: codedockd project:create <name>")
 		}
 		name := args[1]
 		description := ""
@@ -103,7 +103,7 @@ func runProjects(args []string) {
 
 	case "destroy":
 		if len(args) < 2 {
-			exitError("Usage: vessld project:destroy <id>")
+			exitError("Usage: codedockd project:destroy <id>")
 		}
 		p, err := projectRepo.Get(context.Background(), args[1])
 		if err != nil {
@@ -129,7 +129,7 @@ func runProjects(args []string) {
 
 func runEnvVars(args []string) {
 	if len(args) < 1 {
-		fmt.Println("Usage: vessld env:<command> [args]")
+		fmt.Println("Usage: codedockd env:<command> [args]")
 		fmt.Println("")
 		fmt.Println("Commands:")
 		fmt.Println("  list --project <id>       List all env vars for a project")

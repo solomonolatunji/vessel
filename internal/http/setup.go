@@ -13,14 +13,14 @@ import (
 	"github.com/labstack/echo/v4"
 	echomiddleware "github.com/labstack/echo/v4/middleware"
 
-	"vessl.dev/vessl/internal/core"
-	"vessl.dev/vessl/internal/engine"
-	"vessl.dev/vessl/internal/handlers"
-	"vessl.dev/vessl/internal/http/middleware"
-	"vessl.dev/vessl/internal/notifications"
-	"vessl.dev/vessl/internal/repositories"
-	"vessl.dev/vessl/internal/services"
-	"vessl.dev/vessl/internal/utils"
+	"codedock.dev/codedock/internal/core"
+	"codedock.dev/codedock/internal/engine"
+	"codedock.dev/codedock/internal/handlers"
+	"codedock.dev/codedock/internal/http/middleware"
+	"codedock.dev/codedock/internal/notifications"
+	"codedock.dev/codedock/internal/repositories"
+	"codedock.dev/codedock/internal/services"
+	"codedock.dev/codedock/internal/utils"
 )
 
 func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikManager *engine.TraefikManager, dockerClient *client.Client, dataDir string) (*Server, error) {
@@ -41,7 +41,7 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	}))
 
 	allowOrigins := []string{"http://localhost:3000", "http://localhost:8080"}
-	if dashboardURL := os.Getenv("VESSL_DASHBOARD_URL"); dashboardURL != "" {
+	if dashboardURL := os.Getenv("CODEDOCK_DASHBOARD_URL"); dashboardURL != "" {
 		allowOrigins = append(allowOrigins, dashboardURL)
 	}
 

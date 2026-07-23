@@ -10,8 +10,8 @@ Database service creation has its own page: [Databases API](/docs/reference/api-
 All examples assume:
 
 ```bash
-export VESSL_URL="https://pilot.example.com"
-export VESSL_API_KEY="ap_..."
+export CODEDOCK_URL="https://pilot.example.com"
+export CODEDOCK_API_KEY="ap_..."
 ```
 
 ## Create Source Service
@@ -51,7 +51,7 @@ Payload:
 - `dockerfile` — always build with the repository's Dockerfile. The deployment fails if it is missing.
 - `railpack` — always build with Railpack, even when a Dockerfile is present.
 
-`dockerfilePath` optionally points at a Dockerfile in a non-standard location, relative to the service root directory (for example `docker/Dockerfile.web`). The `VESSL_DOCKERFILE_PATH` service environment variable takes precedence when set. Custom install, build, and start commands do not apply to Dockerfile builds.
+`dockerfilePath` optionally points at a Dockerfile in a non-standard location, relative to the service root directory (for example `docker/Dockerfile.web`). The `CODEDOCK_DOCKERFILE_PATH` service environment variable takes precedence when set. Custom install, build, and start commands do not apply to Dockerfile builds.
 
 Use `repoFullName` for GitHub repositories. Use `repoUrl` instead for a direct Git URL:
 
@@ -69,8 +69,8 @@ Use `repoFullName` for GitHub repositories. Use `repoUrl` instead for a direct G
 Example:
 
 ```bash
-curl -X POST "$VESSL_URL/api/projects/project_123/services" \
-  -H "Authorization: Bearer $VESSL_API_KEY" \
+curl -X POST "$CODEDOCK_URL/api/projects/project_123/services" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "web",
@@ -186,8 +186,8 @@ Project scope: service project must be visible to the key.
 Example:
 
 ```bash
-curl "$VESSL_URL/api/services/svc_web/overview" \
-  -H "Authorization: Bearer $VESSL_API_KEY"
+curl "$CODEDOCK_URL/api/services/svc_web/overview" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY"
 ```
 
 Response:
@@ -211,8 +211,8 @@ Response:
       "commitSha": "abc1234",
       "status": "running",
       "trigger": "manual",
-      "imageTag": "vessl-svc_web-dep_123",
-      "containerName": "vessl-svc_web-stable",
+      "imageTag": "codedock-svc_web-dep_123",
+      "containerName": "codedock-svc_web-stable",
       "startedAt": "2026-06-10T08:45:00.000Z",
       "finishedAt": "2026-06-10T08:46:00.000Z",
       "createdAt": "2026-06-10T08:45:00.000Z"
@@ -343,8 +343,8 @@ Project scope: service project must be visible to the key.
 Example:
 
 ```bash
-curl -X DELETE "$VESSL_URL/api/services/svc_web" \
-  -H "Authorization: Bearer $VESSL_API_KEY"
+curl -X DELETE "$CODEDOCK_URL/api/services/svc_web" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY"
 ```
 
 Response:

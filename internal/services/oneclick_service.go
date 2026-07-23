@@ -7,9 +7,9 @@ import (
 
 	"github.com/google/uuid"
 
-	"vessl.dev/vessl/internal/engine"
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/repositories"
+	"codedock.dev/codedock/internal/engine"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/repositories"
 )
 
 type OneClickService struct {
@@ -98,20 +98,20 @@ func (s *OneClickService) DeployApp(ctx context.Context, appID, projectID, name 
 }
 
 func extractOneClickApp(id string, tmpl *engine.ComposeTemplate) *models.OneClickApp {
-	if tmpl.XVessl != nil && tmpl.XVessl.IsOneClick {
+	if tmpl.XCodedock != nil && tmpl.XCodedock.IsOneClick {
 		return &models.OneClickApp{
 			ID:          id,
-			Name:        tmpl.XVessl.Name,
-			Description: tmpl.XVessl.Description,
+			Name:        tmpl.XCodedock.Name,
+			Description: tmpl.XCodedock.Description,
 			Port:        extractPort(tmpl),
 		}
 	}
 	for _, svc := range tmpl.Services {
-		if svc.XVessl != nil && svc.XVessl.IsOneClick {
+		if svc.XCodedock != nil && svc.XCodedock.IsOneClick {
 			return &models.OneClickApp{
 				ID:          id,
-				Name:        svc.XVessl.Name,
-				Description: svc.XVessl.Description,
+				Name:        svc.XCodedock.Name,
+				Description: svc.XCodedock.Description,
 				Port:        parsePortFromString(svc.Ports),
 			}
 		}
@@ -119,13 +119,13 @@ func extractOneClickApp(id string, tmpl *engine.ComposeTemplate) *models.OneClic
 	return nil
 }
 
-func findOneClickMetadata(tmpl *engine.ComposeTemplate) *engine.VesslMetadata {
-	if tmpl.XVessl != nil && tmpl.XVessl.IsOneClick {
-		return tmpl.XVessl
+func findOneClickMetadata(tmpl *engine.ComposeTemplate) *engine.CodedockMetadata {
+	if tmpl.XCodedock != nil && tmpl.XCodedock.IsOneClick {
+		return tmpl.XCodedock
 	}
 	for _, svc := range tmpl.Services {
-		if svc.XVessl != nil && svc.XVessl.IsOneClick {
-			return svc.XVessl
+		if svc.XCodedock != nil && svc.XCodedock.IsOneClick {
+			return svc.XCodedock
 		}
 	}
 	return nil
@@ -133,10 +133,10 @@ func findOneClickMetadata(tmpl *engine.ComposeTemplate) *engine.VesslMetadata {
 
 func extractPort(tmpl *engine.ComposeTemplate) int {
 	for _, svc := range tmpl.Services {
-		if svc.XVessl != nil && svc.XVessl.IsOneClick && len(svc.Ports) > 0 {
+		if svc.XCodedock != nil && svc.XCodedock.IsOneClick && len(svc.Ports) > 0 {
 			return parsePortFromString(svc.Ports)
 		}
-		if tmpl.XVessl != nil && tmpl.XVessl.IsOneClick && len(svc.Ports) > 0 {
+		if tmpl.XCodedock != nil && tmpl.XCodedock.IsOneClick && len(svc.Ports) > 0 {
 			return parsePortFromString(svc.Ports)
 		}
 	}
@@ -170,8 +170,8 @@ func buildDatabaseRecord(projectID, envID, engineID, name string, port int) *mod
 		Engine:        models.DatabaseEngine(engineID),
 		Port:          port,
 		Status:        models.DatabaseStatusCreated,
-		Username:      "vessl",
-		DatabaseName:  "vessl",
+		Username:      "codedock",
+		DatabaseName:  "codedock",
 		CreatedAt:     time.Now(),
 		UpdatedAt:     time.Now(),
 	}

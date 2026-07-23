@@ -1,13 +1,13 @@
 ---
 title: Domains and DNS
-description: Configure custom domains, DNS providers, and automatic hostnames for Vessl services.
+description: Configure custom domains, DNS providers, and automatic hostnames for Codedock services.
 ---
 
-Vessl uses Traefik to route traffic and manage certificates once DNS resolves to your server. It also supports automated DNS record management through major providers.
+Codedock uses Traefik to route traffic and manage certificates once DNS resolves to your server. It also supports automated DNS record management through major providers.
 
 ## Control Plane Domain
 
-The control plane domain serves Vessl itself:
+The control plane domain serves Codedock itself:
 
 ```txt
 A     pilot.example.com     YOUR_SERVER_IPV4
@@ -18,12 +18,12 @@ Set or update this hostname during onboarding or in system settings.
 
 ## Magic Domains (Zero Config)
 
-If you don't have a domain name yet, Vessl provides built-in support for magic DNS providers out of the box:
+If you don't have a domain name yet, Codedock provides built-in support for magic DNS providers out of the box:
 - `sslip.io`
 - `traefik.me`
 - `nip.io`
 
-When a magic domain is enabled, Vessl will automatically generate accessible hostnames based on your server's IP address. For example, if your server IP is `203.0.113.42` and you use `sslip.io`, your apps will get hostnames like:
+When a magic domain is enabled, Codedock will automatically generate accessible hostnames based on your server's IP address. For example, if your server IP is `203.0.113.42` and you use `sslip.io`, your apps will get hostnames like:
 
 ```txt
 api.203-0-113-42.sslip.io
@@ -62,31 +62,31 @@ A     app.example.com     YOUR_SERVER_IPV4
 AAAA  app.example.com     YOUR_SERVER_IPV6
 ```
 
-Then add the domain to the service in Vessl. Traefik handles routing and certificates after DNS resolves.
+Then add the domain to the service in Codedock. Traefik handles routing and certificates after DNS resolves.
 
 ## Automated DNS Providers
 
-Vessl can create or update service-domain `A` records automatically through supported DNS providers:
-- **Cloudflare**: Supports API token or auth key. When zone ID is blank, Vessl searches Cloudflare zones from the hostname.
+Codedock can create or update service-domain `A` records automatically through supported DNS providers:
+- **Cloudflare**: Supports API token or auth key. When zone ID is blank, Codedock searches Cloudflare zones from the hostname.
 - **Namecheap**: Requires API user, API key, and Client IP.
 - **Spaceship**: Requires API key and API secret.
 
 ### What Automation Does
 
-From a service Domains tab, Vessl can apply an `A` record for a public hostname directly to your DNS provider. The record points at the server's public IPv4 address.
+From a service Domains tab, Codedock can apply an `A` record for a public hostname directly to your DNS provider. The record points at the server's public IPv4 address.
 Automation does not run for local loopback domains, and it currently supports IPv4 `A` records only.
 
 ## Traefik Behavior
 
-Traefik serves the Vessl dashboard, app services, static sites, and custom domains. Vessl rewrites and reloads Traefik configuration when domain settings change.
+Traefik serves the Codedock dashboard, app services, static sites, and custom domains. Codedock rewrites and reloads Traefik configuration when domain settings change.
 
-If Traefik reload fails, Vessl surfaces the reload detail in the deployment or settings flow. Check Traefik logs from the server when DNS is correct but routing still fails.
+If Traefik reload fails, Codedock surfaces the reload detail in the deployment or settings flow. Check Traefik logs from the server when DNS is correct but routing still fails.
 
 ## DNS Checklist
 
 - The hostname resolves to the server.
 - Ports `80` and `443` are reachable.
 - No other process is bound to those public ports.
-- Traefik is running through the Vessl Docker Compose stack.
+- Traefik is running through the Codedock Docker Compose stack.
 - The service is deployed and active.
 - The service internal port matches the app container's listening port.

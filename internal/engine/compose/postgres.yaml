@@ -2,7 +2,7 @@ version: "3.8"
 services:
   postgres:
     image: postgres:16-alpine
-    x-vessl:
+    x-codedock:
       is_database: true
       connection_string: "postgresql://${db.username}:${db.password}@${host}:${port}/${db.database_name}"
       backup:

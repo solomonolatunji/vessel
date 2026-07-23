@@ -11,8 +11,8 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/redis/go-redis/v9"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/utils"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/utils"
 )
 
 func (s *DatabaseService) QueryDatabase(ctx context.Context, id string, query string) (*models.DatabaseQueryResponse, error) {

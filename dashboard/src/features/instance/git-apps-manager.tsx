@@ -27,7 +27,7 @@ export function GitAppsManager() {
       <CardHeader>
         <CardTitle>Git Applications</CardTitle>
         <CardDescription>
-          Connect your Vessl instance to Git providers to deploy applications from your
+          Connect your Codedock instance to Git providers to deploy applications from your
           repositories.
         </CardDescription>
       </CardHeader>

@@ -3,13 +3,13 @@ title: Databases API
 description: Database service creation, table browsing, row editing, backups, TLS, and import endpoints.
 ---
 
-Database services are Vessl services with `repoFullName: "database:<engine>"`.
+Database services are Codedock services with `repoFullName: "database:<engine>"`.
 
 All examples assume:
 
 ```bash
-export VESSL_URL="https://pilot.example.com"
-export VESSL_API_KEY="ap_..."
+export CODEDOCK_URL="https://pilot.example.com"
+export CODEDOCK_API_KEY="ap_..."
 ```
 
 ## Supported Engines
@@ -45,7 +45,7 @@ Payload:
   "databasePublicEnabled": true,
   "postgresLogicalReplicationEnabled": true,
   "env": [
-    { "key": "POSTGRES_DB", "value": "vessl" },
+    { "key": "POSTGRES_DB", "value": "codedock" },
     { "key": "POSTGRES_USER", "value": "postgres" },
     { "key": "POSTGRES_PASSWORD", "value": "change-this-password" }
   ]
@@ -55,8 +55,8 @@ Payload:
 Example:
 
 ```bash
-curl -X POST "$VESSL_URL/api/projects/project_123/services" \
-  -H "Authorization: Bearer $VESSL_API_KEY" \
+curl -X POST "$CODEDOCK_URL/api/projects/project_123/services" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "postgres-db",
@@ -67,7 +67,7 @@ curl -X POST "$VESSL_URL/api/projects/project_123/services" \
     "databasePublicEnabled": true,
     "postgresLogicalReplicationEnabled": true,
     "env": [
-      { "key": "POSTGRES_DB", "value": "vessl" },
+      { "key": "POSTGRES_DB", "value": "codedock" },
       { "key": "POSTGRES_USER", "value": "postgres" },
       { "key": "POSTGRES_PASSWORD", "value": "change-this-password" }
     ]
@@ -100,7 +100,7 @@ Response:
 }
 ```
 
-`databasePublicHostname` is optional. When omitted and a root domain is configured, Vessl generates the public database hostname from the service name.
+`databasePublicHostname` is optional. When omitted and a root domain is configured, Codedock generates the public database hostname from the service name.
 
 ## Create Other Engines
 
@@ -150,7 +150,7 @@ MySQL:
   "internalPort": 3306,
   "databasePublicEnabled": true,
   "env": [
-    { "key": "MYSQL_DATABASE", "value": "vessl" },
+    { "key": "MYSQL_DATABASE", "value": "codedock" },
     { "key": "MYSQL_USER", "value": "mysql" },
     { "key": "MYSQL_PASSWORD", "value": "change-this-password" },
     { "key": "MYSQL_ROOT_PASSWORD", "value": "change-this-root-password" }
@@ -169,7 +169,7 @@ ClickHouse:
   "internalPort": 8123,
   "databasePublicEnabled": true,
   "env": [
-    { "key": "CLICKHOUSE_DB", "value": "vessl" },
+    { "key": "CLICKHOUSE_DB", "value": "codedock" },
     { "key": "CLICKHOUSE_USER", "value": "clickhouse" },
     { "key": "CLICKHOUSE_PASSWORD", "value": "change-this-password" },
     { "key": "CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT", "value": "1" }
@@ -189,7 +189,7 @@ TimescaleDB:
   "databasePublicEnabled": true,
   "postgresLogicalReplicationEnabled": true,
   "env": [
-    { "key": "POSTGRES_DB", "value": "vessl" },
+    { "key": "POSTGRES_DB", "value": "codedock" },
     { "key": "POSTGRES_USER", "value": "postgres" },
     { "key": "POSTGRES_PASSWORD", "value": "change-this-password" },
     { "key": "TIMESCALEDB_TELEMETRY", "value": "off" }
@@ -212,8 +212,8 @@ For Redis, add `?database=0` to choose a logical database.
 Example:
 
 ```bash
-curl "$VESSL_URL/api/services/svc_postgres/database/tables" \
-  -H "Authorization: Bearer $VESSL_API_KEY"
+curl "$CODEDOCK_URL/api/services/svc_postgres/database/tables" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY"
 ```
 
 Response:
@@ -243,8 +243,8 @@ Required access: `read`
 Example:
 
 ```bash
-curl "$VESSL_URL/api/services/svc_postgres/database/rows?table=public.users&limit=50&offset=0" \
-  -H "Authorization: Bearer $VESSL_API_KEY"
+curl "$CODEDOCK_URL/api/services/svc_postgres/database/rows?table=public.users&limit=50&offset=0" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY"
 ```
 
 Response:
@@ -501,8 +501,8 @@ Required access: `read`
 Example:
 
 ```bash
-curl -L "$VESSL_URL/api/services/svc_postgres/database/backups/backup_123/download" \
-  -H "Authorization: Bearer $VESSL_API_KEY" \
+curl -L "$CODEDOCK_URL/api/services/svc_postgres/database/backups/backup_123/download" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY" \
   -o backup.dump
 ```
 

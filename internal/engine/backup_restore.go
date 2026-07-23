@@ -12,8 +12,8 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/pkg/stdcopy"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/utils"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/utils"
 )
 
 func (bm *BackupManager) RestoreBackup(ctx context.Context, recordID string) error {
@@ -95,9 +95,9 @@ func (bm *BackupManager) buildRestoreCommand(cfg *models.BackupConfig) (string, 
 			}
 		}
 
-		if tmplService.XVessl != nil && tmplService.XVessl.Restore != nil && len(tmplService.XVessl.Restore.Command) > 0 {
+		if tmplService.XCodedock != nil && tmplService.XCodedock.Restore != nil && len(tmplService.XCodedock.Restore.Command) > 0 {
 			var cmd []string
-			for _, c := range tmplService.XVessl.Restore.Command {
+			for _, c := range tmplService.XCodedock.Restore.Command {
 				resolved := strings.ReplaceAll(c, "${db.password}", db.Password)
 				resolved = strings.ReplaceAll(resolved, "${db.username}", db.Username)
 				resolved = strings.ReplaceAll(resolved, "${db.database_name}", db.DatabaseName)

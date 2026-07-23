@@ -73,7 +73,7 @@ export function ProjectTokens({ projectId }: { projectId: string }) {
       <div className="flex flex-col gap-2">
         <h2 className="font-medium text-lg">API Tokens</h2>
         <p className="text-gray-500 text-sm">
-          Create API tokens to access the Vessl API for this specific project.
+          Create API tokens to access the Codedock API for this specific project.
         </p>
       </div>
 

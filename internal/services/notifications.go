@@ -3,8 +3,8 @@ package services
 import (
 	"context"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/repositories"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/repositories"
 )
 
 type NotificationSettingsService struct {

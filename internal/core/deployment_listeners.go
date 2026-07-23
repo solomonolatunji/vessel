@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/repositories"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/repositories"
 )
 
 type DeploymentListeners struct {
@@ -34,7 +34,7 @@ func (l *DeploymentListeners) SendNotification(e DeploymentCompleted) {
 		Level:     e.Status,
 		Title:     "Deployment " + e.Status,
 		Message:   msg,
-		URL:       fmt.Sprintf("https://vessl.local/projects/%s/services/%s", e.ProjectID, e.ServiceID),
+		URL:       fmt.Sprintf("https://codedock.local/projects/%s/services/%s", e.ProjectID, e.ServiceID),
 	}
 	l.dispatcher.Dispatch(notifEvent)
 }

@@ -8,12 +8,12 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/mark3labs/mcp-go/server"
 
-	"vessl.dev/vessl/internal/core"
-	"vessl.dev/vessl/internal/engine"
-	"vessl.dev/vessl/internal/handlers"
-	"vessl.dev/vessl/internal/http/middleware"
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/services"
+	"codedock.dev/codedock/internal/core"
+	"codedock.dev/codedock/internal/engine"
+	"codedock.dev/codedock/internal/handlers"
+	"codedock.dev/codedock/internal/http/middleware"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/services"
 )
 
 type Server struct {

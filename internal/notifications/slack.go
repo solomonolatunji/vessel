@@ -3,7 +3,7 @@ package notifications
 import (
 	"fmt"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.dev/codedock/internal/models"
 )
 
 func SendSlackNotification(webhookURL string, event *models.NotificationEvent) error {

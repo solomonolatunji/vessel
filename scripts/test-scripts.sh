@@ -1,22 +1,22 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
-echo "🧪 Vessl — End-to-End Script Tests"
+echo "🧪 Codedock — End-to-End Script Tests"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 echo "🐳 Spinning up isolated test environment..."
 # Running Docker in Docker (dind)
-docker run -d --name vessl-e2e-test --privileged docker:dind
+docker run -d --name codedock-e2e-test --privileged docker:dind
 
 # Give dind time to start
 sleep 5
 
 echo "📥 Testing install.sh..."
 # We test a mocked install script or run commands that simulate install.sh
-docker exec vessl-e2e-test sh -c 'apk add curl bash && echo "Simulating install.sh..."'
+docker exec codedock-e2e-test sh -c 'apk add curl bash && echo "Simulating install.sh..."'
 
 echo "📥 Testing upgrade.sh..."
-docker exec vessl-e2e-test sh -c 'echo "Simulating upgrade.sh..."'
+docker exec codedock-e2e-test sh -c 'echo "Simulating upgrade.sh..."'
 
 echo "✅ Scripts passed in isolated container."
-docker rm -f vessl-e2e-test
+docker rm -f codedock-e2e-test

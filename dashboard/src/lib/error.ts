@@ -1,18 +1,18 @@
 import { ApiError } from '#/lib/apiClient';
 
-export class VesslError extends Error {
+export class CodedockError extends Error {
   public status: number;
   public data: unknown;
 
   constructor(message: string, status: number, data?: unknown) {
     super(message);
-    this.name = 'VesslError';
+    this.name = 'CodedockError';
     this.status = status;
     this.data = data;
   }
 }
 
-export const handleApiError = (error: unknown): VesslError => {
+export const handleApiError = (error: unknown): CodedockError => {
   if (error instanceof ApiError) {
     let message: string;
 
@@ -42,14 +42,14 @@ export const handleApiError = (error: unknown): VesslError => {
         message = error.message || 'An unexpected error occurred';
     }
 
-    return new VesslError(message, error.status, error.data);
+    return new CodedockError(message, error.status, error.data);
   }
 
   if (error instanceof Error) {
-    return new VesslError(error.message, 0);
+    return new CodedockError(error.message, 0);
   }
 
-  return new VesslError('An unexpected error occurred', 0);
+  return new CodedockError('An unexpected error occurred', 0);
 };
 
 export const extractErrorMessage = (

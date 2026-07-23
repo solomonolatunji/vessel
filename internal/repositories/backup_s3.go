@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"codedock.dev/codedock/internal/utils"
 	"context"
 	"database/sql"
 	"errors"
@@ -9,9 +10,8 @@ import (
 	"github.com/jmoiron/sqlx"
 	"sync"
 	"time"
-	"vessl.dev/vessl/internal/utils"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.dev/codedock/internal/models"
 )
 
 type S3DestinationRepository interface {

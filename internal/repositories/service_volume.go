@@ -4,8 +4,8 @@ import (
 	"context"
 	"database/sql"
 
+	"codedock.dev/codedock/internal/models"
 	"github.com/jmoiron/sqlx"
-	"vessl.dev/vessl/internal/models"
 )
 
 type ServiceVolumeRepository interface {

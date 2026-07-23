@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	TSDBContainerName = "vessl-tsdb"
+	TSDBContainerName = "codedock-tsdb"
 )
 
 type TSDBManager struct {
@@ -62,7 +62,7 @@ func (m *TSDBManager) createTSDBContainer(ctx context.Context) error {
 		Mounts: []mount.Mount{
 			{
 				Type:   mount.TypeVolume,
-				Source: "vessl-tsdb-data",
+				Source: "codedock-tsdb-data",
 				Target: "/victoria-metrics-data",
 			},
 		},
@@ -81,7 +81,7 @@ func (m *TSDBManager) createTSDBContainer(ctx context.Context) error {
 		},
 	}, hostConfig, &network.NetworkingConfig{
 		EndpointsConfig: map[string]*network.EndpointSettings{
-			VesslNetworkName: {},
+			CodedockNetworkName: {},
 		},
 	}, nil, TSDBContainerName)
 

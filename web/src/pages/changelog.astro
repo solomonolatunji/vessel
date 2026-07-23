@@ -14,7 +14,7 @@ const entries = [
       { type: 'refactor', text: 'Removed Google Wire — manual constructor injection throughout' },
       {
         type: 'refactor',
-        text: 'Extracted dependency wiring to setup.go in both vessl and vessl-cloud',
+        text: 'Extracted dependency wiring to setup.go in both codedock and codedock-cloud',
       },
       {
         type: 'fix',
@@ -32,7 +32,7 @@ const entries = [
       { type: 'feat', text: 'SSO / SAML handler with env-based configuration' },
       {
         type: 'feat',
-        text: 'Vessl Cloud metering handler with repo-authenticated usage reporting',
+        text: 'Codedock Cloud metering handler with repo-authenticated usage reporting',
       },
       { type: 'feat', text: 'Admin and internal staff routing split from public feature routes' },
       { type: 'fix', text: 'service/notifications renamed to avoid double-nesting' },
@@ -60,7 +60,7 @@ const entries = [
     badge: null,
     badgeColor: '',
     changes: [
-      { type: 'feat', text: 'Initial release — single-binary Vessl daemon' },
+      { type: 'feat', text: 'Initial release — single-binary Codedock daemon' },
       { type: 'feat', text: 'Docker-based app and database deployments' },
       { type: 'feat', text: 'Traefik reverse proxy integration with automatic SSL' },
       { type: 'feat', text: 'Encrypted secrets vault' },
@@ -78,7 +78,7 @@ const typeStyle: Record<string, string> = {
 };
 ---
 
-<Layout title="Changelog — Vessl" description="What's new in Vessl. Every release, every improvement, every fix.">
+<Layout title="Changelog — Codedock" description="What's new in Codedock. Every release, every improvement, every fix.">
 
   <section class="max-w-3xl mx-auto px-4 py-20">
 
@@ -87,7 +87,7 @@ const typeStyle: Record<string, string> = {
         Release notes
       </div>
       <h1 class="text-4xl font-extrabold text-foreground mb-3">Changelog</h1>
-      <p class="text-muted-foreground">Every update to Vessl and Vessl Cloud, in reverse chronological order.</p>
+      <p class="text-muted-foreground">Every update to Codedock and Codedock Cloud, in reverse chronological order.</p>
     </div>
 
     <div class="relative bg-background/80 backdrop-blur-md border border-border rounded-xl p-6 md:p-10 mb-16">

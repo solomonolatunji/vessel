@@ -66,7 +66,7 @@ func (w *MetricsWorker) collectAndPush() {
 			continue
 		}
 
-		serviceID := c.Labels["vessl.service.id"]
+		serviceID := c.Labels["codedock.service.id"]
 		if serviceID == "" {
 			serviceID = "unknown"
 		}

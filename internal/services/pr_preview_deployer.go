@@ -14,10 +14,10 @@ import (
 
 	"github.com/google/uuid"
 
-	"vessl.dev/vessl/internal/engine"
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/repositories"
-	"vessl.dev/vessl/internal/utils"
+	"codedock.dev/codedock/internal/engine"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/repositories"
+	"codedock.dev/codedock/internal/utils"
 )
 
 type PRPreviewService struct {
@@ -59,7 +59,7 @@ func (s *PRPreviewService) DeployPRPreview(ctx context.Context, opts DeployPRPre
 	}
 	previewDomain := fmt.Sprintf("pr-%d.%s", opts.PRNumber, app.Domain)
 	if app.Domain == "" {
-		magicDomain := os.Getenv("VESSL_MAGIC_DOMAIN")
+		magicDomain := os.Getenv("CODEDOCK_MAGIC_DOMAIN")
 		if magicDomain == "" {
 			magicDomain = "sslip.io"
 		}
@@ -154,7 +154,7 @@ func (s *PRPreviewService) updateCommitStatus(ctx context.Context, app *models.A
 		"state":       "success",
 		"target_url":  "https://" + previewDomain,
 		"description": "PR Preview is ready",
-		"context":     "vessl/pr-preview",
+		"context":     "codedock/pr-preview",
 	}
 	jsonPayload, _ := json.Marshal(payload)
 	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(jsonPayload))

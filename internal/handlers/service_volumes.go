@@ -3,9 +3,9 @@ package handlers
 import (
 	"net/http"
 
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/utils"
 	"github.com/labstack/echo/v4"
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/utils"
 )
 
 func (h *AppHandler) ListVolumes(c echo.Context) error {

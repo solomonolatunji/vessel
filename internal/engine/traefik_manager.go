@@ -18,8 +18,8 @@ import (
 )
 
 const (
-	TraefikContainerName = "vessl-traefik"
-	VesslNetworkName     = "vessl-network"
+	TraefikContainerName = "codedock-traefik"
+	CodedockNetworkName  = "codedock-network"
 )
 
 type TraefikManager struct {
@@ -56,10 +56,10 @@ func (m *TraefikManager) EnsureTraefikRunning(ctx context.Context) error {
 }
 
 func (m *TraefikManager) ensureNetwork(ctx context.Context) error {
-	_, err := m.dockerClient.NetworkInspect(ctx, VesslNetworkName, network.InspectOptions{})
+	_, err := m.dockerClient.NetworkInspect(ctx, CodedockNetworkName, network.InspectOptions{})
 	if err != nil {
 		if errdefs.IsNotFound(err) {
-			_, err = m.dockerClient.NetworkCreate(ctx, VesslNetworkName, network.CreateOptions{
+			_, err = m.dockerClient.NetworkCreate(ctx, CodedockNetworkName, network.CreateOptions{
 				Driver: "bridge",
 			})
 			return err
@@ -70,7 +70,7 @@ func (m *TraefikManager) ensureNetwork(ctx context.Context) error {
 }
 
 func traefikImage() string {
-	if img := os.Getenv("VESSL_TRAEFIK_IMAGE"); img != "" {
+	if img := os.Getenv("CODEDOCK_TRAEFIK_IMAGE"); img != "" {
 		return img
 	}
 	return "traefik:v3.6"
@@ -124,7 +124,7 @@ func (m *TraefikManager) createTraefikContainer(ctx context.Context) error {
 		},
 	}, hostConfig, &network.NetworkingConfig{
 		EndpointsConfig: map[string]*network.EndpointSettings{
-			VesslNetworkName: {},
+			CodedockNetworkName: {},
 		},
 	}, nil, TraefikContainerName)
 
@@ -143,7 +143,7 @@ func (m *TraefikManager) buildTraefikCmdArgs() []string {
 		"--api.insecure=true",
 		"--providers.docker=true",
 		"--providers.docker.exposedbydefault=false",
-		"--providers.docker.network=" + VesslNetworkName,
+		"--providers.docker.network=" + CodedockNetworkName,
 		"--entrypoints.web.address=:80",
 		"--entrypoints.websecure.address=:443",
 		"--entrypoints.https.http3=true",
@@ -174,7 +174,7 @@ func (m *TraefikManager) buildTraefikMounts() []mount.Mount {
 	if m.tlsEmail != "" {
 		mounts = append(mounts, mount.Mount{
 			Type:   mount.TypeVolume,
-			Source: "vessl-traefik-acme",
+			Source: "codedock-traefik-acme",
 			Target: "/letsencrypt",
 		})
 	}
@@ -182,15 +182,15 @@ func (m *TraefikManager) buildTraefikMounts() []mount.Mount {
 }
 
 func (m *TraefikManager) buildPortBindings() nat.PortMap {
-	httpPort := os.Getenv("VESSL_TRAEFIK_HTTP_PORT")
+	httpPort := os.Getenv("CODEDOCK_TRAEFIK_HTTP_PORT")
 	if httpPort == "" {
 		httpPort = "80"
 	}
-	httpsPort := os.Getenv("VESSL_TRAEFIK_HTTPS_PORT")
+	httpsPort := os.Getenv("CODEDOCK_TRAEFIK_HTTPS_PORT")
 	if httpsPort == "" {
 		httpsPort = "443"
 	}
-	apiPort := os.Getenv("VESSL_TRAEFIK_API_PORT")
+	apiPort := os.Getenv("CODEDOCK_TRAEFIK_API_PORT")
 	if apiPort == "" {
 		apiPort = "8080"
 	}

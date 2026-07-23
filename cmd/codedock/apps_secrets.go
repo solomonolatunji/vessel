@@ -6,8 +6,8 @@ import (
 	"strings"
 	"text/tabwriter"
 
+	"codedock.dev/codedock/internal/models"
 	"github.com/spf13/cobra"
-	"vessl.dev/vessl/internal/models"
 )
 
 var secretsCmd = &cobra.Command{

@@ -11,9 +11,9 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 
-	"vessl.dev/vessl/internal/http/middleware"
-	"vessl.dev/vessl/internal/services"
-	"vessl.dev/vessl/internal/utils"
+	"codedock.dev/codedock/internal/http/middleware"
+	"codedock.dev/codedock/internal/services"
+	"codedock.dev/codedock/internal/utils"
 )
 
 var terminalUpgrader = websocket.Upgrader{

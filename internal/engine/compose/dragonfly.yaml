@@ -2,7 +2,7 @@ version: "3.8"
 services:
   dragonfly:
     image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
-    x-vessl:
+    x-codedock:
       is_database: true
       connection_string: "redis://:${db.password}@${host}:${port}/0"
       backup:

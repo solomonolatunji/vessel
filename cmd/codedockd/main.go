@@ -17,16 +17,16 @@ import (
 
 	_ "modernc.org/sqlite"
 
-	"vessl.dev/vessl/internal/engine"
-	vesslhttp "vessl.dev/vessl/internal/http"
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/repositories"
-	"vessl.dev/vessl/internal/services"
-	"vessl.dev/vessl/internal/telemetry"
-	"vessl.dev/vessl/internal/utils"
+	"codedock.dev/codedock/internal/engine"
+	codedockhttp "codedock.dev/codedock/internal/http"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/repositories"
+	"codedock.dev/codedock/internal/services"
+	"codedock.dev/codedock/internal/telemetry"
+	"codedock.dev/codedock/internal/utils"
 )
 
-var vesslVersion = "dev"
+var codedockVersion = "dev"
 
 type dbDeployerStore struct {
 	db    *sql.DB
@@ -70,7 +70,7 @@ func main() {
 }
 
 func initDataDir() (string, *sql.DB, *utils.Vault) {
-	dataDir := os.Getenv("VESSL_DATA_DIR")
+	dataDir := os.Getenv("CODEDOCK_DATA_DIR")
 	if dataDir == "" {
 		dataDir = "data"
 	}
@@ -83,7 +83,7 @@ func initDataDir() (string, *sql.DB, *utils.Vault) {
 		slog.Error("failed to initialize secrets vault", "err", err)
 		os.Exit(1)
 	}
-	dbPath := filepath.Join(dataDir, "vessl.db")
+	dbPath := filepath.Join(dataDir, "codedock.db")
 	db, err := sql.Open("sqlite", dbPath+"?_pragma=journal_mode(WAL)&_pragma=busy_timeout(5000)&_pragma=foreign_keys(ON)")
 	if err != nil {
 		slog.Error("failed to open SQLite database", "err", err)
@@ -97,14 +97,14 @@ func initDataDir() (string, *sql.DB, *utils.Vault) {
 }
 
 func startServer() {
-	slog.Info("booting daemon", "version", vesslVersion, "os", runtime.GOOS, "arch", runtime.GOARCH)
+	slog.Info("booting daemon", "version", codedockVersion, "os", runtime.GOOS, "arch", runtime.GOARCH)
 	dataDir, db, vlt := initDataDir()
 	defer db.Close()
 
 	telemetry.Init()
 	defer telemetry.Close()
 	telemetry.Track("system", "daemon_start", map[string]interface{}{
-		"version": vesslVersion,
+		"version": codedockVersion,
 		"os":      runtime.GOOS,
 		"arch":    runtime.GOARCH,
 	})
@@ -114,7 +114,7 @@ func startServer() {
 		slog.Warn("Docker daemon connection warning", "err", err, "detail", "container deployment features disabled")
 	}
 
-	traefikMgr := engine.NewTraefikManager(dockerClient, os.Getenv("VESSL_TLS_EMAIL"))
+	traefikMgr := engine.NewTraefikManager(dockerClient, os.Getenv("CODEDOCK_TLS_EMAIL"))
 	if err := traefikMgr.EnsureTraefikRunning(context.Background()); err != nil {
 		slog.Warn("failed to start Traefik proxy", "err", err)
 	}
@@ -135,7 +135,7 @@ func startServer() {
 	logWorker := engine.NewLogWorker(dockerClient)
 	logWorker.Start(context.Background())
 
-	services.StartTelemetryReporter(db, vesslVersion)
+	services.StartTelemetryReporter(db, codedockVersion)
 
 	host := os.Getenv("HOST")
 	port := os.Getenv("PORT")
@@ -145,7 +145,7 @@ func startServer() {
 	addr := host + ":" + port
 
 	deployer := engine.NewDeployer(dockerClient, &dbDeployerStore{db: db, vault: vlt})
-	apiServer, err := vesslhttp.NewServer(db, vlt, deployer, traefikMgr, dockerClient, dataDir)
+	apiServer, err := codedockhttp.NewServer(db, vlt, deployer, traefikMgr, dockerClient, dataDir)
 	if err != nil {
 		slog.Error("failed to initialize server", "err", err)
 		os.Exit(1)
@@ -184,8 +184,8 @@ func runMCP() {
 
 	dockerClient, _ := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	deployer := engine.NewDeployer(dockerClient, &dbDeployerStore{db: db, vault: vlt})
-	traefikMgr := engine.NewTraefikManager(dockerClient, os.Getenv("VESSL_TLS_EMAIL"))
-	apiServer, err := vesslhttp.NewServer(db, vlt, deployer, traefikMgr, dockerClient, "")
+	traefikMgr := engine.NewTraefikManager(dockerClient, os.Getenv("CODEDOCK_TLS_EMAIL"))
+	apiServer, err := codedockhttp.NewServer(db, vlt, deployer, traefikMgr, dockerClient, "")
 	if err != nil {
 		slog.Error("failed to initialize server", "err", err)
 		os.Exit(1)

@@ -14,7 +14,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.dev/codedock/internal/models"
 )
 
 type ArchiveService struct {
@@ -85,7 +85,7 @@ func (s *ArchiveService) resolveOrCreateApp(ctx context.Context, projectID, appN
 }
 
 func extractToTemp(archivePath string) (string, error) {
-	tmpDir := filepath.Join(os.TempDir(), "vessl-archive", uuid.New().String())
+	tmpDir := filepath.Join(os.TempDir(), "codedock-archive", uuid.New().String())
 	if err := os.MkdirAll(tmpDir, 0o755); err != nil {
 		return "", fmt.Errorf("failed to create temp dir: %w", err)
 	}

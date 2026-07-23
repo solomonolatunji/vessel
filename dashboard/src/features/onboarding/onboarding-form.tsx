@@ -115,7 +115,7 @@ export const OnboardingForm = ({ cwd }: { cwd?: string }) => {
             <p className="mb-1 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
               FIRST RUN
             </p>
-            <h1 className="font-bold text-3xl tracking-tight">Set up Vessl</h1>
+            <h1 className="font-bold text-3xl tracking-tight">Set up Codedock</h1>
           </div>
         </div>
         <div className="font-medium text-muted-foreground text-sm uppercase tracking-widest">
@@ -220,7 +220,7 @@ export const OnboardingForm = ({ cwd }: { cwd?: string }) => {
           className="flex h-11 items-center gap-2 rounded-xl bg-background px-6 font-semibold text-muted-foreground text-xs uppercase tracking-widest transition-all duration-300 hover:border-primary/50 hover:text-foreground"
         >
           <Database className="h-4 w-4" />
-          IMPORT EXISTING VESSL
+          IMPORT EXISTING CODEDOCK
         </Button>
         <ImportModal
           open={isImportModalOpen}

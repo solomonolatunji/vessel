@@ -8,8 +8,8 @@ Environment variables and domains belong to services.
 All examples assume:
 
 ```bash
-export VESSL_URL="https://pilot.example.com"
-export VESSL_API_KEY="ap_..."
+export CODEDOCK_URL="https://pilot.example.com"
+export CODEDOCK_API_KEY="ap_..."
 ```
 
 ## Set Environment Variable
@@ -34,8 +34,8 @@ Payload:
 Example:
 
 ```bash
-curl -X POST "$VESSL_URL/api/services/svc_web/env" \
-  -H "Authorization: Bearer $VESSL_API_KEY" \
+curl -X POST "$CODEDOCK_URL/api/services/svc_web/env" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"key":"NODE_ENV","value":"production"}'
 ```
@@ -67,8 +67,8 @@ Project scope: service project must be visible to the key.
 Example:
 
 ```bash
-curl -X DELETE "$VESSL_URL/api/services/svc_web/env/env_123" \
-  -H "Authorization: Bearer $VESSL_API_KEY"
+curl -X DELETE "$CODEDOCK_URL/api/services/svc_web/env/env_123" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY"
 ```
 
 Response:
@@ -102,8 +102,8 @@ Payload:
 Example:
 
 ```bash
-curl -X POST "$VESSL_URL/api/services/svc_web/domains" \
-  -H "Authorization: Bearer $VESSL_API_KEY" \
+curl -X POST "$CODEDOCK_URL/api/services/svc_web/domains" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"hostname":"app.example.com"}'
 ```
@@ -161,8 +161,8 @@ Required access: `write`
 Example:
 
 ```bash
-curl -X DELETE "$VESSL_URL/api/services/svc_web/domains/domain_123" \
-  -H "Authorization: Bearer $VESSL_API_KEY"
+curl -X DELETE "$CODEDOCK_URL/api/services/svc_web/domains/domain_123" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY"
 ```
 
 Response:
@@ -206,8 +206,8 @@ Supported provider IDs:
 Example:
 
 ```bash
-curl -X POST "$VESSL_URL/api/services/svc_web/domains/domain_123/dns-records" \
-  -H "Authorization: Bearer $VESSL_API_KEY" \
+curl -X POST "$CODEDOCK_URL/api/services/svc_web/domains/domain_123/dns-records" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"providerId":"cloudflare"}'
 ```

@@ -7,13 +7,13 @@ import (
 
 	"github.com/google/uuid"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/repositories"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/repositories"
 )
 
 func runDatabases(args []string) {
 	if len(args) < 1 {
-		fmt.Println("Usage: vessld db:<command> [args]")
+		fmt.Println("Usage: codedockd db:<command> [args]")
 		fmt.Println("")
 		fmt.Println("Commands:")
 		fmt.Println("  list                  List all databases")
@@ -51,7 +51,7 @@ func runDatabases(args []string) {
 
 	case "show":
 		if len(args) < 2 {
-			exitError("Usage: vessld db:show <id>")
+			exitError("Usage: codedockd db:show <id>")
 		}
 		d, err := dbRepo.GetByID(context.Background(), args[1])
 		if err != nil {
@@ -71,7 +71,7 @@ func runDatabases(args []string) {
 
 	case "create":
 		if len(args) < 3 {
-			exitError("Usage: vessld db:create <name> <engine> --project <id>")
+			exitError("Usage: codedockd db:create <name> <engine> --project <id>")
 		}
 		name := args[1]
 		engine := args[2]
@@ -106,8 +106,8 @@ func runDatabases(args []string) {
 			Version:      version,
 			Port:         port,
 			Status:       models.DatabaseStatusCreated,
-			Username:     "vessl",
-			DatabaseName: "vessl",
+			Username:     "codedock",
+			DatabaseName: "codedock",
 			CreatedAt:    time.Now(),
 			UpdatedAt:    time.Now(),
 		}
@@ -122,7 +122,7 @@ func runDatabases(args []string) {
 
 	case "destroy":
 		if len(args) < 2 {
-			exitError("Usage: vessld db:destroy <id>")
+			exitError("Usage: codedockd db:destroy <id>")
 		}
 		d, err := dbRepo.GetByID(context.Background(), args[1])
 		if err != nil {

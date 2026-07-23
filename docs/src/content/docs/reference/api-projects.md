@@ -3,13 +3,13 @@ title: Projects API
 description: Project API endpoints, request payloads, and response examples.
 ---
 
-Project endpoints manage Vessl project groups. Services live inside projects.
+Project endpoints manage Codedock project groups. Services live inside projects.
 
 All examples assume:
 
 ```bash
-export VESSL_URL="https://pilot.example.com"
-export VESSL_API_KEY="ap_..."
+export CODEDOCK_URL="https://pilot.example.com"
+export CODEDOCK_API_KEY="ap_..."
 ```
 
 ## List Projects
@@ -25,8 +25,8 @@ Project scope: returns all visible projects for the key.
 Example:
 
 ```bash
-curl "$VESSL_URL/api/projects" \
-  -H "Authorization: Bearer $VESSL_API_KEY"
+curl "$CODEDOCK_URL/api/projects" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY"
 ```
 
 Response:
@@ -102,8 +102,8 @@ Payload:
 Example:
 
 ```bash
-curl -X POST "$VESSL_URL/api/projects" \
-  -H "Authorization: Bearer $VESSL_API_KEY" \
+curl -X POST "$CODEDOCK_URL/api/projects" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"name":"Acme","description":"Production services"}'
 ```
@@ -138,8 +138,8 @@ Project scope: project must be visible to the key.
 Example:
 
 ```bash
-curl "$VESSL_URL/api/projects/acme" \
-  -H "Authorization: Bearer $VESSL_API_KEY"
+curl "$CODEDOCK_URL/api/projects/acme" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY"
 ```
 
 Response:
@@ -181,8 +181,8 @@ Payload:
 Example:
 
 ```bash
-curl -X PATCH "$VESSL_URL/api/projects/project_123" \
-  -H "Authorization: Bearer $VESSL_API_KEY" \
+curl -X PATCH "$CODEDOCK_URL/api/projects/project_123" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"name":"Acme Production","description":"Customer-facing services"}'
 ```
@@ -219,8 +219,8 @@ Deleting a project removes its services, domains, environment variables, deploym
 Example:
 
 ```bash
-curl -X DELETE "$VESSL_URL/api/projects/project_123" \
-  -H "Authorization: Bearer $VESSL_API_KEY"
+curl -X DELETE "$CODEDOCK_URL/api/projects/project_123" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY"
 ```
 
 Response:
@@ -248,8 +248,8 @@ Project scope: project must be visible to the key.
 Example:
 
 ```bash
-curl "$VESSL_URL/api/projects/project_123/database-variable-suggestions" \
-  -H "Authorization: Bearer $VESSL_API_KEY"
+curl "$CODEDOCK_URL/api/projects/project_123/database-variable-suggestions" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY"
 ```
 
 Response:

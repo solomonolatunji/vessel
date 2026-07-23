@@ -48,7 +48,7 @@ export const useRegister = () => {
       queryClient.clear();
       await router.navigate({ to: '/' });
 
-      toast.success('Account created! Welcome to Vessl.');
+      toast.success('Account created! Welcome to Codedock.');
     },
     onError: (error: Error) => {
       toast.error(error?.message || 'Registration failed. Please try again.');

@@ -1,8 +1,8 @@
-# Vessl — Agent Instructions
+# Codedock — Agent Instructions
 
 ## What This Is
 
-This is the Vessl monorepo — an open-source, self-hosted PaaS that turns any bare-metal VPS into a private Vercel & Railway. It's written in Go (backend daemon) and TypeScript (dashboard UI, marketing site, docs).
+This is the Codedock monorepo — an open-source, self-hosted PaaS that turns any bare-metal VPS into a private Vercel & Railway. It's written in Go (backend daemon) and TypeScript (dashboard UI, marketing site, docs).
 
 - **Language (backend)**: Go — `cmd`, `internal/`
 - **Language (frontend)**: TypeScript/TSX — React 19, Astro 7
@@ -16,7 +16,7 @@ This is the Vessl monorepo — an open-source, self-hosted PaaS that turns any b
 
 ### Backend (`cmd/`, `internal/`)
 
-1. **Entrypoint** — `cmd/vessld/main.go`: HTTP server daemon, wires dependencies
+1. **Entrypoint** — `cmd/codedockd/main.go`: HTTP server daemon, wires dependencies
 2. **Models** — `internal/models/`: Domain structs, DTOs, database entities (no circular imports)
 3. **Repositories** — `internal/repositories/`: Database persistence, SQL interfaces, SQLite implementations
 4. **Services** — `internal/services/`: Business logic, external integrations
@@ -30,7 +30,7 @@ React 19 + TanStack Router + TanStack Query + Zustand + Radix UI + Tailwind CSS 
 
 ### Marketing Site (`web/`)
 
-Astro 7 + Tailwind CSS v4. Public landing page at `vessl.dev` — hero section, feature comparisons, install command.
+Astro 7 + Tailwind CSS v4. Public landing page at `codedock.dev` — hero section, feature comparisons, install command.
 
 ### Docs (`docs/`)
 

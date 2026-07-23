@@ -10,8 +10,8 @@ import (
 	"net/http"
 	"time"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/repositories"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/repositories"
 )
 
 type AISettingsService struct {

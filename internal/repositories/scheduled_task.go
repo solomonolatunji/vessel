@@ -1,17 +1,17 @@
 package repositories
 
 import (
+	"codedock.dev/codedock/internal/utils"
 	"context"
 	"database/sql"
 	"errors"
 	"sync"
 	"time"
-	"vessl.dev/vessl/internal/utils"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.dev/codedock/internal/models"
 )
 
 type ScheduledTaskRepository interface {

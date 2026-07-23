@@ -1,9 +1,9 @@
 ---
 title: API & CLI
-description: Programmatic access to Vessl via Personal Access Tokens and the REST API.
+description: Programmatic access to Codedock via Personal Access Tokens and the REST API.
 ---
 
-Vessl exposes a REST API for programmatic access, CI/CD integration, and automation.
+Codedock exposes a REST API for programmatic access, CI/CD integration, and automation.
 
 ## Personal Access Tokens
 
@@ -35,7 +35,7 @@ Copy the token immediately — it starts with `vpt_` and won't be shown again.
 
 ```sh
 curl -H "Authorization: Bearer vpt_xxx" \
-  https://your-vessl-instance/api/projects
+  https://your-codedock-instance/api/projects
 ```
 
 ### Revoking a Token

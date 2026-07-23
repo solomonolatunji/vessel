@@ -3,7 +3,7 @@ title: Configuration
 description: Server settings, environment variables, custom domains, notifications, and email configuration.
 ---
 
-Vessl offers extensive configuration options through the dashboard and environment variables.
+Codedock offers extensive configuration options through the dashboard and environment variables.
 
 ## Server Settings
 
@@ -11,7 +11,7 @@ Access server settings from **Settings → Server Settings** in the dashboard. O
 
 ### Traefik Reverse Proxy
 
-- **Wildcard Domain**: Set the base domain for all services (e.g. `vessl.example.com`).
+- **Wildcard Domain**: Set the base domain for all services (e.g. `codedock.example.com`).
 - **Let's Encrypt Email**: Email for SSL certificate notifications.
 - **HTTP to HTTPS Redirect**: Auto-redirect all HTTP traffic to HTTPS.
 - **Custom Port Bindings**: Map service ports to custom host ports.
@@ -19,13 +19,13 @@ Access server settings from **Settings → Server Settings** in the dashboard. O
 ### DNS
 
 - **Custom DNS Resolvers**: Override system DNS for container networking.
-- **Network**: Vessl containers run on a dedicated Docker network.
+- **Network**: Codedock containers run on a dedicated Docker network.
 
 ### System
 
 - **Data Directory**: Location for SQLite database, vault keys, and container volumes.
 - **Static Directory**: Path to the built dashboard frontend.
-- **Port**: The HTTP port for the Vessl daemon (default: `8080`).
+- **Port**: The HTTP port for the Codedock daemon (default: `8080`).
 
 ## Environment Variables
 
@@ -33,15 +33,15 @@ Set at the server level via `.env`:
 
 ```sh
 PORT=8080
-VESSL_DATA_DIR=data
-VESSL_STATIC_DIR=dashboard/dist
-VESSL_TLS_EMAIL=admin@example.com
-VESSL_MAGIC_DOMAIN=traefik.me # Magic DNS domain (options: sslip.io, traefik.me, nip.io)
+CODEDOCK_DATA_DIR=data
+CODEDOCK_STATIC_DIR=dashboard/dist
+CODEDOCK_TLS_EMAIL=admin@example.com
+CODEDOCK_MAGIC_DOMAIN=traefik.me # Magic DNS domain (options: sslip.io, traefik.me, nip.io)
 ```
 
 ## Notifications
 
-Vessl sends deployment, backup, and system notifications through configurable channels.
+Codedock sends deployment, backup, and system notifications through configurable channels.
 
 ### Supported Channels
 
@@ -125,7 +125,7 @@ For self-hosted instances, manage your license from **Settings → License**:
 
 ## System Updates
 
-Vessl checks for updates automatically. To manage updates:
+Codedock checks for updates automatically. To manage updates:
 
 1. Go to **Settings → Updates**.
 2. Check the current version and available updates.
@@ -135,5 +135,5 @@ Vessl checks for updates automatically. To manage updates:
 Updates can also be triggered manually via the CLI:
 
 ```sh
-curl -fsSL https://get.vessl.dev | sh
+curl -fsSL https://get.codedock.dev | sh
 ```

@@ -10,9 +10,9 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/services"
-	"vessl.dev/vessl/internal/utils"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/services"
+	"codedock.dev/codedock/internal/utils"
 )
 
 type contextKey string
@@ -85,7 +85,7 @@ func (g *AuthGuard) validateAPIToken(c echo.Context, tokenStr string, denyAPITok
 
 	return &models.UserClaims{
 		UserID: "api-token-" + pt.ID,
-		Email:  "api@" + pt.ProjectID + ".vessl.local",
+		Email:  "api@" + pt.ProjectID + ".codedock.local",
 		Role:   "api",
 	}, nil
 }
@@ -114,7 +114,7 @@ func (g *AuthGuard) baseAuth(c echo.Context, denyAPITokens bool) (*models.UserCl
 		if g.TokenService == nil {
 			return &models.UserClaims{
 				UserID: "default",
-				Email:  "default@vessl.dev",
+				Email:  "default@codedock.dev",
 				Role:   "admin",
 			}, nil
 		}
@@ -281,7 +281,7 @@ func ExtractTokenFromRequest(c echo.Context) string {
 	if authHeader != "" && strings.HasPrefix(authHeader, "Bearer ") {
 		return strings.TrimSpace(strings.TrimPrefix(authHeader, "Bearer "))
 	}
-	cookie, err := c.Cookie("vessl_token")
+	cookie, err := c.Cookie("codedock_token")
 	if err == nil && cookie.Value != "" {
 		return strings.TrimSpace(cookie.Value)
 	}

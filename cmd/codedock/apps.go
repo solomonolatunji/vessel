@@ -5,8 +5,8 @@ import (
 	"os"
 	"text/tabwriter"
 
+	"codedock.dev/codedock/internal/models"
 	"github.com/spf13/cobra"
-	"vessl.dev/vessl/internal/models"
 )
 
 var appsCmd = &cobra.Command{

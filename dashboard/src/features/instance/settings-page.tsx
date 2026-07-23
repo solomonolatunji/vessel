@@ -36,7 +36,9 @@ export const SettingsLayout = () => {
           </div>
           <div>
             <h1 className="font-bold text-xl">Instance Settings</h1>
-            <p className="text-muted-foreground text-sm">Manage your Vessl server configuration</p>
+            <p className="text-muted-foreground text-sm">
+              Manage your Codedock server configuration
+            </p>
           </div>
         </div>
 

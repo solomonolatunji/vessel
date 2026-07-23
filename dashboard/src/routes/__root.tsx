@@ -14,9 +14,9 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     meta: [
       {
         name: 'description',
-        content: 'Vessl - Deploy apps instantly',
+        content: 'Codedock - Deploy apps instantly',
       },
-      { title: 'Vessl' },
+      { title: 'Codedock' },
     ],
   }),
   component: RootDocument,

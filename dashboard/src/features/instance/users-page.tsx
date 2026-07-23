@@ -83,7 +83,7 @@ export const UsersPage = () => {
           <div>
             <h1 className="font-bold text-xl">Users</h1>
             <p className="text-muted-foreground text-sm">
-              Manage who has access to this Vessl instance.
+              Manage who has access to this Codedock instance.
             </p>
           </div>
         </div>

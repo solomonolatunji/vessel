@@ -8,10 +8,10 @@ import (
 
 	"github.com/google/uuid"
 
-	"vessl.dev/vessl/internal/engine"
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/repositories"
-	"vessl.dev/vessl/internal/utils"
+	"codedock.dev/codedock/internal/engine"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/repositories"
+	"codedock.dev/codedock/internal/utils"
 )
 
 type DatabaseService struct {
@@ -77,7 +77,7 @@ func (s *DatabaseService) CreateDatabaseFromRequest(ctx context.Context, req *mo
 		}
 	}
 	if req.Username == "" && strings.ToLower(string(req.Engine)) != "redis" {
-		req.Username = "vessladmin"
+		req.Username = "codedockadmin"
 	}
 	if req.DatabaseName == "" {
 		req.DatabaseName = "appdb"

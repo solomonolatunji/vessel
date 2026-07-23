@@ -6,7 +6,7 @@ import (
 	"io"
 	nethttp "net/http"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.dev/codedock/internal/models"
 )
 
 // ListEnvironments returns all environments for a given project ID.

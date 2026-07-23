@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.dev/codedock/internal/models"
 )
 
 type oauthConfig struct {

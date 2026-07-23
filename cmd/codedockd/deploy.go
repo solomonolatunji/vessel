@@ -13,10 +13,10 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/google/uuid"
 
-	"vessl.dev/vessl/internal/engine"
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/repositories"
-	"vessl.dev/vessl/internal/utils"
+	"codedock.dev/codedock/internal/engine"
+	"codedock.dev/codedock/internal/models"
+	"codedock.dev/codedock/internal/repositories"
+	"codedock.dev/codedock/internal/utils"
 )
 
 type deployArgs struct {
@@ -33,7 +33,7 @@ func runDeploy(args []string) {
 	dArgs := parseDeployArgs(args)
 
 	if dArgs.gitURL == "" && dArgs.imageRef == "" && dArgs.archivePath == "" {
-		exitError("Usage: vessld deploy <git-url> | --template <t> | --image <img> | --archive <file>")
+		exitError("Usage: codedockd deploy <git-url> | --template <t> | --image <img> | --archive <file>")
 	}
 
 	count := 0
@@ -111,7 +111,7 @@ func parseDeployArgs(args []string) deployArgs {
 		case "--template", "-t":
 			if i+1 < len(args) {
 				templateName := args[i+1]
-				d.gitURL = "https://github.com/vesslhq/vessl-examples.git"
+				d.gitURL = "https://github.com/buildwithtechx/codedock-examples.git"
 				d.branch = "main"
 				d.rootDir = templateName
 				i++
@@ -313,7 +313,7 @@ func printDeploymentURL(settingsRepo *repositories.SettingsRepo, appName string)
 		wildcard = settings.DefaultWildcardDomain
 	}
 	if wildcard == "" {
-		wildcard = os.Getenv("VESSL_DOMAIN")
+		wildcard = os.Getenv("CODEDOCK_DOMAIN")
 	}
 
 	if wildcard != "" {
@@ -325,13 +325,13 @@ func printDeploymentURL(settingsRepo *repositories.SettingsRepo, appName string)
 		}
 		fmt.Printf("   URL: https://%s.%s\n", cleanName, base)
 	} else {
-		hostIP := os.Getenv("VESSL_HOST_IP")
+		hostIP := os.Getenv("CODEDOCK_HOST_IP")
 		if hostIP == "" {
 			hostIP = "127.0.0.1"
 		}
 		cleanName := utils.SanitizeDomainName(appName)
 		cleanIP := strings.ReplaceAll(hostIP, ".", "-")
-		magicDomain := os.Getenv("VESSL_MAGIC_DOMAIN")
+		magicDomain := os.Getenv("CODEDOCK_MAGIC_DOMAIN")
 		if magicDomain == "" {
 			magicDomain = "sslip.io"
 		}

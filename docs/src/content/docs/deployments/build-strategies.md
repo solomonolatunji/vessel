@@ -1,13 +1,13 @@
 ---
 title: Build Strategies
-description: Vessl auto-detects the best build strategy based on your project.
+description: Codedock auto-detects the best build strategy based on your project.
 ---
 
-Vessl supports multiple build strategies and deployment workflows to get your applications online. It auto-detects the best build strategy based on your project, but you can override it per deployment.
+Codedock supports multiple build strategies and deployment workflows to get your applications online. It auto-detects the best build strategy based on your project, but you can override it per deployment.
 
 ### Dockerfile
 
-If your repository contains a `Dockerfile` at the root, Vessl uses it by default.
+If your repository contains a `Dockerfile` at the root, Codedock uses it by default.
 
 ```dockerfile
 FROM node:22-alpine
@@ -50,4 +50,4 @@ When using auto-detection builders like Railpack or Nixpacks, you can customize 
 - **Build Command**: Override compilation and asset generation (`npm run build`, `go build -o app ./cmd`).
 - **Start Command**: Override the container execution command (`npm start`, `./app`).
 
-Vessl injects these flags directly into the builder CLI (`--install-cmd`, `--build-cmd`, `--start-cmd`) or synthesizes the corresponding `RUN` and `CMD` instructions inside fallback build containers automatically.
+Codedock injects these flags directly into the builder CLI (`--install-cmd`, `--build-cmd`, `--start-cmd`) or synthesizes the corresponding `RUN` and `CMD` instructions inside fallback build containers automatically.

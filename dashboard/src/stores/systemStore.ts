@@ -12,7 +12,7 @@ export interface SystemState {
 
 export const useSystemStore = create<SystemState>((set) => ({
   registrationEnabled: false,
-  siteName: 'Vessl',
+  siteName: 'Codedock',
   emailEnabled: false,
   isLoaded: false,
   isLoading: false,
@@ -23,7 +23,7 @@ export const useSystemStore = create<SystemState>((set) => ({
       const response = await settingsService.getPublicSettings();
       set({
         registrationEnabled: response.data.registrationEnabled,
-        siteName: response.data.siteName || 'Vessl',
+        siteName: response.data.siteName || 'Codedock',
         emailEnabled: response.data.emailEnabled,
         isLoaded: true,
       });

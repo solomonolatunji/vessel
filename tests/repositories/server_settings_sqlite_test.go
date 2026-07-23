@@ -1,10 +1,10 @@
 package repositories_test
 
 import (
+	"codedock.dev/codedock/internal/repositories"
 	"context"
 	"database/sql"
 	"testing"
-	"vessl.dev/vessl/internal/repositories"
 
 	_ "modernc.org/sqlite"
 )
@@ -29,7 +29,7 @@ func TestSettingsRepositoryCreatesAndUpdatesDefaults(t *testing.T) {
 		t.Fatalf("expected global settings, got %q", settings.ID)
 	}
 
-	settings.SiteName = "Vessl Test"
+	settings.SiteName = "Codedock Test"
 	settings.RegistrationEnabled = false
 	if err := repo.UpdateServerSettings(context.Background(), settings); err != nil {
 		t.Fatalf("update settings: %v", err)
@@ -39,7 +39,7 @@ func TestSettingsRepositoryCreatesAndUpdatesDefaults(t *testing.T) {
 	if err != nil {
 		t.Fatalf("get updated settings: %v", err)
 	}
-	if updated.SiteName != "Vessl Test" {
+	if updated.SiteName != "Codedock Test" {
 		t.Fatalf("expected updated site name, got %q", updated.SiteName)
 	}
 	if updated.RegistrationEnabled {

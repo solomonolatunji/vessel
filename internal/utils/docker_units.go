@@ -7,7 +7,7 @@ import (
 )
 
 func DefaultDBMemoryMB() int {
-	if m := os.Getenv("VESSL_DEFAULT_DB_MEMORY_MB"); m != "" {
+	if m := os.Getenv("CODEDOCK_DEFAULT_DB_MEMORY_MB"); m != "" {
 		if v, err := parseInt(m); err == nil && v > 0 {
 			return v
 		}
@@ -16,7 +16,7 @@ func DefaultDBMemoryMB() int {
 }
 
 func DefaultDBCPURequest() float64 {
-	if c := os.Getenv("VESSL_DEFAULT_DB_CPU"); c != "" {
+	if c := os.Getenv("CODEDOCK_DEFAULT_DB_CPU"); c != "" {
 		if v, err := parseFloat(c); err == nil && v > 0 {
 			return v
 		}
@@ -39,7 +39,7 @@ func CPURequestToNanoCPUs(cores float64) int64 {
 }
 
 func NormalizeContainerName(projectID string) string {
-	return fmt.Sprintf("vessl-%s", strings.ToLower(strings.TrimSpace(projectID)))
+	return fmt.Sprintf("codedock-%s", strings.ToLower(strings.TrimSpace(projectID)))
 }
 
 func parseInt(s string) (int, error) {

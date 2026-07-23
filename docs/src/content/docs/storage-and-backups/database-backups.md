@@ -19,13 +19,13 @@ ClickHouse backups are not available yet.
 
 ## Backup Destinations
 
-Vessl creates a local backup file first. Then it follows the selected destination:
+Codedock creates a local backup file first. Then it follows the selected destination:
 
 - `disk`: keep the local file.
 - `r2`: upload to R2, then remove the local file.
 - `disk+r2`: keep the local file and upload a copy to R2.
 
-If `disk+r2` is selected and the R2 upload fails after the local backup exists, Vessl marks the backup succeeded on disk and records the R2 error.
+If `disk+r2` is selected and the R2 upload fails after the local backup exists, Codedock marks the backup succeeded on disk and records the R2 error.
 
 If `r2` is selected and upload fails, the backup fails.
 
@@ -45,7 +45,7 @@ Local disk backups are fast and easy to restore, but they are still on the same 
 
 Automatic backups are off by default for database services unless you enable schedules during onboarding. Daily, weekly, and monthly schedules can be toggled individually per database service from the Backups tab.
 
-Vessl runs:
+Codedock runs:
 
 | Trigger | Interval | Retention |
 | --- | ---: | ---: |

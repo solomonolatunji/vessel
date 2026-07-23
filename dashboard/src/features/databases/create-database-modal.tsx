@@ -83,7 +83,7 @@ export function CreateDatabaseModal({
       port: 5432,
       username: 'postgres',
       password: '',
-      databaseName: 'vessl',
+      databaseName: 'codedock',
       volumePath: '/var/lib/postgresql/data',
       customArgs: '',
       logicalReplication: false,

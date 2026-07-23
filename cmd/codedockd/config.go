@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"vessl.dev/vessl/internal/repositories"
+	"codedock.dev/codedock/internal/repositories"
 )
 
 func runConfig() {
@@ -23,19 +23,19 @@ func runConfig() {
 		fmt.Printf("  site-name:         %s\n", settings.SiteName)
 		fmt.Printf("  registration:      %v\n", settings.RegistrationEnabled)
 		fmt.Printf("  telemetry:         %v\n", settings.TelemetryEnabled)
-		fmt.Printf("  domain:            %s\n", os.Getenv("VESSL_DOMAIN"))
+		fmt.Printf("  domain:            %s\n", os.Getenv("CODEDOCK_DOMAIN"))
 		fmt.Printf("  smtp-enabled:      %v\n", notif.SMTPEnabled)
 		fmt.Printf("  resend-enabled:    %v\n", notif.ResendEnabled)
-		fmt.Println("\nUsage: vessld config <key>=<value>")
-		fmt.Println("  e.g.  vessld config site-name=MyVessl")
-		fmt.Println("        vessld config registration=true")
+		fmt.Println("\nUsage: codedockd config <key>=<value>")
+		fmt.Println("  e.g.  codedockd config site-name=MyCodedock")
+		fmt.Println("        codedockd config registration=true")
 		fmt.Println("  Note: panel-domain and wildcard-domain are set via .env, not here.")
 		return
 	}
 
 	key, value, ok := stringsCut(os.Args[2], "=")
 	if !ok {
-		exitError("Usage: vessld config <key>=<value>")
+		exitError("Usage: codedockd config <key>=<value>")
 	}
 
 	switch key {

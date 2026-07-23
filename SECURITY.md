@@ -1,6 +1,6 @@
 # Security Policy 🔒
 
-Vessl takes infrastructure and deployment security extremely seriously. Because `vessld` interacts directly with your server's Docker daemon (`/var/run/docker.sock`) and manages sensitive `.env` secrets, we adhere to strict security practices.
+Codedock takes infrastructure and deployment security extremely seriously. Because `codedockd` interacts directly with your server's Docker daemon (`/var/run/docker.sock`) and manages sensitive `.env` secrets, we adhere to strict security practices.
 
 ---
 
@@ -14,10 +14,10 @@ Vessl takes infrastructure and deployment security extremely seriously. Because 
 
 ## 🚨 Reporting a Vulnerability
 
-If you discover a security vulnerability in Vessl (such as unauthorized container access, `.env` secret leakage, or authentication bypass), **please do not report it publicly via GitHub Issues**.
+If you discover a security vulnerability in Codedock (such as unauthorized container access, `.env` secret leakage, or authentication bypass), **please do not report it publicly via GitHub Issues**.
 
 Instead, please send an email or private advisory to our maintainers at:
-**<security@vessl.dev>** (or open a private GitHub Security Advisory).
+**<security@codedock.dev>** (or open a private GitHub Security Advisory).
 
 ### What to Include in Your Report
 

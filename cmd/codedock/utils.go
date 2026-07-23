@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"vessl.dev/vessl/pkg/config"
-	"vessl.dev/vessl/pkg/http"
+	"codedock.dev/codedock/pkg/config"
+	"codedock.dev/codedock/pkg/http"
 )
 
 func getClient() *http.Client {
@@ -15,7 +15,7 @@ func getClient() *http.Client {
 		os.Exit(1)
 	}
 	if cfg.ServerURL == "" || cfg.Token == "" {
-		fmt.Println("Error: Not authenticated. Please run 'vessl login' first.")
+		fmt.Println("Error: Not authenticated. Please run 'codedock login' first.")
 		os.Exit(1)
 	}
 	return http.NewClient(cfg.ServerURL, cfg.Token)

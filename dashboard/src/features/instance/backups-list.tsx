@@ -43,9 +43,9 @@ export function BackupsList() {
   const { data: recordsData, isLoading: isLoadingRecords } = useListRecords(config?.id || '');
   const records = recordsData?.data || [];
 
-  const [name, setName] = useState('vessl-db');
-  const [description, setDescription] = useState('Vessl database');
-  const [dbUser, setDbUser] = useState('vessl');
+  const [name, setName] = useState('codedock-db');
+  const [description, setDescription] = useState('Codedock database');
+  const [dbUser, setDbUser] = useState('codedock');
   const [dbPassword, setDbPassword] = useState('********');
   const [backupEnabled, setBackupEnabled] = useState(true);
   const [s3Enabled, setS3Enabled] = useState(false);
@@ -146,7 +146,7 @@ export function BackupsList() {
         <div>
           <h1 className="font-bold text-xl">System Backups</h1>
           <p className="text-muted-foreground text-sm">
-            Backup configuration for the Vessl instance database.
+            Backup configuration for the Codedock instance database.
           </p>
         </div>
 
@@ -275,7 +275,8 @@ export function BackupsList() {
                     {record.startedAt
                       ? format(new Date(record.startedAt), 'MMM d, HH:mm')
                       : 'Unknown time'}{' '}
-                    • Database: vessl • Size: {(record.fileSizeBytes / 1024 / 1024).toFixed(2)} MB
+                    • Database: codedock • Size: {(record.fileSizeBytes / 1024 / 1024).toFixed(2)}{' '}
+                    MB
                     <br />
                     Location: {record.filePath}
                   </div>

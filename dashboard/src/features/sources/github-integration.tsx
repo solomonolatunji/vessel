@@ -154,7 +154,7 @@ export function GithubIntegration() {
           const isLocalhost =
             window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
           const baseManifest = {
-            name: `vessl-${Math.random().toString(36).substring(7)}`,
+            name: `codedock-${Math.random().toString(36).substring(7)}`,
             url: window.location.origin,
             redirect_url: `${window.location.origin}/dashboard/sources`,
             public: false,
@@ -432,7 +432,7 @@ export function GithubIntegration() {
                   GITHUB_APP_SLUG
                 </Label>
                 <Input
-                  placeholder="my-vessl-app"
+                  placeholder="my-codedock-app"
                   value={appSlug}
                   onChange={(e) => setAppSlug(e.target.value)}
                   className="h-11 bg-background/50 font-mono"

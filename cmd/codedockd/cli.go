@@ -30,7 +30,7 @@ func mainCLI() {
 	case "mcp":
 		runMCP()
 	case "version", "--version", "-v":
-		fmt.Printf("vessld %s %s/%s\n", vesslVersion, runtime.GOOS, runtime.GOARCH)
+		fmt.Printf("codedockd %s %s/%s\n", codedockVersion, runtime.GOOS, runtime.GOARCH)
 	default:
 		if strings.Contains(os.Args[1], ":") {
 			parts := strings.SplitN(os.Args[1], ":", 2)
@@ -57,7 +57,7 @@ func mainCLI() {
 }
 
 func printHelp() {
-	fmt.Printf("Usage: vessld [command]\n\n")
+	fmt.Printf("Usage: codedockd [command]\n\n")
 	fmt.Printf("Server commands:\n")
 	fmt.Printf("  serve              Start the daemon (default)\n")
 	fmt.Printf("  setup              Run interactive setup wizard\n")
@@ -114,9 +114,9 @@ func promptOptional(msg string) string {
 }
 
 func runRestart() {
-	fmt.Println("🔄 Restarting Vessl daemon...")
-	if _, err := os.Stat("/vessl/docker-compose.yml"); err == nil {
-		cmd := exec.Command("docker", "compose", "-f", "/vessl/docker-compose.yml", "restart", "vessl-control-plane")
+	fmt.Println("🔄 Restarting Codedock daemon...")
+	if _, err := os.Stat("/codedock/docker-compose.yml"); err == nil {
+		cmd := exec.Command("docker", "compose", "-f", "/codedock/docker-compose.yml", "restart", "codedock-control-plane")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {

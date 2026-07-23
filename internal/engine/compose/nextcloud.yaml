@@ -1,4 +1,4 @@
-x-vessl:
+x-codedock:
   is_one_click: true
   name: Nextcloud
   description: Self-hosted cloud storage & collaboration

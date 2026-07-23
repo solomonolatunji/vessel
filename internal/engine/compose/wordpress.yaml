@@ -1,4 +1,4 @@
-x-vessl:
+x-codedock:
   is_one_click: true
   name: WordPress
   description: CMS & blogging platform

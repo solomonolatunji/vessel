@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# vessl CLI Installer
-# Usage: curl -fsSL https://get.vessl.dev/cli | sh
+# codedock CLI Installer
+# Usage: curl -fsSL https://get.codedock.dev/cli | sh
 set -eo pipefail
 
-REPO="vesslhq/vessl"
-BINARY="vessl"
+REPO="buildwithtechx/codedock"
+BINARY="codedock"
 INSTALL_DIR="/usr/local/bin"
 BOLD="\033[1m"
 GREEN="\033[0;32m"
@@ -13,7 +13,7 @@ RED="\033[0;31m"
 DIM="\033[2m"
 NC="\033[0m"
 
-echo -e "${BOLD}🛰️  vessl CLI Installer${NC}"
+echo -e "${BOLD}🛰️  codedock CLI Installer${NC}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 detect_platform() {
@@ -52,14 +52,14 @@ get_latest_version() {
 install_via_go() {
   if command -v go &>/dev/null; then
     echo -e "${YELLOW}⚙️  No pre-built binary found. Installing via 'go install'...${NC}"
-    go install "vessl.dev/vessl/cmd/vessl@latest"
+    go install "codedock.dev/codedock/cmd/codedock@latest"
     GOBIN=$(go env GOPATH)/bin
-    if [ -f "$GOBIN/vessl" ]; then
+    if [ -f "$GOBIN/codedock" ]; then
       if [ -w "$INSTALL_DIR" ] || [ "$(id -u)" -eq 0 ]; then
-        cp "$GOBIN/vessl" "$INSTALL_DIR/vessl"
-        echo -e "${GREEN}✅ Installed via go install → $INSTALL_DIR/vessl${NC}"
+        cp "$GOBIN/codedock" "$INSTALL_DIR/codedock"
+        echo -e "${GREEN}✅ Installed via go install → $INSTALL_DIR/codedock${NC}"
       else
-        echo -e "${YELLOW}⚠️  No write access to $INSTALL_DIR. Binary is at $GOBIN/vessl${NC}"
+        echo -e "${YELLOW}⚠️  No write access to $INSTALL_DIR. Binary is at $GOBIN/codedock${NC}"
         echo -e "   Add \$(go env GOPATH)/bin to your PATH:"
         echo -e "   ${DIM}export PATH=\$PATH:\$(go env GOPATH)/bin${NC}"
       fi
@@ -72,7 +72,7 @@ install_via_go() {
 PLATFORM=$(detect_platform)
 echo -e "  Platform:  ${PLATFORM}"
 
-TARGET_VERSION="${VESSL_VERSION:-}"
+TARGET_VERSION="${CODEDOCK_VERSION:-}"
 if [ -z "$TARGET_VERSION" ]; then
   echo -e "  Version:   ${DIM}checking latest...${NC}"
   TARGET_VERSION=$(get_latest_version)
@@ -81,8 +81,8 @@ fi
 if [ -z "$TARGET_VERSION" ]; then
   echo -e "${YELLOW}⚠️  Could not fetch latest release from GitHub.${NC}"
   install_via_go || {
-    echo -e "${RED}❌ Could not install vessl. Install Go and run:${NC}"
-    echo -e "   go install vessl.dev/vessl/cmd/vessl@latest"
+    echo -e "${RED}❌ Could not install codedock. Install Go and run:${NC}"
+    echo -e "   go install codedock.dev/codedock/cmd/codedock@latest"
     exit 1
   }
   exit 0
@@ -91,32 +91,32 @@ fi
 echo -e "  Version:   ${TARGET_VERSION}"
 echo ""
 
-DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${TARGET_VERSION}/vessl_${PLATFORM}.tar.gz"
+DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${TARGET_VERSION}/codedock_${PLATFORM}.tar.gz"
 
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
 
-echo -e "${BOLD}⬇️  Downloading vessl ${TARGET_VERSION} (${PLATFORM})...${NC}"
+echo -e "${BOLD}⬇️  Downloading codedock ${TARGET_VERSION} (${PLATFORM})...${NC}"
 
-if ! curl -fsSL "$DOWNLOAD_URL" -o "$TMP_DIR/vessl.tar.gz" 2>/dev/null; then
+if ! curl -fsSL "$DOWNLOAD_URL" -o "$TMP_DIR/codedock.tar.gz" 2>/dev/null; then
   echo -e "${YELLOW}⚠️  Pre-built binary not available for this platform/version.${NC}"
   install_via_go || {
-    echo -e "${RED}❌ Could not install vessl. Install Go and run:${NC}"
-    echo -e "   go install vessl.dev/vessl/cmd/vessl@latest"
+    echo -e "${RED}❌ Could not install codedock. Install Go and run:${NC}"
+    echo -e "   go install codedock.dev/codedock/cmd/codedock@latest"
     exit 1
   }
   exit 0
 fi
 
-tar -xzf "$TMP_DIR/vessl.tar.gz" -C "$TMP_DIR"
+tar -xzf "$TMP_DIR/codedock.tar.gz" -C "$TMP_DIR"
 
-BINARY_PATH="$TMP_DIR/vessl"
+BINARY_PATH="$TMP_DIR/codedock"
 if [ ! -f "$BINARY_PATH" ]; then
-  BINARY_PATH=$(find "$TMP_DIR" -name "vessl" -type f | head -1)
+  BINARY_PATH=$(find "$TMP_DIR" -name "codedock" -type f | head -1)
 fi
 
 if [ -z "$BINARY_PATH" ]; then
-  echo -e "${RED}❌ Could not find vessl binary in archive.${NC}"
+  echo -e "${RED}❌ Could not find codedock binary in archive.${NC}"
   exit 1
 fi
 
@@ -137,18 +137,18 @@ fi
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo -e "${GREEN}✅ vessl ${TARGET_VERSION} installed successfully!${NC}"
+echo -e "${GREEN}✅ codedock ${TARGET_VERSION} installed successfully!${NC}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo -e "  ${BOLD}Get started:${NC}"
 echo -e "  1. Connect to your self-hosted server:"
-echo -e "     ${BOLD}vessl login${NC}"
+echo -e "     ${BOLD}codedock login${NC}"
 echo -e ""
 echo -e "  2. List your projects:"
-echo -e "     ${BOLD}vessl project list${NC}"
+echo -e "     ${BOLD}codedock project list${NC}"
 echo -e ""
 echo -e "  3. Trigger a deployment:"
-echo -e "     ${BOLD}vessl deploy <service-id>${NC}"
+echo -e "     ${BOLD}codedock deploy <service-id>${NC}"
 echo ""
-echo -e "  ${DIM}Docs: https://docs.vessl.dev/cli${NC}"
+echo -e "  ${DIM}Docs: https://docs.codedock.dev/cli${NC}"
 echo ""

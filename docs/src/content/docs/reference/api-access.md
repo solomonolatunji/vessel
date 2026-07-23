@@ -1,9 +1,9 @@
 ---
 title: API Access
-description: Authenticate scripts and CI jobs with scoped Vessl API keys.
+description: Authenticate scripts and CI jobs with scoped Codedock API keys.
 ---
 
-API keys let scripts, CI jobs, and local tools call Vessl without a browser session.
+API keys let scripts, CI jobs, and local tools call Codedock without a browser session.
 
 API keys use the same `/api/*` endpoints as the dashboard. Browser requests authenticate with the session cookie. Programmatic requests authenticate with a bearer token.
 
@@ -18,25 +18,25 @@ Choose:
 - `Projects`: all projects or selected projects.
 - `Expiration`: `7 days`, `30 days`, `90 days`, or `No expiration`.
 
-After creation, Vessl shows the full key once. Copy it before closing the dialog. Later, the API Access page only shows metadata such as prefix, scope, expiration, and last-used time.
+After creation, Codedock shows the full key once. Copy it before closing the dialog. Later, the API Access page only shows metadata such as prefix, scope, expiration, and last-used time.
 
 ## Authentication
 
 Use bearer authentication:
 
 ```bash
-export VESSL_URL="https://pilot.example.com"
-export VESSL_API_KEY="ap_..."
+export CODEDOCK_URL="https://pilot.example.com"
+export CODEDOCK_API_KEY="ap_..."
 
-curl "$VESSL_URL/api/projects" \
-  -H "Authorization: Bearer $VESSL_API_KEY"
+curl "$CODEDOCK_URL/api/projects" \
+  -H "Authorization: Bearer $CODEDOCK_API_KEY"
 ```
 
-Vessl also accepts `X-API-Key`:
+Codedock also accepts `X-API-Key`:
 
 ```bash
-curl "$VESSL_URL/api/projects" \
-  -H "X-API-Key: $VESSL_API_KEY"
+curl "$CODEDOCK_URL/api/projects" \
+  -H "X-API-Key: $CODEDOCK_API_KEY"
 ```
 
 ## Access Levels
@@ -51,7 +51,7 @@ Read-only keys receive `403` for write actions.
 
 `All projects` keys can access every project according to their access level.
 
-`Specific projects` keys can only access the selected projects. For service routes, Vessl resolves the service to its project before allowing the request. For deployment routes, Vessl resolves the deployment to its service, then to the service project.
+`Specific projects` keys can only access the selected projects. For service routes, Codedock resolves the service to its project before allowing the request. For deployment routes, Codedock resolves the deployment to its service, then to the service project.
 
 Selected-project keys cannot create new projects because new projects are outside their scope. Use an all-project write key for project creation.
 

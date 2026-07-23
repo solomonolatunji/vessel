@@ -3,7 +3,7 @@ title: Projects Overview
 description: Organize your services into projects with isolated environments.
 ---
 
-Projects are the top-level organizational unit in Vessl. Each project contains services, databases, storage, and environment configuration.
+Projects are the top-level organizational unit in Codedock. Each project contains services, databases, storage, and environment configuration.
 
 ## Creating a Project
 
