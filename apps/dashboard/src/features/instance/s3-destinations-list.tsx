@@ -1,15 +1,7 @@
-import {
-  Database,
-  Eye,
-  EyeOff,
-  Info,
-  MoreVertical,
-  Plus,
-  Trash,
-} from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
-import { Button } from "#/components/ui/button";
+import { Database, Eye, EyeOff, Info, MoreVertical, Plus, Trash } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { Button } from '#/components/ui/button';
 import {
   Dialog,
   DialogClose,
@@ -17,38 +9,38 @@ import {
   DialogDescription,
   DialogTitle,
   DialogTrigger,
-} from "#/components/ui/dialog";
+} from '#/components/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "#/components/ui/dropdown-menu";
-import { Input } from "#/components/ui/input";
-import { Label } from "#/components/ui/label";
+} from '#/components/ui/dropdown-menu';
+import { Input } from '#/components/ui/input';
+import { Label } from '#/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "#/components/ui/select";
+} from '#/components/ui/select';
 import {
   useCreateS3Destination,
   useDeleteS3Destination,
   useListS3Destinations,
-} from "#/hooks/useBackups";
+} from '#/hooks/useBackups';
 
 export function S3DestinationsList() {
   const [isOpen, setIsOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [provider, setProvider] = useState("r2");
-  const [endpoint, setEndpoint] = useState("");
-  const [bucket, setBucket] = useState("");
-  const [region, setRegion] = useState("us-east-1");
-  const [accessKeyId, setAccessKeyId] = useState("");
-  const [secretAccessKey, setSecretAccessKey] = useState("");
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [provider, setProvider] = useState('r2');
+  const [endpoint, setEndpoint] = useState('');
+  const [bucket, setBucket] = useState('');
+  const [region, setRegion] = useState('us-east-1');
+  const [accessKeyId, setAccessKeyId] = useState('');
+  const [secretAccessKey, setSecretAccessKey] = useState('');
   const [showSecret, setShowSecret] = useState(false);
 
   const { data: s3Destinations, isLoading } = useListS3Destinations();
@@ -57,15 +49,15 @@ export function S3DestinationsList() {
 
   const handleProviderChange = (value: string) => {
     setProvider(value);
-    if (value === "r2") {
-      setEndpoint("https://<account_id>.r2.cloudflarestorage.com");
-      setRegion("auto");
-    } else if (value === "s3") {
-      setRegion("us-east-1");
-      setEndpoint("https://s3.us-east-1.amazonaws.com");
+    if (value === 'r2') {
+      setEndpoint('https://<account_id>.r2.cloudflarestorage.com');
+      setRegion('auto');
+    } else if (value === 's3') {
+      setRegion('us-east-1');
+      setEndpoint('https://s3.us-east-1.amazonaws.com');
     } else {
-      setEndpoint("");
-      setRegion("");
+      setEndpoint('');
+      setRegion('');
     }
   };
 
@@ -74,7 +66,7 @@ export function S3DestinationsList() {
     try {
       await createS3Dest.mutateAsync({
         payload: {
-          projectId: "global",
+          projectId: 'global',
           name,
           description,
           provider,
@@ -85,27 +77,27 @@ export function S3DestinationsList() {
           secretAccessKey,
         },
       });
-      toast.success("S3 destination added successfully");
+      toast.success('S3 destination added successfully');
       setIsOpen(false);
-      setName("");
-      setDescription("");
-      setProvider("r2");
-      setEndpoint("");
-      setBucket("");
-      setRegion("us-east-1");
-      setAccessKeyId("");
-      setSecretAccessKey("");
+      setName('');
+      setDescription('');
+      setProvider('r2');
+      setEndpoint('');
+      setBucket('');
+      setRegion('us-east-1');
+      setAccessKeyId('');
+      setSecretAccessKey('');
     } catch (_error) {
-      toast.error("Failed to add S3 destination");
+      toast.error('Failed to add S3 destination');
     }
   };
 
   const handleDelete = async (id: string) => {
     try {
-      await deleteS3Dest.mutateAsync({ id, projectId: "global" });
-      toast.success("S3 destination deleted successfully");
+      await deleteS3Dest.mutateAsync({ id, projectId: 'global' });
+      toast.success('S3 destination deleted successfully');
     } catch (_error) {
-      toast.error("Failed to delete S3 destination");
+      toast.error('Failed to delete S3 destination');
     }
   };
 
@@ -125,8 +117,8 @@ export function S3DestinationsList() {
           <div>
             <h1 className="font-bold text-xl">S3 Destinations</h1>
             <p className="text-muted-foreground text-sm">
-              Manage your S3 compatible storage connections. Store credentials
-              in Codedock to use them as database backup targets.
+              Manage your S3 compatible storage connections. Store credentials in Codedock to use
+              them as database backup targets.
             </p>
           </div>
         </div>
@@ -145,9 +137,7 @@ export function S3DestinationsList() {
                     <Database className="h-5 w-5 text-primary" />
                     New S3 Storage
                   </DialogTitle>
-                  <DialogDescription>
-                    Connect compatible S3 storage
-                  </DialogDescription>
+                  <DialogDescription>Connect compatible S3 storage</DialogDescription>
                 </div>
                 <DialogClose asChild>
                   <Button
@@ -162,7 +152,7 @@ export function S3DestinationsList() {
             <div className="h-px w-full bg-border/50" />
             <div className="px-5 pt-4 pb-5">
               <p className="mb-5 text-muted-foreground text-sm">
-                For more details, please visit the{" "}
+                For more details, please visit the{' '}
                 <a
                   href="https://docs.codedock.run"
                   className="text-primary underline"
@@ -185,9 +175,7 @@ export function S3DestinationsList() {
                     <SelectContent>
                       <SelectItem value="r2">Cloudflare R2</SelectItem>
                       <SelectItem value="s3">AWS S3</SelectItem>
-                      <SelectItem value="custom">
-                        Custom S3 Compatible
-                      </SelectItem>
+                      <SelectItem value="custom">Custom S3 Compatible</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -286,7 +274,7 @@ export function S3DestinationsList() {
                     <div className="relative">
                       <Input
                         required
-                        type={showSecret ? "text" : "password"}
+                        type={showSecret ? 'text' : 'password'}
                         value={secretAccessKey}
                         onChange={(e) => setSecretAccessKey(e.target.value)}
                         className="h-10 bg-background/50 pr-10 font-mono text-sm focus-visible:ring-yellow-500/50"
@@ -298,11 +286,7 @@ export function S3DestinationsList() {
                         onClick={() => setShowSecret(!showSecret)}
                         className="absolute top-0 right-0 h-10 w-10 text-muted-foreground"
                       >
-                        {showSecret ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
+                        {showSecret ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </Button>
                     </div>
                   </div>
@@ -323,9 +307,7 @@ export function S3DestinationsList() {
                     className="h-9 gap-2 font-mono font-semibold text-[11px] uppercase tracking-wider"
                   >
                     <Plus className="h-3.5 w-3.5" />
-                    {createS3Dest.isPending
-                      ? "Validating..."
-                      : "Validate Connection"}
+                    {createS3Dest.isPending ? 'Validating...' : 'Validate Connection'}
                   </Button>
                 </div>
               </form>
@@ -388,24 +370,17 @@ export function S3DestinationsList() {
               <div className="space-y-1">
                 <h3 className="font-semibold text-lg">{dest.name}</h3>
                 {dest.description && (
-                  <p className="text-muted-foreground text-sm">
-                    {dest.description}
-                  </p>
+                  <p className="text-muted-foreground text-sm">{dest.description}</p>
                 )}
               </div>
               <div className="mt-4 flex flex-col gap-2 border-border/50 border-t pt-4 text-sm">
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Provider</span>
-                  <span className="font-medium capitalize">
-                    {dest.provider}
-                  </span>
+                  <span className="font-medium capitalize">{dest.provider}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Bucket</span>
-                  <span
-                    className="max-w-37.5 truncate font-medium"
-                    title={dest.bucket}
-                  >
+                  <span className="max-w-37.5 truncate font-medium" title={dest.bucket}>
                     {dest.bucket}
                   </span>
                 </div>

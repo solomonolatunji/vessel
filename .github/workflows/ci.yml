@@ -111,7 +111,7 @@ jobs:
       - name: Generate routes
         run: npm --workspace=apps/dashboard run generate-routes
       - name: Typecheck
-        run: npx tsc --noEmit -p dashboard
+        run: npx tsc --noEmit -p apps/dashboard
       - name: Build
         run: npm --workspace=apps/dashboard run build
 
