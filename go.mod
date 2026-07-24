@@ -15,7 +15,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.15.4
 	github.com/mark3labs/mcp-go v0.56.0
-	github.com/posthog/posthog-go v1.19.0
+	github.com/posthog/posthog-go v1.22.0
 	github.com/redis/go-redis/v9 v9.21.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/spf13/cobra v1.10.2
