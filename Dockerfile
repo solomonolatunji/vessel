@@ -4,14 +4,14 @@ WORKDIR /app
 
 # Copy root monorepo files and workspaces
 COPY package*.json ./
-COPY dashboard/package*.json ./dashboard/
-COPY web/package*.json ./web/
+COPY apps/dashboard/package*.json ./apps/dashboard/
+COPY apps/web/package*.json ./apps/web/
 
 # Install dependencies
 RUN npm ci
 
 # Copy dashboard source code and build
-COPY dashboard/ ./dashboard/
+COPY apps/dashboard/ ./apps/dashboard/
 RUN npm run build:dashboard
 
 # Stage 2: Build the static Go daemon (`codedockd`)
@@ -29,7 +29,7 @@ RUN go mod download
 COPY . .
 
 # Copy built dashboard static assets to be embedded
-COPY --from=dashboard-builder /app/dashboard/dist ./dashboard/dist
+COPY --from=dashboard-builder /app/apps/dashboard/dist ./apps/dashboard/dist
 
 # Accept version via build arguments (defaults to dev)
 ARG VERSION=dev

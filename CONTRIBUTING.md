@@ -95,7 +95,7 @@ cp .env.example .env
 | ------------------ | ---------------- | ------------------------------ |
 | `PORT`             | `8080`           | Daemon HTTP port               |
 | `CODEDOCK_DATA_DIR`   | `data`           | SQLite DB + vault storage      |
-| `CODEDOCK_STATIC_DIR` | `dashboard/dist` | Built dashboard files          |
+| `CODEDOCK_STATIC_DIR` | `apps/dashboard/dist` | Built dashboard files          |
 | `CODEDOCK_TLS_EMAIL`  | —                | Let's Encrypt email (optional) |
 
 ---
@@ -114,7 +114,7 @@ go run ./cmd
 ### Terminal 2: Dashboard
 
 ```bash
-cd dashboard
+cd apps/dashboard
 npm install
 npm run dev
 # UI at http://localhost:3000 with HMR
@@ -123,7 +123,7 @@ npm run dev
 ### Optional: Marketing Site
 
 ```bash
-cd web
+cd apps/web
 npm install
 npm run dev
 # http://localhost:4321

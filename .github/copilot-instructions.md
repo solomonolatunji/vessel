@@ -7,8 +7,8 @@ This is the Codedock monorepo — an open-source, self-hosted PaaS that turns an
 - **Language (backend)**: Go — `cmd`, `internal/`
 - **Language (frontend)**: TypeScript/TSX — React 19, Astro 7
 - **Runtime (dashboard)**: Vite + TanStack Start
-- **Runtime (web/docs)**: Astro 7 + Starlight
-- **Monorepo**: npm workspaces (`dashboard/`, `web/`, `docs/`)
+- **Runtime (apps/web/docs)**: Astro 7 + Starlight
+- **Monorepo**: npm workspaces (`apps/dashboard/`, `apps/web/`, `apps/docs/`)
 - **Database**: embedded SQLite (`modernc.org/sqlite`, CGO-free)
 - **Container runtime**: Docker SDK (`github.com/docker/docker/client`)
 
@@ -24,15 +24,15 @@ This is the Codedock monorepo — an open-source, self-hosted PaaS that turns an
 6. **HTTP Setup** — `internal/http/`: Server setup, routes, CORS, auth middleware
 7. **Engine** — `internal/engine/`: Container engine, Docker deployer, runtime management, cron, backup workers
 
-### Dashboard (`dashboard/`)
+### Dashboard (`apps/dashboard/`)
 
 React 19 + TanStack Router + TanStack Query + Zustand + Radix UI + Tailwind CSS v4. The self-hosted control panel where users deploy apps, manage databases, view logs, and configure settings.
 
-### Marketing Site (`web/`)
+### Marketing Site (`apps/web/`)
 
 Astro 7 + Tailwind CSS v4. Public landing page at `codedock.dev` — hero section, feature comparisons, install command.
 
-### Docs (`docs/`)
+### Docs (`apps/docs/`)
 
 Astro 7 + Starlight. Documentation site with full-text search, sidebar navigation.
 
@@ -56,11 +56,11 @@ Astro 7 + Starlight. Documentation site with full-text search, sidebar navigatio
 - **Files**: `kebab-case.tsx` — `project-card.tsx`
 - **Named exports** over default exports
 - **One component per file**
-- Routes in `dashboard/src/routes/` (TanStack Router file conventions)
+- Routes in `apps/dashboard/src/routes/` (TanStack Router file conventions)
 - Do **not** edit `routeTree.gen.ts` by hand
 - **State Management:** Use standard Zustand (`create`) for global UI state. No wrappers, shortcuts, or legacy APIs.
 - **Data Tables:** Use `@tanstack/react-table` for data grid components.
-- **Telemetry:** Use `posthog-js` and `@posthog/react`. Integrations go in `dashboard/src/integrations/`.
+- **Telemetry:** Use `posthog-js` and `@posthog/react`. Integrations go in `apps/dashboard/src/integrations/`.
 - Use `tailwind-merge` + `clsx` + `class-variance-authority` for class composition
 
 ### npm Workspace Scripts
@@ -78,10 +78,10 @@ Astro 7 + Starlight. Documentation site with full-text search, sidebar navigatio
 - **Find a handler**: `internal/handlers/<domain>.go`
 - **Find a repository**: `internal/repositories/<entity>.go`
 - **Find a service**: `internal/services/<domain>.go`
-- **Find a dashboard route**: `dashboard/src/routes/` (TanStack Router file-based)
-- **Find a dashboard component**: `dashboard/src/components/<domain>/`
-- **Find a web page**: `web/src/pages/`
-- **Find docs content**: `docs/src/content/docs/`
+- **Find a dashboard route**: `apps/dashboard/src/routes/` (TanStack Router file-based)
+- **Find a dashboard component**: `apps/dashboard/src/components/<domain>/`
+- **Find a web page**: `apps/web/src/pages/`
+- **Find docs content**: `apps/docs/src/content/apps/docs/`
 
 ## Constraints
 

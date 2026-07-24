@@ -34,17 +34,17 @@ jobs:
               - 'tests/**'
               - 'package.json'
               - 'package-lock.json'
-              - 'dashboard/**' # Go builds embed the dashboard, so dashboard changes trigger go builds
+              - 'apps/dashboard/**' # Go builds embed the dashboard, so dashboard changes trigger go builds
             dashboard:
-              - 'dashboard/**'
+              - 'apps/dashboard/**'
               - 'package.json'
               - 'package-lock.json'
             web:
-              - 'web/**'
+              - 'apps/web/**'
               - 'package.json'
               - 'package-lock.json'
             docs:
-              - 'docs/**'
+              - 'apps/docs/**'
               - 'package.json'
               - 'package-lock.json'
 
@@ -69,8 +69,8 @@ jobs:
         run: npx @biomejs/biome ci .
       - name: Build dashboard for embed
         run: |
-          npm --workspace=dashboard run generate-routes
-          npm --workspace=dashboard run build
+          npm --workspace=apps/dashboard run generate-routes
+          npm --workspace=apps/dashboard run build
       - name: Go vet
         run: go vet ./...
 
@@ -91,8 +91,8 @@ jobs:
         run: npm ci
       - name: Build dashboard for embed
         run: |
-          npm --workspace=dashboard run generate-routes
-          npm --workspace=dashboard run build
+          npm --workspace=apps/dashboard run generate-routes
+          npm --workspace=apps/dashboard run build
       - name: Build
         run: go build ./...
 
@@ -109,11 +109,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Generate routes
-        run: npm --workspace=dashboard run generate-routes
+        run: npm --workspace=apps/dashboard run generate-routes
       - name: Typecheck
         run: npx tsc --noEmit -p dashboard
       - name: Build
-        run: npm --workspace=dashboard run build
+        run: npm --workspace=apps/dashboard run build
 
   build-web:
     name: Build Web
@@ -128,7 +128,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Build
-        run: npm --workspace=web run build
+        run: npm --workspace=apps/web run build
 
   build-docs:
     name: Build Docs
@@ -143,7 +143,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Build
-        run: npm --workspace=docs run build
+        run: npm --workspace=apps/docs run build
 
   test-go:
     name: Test Go
@@ -162,7 +162,7 @@ jobs:
         run: npm ci
       - name: Build dashboard for embed
         run: |
-          npm --workspace=dashboard run generate-routes
-          npm --workspace=dashboard run build
+          npm --workspace=apps/dashboard run generate-routes
+          npm --workspace=apps/dashboard run build
       - name: Test
         run: go test ./tests/...

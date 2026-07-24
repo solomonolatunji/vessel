@@ -37,7 +37,7 @@ test:
 	go test ./... -v
 
 build: build-dashboard build-daemon
-	@echo "✅ Build complete! Binaries available in $(BUILD_DIR)/ and GUI at dashboard/dist"
+	@echo "✅ Build complete! Binaries available in $(BUILD_DIR)/ and GUI at apps/dashboard/dist"
 
 build-daemon:
 	@echo "⚙️  Building Go daemon binary ($(BINARY_NAME))..."

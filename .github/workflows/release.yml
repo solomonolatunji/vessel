@@ -31,8 +31,8 @@ jobs:
       - name: Install dependencies & build dashboard
         run: |
           npm ci
-          npm --workspace=dashboard run generate-routes
-          npm --workspace=dashboard run build
+          npm --workspace=apps/dashboard run generate-routes
+          npm --workspace=apps/dashboard run build
         # We must build the dashboard first because Go uses //go:embed to bundle the React app inside the binary.
 
       - name: Build and Package Binaries
