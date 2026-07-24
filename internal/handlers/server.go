@@ -25,12 +25,12 @@ type CreateServerRequest struct {
 
 func (h *ServerHandler) Create(c echo.Context) error {
 	userID := c.Get("user_id").(string)
-	
+
 	var req CreateServerRequest
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request payload")
 	}
-	
+
 	if req.Name == "" {
 		return echo.NewHTTPError(http.StatusBadRequest, "Server name is required")
 	}

@@ -23,7 +23,7 @@ func runWorker() {
 	}
 
 	daemon := worker.NewWorkerDaemon(serverURL, token)
-	
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -35,11 +35,11 @@ func runWorker() {
 	}()
 
 	fmt.Println("Worker daemon started successfully. Listening for tasks...")
-	
+
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
 	<-sig
-	
+
 	fmt.Println("Shutting down worker daemon...")
 	cancel()
 }

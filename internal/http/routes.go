@@ -140,6 +140,10 @@ func (s *Server) registerProjectRoutes(apiGroup, authGroup *echo.Group) {
 	authGroup.POST("/projects/:projectId/tokens", s.projectSettingsHandler.CreateToken, projectAuthAdmin, s.authGuard.RequireScope("env:write"))
 	authGroup.DELETE("/projects/:projectId/tokens/:id", s.projectSettingsHandler.DeleteToken, projectAuthAdmin, s.authGuard.RequireScope("env:write"))
 
+	authGroup.GET("/projects/:projectId/registries", s.registryHandler.List, projectAuthAdmin)
+	authGroup.POST("/projects/:projectId/registries", s.registryHandler.Create, projectAuthAdmin)
+	authGroup.DELETE("/projects/:projectId/registries/:id", s.registryHandler.Delete, projectAuthAdmin)
+
 	authGroup.GET("/projects/:projectId/members", s.projectSettingsHandler.ListMembers, projectAuth)
 	authGroup.POST("/projects/:projectId/members", s.projectSettingsHandler.AddMember, projectAuthAdmin)
 	authGroup.DELETE("/projects/:projectId/members/:id", s.projectSettingsHandler.RemoveMember, projectAuthAdmin)

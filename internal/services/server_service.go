@@ -17,7 +17,7 @@ type ServerService interface {
 	CreateServer(ctx context.Context, userID, name, ipAddress string) (*models.Server, error)
 	ListServersByUser(ctx context.Context, userID string) ([]*models.Server, error)
 	GetServer(ctx context.Context, id string) (*models.Server, error)
-	// We might want delete later
+	DeleteServer(ctx context.Context, id string) error
 }
 
 type serverService struct {
@@ -62,4 +62,8 @@ func (s *serverService) ListServersByUser(ctx context.Context, userID string) ([
 
 func (s *serverService) GetServer(ctx context.Context, id string) (*models.Server, error) {
 	return s.serverRepo.GetByID(ctx, id)
+}
+
+func (s *serverService) DeleteServer(ctx context.Context, id string) error {
+	return s.serverRepo.Delete(ctx, id)
 }

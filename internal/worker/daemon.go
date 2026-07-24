@@ -96,7 +96,7 @@ func (d *WorkerDaemon) handleMessage(ctx context.Context, msg models.WorkerMessa
 			return
 		}
 		slog.Info("received deploy app command", "app_id", payload.AppID, "deployment_id", payload.DeploymentID)
-		
+
 		go d.executeDeployment(ctx, msg.ID, payload)
 	default:
 		slog.Warn("unhandled message type", "type", msg.Type)
@@ -105,9 +105,9 @@ func (d *WorkerDaemon) handleMessage(ctx context.Context, msg models.WorkerMessa
 
 func (d *WorkerDaemon) executeDeployment(ctx context.Context, commandID string, payload models.WorkerDeployAppPayload) {
 	slog.Info("executing deployment", "app_id", payload.AppID)
-	
+
 	err := d.processDeployment(ctx, commandID, payload)
-	
+
 	ack := models.WorkerCommandAckPayload{
 		CommandID: commandID,
 		Success:   err == nil,

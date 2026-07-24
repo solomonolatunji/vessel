@@ -137,28 +137,28 @@ Once Multi-Server is built, launching Codedock Cloud is trivial:
 
 ### Backend — Models & Repositories
 
-- [ ] Create `servers` model (`internal/models/server.go`) — id, user_id, name, ip_address, status, worker_token, last_seen_at, metrics JSON.
-- [ ] Create `ServerRepository` (`internal/repositories/server.go`) — CRUD + `GetByWorkerToken`.
-- [ ] Add `server_id` (nullable FK) to `projects` table only — NOT to app_services or databases.
+- [x] Create `servers` model (`internal/models/server.go`) — id, user_id, name, ip_address, status, worker_token, last_seen_at, metrics JSON.
+- [x] Create `ServerRepository` (`internal/repositories/server.go`) — CRUD + `GetByWorkerToken`.
+- [x] Add `server_id` (nullable FK) to `projects` table only — NOT to app_services or databases.
 
 ### Backend — Services & Handlers
 
-- [ ] Create `ServerService` (`internal/services/server.go`) — create server, generate worker token, list, delete.
-- [ ] Create `ServerHandler` (`internal/handlers/server.go`) — REST endpoints for server management.
-- [ ] Add server routes to `internal/http/routes.go`.
+- [x] Create `ServerService` (`internal/services/server.go`) — create server, generate worker token, list, delete.
+- [x] Create `ServerHandler` (`internal/handlers/server.go`) — REST endpoints for server management.
+- [x] Add server routes to `internal/http/routes.go`.
 
 ### Backend — Worker Engine
 
-- [ ] Create `WorkerHub` (`internal/engine/worker_hub.go`) — registry of `server_id → live WebSocket conn`.
-- [ ] Create Worker WebSocket endpoint (`/ws/worker`) — workers dial in, authenticate with `worker_token`, register in the hub.
-- [ ] Update `Deployer` — if `project.ServerID != nil`, route deployment command through `WorkerHub` instead of local Docker socket.
+- [x] Create `WorkerHub` (`internal/engine/worker_hub.go`) — registry of `server_id → live WebSocket conn`.
+- [x] Create Worker WebSocket endpoint (`/ws/worker`) — workers dial in, authenticate with `worker_token`, register in the hub.
+- [x] Update `Deployer` — if `project.ServerID != nil`, route deployment command through `WorkerHub` instead of local Docker socket.
 - [ ] WorkerHub handles heartbeats and updates `servers.last_seen_at` + `servers.status`.
 
 ### Worker Binary (New)
 
-- [ ] Scaffold `cmd/codedock-worker/` — new Go entrypoint.
-- [ ] Worker connects to control plane via WebSocket using its `worker_token`.
-- [ ] Worker receives deployment commands (JSON), executes them on the local Docker socket.
+- [x] Scaffold `cmd/codedock-worker/` — new Go entrypoint.
+- [x] Worker connects to control plane via WebSocket using its `worker_token`.
+- [x] Worker receives deployment commands (JSON), executes them on the local Docker socket.
 - [ ] Worker streams container logs and CPU/RAM/disk metrics back over the WebSocket.
 - [ ] Worker reconnects with exponential backoff on disconnect.
 - [ ] Worker installs Traefik on first boot if not already running.

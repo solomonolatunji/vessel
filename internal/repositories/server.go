@@ -14,6 +14,7 @@ type ServerRepository interface {
 	ListByUser(ctx context.Context, userID string) ([]*models.Server, error)
 	UpdateStatus(ctx context.Context, id string, status models.ServerStatus) error
 	UpdateMetrics(ctx context.Context, id string, metricsJSON []byte) error
+	Delete(ctx context.Context, id string) error
 }
 
 type sqliteServerRepository struct {
@@ -107,4 +108,10 @@ func (r *sqliteServerRepository) scanRows(rows *sql.Rows) (*models.Server, error
 		return nil, fmt.Errorf("failed to scan server: %w", err)
 	}
 	return &s, nil
+}
+
+func (r *sqliteServerRepository) Delete(ctx context.Context, id string) error {
+	query := `DELETE FROM servers WHERE id = ?`
+	_, err := r.db.ExecContext(ctx, query, id)
+	return err
 }

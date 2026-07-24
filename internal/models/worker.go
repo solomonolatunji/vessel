@@ -36,15 +36,15 @@ type WorkerAuthResultPayload struct {
 }
 
 type WorkerDeployAppPayload struct {
-	AppID           string            `json:"app_id"`
-	DeploymentID    string            `json:"deployment_id,omitempty"`
-	Image           string            `json:"image,omitempty"`
-	Env             map[string]string `json:"env"`
-	Ports           []string          `json:"ports"`
-	Volumes         []string          `json:"volumes"`
-	Network         string            `json:"network"`
-	Registry        *RegistryConfig   `json:"registry,omitempty"`
-	
+	AppID        string            `json:"app_id"`
+	DeploymentID string            `json:"deployment_id,omitempty"`
+	Image        string            `json:"image,omitempty"`
+	Env          map[string]string `json:"env"`
+	Ports        []string          `json:"ports"`
+	Volumes      []string          `json:"volumes"`
+	Network      string            `json:"network"`
+	Registry     *RegistryConfig   `json:"registry,omitempty"`
+
 	// Build specific (Decentralized Builds)
 	GitRepoURL      string `json:"git_repo_url,omitempty"`
 	GitBranch       string `json:"git_branch,omitempty"`
@@ -57,7 +57,7 @@ type WorkerDeployAppPayload struct {
 	NixpacksVersion string `json:"nixpacks_version,omitempty"`
 	MemoryLimitMB   int    `json:"memory_limit_mb,omitempty"`
 	CPURequest      int    `json:"cpu_request,omitempty"`
-	
+
 	Domain          string `json:"domain,omitempty"`
 	RuntimeMode     string `json:"runtime_mode,omitempty"`
 	HealthCheckPath string `json:"health_check_path,omitempty"`

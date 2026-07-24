@@ -58,19 +58,17 @@ func (d *WorkerDaemon) processDeployment(ctx context.Context, commandID string, 
 		HealthCheckPath: payload.HealthCheckPath,
 		MemoryLimit:     payload.MemoryLimitMB,
 		CPULimit:        float64(payload.CPURequest),
-		Volumes:         nil, // Handle volumes conversion later if needed
+		Volumes:         nil,
 		InternalPort:    8080,
 	}
 	if len(payload.Ports) > 0 {
-		app.InternalPort = 80 // We might want to parse this better later
+		app.InternalPort = 80
 	}
 
 	if app.RuntimeMode == "" {
 		app.RuntimeMode = models.RuntimeModeWeb
 	}
 
-	// Create a dummy log writer for now
-	// In the future, this should stream logs back via WebSocket
 	_, err = deployer.DeployAppService(ctx, app, workspace, os.Stdout)
 	return err
 }
