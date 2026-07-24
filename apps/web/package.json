@@ -17,7 +17,7 @@
     "deploy": "npm run build && wrangler pages deploy dist/ --project-name codedock-web"
   },
   "dependencies": {
-    "@iconify-json/lucide": "^1.2.118",
+    "@iconify-json/lucide": "^1.2.119",
     "@iconify-json/simple-icons": "^1.2.91",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.1.1",
