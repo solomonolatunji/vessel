@@ -21,10 +21,12 @@ import (
 )
 
 type PRPreviewService struct {
-	repo       repositories.PRPreviewRepository
-	appService *AppService
-	gitService *GitService
-	deployer   *engine.Deployer
+	repo        repositories.PRPreviewRepository
+	appService  *AppService
+	gitService  *GitService
+	deployer    *engine.Deployer
+	workerHub   *engine.WorkerHub
+	projectRepo repositories.ProjectRepository
 }
 
 func NewPRPreviewService(
@@ -32,12 +34,16 @@ func NewPRPreviewService(
 	appService *AppService,
 	gitService *GitService,
 	deployer *engine.Deployer,
+	workerHub *engine.WorkerHub,
+	projectRepo repositories.ProjectRepository,
 ) *PRPreviewService {
 	return &PRPreviewService{
-		repo:       repo,
-		appService: appService,
-		gitService: gitService,
-		deployer:   deployer,
+		repo:        repo,
+		appService:  appService,
+		gitService:  gitService,
+		deployer:    deployer,
+		workerHub:   workerHub,
+		projectRepo: projectRepo,
 	}
 }
 

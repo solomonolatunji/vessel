@@ -126,11 +126,14 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	deploymentListeners := core.NewDeploymentListeners(dispatcherService, appRepo)
 	deploymentListeners.Register()
 
+	serverRepo := repositories.NewServerRepository(db)
+	workerHub := engine.NewWorkerHub(serverRepo)
+
 	scheduledTaskService := services.NewScheduledTaskService(scheduledTaskRepo, cronManager)
 	canvasService := services.NewCanvasService(canvasRepo)
 	gitService := services.NewGitService(gitRepo)
 	statsMonitor := engine.NewStatsMonitor(dockerClient)
-	deploymentService := services.NewDeploymentService(deployRepo, appRepo, projectRepo, deployer, gitService, statsMonitor, volumeRepo)
+	deploymentService := services.NewDeploymentService(deployRepo, appRepo, projectRepo, deployer, gitService, statsMonitor, volumeRepo, workerHub)
 	aiAnalysisService := services.NewAIAnalysisService(deployRepo, appRepo, aiRepo)
 
 	autoscaler := engine.NewAutoscalerWorker(appRepo, statsMonitor, deploymentService)
@@ -139,7 +142,7 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	backupService := services.NewBackupService(backupRepo, s3DestinationRepo, backupManager)
 	userService := services.NewUserService(userRepo)
 	oAuthService := services.NewOAuthService(oauthRepo, userRepo, tokenService)
-	prPreviewService := services.NewPRPreviewService(prPreviewRepository, appService, gitService, deployer)
+	prPreviewService := services.NewPRPreviewService(prPreviewRepository, appService, gitService, deployer, workerHub, projectRepo)
 	dnsProviderService := services.NewDNSProviderService(settingsRepo)
 	environmentService := services.NewEnvironmentService(environmentRepo, domainRepo, envVarRepo, dnsProviderService)
 	notificationService := services.NewNotificationService(dispatcherService)
@@ -204,8 +207,7 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	exampleService := services.NewExampleService()
 	exampleHandler := handlers.NewExampleHandler(exampleService)
 
-	serverRepo := repositories.NewServerRepository(db)
-	workerHub := engine.NewWorkerHub(serverRepo)
+
 	workerWSHandler := handlers.NewWorkerWSHandler(workerHub, serverRepo)
 
 	authLimiter := middleware.NewRateLimiter(10, time.Minute)

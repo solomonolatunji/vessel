@@ -25,6 +25,7 @@ type DeploymentService struct {
 	gitService   *GitService
 	statsMonitor *engine.StatsMonitor
 	volumeRepo   repositories.ServiceVolumeRepository
+	workerHub    *engine.WorkerHub
 }
 
 func NewDeploymentService(
@@ -35,6 +36,7 @@ func NewDeploymentService(
 	gs *GitService,
 	sm *engine.StatsMonitor,
 	vr repositories.ServiceVolumeRepository,
+	wh *engine.WorkerHub,
 ) *DeploymentService {
 	return &DeploymentService{
 		repo:         r,
@@ -44,6 +46,7 @@ func NewDeploymentService(
 		gitService:   gs,
 		statsMonitor: sm,
 		volumeRepo:   vr,
+		workerHub:    wh,
 	}
 }
 

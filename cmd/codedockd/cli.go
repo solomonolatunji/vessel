@@ -25,6 +25,8 @@ func mainCLI() {
 		runConfig()
 	case "deploy":
 		runDeploy(os.Args[2:])
+	case "worker":
+		runWorker()
 	case "restart":
 		runRestart()
 	case "mcp":
