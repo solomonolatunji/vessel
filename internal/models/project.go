@@ -4,6 +4,7 @@ import "time"
 
 type ProjectConfig struct {
 	ID          string    `json:"id" db:"id"`
+	ServerID    string    `json:"serverId,omitempty" db:"server_id"` // Node where this project runs
 	Name        string    `json:"name" db:"name"`
 	Description string    `json:"description,omitempty" db:"description"`
 	CreatedAt   time.Time `json:"createdAt" db:"created_at"`

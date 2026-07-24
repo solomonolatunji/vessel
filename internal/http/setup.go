@@ -203,6 +203,11 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	auditLogHandler := handlers.NewAuditLogHandler(auditService)
 	exampleService := services.NewExampleService()
 	exampleHandler := handlers.NewExampleHandler(exampleService)
+
+	serverRepo := repositories.NewServerRepository(db)
+	workerHub := engine.NewWorkerHub(serverRepo)
+	workerWSHandler := handlers.NewWorkerWSHandler(workerHub, serverRepo)
+
 	authLimiter := middleware.NewRateLimiter(10, time.Minute)
 	otpLimiter := middleware.NewRateLimiter(5, time.Minute)
 
@@ -257,6 +262,7 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 		logHandler:             logHandler,
 		auditLogHandler:        auditLogHandler,
 		exampleHandler:         exampleHandler,
+		workerWSHandler:        workerWSHandler,
 	}
 
 	if srv.deployer != nil {

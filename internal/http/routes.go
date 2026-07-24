@@ -283,6 +283,7 @@ func (s *Server) registerMiscRoutes(apiGroup, authGroup *echo.Group) {
 	authGroup.POST("/mcp/messages", s.HandleMCPMessage)
 	apiGroup.GET("/ws/terminal/:id", s.terminalHandler.HandleWebSocket)
 	apiGroup.GET("/ws/services/:id/terminal", s.terminalHandler.HandleWebSocket)
+	apiGroup.GET("/ws/worker", s.workerWSHandler.Connect)
 }
 
 func (s *Server) setupSPAFallback() {
