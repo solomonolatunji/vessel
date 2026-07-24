@@ -6,13 +6,11 @@ import "time"
 type WorkerMessageType string
 
 const (
-	// Control Plane -> Worker Commands
 	WorkerMessageTypeDeployApp  WorkerMessageType = "deploy_app"
 	WorkerMessageTypeStopApp    WorkerMessageType = "stop_app"
 	WorkerMessageTypeRestartApp WorkerMessageType = "restart_app"
 	WorkerMessageTypeDeployDB   WorkerMessageType = "deploy_db"
 
-	// Worker -> Control Plane Responses/Events
 	WorkerMessageTypeAuth       WorkerMessageType = "auth"
 	WorkerMessageTypeAuthResult WorkerMessageType = "auth_result"
 	WorkerMessageTypeLogStream  WorkerMessageType = "log_stream"
@@ -20,19 +18,12 @@ const (
 	WorkerMessageTypeCommandAck WorkerMessageType = "command_ack"
 )
 
-// WorkerMessage is the universal envelope for all WebSocket communication
-// between the control plane and the worker daemon.
 type WorkerMessage struct {
 	ID        string            `json:"id"`
 	Type      WorkerMessageType `json:"type"`
 	Timestamp time.Time         `json:"timestamp"`
-	// Payload contains the actual data, which will be unmarshaled based on the Type.
-	Payload []byte `json:"payload"`
+	Payload   []byte            `json:"payload"`
 }
-
-// -----------------------------------------------------------------------------
-// Authentication Schemas
-// -----------------------------------------------------------------------------
 
 type WorkerAuthPayload struct {
 	WorkerToken string `json:"worker_token"`
@@ -44,11 +35,6 @@ type WorkerAuthResultPayload struct {
 	Error   string `json:"error,omitempty"`
 }
 
-// -----------------------------------------------------------------------------
-// Command Schemas (Control Plane -> Worker)
-// -----------------------------------------------------------------------------
-
-// WorkerDeployAppPayload contains everything the worker needs to deploy an app.
 type WorkerDeployAppPayload struct {
 	AppID    string            `json:"app_id"`
 	Image    string            `json:"image"`
@@ -71,14 +57,10 @@ type WorkerCommandAckPayload struct {
 	Error     string `json:"error,omitempty"`
 }
 
-// -----------------------------------------------------------------------------
-// Telemetry Schemas (Worker -> Control Plane)
-// -----------------------------------------------------------------------------
-
 type WorkerLogStreamPayload struct {
 	ContainerID string `json:"container_id"`
 	LogLine     string `json:"log_line"`
-	StreamType  string `json:"stream_type"` // "stdout" or "stderr"
+	StreamType  string `json:"stream_type"`
 }
 
 type WorkerMetricsPayload struct {
