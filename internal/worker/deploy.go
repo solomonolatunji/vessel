@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/docker/docker/client"
 	"codedock.run/codedock/internal/engine"
 	"codedock.run/codedock/internal/models"
+	"github.com/docker/docker/client"
 )
 
 func (d *WorkerDaemon) processDeployment(ctx context.Context, commandID string, payload models.WorkerDeployAppPayload) error {
@@ -26,20 +26,20 @@ func (d *WorkerDaemon) processDeployment(ctx context.Context, commandID string, 
 	if err := os.MkdirAll(workspace, 0755); err != nil {
 		return err
 	}
-	
+
 	// Clone repository
 	if payload.GitRepoURL != "" {
 		cloneURL := payload.GitRepoURL
 		if payload.GitAuthToken != "" {
 			cloneURL = strings.Replace(cloneURL, "https://", fmt.Sprintf("https://oauth2:%s@", payload.GitAuthToken), 1)
 		}
-		
+
 		args := []string{"clone", "--depth", "1"}
 		if payload.GitBranch != "" {
 			args = append(args, "--branch", payload.GitBranch)
 		}
 		args = append(args, cloneURL, workspace)
-		
+
 		cmd := exec.CommandContext(ctx, "git", args...)
 		if out, err := cmd.CombinedOutput(); err != nil {
 			return fmt.Errorf("git clone failed: %v\n%s", err, string(out))
@@ -64,7 +64,7 @@ func (d *WorkerDaemon) processDeployment(ctx context.Context, commandID string, 
 	if len(payload.Ports) > 0 {
 		app.InternalPort = 80 // We might want to parse this better later
 	}
-	
+
 	if app.RuntimeMode == "" {
 		app.RuntimeMode = models.RuntimeModeWeb
 	}

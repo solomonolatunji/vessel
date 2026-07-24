@@ -41,7 +41,7 @@ func (r *ProjectRepo) List(_ context.Context, limit, offset int) ([]models.Proje
 	if err = r.db.Get(&total, `SELECT COUNT(*) FROM projects`); err != nil {
 		return nil, 0, err
 	}
-	err = r.db.Select(&projects, `SELECT id, name, COALESCE(description,'') AS description, created_at, updated_at FROM projects ORDER BY created_at DESC LIMIT ? OFFSET ?`, limit, offset)
+	err = r.db.Select(&projects, `SELECT id, name, COALESCE(server_id, '') AS server_id, COALESCE(description,'') AS description, created_at, updated_at FROM projects ORDER BY created_at DESC LIMIT ? OFFSET ?`, limit, offset)
 
 	if err != nil {
 		return nil, 0, err
@@ -54,7 +54,7 @@ func (r *ProjectRepo) List(_ context.Context, limit, offset int) ([]models.Proje
 
 func (r *ProjectRepo) Get(_ context.Context, id string) (*models.ProjectConfig, error) {
 	var p models.ProjectConfig
-	err := r.db.Get(&p, `SELECT id, name, COALESCE(description,'') AS description, created_at, updated_at FROM projects WHERE id = ?`, id)
+	err := r.db.Get(&p, `SELECT id, name, COALESCE(server_id, '') AS server_id, COALESCE(description,'') AS description, created_at, updated_at FROM projects WHERE id = ?`, id)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -71,9 +71,13 @@ func (r *ProjectRepo) Create(ctx context.Context, p *models.ProjectConfig) error
 	now := time.Now().UTC()
 	p.CreatedAt = now
 	p.UpdatedAt = now
+	var serverID interface{}
+	if p.ServerID != "" {
+		serverID = p.ServerID
+	}
 	_, err := r.db.Exec(
-		`INSERT INTO projects (id, name, description, created_at, updated_at) VALUES (?, ?, ?, ?, ?)`,
-		p.ID, p.Name, p.Description, p.CreatedAt, p.UpdatedAt,
+		`INSERT INTO projects (id, server_id, name, description, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)`,
+		p.ID, serverID, p.Name, p.Description, p.CreatedAt, p.UpdatedAt,
 	)
 	if err != nil {
 		return err
@@ -100,9 +104,13 @@ func (r *ProjectRepo) CreateWithMember(ctx context.Context, p *models.ProjectCon
 	}
 	defer tx.Rollback()
 
+	var serverID interface{}
+	if p.ServerID != "" {
+		serverID = p.ServerID
+	}
 	_, err = tx.ExecContext(ctx,
-		`INSERT INTO projects (id, name, description, created_at, updated_at) VALUES (?, ?, ?, ?, ?)`,
-		p.ID, p.Name, p.Description, p.CreatedAt, p.UpdatedAt,
+		`INSERT INTO projects (id, server_id, name, description, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)`,
+		p.ID, serverID, p.Name, p.Description, p.CreatedAt, p.UpdatedAt,
 	)
 	if err != nil {
 		return err

@@ -67,6 +67,7 @@ type Server struct {
 	logHandler             *handlers.LogHandler
 	auditLogHandler        *handlers.AuditLogHandler
 	exampleHandler         *handlers.ExampleHandler
+	serverHandler          *handlers.ServerHandler
 	workerWSHandler        *handlers.WorkerWSHandler
 }
 

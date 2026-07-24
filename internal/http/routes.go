@@ -20,6 +20,7 @@ func (s *Server) registerRoutes() {
 	s.registerSystemRoutes(apiGroup, authGroup)
 	s.registerUserRoutes(apiGroup, authGroup)
 	s.registerProjectRoutes(apiGroup, authGroup)
+	s.registerServerRoutes(authGroup)
 	s.registerDatabaseRoutes(authGroup)
 	s.registerAppRoutes(apiGroup, authGroup)
 	s.registerDeploymentRoutes(authGroup)
@@ -142,6 +143,11 @@ func (s *Server) registerProjectRoutes(apiGroup, authGroup *echo.Group) {
 	authGroup.GET("/projects/:projectId/members", s.projectSettingsHandler.ListMembers, projectAuth)
 	authGroup.POST("/projects/:projectId/members", s.projectSettingsHandler.AddMember, projectAuthAdmin)
 	authGroup.DELETE("/projects/:projectId/members/:id", s.projectSettingsHandler.RemoveMember, projectAuthAdmin)
+}
+
+func (s *Server) registerServerRoutes(authGroup *echo.Group) {
+	authGroup.GET("/servers", s.serverHandler.List, s.authGuard.RequireScope("server:read"))
+	authGroup.POST("/servers", s.serverHandler.Create, s.authGuard.RequireScope("server:write"))
 }
 
 func (s *Server) registerDatabaseRoutes(authGroup *echo.Group) {

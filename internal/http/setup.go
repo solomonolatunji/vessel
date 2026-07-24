@@ -208,6 +208,10 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	exampleHandler := handlers.NewExampleHandler(exampleService)
 
 
+
+
+	serverService := services.NewServerService(serverRepo)
+	serverHandler := handlers.NewServerHandler(serverService)
 	workerWSHandler := handlers.NewWorkerWSHandler(workerHub, serverRepo)
 
 	authLimiter := middleware.NewRateLimiter(10, time.Minute)
@@ -264,6 +268,7 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 		logHandler:             logHandler,
 		auditLogHandler:        auditLogHandler,
 		exampleHandler:         exampleHandler,
+		serverHandler:          serverHandler,
 		workerWSHandler:        workerWSHandler,
 	}
 
