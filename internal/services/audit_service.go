@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"log/slog"
 
+	"codedock.run/codedock/internal/models"
+	"codedock.run/codedock/internal/repositories"
 	"github.com/google/uuid"
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/repositories"
 )
 
 type AuditService struct {

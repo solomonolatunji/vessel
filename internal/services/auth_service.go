@@ -8,9 +8,9 @@ import (
 
 	"github.com/google/uuid"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/repositories"
-	"vessl.dev/vessl/internal/utils"
+	"codedock.run/codedock/internal/models"
+	"codedock.run/codedock/internal/repositories"
+	"codedock.run/codedock/internal/utils"
 )
 
 type Mailer interface {
@@ -44,15 +44,15 @@ func NewAuthService(
 	}
 }
 
-func (a *AuthService) Register(ctx context.Context, name, email, password string) (*models.User, string, error) {
+func (a *AuthService) Register(ctx context.Context, name, email, password string) (*models.User, string, string, error) {
 	if email == "" || password == "" || name == "" {
-		return nil, "", errors.New("name, email and password are required")
+		return nil, "", "", errors.New("name, email and password are required")
 	}
 	_, total, _ := a.userRepo.ListUsers(ctx, 1, 0)
 	isInitial := total == 0
 	cfg, _ := a.settingsRepo.GetServerSettings(ctx)
 	if cfg != nil && !cfg.RegistrationEnabled && !isInitial {
-		return nil, "", errors.New("user registration is disabled on this server")
+		return nil, "", "", errors.New("user registration is disabled on this server")
 	}
 	if cfg != nil && !isInitial && strings.TrimSpace(cfg.RegistrationDomainAllowlist) != "" {
 		allowed := false
@@ -64,16 +64,16 @@ func (a *AuthService) Register(ctx context.Context, name, email, password string
 			}
 		}
 		if !allowed {
-			return nil, "", errors.New("email domain is not allowed on this server")
+			return nil, "", "", errors.New("email domain is not allowed on this server")
 		}
 	}
 	existing, _ := a.userRepo.GetUserByEmail(ctx, email)
 	if existing != nil {
-		return nil, "", errors.New("user already exists with that email")
+		return nil, "", "", errors.New("user already exists with that email")
 	}
 	hashed, err := utils.HashPassword(password)
 	if err != nil {
-		return nil, "", err
+		return nil, "", "", err
 	}
 	role := models.UserRoleMember
 	if total == 0 {
@@ -89,32 +89,41 @@ func (a *AuthService) Register(ctx context.Context, name, email, password string
 		UpdatedAt:    time.Now(),
 	}
 	if err := a.userRepo.CreateUser(ctx, u); err != nil {
-		return nil, "", err
+		return nil, "", "", err
 	}
 
 	token, err := a.tokenService.GenerateToken(u)
 	if err != nil {
-		return nil, "", err
+		return nil, "", "", err
+	}
+	refreshToken, err := a.tokenService.GenerateRefreshToken(u)
+	if err != nil {
+		return nil, "", "", err
 	}
 	uCopy := *u
 	uCopy.PasswordHash = ""
-	return &uCopy, token, nil
+	return &uCopy, token, refreshToken, nil
 }
 
-func (a *AuthService) Login(ctx context.Context, email, password string) (*models.User, string, error) {
+func (a *AuthService) Login(ctx context.Context, email, password string) (*models.User, string, string, error) {
 	if email == "" || password == "" {
-		return nil, "", errors.New("email and password are required")
+		return nil, "", "", errors.New("email and password are required")
 	}
 	u, err := a.userRepo.GetUserByEmail(ctx, email)
 	if err != nil || u == nil {
-		return nil, "", errors.New("invalid email or password")
+		return nil, "", "", errors.New("invalid email or password")
 	}
 	if !utils.CheckPasswordHash(password, u.PasswordHash) {
-		return nil, "", errors.New("invalid email or password")
+		return nil, "", "", errors.New("invalid email or password")
 	}
 	token, err := a.tokenService.GenerateToken(u)
 	if err != nil {
-		return nil, "", err
+		return nil, "", "", err
+	}
+
+	refreshToken, err := a.tokenService.GenerateRefreshToken(u)
+	if err != nil {
+		return nil, "", "", err
 	}
 
 	now := time.Now()
@@ -123,7 +132,37 @@ func (a *AuthService) Login(ctx context.Context, email, password string) (*model
 
 	uCopy := *u
 	uCopy.PasswordHash = ""
-	return &uCopy, token, nil
+	return &uCopy, token, refreshToken, nil
+}
+
+func (a *AuthService) RefreshToken(ctx context.Context, refreshTokenStr string) (*models.User, string, string, error) {
+	if refreshTokenStr == "" {
+		return nil, "", "", errors.New("refresh token is required")
+	}
+
+	userID, err := a.tokenService.ValidateRefreshToken(refreshTokenStr)
+	if err != nil {
+		return nil, "", "", errors.New("invalid or expired refresh token")
+	}
+
+	u, err := a.userRepo.GetUserByID(ctx, userID)
+	if err != nil || u == nil {
+		return nil, "", "", errors.New("user not found")
+	}
+
+	token, err := a.tokenService.GenerateToken(u)
+	if err != nil {
+		return nil, "", "", err
+	}
+
+	newRefreshToken, err := a.tokenService.GenerateRefreshToken(u)
+	if err != nil {
+		return nil, "", "", err
+	}
+
+	uCopy := *u
+	uCopy.PasswordHash = ""
+	return &uCopy, token, newRefreshToken, nil
 }
 
 func (a *AuthService) ForgotPassword(ctx context.Context, email string, originUrl string) error {

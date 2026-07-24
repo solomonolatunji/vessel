@@ -11,8 +11,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/utils"
+	"codedock.run/codedock/internal/models"
+	"codedock.run/codedock/internal/utils"
 )
 
 type EnvironmentRepository interface {

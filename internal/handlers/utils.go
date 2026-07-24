@@ -5,12 +5,12 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.run/codedock/internal/models"
 )
 
 func SetAuthCookie(c echo.Context, token string) {
 	c.SetCookie(&http.Cookie{
-		Name:     "vessl_token",
+		Name:     "codedock_token",
 		Value:    token,
 		Path:     "/",
 		HttpOnly: true,
@@ -22,7 +22,7 @@ func SetAuthCookie(c echo.Context, token string) {
 
 func ClearAuthCookie(c echo.Context) {
 	c.SetCookie(&http.Cookie{
-		Name:     "vessl_token",
+		Name:     "codedock_token",
 		Value:    "",
 		Path:     "/",
 		HttpOnly: true,

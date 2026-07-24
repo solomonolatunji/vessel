@@ -2,7 +2,7 @@ version: "3.8"
 services:
   redis:
     image: redis:7-alpine
-    x-vessl:
+    x-codedock:
       is_database: true
       connection_string: "redis://:${db.password}@${host}:${port}/0"
       backup:

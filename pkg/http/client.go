@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// Client is the Vessl API client.
+// Client is the Codedock API client.
 type Client struct {
 	BaseURL    string
 	Token      string
@@ -26,7 +26,7 @@ func NewClient(baseURL, token string) *Client {
 	}
 }
 
-// sendRequest is a helper for making HTTP requests to the Vessl API.
+// sendRequest is a helper for making HTTP requests to the Codedock API.
 func (c *Client) sendRequest(method, endpoint string, payload interface{}) (*nethttp.Response, error) {
 	var reqBytes []byte
 	var err error
@@ -51,7 +51,7 @@ func (c *Client) sendRequest(method, endpoint string, payload interface{}) (*net
 	return c.HTTPClient.Do(req)
 }
 
-// Ping checks if the Vessl server is reachable and the token is valid.
+// Ping checks if the Codedock server is reachable and the token is valid.
 func (c *Client) Ping() error {
 	resp, err := c.sendRequest("GET", "/system/health", nil)
 	if err != nil {

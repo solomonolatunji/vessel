@@ -13,14 +13,14 @@ import (
 	"github.com/labstack/echo/v4"
 	echomiddleware "github.com/labstack/echo/v4/middleware"
 
-	"vessl.dev/vessl/internal/core"
-	"vessl.dev/vessl/internal/engine"
-	"vessl.dev/vessl/internal/handlers"
-	"vessl.dev/vessl/internal/http/middleware"
-	"vessl.dev/vessl/internal/notifications"
-	"vessl.dev/vessl/internal/repositories"
-	"vessl.dev/vessl/internal/services"
-	"vessl.dev/vessl/internal/utils"
+	"codedock.run/codedock/internal/core"
+	"codedock.run/codedock/internal/engine"
+	"codedock.run/codedock/internal/handlers"
+	"codedock.run/codedock/internal/http/middleware"
+	"codedock.run/codedock/internal/notifications"
+	"codedock.run/codedock/internal/repositories"
+	"codedock.run/codedock/internal/services"
+	"codedock.run/codedock/internal/utils"
 )
 
 func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikManager *engine.TraefikManager, dockerClient *client.Client, dataDir string) (*Server, error) {
@@ -41,7 +41,7 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	}))
 
 	allowOrigins := []string{"http://localhost:3000", "http://localhost:8080"}
-	if dashboardURL := os.Getenv("VESSL_DASHBOARD_URL"); dashboardURL != "" {
+	if dashboardURL := os.Getenv("CODEDOCK_DASHBOARD_URL"); dashboardURL != "" {
 		allowOrigins = append(allowOrigins, dashboardURL)
 	}
 
@@ -203,6 +203,11 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 	auditLogHandler := handlers.NewAuditLogHandler(auditService)
 	exampleService := services.NewExampleService()
 	exampleHandler := handlers.NewExampleHandler(exampleService)
+
+	serverRepo := repositories.NewServerRepository(db)
+	workerHub := engine.NewWorkerHub(serverRepo)
+	workerWSHandler := handlers.NewWorkerWSHandler(workerHub, serverRepo)
+
 	authLimiter := middleware.NewRateLimiter(10, time.Minute)
 	otpLimiter := middleware.NewRateLimiter(5, time.Minute)
 
@@ -257,6 +262,7 @@ func NewServer(db *sql.DB, v *utils.Vault, deployer *engine.Deployer, traefikMan
 		logHandler:             logHandler,
 		auditLogHandler:        auditLogHandler,
 		exampleHandler:         exampleHandler,
+		workerWSHandler:        workerWSHandler,
 	}
 
 	if srv.deployer != nil {

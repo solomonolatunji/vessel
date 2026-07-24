@@ -25,19 +25,19 @@
 | Backend              | Go (`cmd`, `internal/`)                                                      |
 | State (dashboard)    | Zustand, TanStack Query, Zod validation                                      |
 | Styling (dashboard)  | `tailwind-merge` + `clsx` + `class-variance-authority` for class composition |
-| Monorepo             | npm workspaces (`dashboard/`, `web/`, `docs/`)                               |
+| Monorepo             | npm workspaces (`apps/dashboard/`, `apps/web/`, `apps/docs/`)                               |
 
 ## Conventions
 
-- **Dashboard routes** live in `dashboard/src/routes/` following TanStack Router file conventions. Generated route tree is in `routeTree.gen.ts` — do not edit by hand.
-- **Dashboard components** go in `dashboard/src/components/`, grouped by domain (e.g. `projects/`, `databases/`, `ui/`).
-- **Hooks** go in `dashboard/src/hooks/`.
-- **Lib/utils** go in `dashboard/src/lib/`.
-- **Marketing pages** live in `web/src/pages/`, components in `web/src/components/`.
+- **Dashboard routes** live in `apps/dashboard/src/routes/` following TanStack Router file conventions. Generated route tree is in `routeTree.gen.ts` — do not edit by hand.
+- **Dashboard components** go in `apps/dashboard/src/components/`, grouped by domain (e.g. `projects/`, `databases/`, `ui/`).
+- **Hooks** go in `apps/dashboard/src/hooks/`.
+- **Lib/utils** go in `apps/dashboard/src/lib/`.
+- **Marketing pages** live in `apps/web/src/pages/`, components in `apps/web/src/components/`.
 - Use Tailwind CSS v4 `@theme` directives for design tokens; avoid custom CSS where Tailwind utilities suffice.
 - **State Management:** Use standard Zustand (`create`) for global UI state. No wrappers, shortcuts, or legacy APIs.
 - **Data Tables:** Use `@tanstack/react-table` for data grid components.
-- **Telemetry:** Use `posthog-js` and `@posthog/react`. Integrations go in `dashboard/src/integrations/`.
+- **Telemetry:** Use `posthog-js` and `@posthog/react`. Integrations go in `apps/dashboard/src/integrations/`.
 - **Format strictly with Biome** (`npm run format:fix` / `biome check --write .`) and `go fmt ./...`. NEVER use Prettier (`npx prettier`).
 
 ## Go Conventions & Architecture
@@ -55,7 +55,7 @@
 - **File naming:** lowercase snake_case (`container_health.go`).
 - **Package naming:** short, lowercase, single word (`cron`, `auth`, `apikeys`).
 - **Error handling:** always check errors; wrap with `fmt.Errorf("context: %w", err)`.
-- **No global state.** Pass dependencies via struct fields — wire up in `cmd/vessld/main.go`.
+- **No global state.** Pass dependencies via struct fields — wire up in `cmd/codedockd/main.go`.
 - **JSON tags** on every exported struct field.
 - Use `modernc.org/sqlite` (CGO-free) for SQLite. No `database/sql` driver imports for `mattn/go-sqlite3`.
 - Use official `github.com/docker/docker/client` for Docker SDK. Use `gorilla/websocket` for WebSocket upgrades.
@@ -66,13 +66,13 @@
 
 ```sh
 npm run dev        # starts at http://localhost:3000
-npm run build      # output → dashboard/dist/
+npm run build      # output → apps/dashboard/dist/
 npm run generate-routes  # regenerate route tree after adding routes
 ```
 
 **Conventions:**
 
-- Routes live in `dashboard/src/routes/` — TanStack Router file conventions.
+- Routes live in `apps/dashboard/src/routes/` — TanStack Router file conventions.
 - Add shadcn/Radix UI components via `npx shadcn@latest add button`.
 - Components go in `src/components/ui/`. Prefer existing Radix over building from scratch.
 
@@ -89,7 +89,7 @@ Pure Astro + Tailwind CSS v4 — no React/Vue/Svelte islands.
 
 ```sh
 npm run dev   # starts at http://localhost:4322
-npm run build # output → docs/dist/
+npm run build # output → apps/docs/dist/
 ```
 
-Add pages via `.md` files in `src/content/docs/`. Starlight uses file-based routing.
+Add pages via `.md` files in `src/content/apps/docs/`. Starlight uses file-based routing.

@@ -3,7 +3,7 @@ package services_test
 import (
 	"testing"
 
-	"vessl.dev/vessl/internal/services"
+	"codedock.run/codedock/internal/services"
 )
 
 func TestSystemService_GetStats(t *testing.T) {

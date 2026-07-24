@@ -3,8 +3,8 @@ package services
 import (
 	"strings"
 
+	"codedock.run/codedock/internal/models"
 	"gopkg.in/yaml.v3"
-	"vessl.dev/vessl/internal/models"
 )
 
 type ComposeParserService struct{}

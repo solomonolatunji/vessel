@@ -1,0 +1,48 @@
+---
+import '../styles/global.css';
+import Footer from '../components/footer.astro';
+import Header from '../components/header.astro';
+import PosthogTracking from '../components/posthog-tracking.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Codedock — Self-hosting with superpowers',
+  description = 'Deploy apps, databases, and services to your own server. Open-source, lightweight, and built for teams.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <PosthogTracking />
+  </head>
+  <body class="bg-background text-foreground font-sans antialiased overflow-x-hidden max-w-[100vw]">
+    <div class="pointer-events-none fixed inset-0 bg-[radial-gradient(#6d28d9_1.5px,transparent_1.5px)] bg-size-[40px_40px] opacity-30 -z-10"></div>
+
+    <Header />
+
+    <main>
+      <slot />
+    </main>
+
+    <Footer />
+
+  </body>
+</html>

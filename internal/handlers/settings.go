@@ -6,10 +6,10 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/utils"
+	"codedock.run/codedock/internal/models"
+	"codedock.run/codedock/internal/utils"
 
-	"vessl.dev/vessl/internal/services"
+	"codedock.run/codedock/internal/services"
 )
 
 type SettingsHandler struct {

@@ -4,10 +4,10 @@ import (
 	"os"
 	"path/filepath"
 
+	"codedock.run/codedock/apps/dashboard"
+	"codedock.run/codedock/internal/models"
+	"codedock.run/codedock/internal/utils"
 	"github.com/labstack/echo/v4"
-	"vessl.dev/vessl/dashboard"
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/utils"
 )
 
 func (s *Server) registerRoutes() {
@@ -75,6 +75,7 @@ func (s *Server) RequireServiceRole(minPermission models.MemberPermission) echo.
 func (s *Server) registerAuthRoutes(apiGroup, authGroup *echo.Group) {
 	apiGroup.POST("/auth/signup", s.authHandler.Register, s.authRateLimiter.Middleware)
 	apiGroup.POST("/auth/signin", s.authHandler.Login, s.authRateLimiter.Middleware)
+	apiGroup.POST("/auth/refresh", s.authHandler.Refresh)
 	apiGroup.POST("/auth/forgot-password", s.authHandler.ForgotPassword, s.authRateLimiter.Middleware)
 	apiGroup.POST("/auth/reset-password", s.authHandler.ResetPassword, s.authRateLimiter.Middleware)
 	apiGroup.POST("/auth/logout", s.authHandler.Logout)
@@ -282,10 +283,11 @@ func (s *Server) registerMiscRoutes(apiGroup, authGroup *echo.Group) {
 	authGroup.POST("/mcp/messages", s.HandleMCPMessage)
 	apiGroup.GET("/ws/terminal/:id", s.terminalHandler.HandleWebSocket)
 	apiGroup.GET("/ws/services/:id/terminal", s.terminalHandler.HandleWebSocket)
+	apiGroup.GET("/ws/worker", s.workerWSHandler.Connect)
 }
 
 func (s *Server) setupSPAFallback() {
-	staticDir := os.Getenv("VESSL_STATIC_DIR")
+	staticDir := os.Getenv("CODEDOCK_STATIC_DIR")
 
 	if staticDir != "" {
 		if stat, err := os.Stat(staticDir); err == nil && stat.IsDir() {

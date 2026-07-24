@@ -11,7 +11,7 @@ import (
 	"github.com/docker/docker/client"
 	"golang.org/x/sync/semaphore"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.run/codedock/internal/models"
 )
 
 type BuildStrategy string
@@ -47,7 +47,7 @@ type EngineBuilder struct {
 }
 
 func defaultConcurrentBuilds() int64 {
-	if s := os.Getenv("VESSL_MAX_CONCURRENT_BUILDS"); s != "" {
+	if s := os.Getenv("CODEDOCK_MAX_CONCURRENT_BUILDS"); s != "" {
 		if v, err := strconv.ParseInt(s, 10, 64); err == nil && v > 0 {
 			return v
 		}
@@ -124,7 +124,7 @@ func (b *EngineBuilder) wrapStaticOutput(ctx context.Context, baseImageTag strin
 		fmt.Fprintf(logWriter, "📦 [StaticOutput] Extracting %s and wrapping in NGINX alpine...\n", staticOutputDir)
 	}
 
-	tmpDir, err := os.MkdirTemp("", "vessl-static-*")
+	tmpDir, err := os.MkdirTemp("", "codedock-static-*")
 	if err != nil {
 		return "", err
 	}

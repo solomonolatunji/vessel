@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.run/codedock/internal/models"
 )
 
 func (d *Deployer) prepareServerlessCode(app *models.AppService, sourceDir string, logWriter io.Writer) error {
@@ -59,7 +59,7 @@ func prepareNodeJSCode(sourceDir, codeContent string, logWriter io.Writer) error
 	}
 
 	pkgJSON := `{
-  "name": "vessl-function",
+  "name": "codedock-function",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
@@ -181,7 +181,7 @@ func main() {
 		return err
 	}
 
-	goMod := `module vessl-function
+	goMod := `module codedock-function
 
 go 1.23
 `

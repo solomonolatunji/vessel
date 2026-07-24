@@ -3,7 +3,7 @@ package engine
 import (
 	"time"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.run/codedock/internal/models"
 )
 
 type DeployerStore interface {

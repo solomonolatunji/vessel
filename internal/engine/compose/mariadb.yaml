@@ -2,7 +2,7 @@ version: "3.8"
 services:
   mariadb:
     image: mariadb:11
-    x-vessl:
+    x-codedock:
       is_database: true
       connection_string: "mariadb://${db.username}:${db.password}@${host}:${port}/${db.database_name}"
       backup:

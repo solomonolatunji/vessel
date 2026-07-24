@@ -1,5 +1,5 @@
 SERVICES = dashboard web docs
-BINARY_NAME = vessld
+BINARY_NAME = codedockd
 BUILD_DIR = bin
 
 .PHONY: help all build build-daemon build-dashboard dev dev-dryrun dev-daemon dev-dashboard clean check fmt test docker-build docker-up docker-down
@@ -7,7 +7,7 @@ BUILD_DIR = bin
 all: check build
 
 help:
-	@echo "Vessl — available commands:"
+	@echo "Codedock — available commands:"
 	@echo ""
 	@echo "  make check             Run Go fmt + vet"
 	@echo "  make fmt               Run Go fmt only"
@@ -37,12 +37,12 @@ test:
 	go test ./... -v
 
 build: build-dashboard build-daemon
-	@echo "✅ Build complete! Binaries available in $(BUILD_DIR)/ and GUI at dashboard/dist"
+	@echo "✅ Build complete! Binaries available in $(BUILD_DIR)/ and GUI at apps/dashboard/dist"
 
 build-daemon:
 	@echo "⚙️  Building Go daemon binary ($(BINARY_NAME))..."
 	mkdir -p $(BUILD_DIR)
-	go build -ldflags "-s -w" -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/vessld
+	go build -ldflags "-s -w" -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/codedockd
 
 build-dashboard:
 	@echo "💻 Building TanStack + Vite Dashboard GUI..."
@@ -73,11 +73,11 @@ docker-build:
 	docker compose build
 
 docker-up:
-	@echo "🐳 Starting Vessl via Docker Compose..."
+	@echo "🐳 Starting Codedock via Docker Compose..."
 	docker compose up -d
 
 docker-down:
-	@echo "🐳 Stopping Vessl Docker stack..."
+	@echo "🐳 Stopping Codedock Docker stack..."
 	docker compose down
 
 clean:

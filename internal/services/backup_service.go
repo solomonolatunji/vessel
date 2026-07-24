@@ -8,9 +8,9 @@ import (
 
 	"github.com/google/uuid"
 
-	"vessl.dev/vessl/internal/engine"
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/repositories"
+	"codedock.run/codedock/internal/engine"
+	"codedock.run/codedock/internal/models"
+	"codedock.run/codedock/internal/repositories"
 )
 
 type BackupService struct {

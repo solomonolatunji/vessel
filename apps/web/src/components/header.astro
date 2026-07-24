@@ -1,0 +1,88 @@
+---
+import { Icon } from 'astro-icon/components';
+
+const navLinks = [
+  { href: '/philosophy', label: 'Philosophy', icon: 'lucide:lightbulb' },
+  { href: '/pricing', label: 'Pricing', icon: 'lucide:dollar-sign' },
+  { href: '/changelog', label: 'Changelog', icon: 'lucide:clock' },
+  { href: 'https://docs.codedock.run', label: 'Docs', icon: 'lucide:book' },
+  { href: 'https://github.com/techxteam/codedock', label: 'GitHub', icon: 'simple-icons:github' },
+  { href: 'https://discord.gg/codedock', label: 'Community', icon: 'simple-icons:discord' },
+];
+---
+
+<header class="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
+  <nav class="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
+
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-2 font-bold text-lg tracking-tight shrink-0 relative z-50">
+      <span class="size-7 rounded-lg bg-primary flex items-center justify-center text-white text-xs font-black">V</span>
+      Codedock
+    </a>
+
+    <!-- Desktop nav -->
+    <div class="hidden lg:flex items-center gap-0.5 text-sm">
+      {navLinks.map(link => (
+        <a href={link.href} target={link.href.startsWith('http') ? '_blank' : undefined} class="flex items-center gap-1.5 px-3 py-2 rounded-md font-semibold text-foreground hover:text-foreground hover:bg-surface transition-colors">
+          <Icon name={link.icon} class="size-4 text-primary" />
+          {link.label}
+        </a>
+      ))}
+    </div>
+
+    <!-- Desktop CTA -->
+    <a href="https://app.codedock.run" class="hidden lg:inline-flex shrink-0 text-sm font-semibold px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-white transition-colors">
+      Get Cloud
+    </a>
+
+    <!-- Mobile Menu Toggle -->
+    <button id="mobile-menu-btn" class="lg:hidden p-2 -mr-2 text-foreground relative z-50" aria-label="Toggle Menu">
+      <span id="menu-icon-open"><Icon name="lucide:menu" class="size-6" /></span>
+      <span id="menu-icon-close" class="hidden"><Icon name="lucide:x" class="size-6" /></span>
+    </button>
+  </nav>
+
+  <!-- Mobile nav -->
+  <div id="mobile-menu" class="absolute top-full left-0 right-0 bg-[#111111] border-b border-border z-40 hidden flex-col px-4 py-6 lg:hidden shadow-2xl">
+    <div class="flex flex-col gap-1">
+      {navLinks.map(link => (
+        <a href={link.href} target={link.href.startsWith('http') ? '_blank' : undefined} class="flex items-center gap-4 px-3 py-3 rounded-md font-medium text-sm text-foreground hover:bg-white/5 transition-colors">
+          <Icon name={link.icon} class="size-5 text-primary" />
+          {link.label}
+        </a>
+      ))}
+    </div>
+
+    <div class="mt-8 mb-2">
+      <a href="https://app.codedock.run" class="flex items-center justify-center w-full py-3.5 rounded-md text-sm font-bold text-white transition-colors bg-[#231247] hover:bg-[#2d185e] border border-[#3e257f]">
+        To Cloud
+      </a>
+    </div>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  const iconOpen = document.getElementById('menu-icon-open');
+  const iconClose = document.getElementById('menu-icon-close');
+
+  let isOpen = false;
+
+  btn?.addEventListener('click', () => {
+    isOpen = !isOpen;
+    if (isOpen) {
+      menu?.classList.remove('hidden');
+      menu?.classList.add('flex');
+      iconOpen?.classList.add('hidden');
+      iconClose?.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    } else {
+      menu?.classList.add('hidden');
+      menu?.classList.remove('flex');
+      iconOpen?.classList.remove('hidden');
+      iconClose?.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+  });
+</script>

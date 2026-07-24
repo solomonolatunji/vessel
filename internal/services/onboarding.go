@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.run/codedock/internal/models"
 )
 
 type SetupEnv struct {
@@ -52,18 +52,18 @@ func NewOnboardingService(
 	}
 }
 
-func (s *OnboardingService) CompleteSetup(ctx context.Context, req SetupRequest) (*models.User, string, error) {
+func (s *OnboardingService) CompleteSetup(ctx context.Context, req SetupRequest) (*models.User, string, string, error) {
 	count, err := s.userService.CountUsers(ctx)
 	if err != nil {
-		return nil, "", fmt.Errorf("failed to check user count: %w", err)
+		return nil, "", "", fmt.Errorf("failed to check user count: %w", err)
 	}
 	if count > 0 {
-		return nil, "", fmt.Errorf("setup has already been completed")
+		return nil, "", "", fmt.Errorf("setup has already been completed")
 	}
 
-	u, token, err := s.authService.Register(ctx, req.Name, req.Email, req.Password)
+	u, token, refreshToken, err := s.authService.Register(ctx, req.Name, req.Email, req.Password)
 	if err != nil {
-		return nil, "", fmt.Errorf("registration failed: %w", err)
+		return nil, "", "", fmt.Errorf("registration failed: %w", err)
 	}
 
 	if req.Env.JWTSecret == "" {
@@ -80,7 +80,7 @@ func (s *OnboardingService) CompleteSetup(ctx context.Context, req SetupRequest)
 		}
 	}
 
-	return u, token, nil
+	return u, token, refreshToken, nil
 }
 
 func (s *OnboardingService) generateJWTSecret() string {
@@ -92,18 +92,18 @@ func (s *OnboardingService) generateJWTSecret() string {
 func (s *OnboardingService) writeEnvFile(env SetupEnv) error {
 	envBytes, err := os.ReadFile(".env.example")
 	if err != nil {
-		envContent := fmt.Sprintf("VESSL_JWT_SECRET=%s\nVESSL_DATA_DIR=%s\nVESSL_DASHBOARD_URL=%s\nPORT=%d\n",
+		envContent := fmt.Sprintf("CODEDOCK_JWT_SECRET=%s\nCODEDOCK_DATA_DIR=%s\nCODEDOCK_DASHBOARD_URL=%s\nPORT=%d\n",
 			env.JWTSecret, env.DataDir, env.DashboardURL, env.Port)
 		return os.WriteFile(".env", []byte(envContent), 0644)
 	}
 
 	envStr := string(envBytes)
-	envStr = strings.ReplaceAll(envStr, "VESSL_JWT_SECRET=change-this-to-a-secure-random-secret-in-prod", "VESSL_JWT_SECRET="+env.JWTSecret)
+	envStr = strings.ReplaceAll(envStr, "CODEDOCK_JWT_SECRET=change-this-to-a-secure-random-secret-in-prod", "CODEDOCK_JWT_SECRET="+env.JWTSecret)
 	if env.DataDir != "" {
-		envStr = strings.ReplaceAll(envStr, "VESSL_DATA_DIR=./data", "VESSL_DATA_DIR="+env.DataDir)
+		envStr = strings.ReplaceAll(envStr, "CODEDOCK_DATA_DIR=./data", "CODEDOCK_DATA_DIR="+env.DataDir)
 	}
 	if env.DashboardURL != "" {
-		envStr = strings.ReplaceAll(envStr, "VESSL_DASHBOARD_URL=http://localhost:3000", "VESSL_DASHBOARD_URL="+env.DashboardURL)
+		envStr = strings.ReplaceAll(envStr, "CODEDOCK_DASHBOARD_URL=http://localhost:3000", "CODEDOCK_DASHBOARD_URL="+env.DashboardURL)
 	}
 	if env.Port != 0 {
 		envStr = strings.ReplaceAll(envStr, "PORT=8080", fmt.Sprintf("PORT=%d", env.Port))

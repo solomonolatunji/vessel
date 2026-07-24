@@ -7,30 +7,30 @@ if [ -z "$1" ]; then
 fi
 
 BACKUP_FILE="$1"
-VESSL_DIR=${VESSL_DIR:-/vessl}
+CODEDOCK_DIR=${CODEDOCK_DIR:-/codedock}
 
 if [ ! -f "${BACKUP_FILE}" ]; then
   echo "❌ Error: Backup file ${BACKUP_FILE} not found!"
   exit 1
 fi
 
-if [ ! -d "$VESSL_DIR/data" ]; then
+if [ ! -d "$CODEDOCK_DIR/data" ]; then
   if [ -d "./data" ]; then
-    VESSL_DIR="."
+    CODEDOCK_DIR="."
   else
-    echo "❌ No Vessl data directory found at $VESSL_DIR/data."
+    echo "❌ No Codedock data directory found at $CODEDOCK_DIR/data."
     exit 1
   fi
 fi
 
-echo "⚠️  Restoring Vessl state from ${BACKUP_FILE} into ${VESSL_DIR}/data..."
-# Extract relative to VESSL_DIR
-tar -xzf "${BACKUP_FILE}" -C "${VESSL_DIR}"
+echo "⚠️  Restoring Codedock state from ${BACKUP_FILE} into ${CODEDOCK_DIR}/data..."
+# Extract relative to CODEDOCK_DIR
+tar -xzf "${BACKUP_FILE}" -C "${CODEDOCK_DIR}"
 
 # Restarting the service
-echo "🔄 Restarting Vessl container to apply restored data..."
-if command -v docker &> /dev/null && [ -f "$VESSL_DIR/docker-compose.yml" ]; then
-  docker compose -f "$VESSL_DIR/docker-compose.yml" restart vessl
+echo "🔄 Restarting Codedock container to apply restored data..."
+if command -v docker &> /dev/null && [ -f "$CODEDOCK_DIR/docker-compose.yml" ]; then
+  docker compose -f "$CODEDOCK_DIR/docker-compose.yml" restart codedock
 fi
 
-echo "✅ Restore completed successfully! Vessl is back online."
+echo "✅ Restore completed successfully! Codedock is back online."

@@ -1,0 +1,122 @@
+---
+import { Icon } from 'astro-icon/components';
+
+const serverRows = [
+  { k: 'HOST', v: 'prod-eu-1.acme.com' },
+  { k: 'AGENT', v: 'v0.5.1' },
+  { k: 'PROXY', v: 'traefik v3.1' },
+  { k: 'NETWORK', v: 'codedock-network' },
+  { k: 'TUNNEL', v: 'yamux / active', accent: true },
+];
+
+const capabilities = [
+  'apps',
+  'databases',
+  'cron-jobs',
+  'backups → S3',
+  'domains + SSL',
+  'env secrets',
+  'canvas view',
+  'log tailing',
+];
+---
+
+<section class="relative isolate overflow-hidden py-24 lg:py-32">
+  <div class="relative mx-auto max-w-4xl px-6 text-center">
+
+    <!-- Badge -->
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-background/80 backdrop-blur-md text-xs text-muted-foreground mb-8 font-medium">
+      <span class="size-1.5 rounded-full bg-(--color-primary) animate-pulse"></span>
+      Open source &amp; free forever
+    </div>
+
+    <!-- Heading -->
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight sm:leading-none text-foreground text-balance">
+      The open-source Heroku & Vercel alternative<span class="text-(--color-primary)">.</span>
+    </h1>
+
+    <!-- Description -->
+    <p class="mt-6 text-muted-foreground text-base md:text-lg leading-relaxed mx-auto max-w-2xl">
+      Imagine having the ease of a cloud but with your own servers. Codedock is a sub-30MB daemon that turns any Linux server into a full deployment platform—with zero vendor lock-in.
+    </p>
+
+    <!-- Install command strip -->
+    <div class="mt-10 mx-auto max-w-lg flex items-center gap-2 rounded-lg border border-border bg-background/80 backdrop-blur-md px-4 py-3 font-mono text-sm">
+      <span class="text-(--color-primary) font-bold shrink-0">$</span>
+      <code class="flex-1 text-left text-foreground truncate text-[0.8rem]">curl -fsSL https://get.codedock.run | sh</code>
+      <button id="copy-btn" aria-label="Copy install command" class="shrink-0 p-1.5 rounded text-muted-foreground hover:text-foreground hover:bg-border transition-colors">
+        <Icon id="copy-icon" name="lucide:copy" class="size-3.5" />
+      </button>
+    </div>
+
+    <!-- CTA buttons -->
+    <div class="mt-6 flex flex-row items-start justify-center gap-3 sm:gap-4">
+      <div class="flex flex-col items-center">
+        <a href="https://app.codedock.run" class="flex items-center justify-center gap-2 px-6 sm:px-10 py-3.5 rounded-lg font-semibold text-sm bg-background/80 backdrop-blur-md hover:bg-border border border-border text-foreground transition-colors whitespace-nowrap">
+          <Icon name="lucide:cloud" class="size-4 text-(--color-primary)" />
+          Cloud
+        </a>
+        <p class="text-(--color-primary) text-[10px] sm:text-xs font-bold mt-2 text-center">
+          1,200+ <span class="text-muted-foreground font-normal block sm:inline">servers online</span>
+        </p>
+      </div>
+      <div class="flex flex-col items-center">
+        <a href="https://docs.codedock.run/self-host" target="_blank" class="flex items-center justify-center gap-2 px-6 sm:px-10 py-3.5 rounded-lg font-semibold text-sm bg-background/80 backdrop-blur-md hover:bg-border border border-border text-foreground transition-colors whitespace-nowrap">
+          <Icon name="lucide:server" class="size-4 text-(--color-primary)" />
+          Self-hosted
+        </a>
+        <p class="text-(--color-primary) text-[10px] sm:text-xs font-bold mt-2 text-center">
+          &lt;30MB <span class="text-muted-foreground font-normal block sm:inline">single binary</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Terminal panel -->
+    <div class="mt-12 rounded-xl border border-border bg-background/80 backdrop-blur-md overflow-hidden text-left font-mono text-xs shadow-2xl relative z-10">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-border bg-background/40">
+        <span class="text-muted-foreground text-[10px] font-bold uppercase tracking-widest">codedock daemon</span>
+        <span class="flex items-center gap-1.5 text-green-400 text-[10px] font-semibold">
+          <span class="size-1.5 rounded-full bg-green-400 animate-pulse"></span>
+          CONNECTED
+        </span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-border">
+        <div class="px-5 py-4 space-y-2.5">
+          {serverRows.map(r => (
+            <div class="flex items-center gap-3 text-[0.71rem]">
+              <span class="text-muted-foreground w-20 shrink-0">{r.k}</span>
+              <span class={r.accent ? 'text-(--color-primary) font-semibold' : 'text-foreground'}>{r.v}</span>
+            </div>
+          ))}
+        </div>
+        <div class="px-5 py-4">
+          <div class="text-[9px] font-bold tracking-widest uppercase text-muted-foreground mb-3">Capabilities on this node</div>
+          <div class="grid grid-cols-2 gap-y-2 gap-x-4">
+            {capabilities.map(cap => (
+              <div class="flex items-center gap-2 text-[0.68rem] text-muted-foreground">
+                <span class="size-1.5 rounded-full bg-(--color-primary)/70 shrink-0"></span>
+                {cap}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+  </div>
+</section>
+
+<script>
+  const btn = document.getElementById('copy-btn');
+  const icon = document.getElementById('copy-icon');
+  const original = icon?.innerHTML;
+  btn?.addEventListener('click', () => {
+    navigator.clipboard.writeText('curl -fsSL https://get.codedock.run | sh');
+    if (icon) icon.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+    setTimeout(() => {
+      if (icon && original) icon.innerHTML = original;
+    }, 2000);
+  });
+</script>

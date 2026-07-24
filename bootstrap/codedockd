@@ -1,0 +1,325 @@
+#!/usr/bin/env bash
+# Codedock Control - CLI admin tool for Docker-based installations
+# Usage: codedockd <command> [args]
+set -eo pipefail
+
+CODEDOCK_DIR=${CODEDOCK_DIR:-/codedock}
+CONTAINER_NAME="codedock-control-plane"
+BOLD="\033[1m"
+DIM="\033[2m"
+GREEN="\033[0;32m"
+YELLOW="\033[0;33m"
+RED="\033[0;31m"
+NC="\033[0m"
+
+if [ ! -f "$CODEDOCK_DIR/docker-compose.yml" ] && [ ! -f "./docker-compose.yml" ] && [ ! -f "./docker/docker-compose.yml" ]; then
+  echo -e "${RED}❌ No Codedock installation found.${NC} Expected docker-compose.yml in $CODEDOCK_DIR, current directory, or ./docker/docker-compose.yml."
+  exit 1
+fi
+
+if [ ! -f "$CODEDOCK_DIR/docker-compose.yml" ]; then
+  if [ -f "./docker-compose.yml" ]; then
+    CODEDOCK_DIR="."
+  elif [ -f "./docker/docker-compose.yml" ]; then
+    CODEDOCK_DIR="./docker"
+  fi
+fi
+
+exec_in_container() {
+  docker compose -f "$CODEDOCK_DIR/docker-compose.yml" exec -T "$CONTAINER_NAME" codedockd "$@"
+}
+
+container_running() {
+  docker ps --filter name="$CONTAINER_NAME" --format '{{.Status}}' 2>/dev/null | grep -q .
+}
+
+show_help() {
+  echo -e "${BOLD}Codedock Control (codedockctl)${NC} — CLI admin tools for Codedock"
+  echo ""
+  echo -e "${BOLD}Usage:${NC} codedockctl <command> [args]"
+  echo ""
+  echo -e "${BOLD}Commands:${NC}"
+  echo "  setup                    Run interactive setup wizard (create admin)"
+  echo "  reset-password           Reset admin password"
+  echo "  config                   View current configuration"
+  echo "  config <key>=<val>       Update a config value"
+  echo "  status                   Show daemon health, version, containers"
+  echo "  restart                  Restart the Codedock daemon"
+  echo "  logs                    Tail daemon logs"
+  echo "  update [version]         Upgrade to latest or specific version"
+  echo "  downgrade <version>      Downgrade to a specific version"
+  echo "  backup                   Create a manual database backup"
+  echo "  uninstall                Remove Codedock daemon (apps keep running)"
+  echo "  version                  Show Codedock version"
+  echo "  help                     Show this help message"
+  echo ""
+  echo -e "${BOLD}App & Database Management:${NC}"
+  echo "  deploy <git-url>            Deploy an app from a Git URL"
+  echo "  deploy --image <image>      Deploy from a Docker image"
+  echo "  apps:list           List all apps"
+  echo "  apps:show <id>      Show app details"
+  echo "  apps:create <name>  Create an app"
+  echo "  apps:destroy <id>   Delete an app"
+  echo "  db:list             List all databases"
+  echo "  db:show <id>        Show database details"
+  echo "  db:create <n> <e>   Create a database (name + engine)"
+  echo "  db:destroy <id>     Delete a database"
+  echo ""
+  echo -e "${BOLD}Examples:${NC}"
+  echo "  codedockctl setup"
+  echo "  codedockctl reset-password"
+  echo "  codedockctl config site-name=MyCodedock"
+  echo "  codedockctl status"
+  echo "  codedockctl deploy https://github.com/user/app.git"
+  echo "  codedockctl apps:list"
+  echo "  codedockctl db:create my-db postgres --project <id>"
+  echo "  codedockctl logs -f"
+  echo "  codedockctl update v0.2.0"
+  echo "  codedockctl downgrade v0.1.0"
+}
+
+case "${1:-help}" in
+  setup|reset-password|config)
+    exec_in_container "$@"
+    ;;
+  deploy|apps:*|db:*)
+    exec_in_container "$@"
+    ;;
+  version)
+    exec_in_container version
+    ;;
+  restart)
+    echo -e "${YELLOW}⚠️  Restarting Codedock will briefly interrupt the dashboard.${NC}"
+    echo -e "${YELLOW}   Running services (apps, databases) are NOT affected.${NC}"
+    echo ""
+    echo -n "Continue? (y/N): "
+    read -r CONFIRM
+    if [ "$CONFIRM" != "y" ] && [ "$CONFIRM" != "Y" ]; then
+      echo "Cancelled."
+      exit 0
+    fi
+    echo ""
+    echo -e "${BOLD}🔄 Restarting Codedock...${NC}"
+    docker compose -f "$CODEDOCK_DIR/docker-compose.yml" restart "$CONTAINER_NAME"
+    echo -e "${GREEN}✅ Codedock restarted.${NC}"
+    echo "   Run 'codedockctl status' to verify."
+    ;;
+  logs)
+    shift
+    docker compose -f "$CODEDOCK_DIR/docker-compose.yml" logs "$@" "$CONTAINER_NAME"
+    ;;
+  status)
+    echo -e "${BOLD}📊 Codedock Status${NC}"
+    echo "━━━━━━━━━━━━━━━━━━━━━━"
+
+    # Daemon
+    STATUS=$(docker ps --filter name="$CONTAINER_NAME" --format '{{.Status}}' 2>/dev/null)
+    if [ -n "$STATUS" ]; then
+      echo -e "  ${BOLD}Daemon:${NC}     ${GREEN}running${NC} ($STATUS)"
+    else
+      echo -e "  ${BOLD}Daemon:${NC}     ${RED}not running${NC}"
+    fi
+    VERSION=$(exec_in_container version 2>/dev/null || echo "unavailable")
+    echo -e "  ${BOLD}Version:${NC}    $VERSION"
+    echo -e "  ${BOLD}Data dir:${NC}   $CODEDOCK_DIR/data"
+    echo ""
+
+    # System resources
+    echo -e "${BOLD}  System:${NC}"
+    TOTAL_RAM=$(free -m | awk '/^Mem:/{print $2}')
+    USED_RAM=$(free -m | awk '/^Mem:/{print $3}')
+    SWAP=$(free -m | awk '/^Swap:/{print $2}')
+    DISK_USED=$(df -h / 2>/dev/null | awk 'NR==2{print $3}')
+    DISK_TOTAL=$(df -h / 2>/dev/null | awk 'NR==2{print $2}')
+    LOAD=$(uptime | awk -F'load average:' '{print $2}' | xargs)
+    echo -e "    Memory:    ${USED_RAM}MB / ${TOTAL_RAM}MB"
+    if [ "$SWAP" -gt 0 ]; then
+      echo -e "    Swap:      ${SWAP}MB"
+    fi
+    echo -e "    Disk:      ${DISK_USED} / ${DISK_TOTAL}"
+    echo -e "    Load:      ${LOAD}"
+    echo ""
+
+    # Active containers
+    echo -e "${BOLD}  Active Containers:${NC}"
+    CONTAINERS=$(docker ps --filter network=codedock-network --format '  {{.Names}} ({{.Image}}, {{.Status}})' 2>/dev/null)
+    if [ -n "$CONTAINERS" ]; then
+      echo "$CONTAINERS"
+    else
+      echo "    None"
+    fi
+    echo ""
+    echo -e "  ${DIM}Run 'codedockctl logs -f' to follow daemon logs.${NC}"
+    ;;
+  update)
+    TARGET_VERSION="${2:-latest}"
+    echo -e "${BOLD}🛰️  Codedock Update Check${NC}"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    # Get current version
+    CURRENT=$(exec_in_container version 2>/dev/null | awk '{print $2}' || echo "unknown")
+
+    if [ "$TARGET_VERSION" = "latest" ]; then
+      echo -e "  Current:    ${CURRENT}"
+      echo -e "  Target:     ${BOLD}latest${NC} (checking GitHub...)"
+      # Try to fetch latest from GitHub
+      LATEST=$(curl -fsS "https://api.github.com/repos/buildwithtechx/codedock/releases/latest" 2>/dev/null | grep '"tag_name"' | head -1 | cut -d'"' -f4 || echo "unknown")
+      echo -e "  Available:  ${BOLD}${LATEST}${NC}"
+      echo ""
+      if [ "$LATEST" != "unknown" ] && [ "$LATEST" != "$CURRENT" ]; then
+        echo -e "  ${GREEN}✨ Update available!${NC}"
+      elif [ "$LATEST" = "$CURRENT" ]; then
+        echo -e "  ${GREEN}✅ You're on the latest version.${NC}"
+        echo ""
+        echo -n "Reinstall anyway? (y/N): "
+        read -r CONFIRM
+        if [ "$CONFIRM" != "y" ] && [ "$CONFIRM" != "Y" ]; then
+          echo "Cancelled."
+          exit 0
+        fi
+      fi
+    else
+      echo -e "  Current:    ${CURRENT}"
+      echo -e "  Target:     ${BOLD}${TARGET_VERSION}${NC}"
+      echo ""
+    fi
+
+    echo -e "${YELLOW}⚠️  A backup will be created before updating.${NC}"
+    echo -n "Continue with update? (y/N): "
+    read -r CONFIRM
+    if [ "$CONFIRM" != "y" ] && [ "$CONFIRM" != "Y" ]; then
+      echo "Cancelled."
+      exit 0
+    fi
+
+    echo ""
+    echo -e "${BOLD}💾 Creating pre-update backup...${NC}"
+    mkdir -p "$CODEDOCK_DIR/data/backups"
+    if container_running; then
+      docker compose -f "$CODEDOCK_DIR/docker-compose.yml" exec -T "$CONTAINER_NAME" sh -c "cp /codedock/data/codedock.db /codedock/data/backups/codedock-pre-upgrade-$(date +%Y%m%d%H%M%S).db" 2>/dev/null || true
+    fi
+    echo -e "${GREEN}✅ Backup saved to $CODEDOCK_DIR/data/backups/${NC}"
+
+    export CODEDOCK_VERSION="${TARGET_VERSION}"
+    echo -e "${BOLD}🐳 Pulling codedock:${TARGET_VERSION}...${NC}"
+    docker compose -f "$CODEDOCK_DIR/docker-compose.yml" pull
+    echo -e "${BOLD}🚀 Recreating container...${NC}"
+    docker compose -f "$CODEDOCK_DIR/docker-compose.yml" up -d --force-recreate
+    echo -e "${GREEN}✅ Codedock updated to ${TARGET_VERSION}.${NC}"
+    echo "   Your apps and databases experienced zero downtime."
+    echo "   Run 'codedockctl status' to verify."
+    ;;
+  downgrade)
+    if [ -z "$2" ]; then
+      echo -e "${RED}❌ Usage: codedockctl downgrade <version>${NC}"
+      echo "   Example: codedockctl downgrade v0.1.0"
+      echo ""
+      echo "Available versions: https://github.com/buildwithtechx/codedock/releases"
+      exit 1
+    fi
+
+    TARGET_VERSION="$2"
+    CURRENT=$(exec_in_container version 2>/dev/null | awk '{print $2}' || echo "unknown")
+
+    echo -e "${BOLD}⬇️  Codedock Downgrade${NC}"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━"
+    echo -e "  Current:    ${CURRENT}"
+    echo -e "  Target:     ${BOLD}${TARGET_VERSION}${NC}"
+    echo ""
+    echo -e "${RED}⚠️  WARNING: Downgrade${NC}"
+    echo -e "${YELLOW}   • A database backup will be created automatically${NC}"
+    echo -e "${YELLOW}   • Database schema changes may not be backward-compatible${NC}"
+    echo -e "${YELLOW}   • If something breaks, restore from backup:${NC}"
+    echo -e "${YELLOW}      cp $CODEDOCK_DIR/data/backups/codedock-pre-downgrade-*.db \\${NC}"
+    echo -e "${YELLOW}         $CODEDOCK_DIR/data/codedock.db${NC}"
+    echo ""
+
+    if [ "$TARGET_VERSION" = "$CURRENT" ]; then
+      echo -e "${YELLOW}⚠️  Target version matches current version. No downgrade needed.${NC}"
+      exit 0
+    fi
+
+    echo -n "Type '${BOLD}downgrade${NC}' to confirm: "
+    read -r CONFIRM
+    if [ "$CONFIRM" != "downgrade" ]; then
+      echo "Cancelled."
+      exit 0
+    fi
+
+    echo ""
+    echo -e "${BOLD}💾 Creating pre-downgrade backup...${NC}"
+    mkdir -p "$CODEDOCK_DIR/data/backups"
+    if container_running; then
+      docker compose -f "$CODEDOCK_DIR/docker-compose.yml" exec -T "$CONTAINER_NAME" sh -c "cp /codedock/data/codedock.db /codedock/data/backups/codedock-pre-downgrade-$(date +%Y%m%d%H%M%S).db" 2>/dev/null || true
+      echo -e "${GREEN}✅ Backup saved.${NC}"
+    fi
+
+    export CODEDOCK_VERSION="${TARGET_VERSION}"
+    echo -e "${BOLD}🐳 Pulling codedock:${TARGET_VERSION}...${NC}"
+    docker compose -f "$CODEDOCK_DIR/docker-compose.yml" pull
+    echo -e "${BOLD}🚀 Recreating container with v${TARGET_VERSION}...${NC}"
+    docker compose -f "$CODEDOCK_DIR/docker-compose.yml" up -d --force-recreate
+    echo -e "${GREEN}✅ Downgraded to ${TARGET_VERSION}.${NC}"
+    echo -e "${YELLOW}⚠️  If you encounter issues, restore from backup:${NC}"
+    echo "   cp $CODEDOCK_DIR/data/backups/codedock-pre-downgrade-*.db $CODEDOCK_DIR/data/codedock.db"
+    echo "   codedockctl restart"
+    ;;
+  uninstall)
+    echo -e "${RED}⚠️  WARNING: This removes Codedock but keeps your apps running.${NC}"
+    echo -e "${YELLOW}   Your Docker containers, databases, and volumes will NOT be touched.${NC}"
+    echo -e "${YELLOW}   See https://docs.codedock.run/adopt/ to learn how to take over.${NC}"
+    echo ""
+    echo -n "Type '${BOLD}uninstall${NC}' to confirm: "
+    read -r CONFIRM
+    if [ "$CONFIRM" != "uninstall" ]; then
+      echo "Cancelled."
+      exit 0
+    fi
+    echo ""
+    echo -e "${BOLD}🛑 Stopping Codedock daemon...${NC}"
+    docker compose -f "$CODEDOCK_DIR/docker-compose.yml" stop "$CONTAINER_NAME" 2>/dev/null || true
+    if command -v systemctl &>/dev/null; then
+      systemctl stop codedock.service 2>/dev/null || true
+      systemctl disable codedock.service 2>/dev/null || true
+      rm -f /etc/systemd/system/codedock.service
+      systemctl daemon-reload
+    fi
+    rm -f /usr/local/bin/codedockctl
+    echo ""
+    echo -e "${GREEN}✅ Codedock daemon removed.${NC}"
+    echo -e "${YELLOW}   Your apps, databases, and data are still running:${NC}"
+    echo "   $(docker ps --filter network=codedock-network --format '{{.Names}}' 2>/dev/null | wc -l) containers active"
+    echo ""
+    echo "   To adopt your containers manually:"
+    echo "     docker ps --filter network=codedock-network"
+    echo ""
+    echo "   To fully remove all data (apps, databases, volumes):"
+    echo "     docker compose -f $CODEDOCK_DIR/docker-compose.yml down -v"
+    echo "     rm -rf $CODEDOCK_DIR"
+    ;;
+
+  backup)
+    BACKUP_FILE="$CODEDOCK_DIR/data/backups/codedock-manual-$(date +%Y%m%d%H%M%S).db"
+    mkdir -p "$CODEDOCK_DIR/data/backups"
+    echo -e "${BOLD}💾 Creating database backup...${NC}"
+    if container_running; then
+      docker compose -f "$CODEDOCK_DIR/docker-compose.yml" exec -T "$CONTAINER_NAME" sh -c "cp /codedock/data/codedock.db /codedock/data/backups/tmp.db"
+      docker compose cp "$CONTAINER_NAME:/codedock/data/backups/tmp.db" "$BACKUP_FILE"
+      docker compose -f "$CODEDOCK_DIR/docker-compose.yml" exec -T "$CONTAINER_NAME" sh -c "rm /codedock/data/backups/tmp.db"
+      echo -e "${GREEN}✅ Database backed up to $BACKUP_FILE${NC}"
+      echo "   Size: $(du -h "$BACKUP_FILE" | cut -f1)"
+    else
+      echo -e "${RED}❌ Codedock container is not running. Cannot access database.${NC}"
+      exit 1
+    fi
+    ;;
+  help|--help|-h)
+    show_help
+    ;;
+  *)
+    echo -e "${RED}❌ Unknown command: ${1}${NC}"
+    echo ""
+    show_help
+    exit 1
+    ;;
+esac

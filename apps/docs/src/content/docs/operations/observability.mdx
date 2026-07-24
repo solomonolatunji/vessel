@@ -1,0 +1,79 @@
+---
+title: Observability & Logs
+description: Persistent log aggregation, time-series metrics, and comprehensive audit logs.
+---
+
+Codedock provides native integrations with industry-standard observability stacks to give you deep insights into both your application logs and system performance, alongside a robust audit logging system.
+
+## Persistent Log Aggregation (Grafana Loki)
+
+While standard Docker logs are ephemeral, Codedock seamlessly integrates with **Grafana Loki** (or compatible aggregation services like Vector) to provide persistent, searchable logs across all your deployments.
+
+### Features
+- **Application Logs**: Logs emitted by your services and apps are automatically captured, enriched with metadata (project, service, deployment ID), and shipped to the storage layer.
+- **Historical Querying**: Use the built-in Codedock dashboard to search and view logs from previous deployments, not just the currently running containers.
+- **Stream Support**: Logs are parsed via the `LogService` API and streamed directly into the dashboard interface.
+
+### Configuration
+Loki configuration can be managed via Environment Variables on the Codedock daemon. You can point the Codedock engine to your external Loki instance URL to begin streaming all stdout/stderr logs automatically.
+
+## Log Drains (Webhooks & External Services)
+
+Codedock allows you to forward runtime container logs directly to external observability tools in real-time.
+
+### Supported Destinations
+- **Custom Webhooks**: Send POST requests with JSON log payloads to any endpoint.
+- **Axiom**: Forward logs directly to Axiom datasets.
+- **New Relic**: Stream logs to New Relic Logs.
+- **Datadog**: Send logs natively to Datadog's log ingestion APIs.
+
+### Configuration
+1. Navigate to your Service in the Dashboard.
+2. Open the **Log Drains** tab.
+3. Select your destination type, provide the Endpoint URL, and an optional Auth Token.
+4. Codedock will automatically spawn a background worker that multiplexes container logs to your destination.
+
+## Historical Metrics / TSDB (Prometheus)
+
+To monitor infrastructure health, Codedock exposes metrics natively and can query historical time-series data from **Prometheus** or **VictoriaMetrics**.
+
+### Built-in Dashboard Monitoring
+When integrated with a TSDB backend, your Codedock dashboard will automatically populate charts for:
+- **CPU Usage**: Real-time and historical CPU utilization across your containers and the underlying host.
+- **Memory (RAM)**: Memory consumption trends, helping you avoid Out-Of-Memory (OOM) crashes.
+- **Network Traffic**: Egress and Ingress bandwidth usage over time.
+
+### Setting Up
+The Codedock daemon exposes a `/metrics` endpoint that can be scraped by Prometheus. To enable historical graphs in the dashboard, provide the `PROMETHEUS_URL` to the daemon's configuration environment. Codedock uses internal APIs (like `MetricsService`) to securely query this TSDB and visualize the data in your Projects overview.
+
+## Audit Logs
+
+Audit Logs provide a comprehensive, immutable record of administrative and user actions across your Codedock PaaS environment. Every sensitive action is captured to ensure security, compliance, and accountability.
+
+### What is Logged?
+
+Codedock automatically tracks and records:
+- **Authentication**: User logins, logouts, and password resets.
+- **Project Management**: Creation, deletion, and modification of projects.
+- **Team Management**: Inviting users, accepting invitations, and changing member roles.
+- **Deployments**: Triggering builds, successful deployments, and rollbacks.
+- **Infrastructure**: Provisioning or modifying databases, storage buckets, and custom domains.
+- **Settings**: Changes to environment variables, system settings, or integrations.
+
+### Viewing Audit Logs
+
+You can view the audit logs directly in the Codedock Dashboard:
+
+1. Navigate to the **Settings** gear icon in the sidebar.
+2. Select **Audit Logs**.
+3. You will see a chronological table detailing:
+   - **Timestamp**: When the action occurred.
+   - **User**: The email address of the user who performed the action.
+   - **Action**: A descriptive string (e.g., `project.create`, `deployment.trigger`).
+   - **Resource**: The target of the action (e.g., the specific Project ID or Service Name).
+   - **IP Address**: The origin IP address of the request.
+   - **Details**: A JSON payload containing any relevant metadata or configuration changes.
+
+### Retention and Storage
+
+Audit logs are stored asynchronously in the underlying SQLite database (`audit_logs` table) to ensure they do not block or slow down standard HTTP requests. Because Codedock operates on a single-tenant architecture, all audit logs for your instance are stored locally and securely alongside your other operational data.

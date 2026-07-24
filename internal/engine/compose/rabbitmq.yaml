@@ -2,7 +2,7 @@ version: "3.8"
 services:
   rabbitmq:
     image: rabbitmq:4-alpine
-    x-vessl:
+    x-codedock:
       is_database: true
       connection_string: "amqp://${host}:${port}"
     ports:

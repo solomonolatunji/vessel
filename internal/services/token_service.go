@@ -7,20 +7,27 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.run/codedock/internal/models"
 )
 
 type TokenService struct {
-	secretKey []byte
+	secretKey        []byte
+	refreshSecretKey []byte
 }
 
 func NewTokenService() (*TokenService, error) {
-	secret := os.Getenv("VESSL_JWT_SECRET")
+	secret := os.Getenv("CODEDOCK_JWT_SECRET")
 	if secret == "" {
-		return nil, errors.New("VESSL_JWT_SECRET environment variable is required")
+		return nil, errors.New("CODEDOCK_JWT_SECRET environment variable is required")
+	}
+	refreshSecret := os.Getenv("CODEDOCK_REFRESH_SECRET")
+	if refreshSecret == "" {
+		// Fallback to JWT secret if not provided for backward compatibility
+		refreshSecret = secret
 	}
 	return &TokenService{
-		secretKey: []byte(secret),
+		secretKey:        []byte(secret),
+		refreshSecretKey: []byte(refreshSecret),
 	}, nil
 }
 
@@ -35,7 +42,7 @@ func (ts *TokenService) GenerateToken(u *models.User) (string, error) {
 		"totpEnabled": u.TOTPEnabled,
 		"exp":         time.Now().Add(72 * time.Hour).Unix(),
 		"iat":         time.Now().Unix(),
-		"iss":         "vessl-auth",
+		"iss":         "codedock-auth",
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(ts.secretKey)
@@ -62,7 +69,7 @@ func (ts *TokenService) GeneratePasswordResetToken(email string) (string, error)
 	claims := jwt.MapClaims{
 		"email": email,
 		"exp":   time.Now().Add(1 * time.Hour).Unix(),
-		"iss":   "vessl-password-reset",
+		"iss":   "codedock-password-reset",
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(ts.secretKey)
@@ -83,7 +90,7 @@ func (ts *TokenService) ValidatePasswordResetToken(tokenStr string) (string, err
 		return "", errors.New("invalid token claims or signature")
 	}
 
-	if iss, ok := claims["iss"].(string); !ok || iss != "vessl-password-reset" {
+	if iss, ok := claims["iss"].(string); !ok || iss != "codedock-password-reset" {
 		return "", errors.New("invalid token issuer")
 	}
 
@@ -92,4 +99,44 @@ func (ts *TokenService) ValidatePasswordResetToken(tokenStr string) (string, err
 		return "", errors.New("invalid token claims")
 	}
 	return email, nil
+}
+
+func (ts *TokenService) GenerateRefreshToken(u *models.User) (string, error) {
+	if u == nil {
+		return "", errors.New("user cannot be nil when generating token")
+	}
+	claims := jwt.MapClaims{
+		"sub": u.ID,
+		"exp": time.Now().Add(7 * 24 * time.Hour).Unix(),
+		"iat": time.Now().Unix(),
+		"iss": "codedock-refresh",
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(ts.refreshSecretKey)
+}
+
+func (ts *TokenService) ValidateRefreshToken(tokenStr string) (string, error) {
+	token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (any, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("unexpected signing method")
+		}
+		return ts.refreshSecretKey, nil
+	})
+	if err != nil {
+		return "", err
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return "", errors.New("invalid token claims or signature")
+	}
+
+	if iss, ok := claims["iss"].(string); !ok || iss != "codedock-refresh" {
+		return "", errors.New("invalid token issuer")
+	}
+
+	sub, ok := claims["sub"].(string)
+	if !ok || sub == "" {
+		return "", errors.New("invalid token claims")
+	}
+	return sub, nil
 }

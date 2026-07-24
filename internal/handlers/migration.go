@@ -8,8 +8,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"vessl.dev/vessl/internal/services"
-	"vessl.dev/vessl/internal/utils"
+	"codedock.run/codedock/internal/services"
+	"codedock.run/codedock/internal/utils"
 )
 
 type MigrationHandler struct {
@@ -33,7 +33,7 @@ func (h *MigrationHandler) Export(c echo.Context) error {
 		return utils.Error(c, http.StatusInternalServerError, fmt.Sprintf("export failed: %v", err))
 	}
 
-	filename := fmt.Sprintf("vessl-bundle-%s.vessl", time.Now().UTC().Format("20060102-150405"))
+	filename := fmt.Sprintf("codedock-bundle-%s.codedock", time.Now().UTC().Format("20060102-150405"))
 	c.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filename))
 	c.Response().Header().Set("Content-Type", "application/octet-stream")
 	c.Response().WriteHeader(http.StatusOK)

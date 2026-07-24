@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"codedock.run/codedock/internal/utils"
 	"github.com/docker/docker/client"
-	"vessl.dev/vessl/internal/utils"
 )
 
 type dockerStats struct {

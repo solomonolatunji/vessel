@@ -5,10 +5,10 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/services"
-	"vessl.dev/vessl/internal/telemetry"
-	"vessl.dev/vessl/internal/utils"
+	"codedock.run/codedock/internal/models"
+	"codedock.run/codedock/internal/services"
+	"codedock.run/codedock/internal/telemetry"
+	"codedock.run/codedock/internal/utils"
 )
 
 type AuthHandler struct {
@@ -75,7 +75,7 @@ func (h *AuthHandler) Register(c echo.Context) error {
 	if err := c.Bind(&payload); err != nil {
 		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
-	u, token, err := h.authService.Register(c.Request().Context(), payload.Name, payload.Email, payload.Password)
+	u, token, refreshToken, err := h.authService.Register(c.Request().Context(), payload.Name, payload.Email, payload.Password)
 	if err != nil {
 		return utils.Error(c, http.StatusBadRequest, err.Error())
 	}
@@ -85,8 +85,9 @@ func (h *AuthHandler) Register(c echo.Context) error {
 		"name":  u.Name,
 	})
 	return utils.Success(c, "Registration successful", map[string]any{
-		"token": token,
-		"user":  u,
+		"token":        token,
+		"refreshToken": refreshToken,
+		"user":         u,
 	})
 }
 
@@ -95,7 +96,7 @@ func (h *AuthHandler) Login(c echo.Context) error {
 	if err := c.Bind(&payload); err != nil {
 		return utils.Error(c, http.StatusBadRequest, "invalid payload")
 	}
-	u, token, err := h.authService.Login(c.Request().Context(), payload.Email, payload.Password)
+	u, token, refreshToken, err := h.authService.Login(c.Request().Context(), payload.Email, payload.Password)
 	if err != nil {
 		return utils.Error(c, http.StatusUnauthorized, err.Error())
 	}
@@ -104,8 +105,30 @@ func (h *AuthHandler) Login(c echo.Context) error {
 		"email": u.Email,
 	})
 	return utils.Success(c, "Login successful", map[string]any{
-		"token": token,
-		"user":  u,
+		"token":        token,
+		"refreshToken": refreshToken,
+		"user":         u,
+	})
+}
+
+type RefreshRequest struct {
+	RefreshToken string `json:"refreshToken"`
+}
+
+func (h *AuthHandler) Refresh(c echo.Context) error {
+	var payload RefreshRequest
+	if err := c.Bind(&payload); err != nil {
+		return utils.Error(c, http.StatusBadRequest, "invalid payload")
+	}
+	u, token, newRefreshToken, err := h.authService.RefreshToken(c.Request().Context(), payload.RefreshToken)
+	if err != nil {
+		return utils.Error(c, http.StatusUnauthorized, err.Error())
+	}
+	SetAuthCookie(c, token)
+	return utils.Success(c, "Token refreshed successfully", map[string]any{
+		"token":        token,
+		"refreshToken": newRefreshToken,
+		"user":         u,
 	})
 }
 

@@ -1,18 +1,18 @@
 package repositories
 
 import (
+	"codedock.run/codedock/internal/utils"
 	"context"
 	"database/sql"
 	"errors"
 	"fmt"
 	"sync"
 	"time"
-	"vessl.dev/vessl/internal/utils"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.run/codedock/internal/models"
 )
 
 type UserRepository interface {
@@ -98,13 +98,13 @@ func (r *UserRepo) ListUsers(ctx context.Context, limit, offset int) ([]models.U
 
 	var users []models.User
 	err := r.db.SelectContext(ctx, &users, `
-		SELECT 
+		SELECT
 			id, email, name, password_hash, role, created_at, updated_at, last_login,
 			(SELECT COUNT(*) FROM project_members WHERE user_id = users.id) AS projects_count,
 			(SELECT COUNT(*) FROM app_services WHERE project_id IN (SELECT project_id FROM project_members WHERE user_id = users.id) AND status = 'running') AS services_count,
 			(SELECT COUNT(*) FROM personal_access_tokens WHERE user_id = users.id) AS api_keys_count
-		FROM users 
-		ORDER BY created_at ASC 
+		FROM users
+		ORDER BY created_at ASC
 		LIMIT ? OFFSET ?`, limit, offset)
 	if err != nil {
 		return nil, 0, err

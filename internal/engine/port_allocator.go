@@ -6,7 +6,7 @@ import (
 	"os"
 	"strconv"
 
-	"vessl.dev/vessl/internal/utils"
+	"codedock.run/codedock/internal/utils"
 )
 
 func GetAvailablePort() (int, error) {

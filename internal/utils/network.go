@@ -9,7 +9,7 @@ import (
 )
 
 func GetDataDir() string {
-	dir := os.Getenv("VESSL_DATA_DIR")
+	dir := os.Getenv("CODEDOCK_DATA_DIR")
 	if dir == "" {
 		return "data"
 	}
@@ -17,14 +17,14 @@ func GetDataDir() string {
 }
 
 func GetRuntimeNetwork() string {
-	net := os.Getenv("VESSL_RUNTIME_NETWORK")
+	net := os.Getenv("CODEDOCK_RUNTIME_NETWORK")
 	if net == "" {
-		return "vessl-network"
+		return "codedock-network"
 	}
 	return net
 }
 
-func EnsureVesslNetwork(ctx context.Context, cli *client.Client) error {
+func EnsureCodedockNetwork(ctx context.Context, cli *client.Client) error {
 	if cli == nil {
 		return nil
 	}

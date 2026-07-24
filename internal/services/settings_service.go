@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/repositories"
+	"codedock.run/codedock/internal/models"
+	"codedock.run/codedock/internal/repositories"
 )
 
 type SettingsService struct {
@@ -56,7 +56,7 @@ func (s *SettingsService) ExecuteMCPTool(ctx context.Context, toolName string) (
 		}, nil
 	case "get_system_status":
 		return []map[string]any{
-			{"type": "text", "text": "Vessl system is healthy and operational."},
+			{"type": "text", "text": "Codedock system is healthy and operational."},
 		}, nil
 	default:
 		return nil, fmt.Errorf("Method/Tool not found: %s", toolName)

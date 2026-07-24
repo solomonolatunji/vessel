@@ -8,7 +8,7 @@ import (
 
 func GenerateAppDomain(projectNameOrID string, hostIP string, wildcardDomain string) string {
 	if wildcardDomain == "" {
-		wildcardDomain = os.Getenv("VESSL_WILDCARD_DOMAIN")
+		wildcardDomain = os.Getenv("CODEDOCK_WILDCARD_DOMAIN")
 	}
 
 	if wildcardDomain != "" {
@@ -21,7 +21,7 @@ func GenerateAppDomain(projectNameOrID string, hostIP string, wildcardDomain str
 	}
 
 	if hostIP == "" {
-		hostIP = os.Getenv("VESSL_HOST_IP")
+		hostIP = os.Getenv("CODEDOCK_HOST_IP")
 	}
 
 	if hostIP == "" {
@@ -30,7 +30,7 @@ func GenerateAppDomain(projectNameOrID string, hostIP string, wildcardDomain str
 
 	cleanIP := strings.ReplaceAll(strings.TrimSpace(hostIP), ".", "-")
 	cleanName := SanitizeDomainName(projectNameOrID)
-	magicDomain := os.Getenv("VESSL_MAGIC_DOMAIN")
+	magicDomain := os.Getenv("CODEDOCK_MAGIC_DOMAIN")
 	if magicDomain == "" {
 		magicDomain = "sslip.io"
 	}

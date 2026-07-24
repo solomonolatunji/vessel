@@ -2,12 +2,13 @@ package handlers
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/labstack/echo/v4"
 
-	"vessl.dev/vessl/internal/services"
-	"vessl.dev/vessl/internal/utils"
+	"codedock.run/codedock/internal/services"
+	"codedock.run/codedock/internal/utils"
 )
 
 type OnboardingHandler struct {
@@ -46,7 +47,7 @@ func (h *OnboardingHandler) Setup(c echo.Context) error {
 		return utils.Error(c, 400, "invalid request")
 	}
 
-	u, token, err := h.onboardingService.CompleteSetup(ctx, req)
+	u, token, refreshToken, err := h.onboardingService.CompleteSetup(ctx, req)
 	if err != nil {
 		if err.Error() == "setup has already been completed" {
 			return utils.Error(c, 403, err.Error())
@@ -54,9 +55,20 @@ func (h *OnboardingHandler) Setup(c echo.Context) error {
 		return utils.Error(c, 400, err.Error())
 	}
 
+	SetAuthCookie(c, token)
+	c.SetCookie(&http.Cookie{
+		Name:     "codedock_refresh_token",
+		Value:    refreshToken,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteLaxMode,
+	})
+
 	res := map[string]any{
-		"user":  u,
-		"token": token,
+		"user":         u,
+		"token":        token,
+		"refreshToken": refreshToken,
 	}
 
 	return utils.Success(c, "Setup completed successfully", res)

@@ -1,16 +1,16 @@
 package repositories
 
 import (
+	"codedock.run/codedock/internal/utils"
 	"context"
 	"database/sql"
 	"errors"
 	"time"
-	"vessl.dev/vessl/internal/utils"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.run/codedock/internal/models"
 )
 
 type GitRepository interface {

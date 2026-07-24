@@ -1,0 +1,57 @@
+---
+title: Quick Start
+description: Deploy your first application on Codedock.
+---
+
+import { Steps, Tabs, TabItem, Aside } from '@astrojs/starlight/components';
+
+## Quick Start: Deploy Your First App
+
+### From Git
+
+<Steps>
+
+1. Click **New Project** in the dashboard.
+2. Connect your GitHub or GitLab account.
+3. Select a repository and branch.
+4. Choose a build strategy (Dockerfile, Railpack, or Nixpacks).
+5. Click **Deploy**.
+
+</Steps>
+
+<Aside>Codedock clones the repo, builds the image, and runs a health check before routing traffic.</Aside>
+
+### One-Click Databases
+
+<Steps>
+
+1. Navigate to **Databases** in the sidebar.
+2. Click **New Database**.
+3. Select an engine (PostgreSQL, MySQL, Redis, MongoDB, etc.).
+4. Click **Create**.
+
+</Steps>
+
+<Aside>Codedock provisions the container with persistent volumes and injects the connection string into your apps automatically.</Aside>
+
+### From a Template
+
+Deploy a ready-made starter from the [codedock-examples](https://github.com/buildwithtechx/codedock-examples) repository:
+
+```sh
+codedockd deploy --template go-fiber
+codedockd deploy --template node-express
+codedockd deploy --template python-fastapi
+codedockd deploy --template nextjs
+```
+
+This clones the template, builds it, and deploys it in one step. Browse all available templates at **[github.com/buildwithtechx/codedock-examples](https://github.com/buildwithtechx/codedock-examples)**.
+
+## What's Next
+
+- [Follow the tutorial → Deploy your first app in 5 minutes](/tutorial/)
+- [Deployment guide](/deployments/deployment-lifecycle) — build strategies, domains, env vars, CI/CD
+- [Add a database](/databases/provisioning)
+- [Configure environment variables](/configuration/)
+- [Set up notifications](/configuration/#notifications)
+- [CLI reference](/cli/)

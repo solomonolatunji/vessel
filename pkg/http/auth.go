@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.run/codedock/internal/models"
 )
 
 type AuthRequest struct {

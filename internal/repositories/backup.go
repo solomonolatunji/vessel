@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"codedock.run/codedock/internal/utils"
 	"context"
 	"database/sql"
 	"errors"
@@ -9,9 +10,8 @@ import (
 	"github.com/jmoiron/sqlx"
 	"sync"
 	"time"
-	"vessl.dev/vessl/internal/utils"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.run/codedock/internal/models"
 )
 
 type BackupRepository interface {

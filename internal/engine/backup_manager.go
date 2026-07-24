@@ -19,9 +19,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/robfig/cron/v3"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.run/codedock/internal/models"
 
-	"vessl.dev/vessl/internal/utils"
+	"codedock.run/codedock/internal/utils"
 )
 
 type BackupManager struct {
@@ -149,7 +149,7 @@ func (bm *BackupManager) TriggerBackup(ctx context.Context, backupConfigID strin
 	var fileExt string
 
 	if cfg.DatabaseID == "global" || cfg.DatabaseID == "" {
-		dbPath := filepath.Join(utils.GetDataDir(), "vessl.db")
+		dbPath := filepath.Join(utils.GetDataDir(), "codedock.db")
 		content, err := os.ReadFile(dbPath)
 		if err != nil {
 			return bm.failBackupRecord(rec.ID, fmt.Sprintf("failed to read global db: %v", err))
@@ -222,15 +222,15 @@ func (bm *BackupManager) buildDumpCommand(cfg *models.BackupConfig) (string, []s
 			}
 		}
 
-		if tmplService.XVessl != nil && tmplService.XVessl.Backup != nil && len(tmplService.XVessl.Backup.Command) > 0 {
+		if tmplService.XCodedock != nil && tmplService.XCodedock.Backup != nil && len(tmplService.XCodedock.Backup.Command) > 0 {
 			var dumpCmd []string
-			for _, c := range tmplService.XVessl.Backup.Command {
+			for _, c := range tmplService.XCodedock.Backup.Command {
 				resolved := strings.ReplaceAll(c, "${db.password}", db.Password)
 				resolved = strings.ReplaceAll(resolved, "${db.username}", db.Username)
 				resolved = strings.ReplaceAll(resolved, "${db.database_name}", db.DatabaseName)
 				dumpCmd = append(dumpCmd, resolved)
 			}
-			return containerName, dumpCmd, tmplService.XVessl.Backup.FileExtension, nil
+			return containerName, dumpCmd, tmplService.XCodedock.Backup.FileExtension, nil
 		}
 		return containerName, []string{"sh", "-c", "echo 'Generic volume snapshot'"}, ".tar.gz", nil
 

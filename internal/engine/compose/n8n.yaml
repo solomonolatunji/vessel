@@ -1,4 +1,4 @@
-x-vessl:
+x-codedock:
   is_one_click: true
   name: n8n
   description: Open-source workflow automation

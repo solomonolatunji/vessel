@@ -23,7 +23,7 @@ func NewRailpackBuilder(dockerClient *client.Client) *RailpackBuilder {
 }
 
 func (r *RailpackBuilder) Build(ctx context.Context, opts BuildOptions, engineName string) (string, error) {
-	imageTag := fmt.Sprintf("vessl-app-%s:latest", strings.ToLower(opts.ProjectID))
+	imageTag := fmt.Sprintf("codedock-app-%s:latest", strings.ToLower(opts.ProjectID))
 	if opts.LogWriter != nil {
 		fmt.Fprintf(opts.LogWriter, "🌟 [Railpack/Nixpacks] Auto-detecting language & framework in %s...\n", opts.SourceDir)
 	}
@@ -45,11 +45,11 @@ func (r *RailpackBuilder) Build(ctx context.Context, opts BuildOptions, engineNa
 		if opts.LogWriter != nil {
 			fmt.Fprintf(opts.LogWriter, "⚙️ [Buildpacks] Executing pack builder engine via Docker container...\n")
 		}
-		packImage := os.Getenv("VESSL_PACK_IMAGE")
+		packImage := os.Getenv("CODEDOCK_PACK_IMAGE")
 		if packImage == "" {
 			packImage = "buildpacksio/pack:latest"
 		}
-		builderImage := os.Getenv("VESSL_BUILDER_IMAGE")
+		builderImage := os.Getenv("CODEDOCK_BUILDER_IMAGE")
 		if builderImage == "" {
 			builderImage = "paketobuildpacks/builder:base"
 		}
@@ -74,7 +74,7 @@ func (r *RailpackBuilder) Build(ctx context.Context, opts BuildOptions, engineNa
 		if opts.LogWriter != nil {
 			fmt.Fprintf(opts.LogWriter, "⚙️ [Nixpacks] Executing Nixpacks builder engine via Docker container...\n")
 		}
-		nixpacksImage := os.Getenv("VESSL_NIXPACKS_IMAGE")
+		nixpacksImage := os.Getenv("CODEDOCK_NIXPACKS_IMAGE")
 		if nixpacksImage == "" {
 			nixpacksImage = "ghcr.io/railwayapp/nixpacks:latest"
 		}
@@ -114,13 +114,13 @@ func (r *RailpackBuilder) Build(ctx context.Context, opts BuildOptions, engineNa
 	if err != nil {
 		return "", fmt.Errorf("failed to synthesize fallback dockerfile: %w", err)
 	}
-	dockerfilePath := filepath.Join(opts.SourceDir, ".vessl.Dockerfile")
+	dockerfilePath := filepath.Join(opts.SourceDir, ".codedock.Dockerfile")
 	if err := os.WriteFile(dockerfilePath, []byte(synthesizedDockerfile), 0o644); err != nil {
 		return "", fmt.Errorf("failed to write synthesized dockerfile: %w", err)
 	}
 	defer os.Remove(dockerfilePath)
 	fallbackOpts := opts
-	fallbackOpts.DockerfilePath = ".vessl.Dockerfile"
+	fallbackOpts.DockerfilePath = ".codedock.Dockerfile"
 	fallbackBuilder := NewDockerfileBuilder(r.dockerClient)
 	return fallbackBuilder.Build(ctx, fallbackOpts)
 }

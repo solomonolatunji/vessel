@@ -11,6 +11,43 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    name: Detect File Changes
+    runs-on: ubuntu-latest
+    outputs:
+      go: ${{ steps.filter.outputs.go }}
+      dashboard: ${{ steps.filter.outputs.dashboard }}
+      web: ${{ steps.filter.outputs.web }}
+      docs: ${{ steps.filter.outputs.docs }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            go:
+              - '**/*.go'
+              - 'go.mod'
+              - 'go.sum'
+              - 'cmd/**'
+              - 'internal/**'
+              - 'tests/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'apps/dashboard/**' # Go builds embed the dashboard, so dashboard changes trigger go builds
+            dashboard:
+              - 'apps/dashboard/**'
+              - 'package.json'
+              - 'package-lock.json'
+            web:
+              - 'apps/web/**'
+              - 'package.json'
+              - 'package-lock.json'
+            docs:
+              - 'apps/docs/**'
+              - 'package.json'
+              - 'package-lock.json'
+
   lint:
     name: Lint & Format
     runs-on: ubuntu-latest
@@ -32,13 +69,15 @@ jobs:
         run: npx @biomejs/biome ci .
       - name: Build dashboard for embed
         run: |
-          npm --workspace=dashboard run generate-routes
-          npm --workspace=dashboard run build
+          npm --workspace=apps/dashboard run generate-routes
+          npm --workspace=apps/dashboard run build
       - name: Go vet
         run: go vet ./...
 
   build-go:
     name: Build Go
+    needs: changes
+    if: ${{ needs.changes.outputs.go == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -52,13 +91,15 @@ jobs:
         run: npm ci
       - name: Build dashboard for embed
         run: |
-          npm --workspace=dashboard run generate-routes
-          npm --workspace=dashboard run build
+          npm --workspace=apps/dashboard run generate-routes
+          npm --workspace=apps/dashboard run build
       - name: Build
         run: go build ./...
 
   build-dashboard:
     name: Build Dashboard
+    needs: changes
+    if: ${{ needs.changes.outputs.dashboard == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -68,14 +109,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Generate routes
-        run: npm --workspace=dashboard run generate-routes
+        run: npm --workspace=apps/dashboard run generate-routes
       - name: Typecheck
-        run: npx tsc --noEmit -p dashboard
+        run: npx tsc --noEmit -p apps/dashboard
       - name: Build
-        run: npm --workspace=dashboard run build
+        run: npm --workspace=apps/dashboard run build
 
   build-web:
     name: Build Web
+    needs: changes
+    if: ${{ needs.changes.outputs.web == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -85,10 +128,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Build
-        run: npm --workspace=web run build
+        run: npm --workspace=apps/web run build
 
   build-docs:
     name: Build Docs
+    needs: changes
+    if: ${{ needs.changes.outputs.docs == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -98,10 +143,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Build
-        run: npm --workspace=docs run build
+        run: npm --workspace=apps/docs run build
 
   test-go:
     name: Test Go
+    needs: changes
+    if: ${{ needs.changes.outputs.go == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -115,7 +162,7 @@ jobs:
         run: npm ci
       - name: Build dashboard for embed
         run: |
-          npm --workspace=dashboard run generate-routes
-          npm --workspace=dashboard run build
+          npm --workspace=apps/dashboard run generate-routes
+          npm --workspace=apps/dashboard run build
       - name: Test
         run: go test ./tests/...

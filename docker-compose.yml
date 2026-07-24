@@ -1,10 +1,10 @@
 services:
-  vessl:
+  codedock:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ghcr.io/vesslhq/vessl:${VESSL_VERSION:-latest}
-    container_name: vessl-control-plane
+    image: ghcr.io/buildwithtechx/codedock:${CODEDOCK_VERSION:-latest}
+    container_name: codedock-control-plane
     restart: unless-stopped
     ports:
       - "8080:8080"
@@ -14,26 +14,26 @@ services:
       - .env
     environment:
       - PORT=8080
-      - VESSL_DATA_DIR=/vessl/data
-      - VESSL_DASHBOARD_URL=${VESSL_DASHBOARD_URL:-http://localhost:8080}
-      - TZ=${VESSL_TIMEZONE:-UTC}
+      - CODEDOCK_DATA_DIR=/codedock/data
+      - CODEDOCK_DASHBOARD_URL=${CODEDOCK_DASHBOARD_URL:-http://localhost:8080}
+      - TZ=${CODEDOCK_TIMEZONE:-UTC}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=Host(`${VESSL_DOMAIN:-vessl.local}`)"
-      - "traefik.http.routers.dashboard.tls=${VESSL_DOMAIN:+true}"
+      - "traefik.http.routers.dashboard.rule=Host(`${CODEDOCK_DOMAIN:-codedock.local}`)"
+      - "traefik.http.routers.dashboard.tls=${CODEDOCK_DOMAIN:+true}"
       - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
       - "traefik.http.services.dashboard.loadbalancer.server.port=8080"
     volumes:
-      - vessl_data:/vessl/data
+      - codedock_data:/codedock/data
       - ${DOCKER_SOCKET_PATH:-/var/run/docker.sock}:/var/run/docker.sock:ro
     networks:
-      - vessl-network
+      - codedock-network
 
 volumes:
-  vessl_data:
-    name: vessl_data
+  codedock_data:
+    name: codedock_data
 
 networks:
-  vessl-network:
-    name: vessl-network
+  codedock-network:
+    name: codedock-network
     driver: bridge

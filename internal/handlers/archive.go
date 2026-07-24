@@ -10,8 +10,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 
-	"vessl.dev/vessl/internal/services"
-	"vessl.dev/vessl/internal/utils"
+	"codedock.run/codedock/internal/services"
+	"codedock.run/codedock/internal/utils"
 )
 
 type ArchiveHandler struct {
@@ -43,7 +43,7 @@ func (h *ArchiveHandler) DeployArchive(c echo.Context) error {
 	}
 	defer src.Close()
 
-	tmpPath := filepath.Join(os.TempDir(), "vessl-upload", uuid.New().String()+".tar.gz")
+	tmpPath := filepath.Join(os.TempDir(), "codedock-upload", uuid.New().String()+".tar.gz")
 	if err := writeFile(tmpPath, src); err != nil {
 		return utils.Error(c, http.StatusInternalServerError, "failed to save archive")
 	}

@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.run/codedock/internal/models"
 )
 
 func (d *Deployer) getEnvironmentVariables(app *models.AppService, logWriter io.Writer) (map[string]string, error) {
@@ -52,7 +52,7 @@ func (d *Deployer) getEnvironmentVariables(app *models.AppService, logWriter io.
 }
 
 func defaultAppPort() int {
-	if p := os.Getenv("VESSL_DEFAULT_APP_PORT"); p != "" {
+	if p := os.Getenv("CODEDOCK_DEFAULT_APP_PORT"); p != "" {
 		if port, err := strconv.Atoi(p); err == nil && port > 0 {
 			return port
 		}
@@ -61,7 +61,7 @@ func defaultAppPort() int {
 }
 
 func defaultMemoryMB() int {
-	if m := os.Getenv("VESSL_DEFAULT_MEMORY_MB"); m != "" {
+	if m := os.Getenv("CODEDOCK_DEFAULT_MEMORY_MB"); m != "" {
 		if mem, err := strconv.Atoi(m); err == nil && mem > 0 {
 			return mem
 		}
@@ -70,7 +70,7 @@ func defaultMemoryMB() int {
 }
 
 func defaultCPURequest() float64 {
-	if c := os.Getenv("VESSL_DEFAULT_CPU"); c != "" {
+	if c := os.Getenv("CODEDOCK_DEFAULT_CPU"); c != "" {
 		if cpu, err := strconv.ParseFloat(c, 64); err == nil && cpu > 0 {
 			return cpu
 		}
@@ -98,7 +98,7 @@ func (d *Deployer) verifyHealthCheck(ctx context.Context, app *models.AppService
 
 func (d *Deployer) waitForHealthyContainer(ctx context.Context, containerName string, healthCheckPath string, internalPort int) bool {
 	maxRetries := 30
-	if t := os.Getenv("VESSL_DEPLOYMENT_TIMEOUT"); t != "" {
+	if t := os.Getenv("CODEDOCK_DEPLOYMENT_TIMEOUT"); t != "" {
 		if v, err := strconv.Atoi(t); err == nil && v > 0 {
 			maxRetries = v / 2
 		}

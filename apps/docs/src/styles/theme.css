@@ -1,0 +1,242 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Unbounded:wght@500;700;800&display=swap');
+
+:root,
+:root[data-theme='light'] {
+  color-scheme: dark;
+  --codedock-bg: #0a0a0f;
+  --codedock-panel: #13131a;
+  --codedock-panel-soft: #1c1c26;
+  --codedock-border: #27272a;
+  --codedock-muted: #a1a1aa;
+  --codedock-text: #fafafa;
+  --codedock-accent: #7c3aed;
+  --codedock-accent-strong: #8b5cf6;
+
+  --sl-color-white: var(--codedock-text);
+  --sl-color-gray-1: #e7e8ee;
+  --sl-color-gray-2: var(--codedock-muted);
+  --sl-color-gray-3: #777b87;
+  --sl-color-gray-4: #52525b;
+  --sl-color-gray-5: var(--codedock-border);
+  --sl-color-gray-6: var(--codedock-panel);
+  --sl-color-black: var(--codedock-bg);
+  --sl-color-accent-low: rgba(124, 58, 237, 0.16);
+  --sl-color-accent: var(--codedock-accent);
+  --sl-color-accent-high: var(--codedock-accent-strong);
+  --sl-color-text: var(--codedock-muted);
+  --sl-color-text-accent: var(--codedock-accent-strong);
+  --sl-color-text-invert: #ffffff;
+  --sl-color-bg: var(--codedock-bg);
+  --sl-color-bg-nav: rgba(10, 10, 15, 0.88);
+  --sl-color-bg-sidebar: rgba(10, 10, 15, 0.72);
+  --sl-color-bg-inline-code: rgba(19, 19, 26, 0.9);
+  --sl-color-bg-accent: var(--codedock-accent);
+  --sl-color-hairline-light: rgba(39, 39, 42, 0.72);
+  --sl-color-hairline: rgba(39, 39, 42, 0.65);
+  --sl-color-hairline-shade: rgba(39, 39, 42, 0.5);
+  --sl-color-backdrop-overlay: rgba(10, 10, 15, 0.78);
+
+  --sl-font: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --sl-font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  --sl-content-width: 52rem;
+  --sl-sidebar-width: 17.5rem;
+  --sl-nav-height: 4.25rem;
+  --sl-text-h1: 3.3rem;
+  --sl-text-h2: 2.2rem;
+  --sl-text-h3: 1.45rem;
+  --sl-line-height-headings: 1.05;
+}
+
+html,
+body {
+  background: var(--codedock-bg);
+}
+
+body {
+  background-color: var(--codedock-bg);
+  background-image: radial-gradient(rgba(109, 40, 217, 0.3) 1.5px, transparent 1.5px);
+  background-size: 40px 40px;
+  background-position: center top;
+  background-attachment: fixed;
+}
+
+.header {
+  font-family: var(--sl-font-mono);
+}
+
+.header a {
+  text-decoration: none;
+}
+
+.header a:hover,
+.right-sidebar a:hover,
+.sidebar-content a:hover {
+  color: var(--codedock-accent-strong);
+}
+
+.top-level {
+  border-bottom: 1px solid rgba(39, 39, 42, 0.72);
+  backdrop-filter: blur(16px);
+}
+
+.sidebar-pane {
+  border-right-color: rgba(39, 39, 42, 0.64);
+}
+
+.right-sidebar {
+  border-left-color: rgba(39, 39, 42, 0.64);
+}
+
+.sl-markdown-content {
+  font-family: var(--sl-font);
+}
+
+.sl-markdown-content h1,
+.sl-markdown-content h2,
+.sl-markdown-content h3,
+.hero h1 {
+  font-family: 'Unbounded', var(--sl-font);
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.hero {
+  padding-block: 4.5rem 3rem;
+}
+
+.hero .stack {
+  gap: 1.5rem;
+}
+
+.hero h1 {
+  max-width: 12ch;
+  font-size: 3.4rem;
+}
+
+.hero .tagline {
+  max-width: 44rem;
+  color: var(--codedock-muted);
+  font-family: var(--sl-font-mono);
+  font-size: 0.98rem;
+  line-height: 1.8;
+}
+
+.hero .actions {
+  gap: 0.75rem;
+}
+
+.sl-link-button {
+  min-height: 2.75rem;
+  border-radius: 0;
+  font-weight: 800;
+}
+
+.sl-link-button.primary {
+  border: 1px solid rgba(139, 92, 246, 0.5);
+  background: rgba(124, 58, 237, 0.16);
+  color: var(--codedock-accent-strong);
+}
+
+.sl-link-button.secondary {
+  border: 1px solid var(--codedock-border);
+  background: rgba(19, 19, 26, 0.72);
+  color: var(--codedock-text);
+}
+
+.sl-markdown-content a:not(.sl-link-button) {
+  color: var(--codedock-accent-strong);
+  text-decoration-color: rgba(139, 92, 246, 0.45);
+}
+
+.sl-markdown-content code {
+  border: 1px solid rgba(39, 39, 42, 0.72);
+  border-radius: 0;
+  color: var(--codedock-accent-strong);
+}
+
+.expressive-code .frame {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.card {
+  border-color: rgba(39, 39, 42, 0.85);
+  border-radius: 0;
+  background: rgba(19, 19, 26, 0.78);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.22);
+  padding: 1.5rem;
+}
+
+.card .title {
+  font-family: var(--sl-font);
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.card .icon {
+  border-color: rgba(124, 58, 237, 0.44);
+  border-radius: 0;
+  background: rgba(124, 58, 237, 0.1);
+  color: var(--codedock-accent-strong);
+}
+
+.sl-link-card {
+  border-color: rgba(39, 39, 42, 0.85);
+  border-radius: 0;
+  background: rgba(19, 19, 26, 0.72);
+  box-shadow: none;
+}
+
+.sl-link-card:hover {
+  border-color: rgba(139, 92, 246, 0.48);
+  background: rgba(124, 58, 237, 0.1);
+}
+
+.sl-link-card .title {
+  color: var(--codedock-text);
+  font-weight: 800;
+}
+
+.sl-link-card .description {
+  color: var(--codedock-muted);
+  font-family: var(--sl-font-mono);
+  font-size: 0.84rem;
+}
+
+.sl-link-card .icon {
+  color: var(--codedock-accent-strong);
+}
+
+.starlight-aside {
+  border-color: rgba(124, 58, 237, 0.64);
+  border-radius: 0;
+  background: rgba(19, 19, 26, 0.78);
+  font-family: var(--sl-font-mono);
+}
+
+.starlight-aside--tip {
+  --sl-color-asides-text-accent: var(--codedock-accent-strong);
+  --sl-color-asides-border: var(--codedock-accent);
+  background: rgba(124, 58, 237, 0.12);
+}
+
+.pagination-links a {
+  border-radius: 0;
+}
+
+@media (max-width: 49.99rem) {
+  :root,
+  :root[data-theme='light'] {
+    --sl-text-h1: 2.35rem;
+    --sl-text-h2: 1.75rem;
+  }
+
+  .hero {
+    padding-block: 2.5rem 2rem;
+  }
+
+  .hero h1 {
+    font-size: 2.45rem;
+  }
+}

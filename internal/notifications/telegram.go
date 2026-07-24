@@ -3,7 +3,7 @@ package notifications
 import (
 	"fmt"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.run/codedock/internal/models"
 )
 
 func SendTelegramNotification(botToken, chatID string, event *models.NotificationEvent) error {

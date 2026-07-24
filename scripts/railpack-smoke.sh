@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
-echo "🚂 Vessl — Railpack CI Smoke Test"
+echo "🚂 Codedock — Railpack CI Smoke Test"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 APP_NAME="smoke-test-$(date +%s)"
@@ -21,16 +21,16 @@ cat << 'EOF' > "$TEST_DIR/package.json"
 EOF
 
 echo "📦 Building with Railpack..."
-# Replace ghcr.io/vessl/railpack with the actual local build if needed
+# Replace ghcr.io/codedock/railpack with the actual local build if needed
 # We assume the image is available locally or can be pulled
 docker run --rm -v "$TEST_DIR:/workspace" -v /var/run/docker.sock:/var/run/docker.sock \
-  ghcr.io/vessl/railpack:latest build -t "vessl-$APP_NAME" /workspace || {
+  ghcr.io/codedock/railpack:latest build -t "codedock-$APP_NAME" /workspace || {
     echo "⚠️  Railpack build failed or image unavailable. Skipping execution."
     exit 0
 }
 
 echo "🚀 Starting test container..."
-CONTAINER_ID=$(docker run -d -p 3000:3000 "vessl-$APP_NAME")
+CONTAINER_ID=$(docker run -d -p 3000:3000 "codedock-$APP_NAME")
 
 sleep 3
 echo "🩺 Healthcheck..."

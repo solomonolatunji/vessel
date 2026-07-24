@@ -1,7 +1,7 @@
 package notifications
 
 import (
-	"vessl.dev/vessl/internal/models"
+	"codedock.run/codedock/internal/models"
 )
 
 func SendGenericWebhook(webhookURL string, event *models.NotificationEvent) error {

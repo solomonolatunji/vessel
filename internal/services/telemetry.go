@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"time"
 
-	"vessl.dev/vessl/internal/repositories"
+	"codedock.run/codedock/internal/repositories"
 )
 
 func StartTelemetryReporter(db *sql.DB, version string) {

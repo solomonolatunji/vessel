@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/repositories"
+	"codedock.run/codedock/internal/models"
+	"codedock.run/codedock/internal/repositories"
 )
 
 type ServerlessService interface {

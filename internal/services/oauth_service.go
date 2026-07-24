@@ -9,9 +9,9 @@ import (
 
 	"github.com/google/uuid"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/repositories"
-	"vessl.dev/vessl/internal/utils"
+	"codedock.run/codedock/internal/models"
+	"codedock.run/codedock/internal/repositories"
+	"codedock.run/codedock/internal/utils"
 )
 
 var ErrInvalidPasscode = errors.New("invalid passcode")
@@ -104,18 +104,18 @@ func (s *OAuthService) UpdateUserTOTP(ctx context.Context, userID string, enable
 	return s.oauthRepo.UpdateUserTOTP(ctx, userID, enabled, secret, recoveryCodes)
 }
 
-func (s *OAuthService) HandleCallback(ctx context.Context, providerName, code string) (string, *models.User, error) {
+func (s *OAuthService) HandleCallback(ctx context.Context, providerName, code string) (string, string, *models.User, error) {
 	p, err := s.oauthRepo.GetProvider(ctx, providerName)
 	if err != nil || p == nil {
-		return "", nil, errors.New("oauth provider not found: " + providerName)
+		return "", "", nil, errors.New("oauth provider not found: " + providerName)
 	}
 	email, err := ExchangeCode(p, code)
 	if err != nil || email == "" {
-		return "", nil, errors.New("failed oauth code exchange")
+		return "", "", nil, errors.New("failed oauth code exchange")
 	}
 	u, err := s.userRepo.GetUserByEmail(ctx, email)
 	if err != nil {
-		return "", nil, err
+		return "", "", nil, err
 	}
 	if u == nil {
 		u = &models.User{
@@ -127,17 +127,21 @@ func (s *OAuthService) HandleCallback(ctx context.Context, providerName, code st
 			UpdatedAt:    time.Now(),
 		}
 		if err := s.userRepo.CreateUser(ctx, u); err != nil {
-			return "", nil, errors.New("failed to create user account from oauth: " + err.Error())
+			return "", "", nil, errors.New("failed to create user account from oauth: " + err.Error())
 		}
 
 	}
 	token, err := s.tokenService.GenerateToken(u)
 	if err != nil {
-		return "", nil, errors.New("failed generating token")
+		return "", "", nil, errors.New("failed generating token")
+	}
+	refreshToken, err := s.tokenService.GenerateRefreshToken(u)
+	if err != nil {
+		return "", "", nil, errors.New("failed generating refresh token")
 	}
 	uCopy := *u
 	uCopy.PasswordHash = ""
-	return token, &uCopy, nil
+	return token, refreshToken, &uCopy, nil
 }
 
 func (s *OAuthService) Setup2FA(ctx context.Context, userID, email string) (*models.TwoFASetupResponse, error) {

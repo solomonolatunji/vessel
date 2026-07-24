@@ -8,12 +8,12 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/mark3labs/mcp-go/server"
 
-	"vessl.dev/vessl/internal/core"
-	"vessl.dev/vessl/internal/engine"
-	"vessl.dev/vessl/internal/handlers"
-	"vessl.dev/vessl/internal/http/middleware"
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/services"
+	"codedock.run/codedock/internal/core"
+	"codedock.run/codedock/internal/engine"
+	"codedock.run/codedock/internal/handlers"
+	"codedock.run/codedock/internal/http/middleware"
+	"codedock.run/codedock/internal/models"
+	"codedock.run/codedock/internal/services"
 )
 
 type Server struct {
@@ -67,6 +67,7 @@ type Server struct {
 	logHandler             *handlers.LogHandler
 	auditLogHandler        *handlers.AuditLogHandler
 	exampleHandler         *handlers.ExampleHandler
+	workerWSHandler        *handlers.WorkerWSHandler
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {

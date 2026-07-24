@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/services"
+	"codedock.run/codedock/internal/models"
+	"codedock.run/codedock/internal/services"
 )
 
 type mockAppRepo struct {

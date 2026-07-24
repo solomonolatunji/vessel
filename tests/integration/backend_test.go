@@ -9,19 +9,19 @@ import (
 	"github.com/docker/docker/client"
 	_ "modernc.org/sqlite"
 
-	vesslhttp "vessl.dev/vessl/internal/http"
-	"vessl.dev/vessl/internal/repositories"
-	"vessl.dev/vessl/internal/utils"
+	codedockhttp "codedock.run/codedock/internal/http"
+	"codedock.run/codedock/internal/repositories"
+	"codedock.run/codedock/internal/utils"
 )
 
-func TestVesslBackendInitialization(t *testing.T) {
+func TestCodedockBackendInitialization(t *testing.T) {
 	dataDir := t.TempDir()
 	vlt, err := utils.NewVault(dataDir)
 	if err != nil {
 		t.Fatalf("failed to create vault: %v", err)
 	}
 
-	dbPath := filepath.Join(dataDir, "vessl.db")
+	dbPath := filepath.Join(dataDir, "codedock.db")
 	db, err := sql.Open("sqlite", dbPath+"?_pragma=journal_mode(WAL)&_pragma=busy_timeout(5000)&_pragma=foreign_keys(ON)")
 	if err != nil {
 		t.Fatalf("failed to open sqlite database: %v", err)
@@ -32,11 +32,11 @@ func TestVesslBackendInitialization(t *testing.T) {
 		t.Fatalf("failed to run migrations: %v", err)
 	}
 
-	t.Setenv("VESSL_JWT_SECRET", "testsecret")
+	t.Setenv("CODEDOCK_JWT_SECRET", "testsecret")
 
 	dockerClient, _ := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 
-	server, err := vesslhttp.NewServer(db, vlt, nil, nil, dockerClient, dataDir)
+	server, err := codedockhttp.NewServer(db, vlt, nil, nil, dockerClient, dataDir)
 	if err != nil {
 		t.Fatalf("failed to initialize server: %v", err)
 	}

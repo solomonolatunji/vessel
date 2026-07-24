@@ -14,13 +14,13 @@ type Config struct {
 	Email     string `json:"email,omitempty"`
 }
 
-// GetConfigPath returns the absolute path to ~/.vessl/config.json
+// GetConfigPath returns the absolute path to ~/.codedock/config.json
 func GetConfigPath() (string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(home, ".vessl", "config.json"), nil
+	return filepath.Join(home, ".codedock", "config.json"), nil
 }
 
 // Load reads the configuration from disk.

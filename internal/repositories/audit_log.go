@@ -1,10 +1,10 @@
 package repositories
 
 import (
+	"codedock.run/codedock/internal/models"
 	"context"
 	"database/sql"
 	"fmt"
-	"vessl.dev/vessl/internal/models"
 )
 
 type AuditLogRepository interface {

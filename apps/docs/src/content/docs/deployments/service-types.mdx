@@ -1,0 +1,69 @@
+---
+title: Service Types
+description: Deploy source code, Docker images, Compose stacks, static sites, workers, and serverless functions.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+Codedock supports a variety of service types to accommodate any application architecture. 
+
+## Source Services
+
+Source services are built directly from your code using Railpack or a standard Dockerfile.
+
+### Source Options
+
+- **GitHub repository**: Browse repositories available to the connected GitHub App, choose a branch, and select a root directory.
+- **Git URL**: Enter an HTTPS or SSH Git URL manually, then provide the branch and root directory.
+
+Use GitHub repositories when you want push-triggered deployments. Use direct Git URLs when the repository is public or uses SSH. Codedock supports custom install, build, and start command overrides for source services if auto-detection (Railpack) is insufficient.
+
+## Docker Compose Support
+
+Codedock supports natively deploying applications defined via standard `docker-compose.yml` files.
+
+```bash
+codedockd deploy --compose ./docker-compose.yml
+```
+
+When Codedock detects a `docker-compose.yml` file, it parses the file:
+<Steps>
+1. **Services:** Iterates over the `services` block and registers each as an individual App Service.
+2. **Environment Variables:** Values in `environment` or `env_file` are imported as Codedock Secrets.
+3. **Ports & Volumes:** Port mappings are honored and dynamically wired to Traefik. Volumes are mounted as persistent directories.
+</Steps>
+
+## Docker Image Services
+
+Docker image services skip the source build. Codedock pulls the configured image and runs it directly on the server. Use this when:
+- CI already builds and publishes images.
+- You want to deploy a service from GHCR, Docker Hub, or another registry.
+- You are running third-party software.
+
+Private images use the host Docker daemon's registry login. For a web image, Codedock starts a temporary container, probes the port, and only switches traffic after the container is reachable (zero-downtime hot swap).
+
+## Static Sites
+
+A static site is a web service with a `Static output` directory defined. 
+
+Codedock builds the source service, creates an image, copies the static output directory from that image into a static volume, and serves the files directly through Traefik.
+
+Set `Static output` to the directory created by your build (e.g., `dist`, `build`, `.output/public`). Leave it blank if you are running a server-rendered application (like Next.js or Nuxt).
+
+## Background Workers
+
+Workers run background processes without public traffic. Use workers for queues, schedulers, job processors, or event consumers.
+
+Worker services:
+- Do not need an internal port.
+- Do not receive generated public web routes.
+- Are considered healthy when the container stays running.
+
+## Serverless Functions
+
+Codedock supports serverless function deployment for lightweight, event-driven workloads directly from the dashboard using the in-browser Monaco editor.
+
+- **Supported Runtimes:** Node.js, Python, Go
+- **Environment Variables:** Full access to project secrets and auto-linked databases.
+
+Functions are deployed as lightweight containers with fast cold-start times whenever you click **Save & Deploy**.

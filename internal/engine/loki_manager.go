@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	LokiContainerName = "vessl-loki"
+	LokiContainerName = "codedock-loki"
 )
 
 type LokiManager struct {
@@ -62,7 +62,7 @@ func (m *LokiManager) createLokiContainer(ctx context.Context) error {
 		Mounts: []mount.Mount{
 			{
 				Type:   mount.TypeVolume,
-				Source: "vessl-loki-data",
+				Source: "codedock-loki-data",
 				Target: "/loki",
 			},
 		},
@@ -78,7 +78,7 @@ func (m *LokiManager) createLokiContainer(ctx context.Context) error {
 		},
 	}, hostConfig, &network.NetworkingConfig{
 		EndpointsConfig: map[string]*network.EndpointSettings{
-			VesslNetworkName: {},
+			CodedockNetworkName: {},
 		},
 	}, nil, LokiContainerName)
 

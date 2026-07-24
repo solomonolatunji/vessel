@@ -41,7 +41,7 @@ func (w *LogWorker) Start(ctx context.Context) {
 	containers, err := w.dockerClient.ContainerList(ctx, container.ListOptions{})
 	if err == nil {
 		for _, c := range containers {
-			w.startTailing(c.ID, c.Labels["vessl.service.id"])
+			w.startTailing(c.ID, c.Labels["codedock.service.id"])
 		}
 	} else {
 		slog.Error("log worker failed to list initial containers", "err", err)
@@ -69,7 +69,7 @@ func (w *LogWorker) listenForEvents(ctx context.Context) {
 			}
 		case msg := <-msgs:
 			if msg.Action == "start" {
-				serviceID := msg.Actor.Attributes["vessl.service.id"]
+				serviceID := msg.Actor.Attributes["codedock.service.id"]
 				w.startTailing(msg.Actor.ID, serviceID)
 			}
 		}

@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"strings"
 
-	"vessl.dev/vessl/internal/models"
+	"codedock.run/codedock/internal/models"
 )
 
 func (s *DatabaseService) GetSchemas(ctx context.Context, id string) ([]models.TableSchema, error) {

@@ -12,9 +12,9 @@ import (
 	"strings"
 	"time"
 
+	"codedock.run/codedock/internal/models"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
-	"vessl.dev/vessl/internal/models"
 )
 
 func StartLogDrains(ctx context.Context, dockerClient *client.Client, containerID, serviceName string, drains []*models.LogDrain) {
@@ -79,7 +79,7 @@ func sendToDrain(drain *models.LogDrain, serviceName, logLine string) {
 		sendHTTP(drain.EndpointURL, drain.AuthToken, payload)
 	case models.LogDrainTypeDatadog:
 		ddPayload := map[string]interface{}{
-			"ddsource": "vessl",
+			"ddsource": "codedock",
 			"service":  serviceName,
 			"message":  logLine,
 		}

@@ -6,9 +6,9 @@ import (
 	"log/slog"
 	"strings"
 
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/notifications"
-	"vessl.dev/vessl/internal/repositories"
+	"codedock.run/codedock/internal/models"
+	"codedock.run/codedock/internal/notifications"
+	"codedock.run/codedock/internal/repositories"
 )
 
 type DispatcherService struct {

@@ -6,12 +6,12 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"vessl.dev/vessl/internal/utils"
+	"codedock.run/codedock/internal/utils"
 
-	"vessl.dev/vessl/internal/http/middleware"
-	"vessl.dev/vessl/internal/models"
-	"vessl.dev/vessl/internal/services"
-	"vessl.dev/vessl/internal/telemetry"
+	"codedock.run/codedock/internal/http/middleware"
+	"codedock.run/codedock/internal/models"
+	"codedock.run/codedock/internal/services"
+	"codedock.run/codedock/internal/telemetry"
 )
 
 type ProjectHandler struct {

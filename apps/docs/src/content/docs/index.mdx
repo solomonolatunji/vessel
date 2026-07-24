@@ -1,0 +1,99 @@
+---
+title: Codedock Docs
+description: Documentation for Codedock — turn any bare-metal VPS into your own private Platform-as-a-Service.
+template: splash
+hero:
+  tagline: Turn any bare-metal VPS into your own private Platform-as-a-Service in 60 seconds.
+  actions:
+    - text: Get Started
+      link: /getting-started/installation/
+      icon: rocket
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/buildwithtechx/codedock
+      icon: github
+      variant: secondary
+---
+
+import { Card, CardGrid, LinkCard, Icon } from '@astrojs/starlight/components';
+
+## Getting Started
+
+<CardGrid>
+  <LinkCard
+    title="Installation"
+    description="Deploy Codedock on any Linux VPS in under 60 seconds."
+    href="/getting-started/installation/"
+  />
+  <LinkCard
+    title="Browser Onboarding"
+    description="Securely initialize your server and create an admin account."
+    href="/getting-started/onboarding/"
+  />
+  <LinkCard
+    title="Quick Start"
+    description="Take a quick tour of the Codedock dashboard and core features."
+    href="/getting-started/quick-start/"
+  />
+  <LinkCard
+    title="Deploy Your First App"
+    description="Learn how to deploy a basic app from GitHub or a template."
+    href="/tutorial/"
+  />
+</CardGrid>
+
+## Platform Features
+
+<CardGrid>
+  <LinkCard
+    title="Projects & Canvas"
+    description="Organize services into environments with an interactive visual canvas view."
+    href="/projects/overview/"
+  />
+  <LinkCard
+    title="Apps & Deployments"
+    description="Deploy Docker, source code, and functions. Features zero-downtime, PR previews, and Log Drains."
+    href="/deployments/service-types/"
+  />
+  <LinkCard
+    title="Databases & Data Browsers"
+    description="15 managed engines with automated backups, 1-click restore, SQL Studio, and Redis browser."
+    href="/databases/provisioning/"
+  />
+  <LinkCard
+    title="Storage & Operations"
+    description="MinIO storage, live log viewing, instantaneous Maintenance Mode, and AI Log Diagnosis."
+    href="/operations/observability/"
+  />
+</CardGrid>
+
+## Configuration & Management
+
+<CardGrid>
+  <LinkCard
+    title="System Settings"
+    description="Notifications, emails, AI keys, auto-updates, MCP."
+    href="/reference/system-settings/"
+  />
+  <LinkCard
+    title="Teams"
+    description="Invite members to collaborate on projects with role-based access."
+    href="/operations/teams/"
+  />
+  <LinkCard
+    title="Maintenance & Updates"
+    description="Automated garbage collection, disk alerts, and seamless auto-updates."
+    href="/operations/maintenance-and-updates/"
+  />
+  <LinkCard
+    title="API Reference"
+    description="Full REST API with personal access tokens and rate limits."
+    href="/api/"
+  />
+</CardGrid>
+
+## Community
+
+- **[GitHub Issues](https://github.com/buildwithtechx/codedock/issues)** — Report bugs and request features
+- **[Discord](https://discord.gg/codedock)** — Community discussions and support
+- **[GitHub Discussions](https://github.com/buildwithtechx/codedock/discussions)** — Ask questions and share ideas
